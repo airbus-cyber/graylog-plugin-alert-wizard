@@ -14,11 +14,47 @@
 		
 	<groupId>com.airbus-cyber-security.graylog</groupId>
 	<artifactId>graylog-plugin-alert-wizard</artifactId>
-	<version>0.5.0</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
+
 	<name>${project.artifactId}</name>
 	<description>Graylog ${project.artifactId} plugin.</description>
-	<url>https://www.graylog.org</url>
+	<url>https://github.com/airbus-cyber/graylog-plugin-alert-wizard</url>
+
+	<licenses>
+		<license>
+			<name>GNU General Public License (GPL) version 3.0</name>
+		        <url>https://www.gnu.org/licenses/gpl-3.0.html</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>Airbus CyberSecurity</name>
+			<organization>Airbus CyberSecurity</organization>
+			<organizationUrl>https://www.airbus-cyber-security.com</organizationUrl>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:git@github.com:airbus-cyber/graylog-plugin-alert-wizard.git</connection>
+		<developerConnection>scm:git:git@github.com:airbus-cyber/graylog-plugin-alert-wizard.git</developerConnection>
+		<url>https://github.com/airbus-cyber/graylog-plugin-alert-wizard</url>
+		<tag>HEAD</tag>
+	</scm>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<name>Sonatype Nexus Snapshots</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<name>Nexus Release Repository</name>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -211,6 +247,57 @@
 						</mapping>
 					</mappings>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.6.7</version>
+				<extensions>true</extensions>
+				<configuration>
+					<serverId>ossrh</serverId>
+					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+					<autoReleaseAfterClose>true</autoReleaseAfterClose>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.2.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
