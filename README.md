@@ -1,6 +1,8 @@
 # Alert Wizard Plugin for Graylog
 
+[![Build Status](https://travis-ci.org/airbus-cyber/graylog-plugin-alert-wizard.svg?branch=master)](https://travis-ci.org/airbus-cyber/graylog-plugin-alert-wizard)
 [![License](https://img.shields.io/badge/license-GPL--3.0-orange.svg)](https://www.gnu.org/licenses/gpl-3.0.txt)
+[![GitHub Release](https://img.shields.io/badge/release-v1.0.0-blue.svg)](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/releases)
 
 #### Alert Wizard plugin for Graylog to manage the alert rules
 
@@ -11,9 +13,9 @@ Perfect for example to configure together and at the same time a stream, an aler
 **Required Graylog version:** 2.4.x  
 
 **Required Graylog plugins:**
-* graylog-plugin-logging-alert
-* graylog-plugin-aggregation-count
-* graylog-plugin-correlation-count
+* [graylog-plugin-logging-alert](https://github.com/airbus-cyber/graylog-plugin-logging-alert)
+* [graylog-plugin-aggregation-count](https://github.com/airbus-cyber/graylog-plugin-aggregation-count)
+* [graylog-plugin-correlation-count](https://github.com/airbus-cyber/graylog-plugin-correlation-count)
 
 ## Graylog and Plugins Version Compatibility
 
