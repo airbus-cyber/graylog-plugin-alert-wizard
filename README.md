@@ -8,7 +8,18 @@ An alert wizard for configuring alert rules on Graylog.
  
 Perfect for example to configure together and at the same time a stream, an alert condition and a logging alert notification.  
 
-**Required Graylog version:** 2.4.3 and later
+**Required Graylog version:** 2.4.x  
+
+**Required Graylog plugins:**
+* graylog-plugin-logging-alert
+* graylog-plugin-aggregation-count
+* graylog-plugin-correlation-count
+
+## Graylog and Plugins Version Compatibility
+
+| Wizard Plugin Version | Graylog Version | Logging Alert Plugin Version | Aggregation Count Plugin Version | Correlation Count Plugin Version |
+| --------------------- | --------------- | ---------------------------- | -------------------------------- | -------------------------------- |
+| 1.0.0                 | 2.4.x           | 1.0.x                        | 1.0.x                            | 1.0.x                            |
 
 ## Installation
 
