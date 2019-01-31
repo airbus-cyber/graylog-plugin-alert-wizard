@@ -1,0 +1,27 @@
+{
+  "name": "AlertWizard",
+  "version": "0.5.0",
+  "description": "Graylog plugin AlertWizard Web Interface",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/airbus-cyber/graylog-plugin-alert-wizard"
+  },
+  "scripts": {
+    "build": "webpack --bail"
+  },
+  "keywords": [
+    "graylog"
+  ],
+  "author": "Airbus CyberSecurity",
+  "license": "GPL-3.0",
+  "dependencies": {},
+  "devDependencies": {
+    "graylog-web-plugin": "file:../graylog2-server/graylog2-web-interface/packages/graylog-web-plugin",
+    "react": "^0.14.9",
+    "react-addons-test-utils": "^0.14.8",
+    "react-dom": "^0.14.9",
+    "webpack": "^3.4.1",
+    "react-confirm-alert": "^2.0.5",
+    "react-intl": "^2.4.0"
+  }
+}

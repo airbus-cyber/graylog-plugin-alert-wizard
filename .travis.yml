@@ -1,0 +1,34 @@
+dist: trusty
+sudo: required
+language: java
+jdk:
+- openjdk8
+addons:
+  apt:
+    packages:
+    - rpm
+install:
+- git clone --branch 2.4 --depth=1 --no-single-branch https://github.com/Graylog2/graylog2-server ../graylog2-server
+- (cd ../graylog2-server && mvn -DskipTests=true compile -B -V)
+- mvn install -DskipTests=true -Dmaven.javadoc.skip=true -Dskip.web.build=true -Dsource.skip=true -Dgpg.skip -B -V
+script:
+- mvn package -Dmaven.javadoc.skip=true -Dsource.skip=true -Dgpg.skip -B
+before_deploy:
+- mvn jdeb:jdeb && export RELEASE_DEB_FILE=$(ls target/*.deb)
+- mvn rpm:rpm && export RELEASE_RPM_FILE=$(find target/ -name '*.rpm' | tail -1)
+- rm -f target/original-*.jar
+- export RELEASE_PKG_FILE=$(ls target/*.jar)
+- echo "Deploying release to GitHub releases"
+deploy:
+  provider: releases
+  api_key:
+    secure: aAXm/WHJSAHBg7SY+2QzJaFzgKiLtNpUZctT1/h7LrBOGGsdHFDvG8tFdXwVx6r+i528Un5PFejA5y6wK07KENvrE87Fc4gW1OtPFkgyQc6y6uMkc+xYD7R9lbZ0xmGAJeZnrDuGF4LCIuD2xwhI+TZ4dZYZ39sKdE2ACp+UNBDD+4yBSXhLFthqZ20vQRyIaSL62G+epmRJizHGiPEXj8zJw/t4X1/stNmPVVaNiSAcNIMmjjtit9i8cdJCXIeL3O3cICl7J1EdIYB1KTRt2YMGj5XyKCj9NawFBLfANF3U8VwGAQaZSnFQsa7ISd0ha/O4ftaydMlXh+eJp6kT+Zn2u66srcKBbAAPnW4daYYy+ETxmY00z/lzJptM/r+f0D/MfIIQ3mTxsvp5CZ2kn580hi55h5TsDmu80UD/ltg5TcVw7nZzOzStBBegCpy9zmlUhyvGRe926wM8FR7uhV69fa6wKhxxdmayi3AuZIhzC/apJlLuvJ0NT0wGGYOPOsrfls85Rs3xtV4Bt1iEYNAxKyUBZU6c21SJx8fuKDqNPgPm7YgVZVhxtu2x27cc/Sub1IKL8268R02wHf0Gl++QBO7mxK3dVR6rhmMh+cohS4z0sFQpbguJtwpgVGdgTv8uKFaA9bQVpWwH2m6csMRnP7VKugspeCXr6smY5/k=
+  file: 
+  - "${RELEASE_PKG_FILE}"
+  - "${RELEASE_DEB_FILE}"
+  - "${RELEASE_RPM_FILE}"
+  skip_cleanup: true
+  on:
+    repo: airbus-cyber/graylog-plugin-alert-wizard
+    jdk: openjdk8
+    tags: true
