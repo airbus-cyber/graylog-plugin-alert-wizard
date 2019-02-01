@@ -9,12 +9,12 @@
  	<parent>
 		<groupId>org.graylog.plugins</groupId>
 		<artifactId>graylog-plugin-web-parent</artifactId>
-		<version>2.4.3</version>
+		<version>2.5.0</version>
 	</parent>
 		
 	<groupId>com.airbus-cyber-security.graylog</groupId>
 	<artifactId>graylog-plugin-alert-wizard</artifactId>
-	<version>1.0.0</version>
+	<version>1.1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>${project.artifactId}</name>
