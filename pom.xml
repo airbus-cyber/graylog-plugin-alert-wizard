@@ -13,7 +13,7 @@
 		
 	<groupId>com.airbus-cyber-security.graylog</groupId>
 	<artifactId>graylog-plugin-alert-wizard</artifactId>
-	<version>1.1.0</version>
+	<version>1.2.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>${project.artifactId}</name>
@@ -39,7 +39,7 @@
 		<connection>scm:git:git@github.com:airbus-cyber/graylog-plugin-alert-wizard.git</connection>
 		<developerConnection>scm:git:git@github.com:airbus-cyber/graylog-plugin-alert-wizard.git</developerConnection>
 		<url>https://github.com/airbus-cyber/graylog-plugin-alert-wizard</url>
-		<tag>1.1.0</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<distributionManagement>
