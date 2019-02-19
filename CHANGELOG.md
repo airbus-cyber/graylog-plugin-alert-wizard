@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.1](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/1.1.0...1.1.1) (2019-02-19)
+
+### Bug Fixes
+* Fix the issue of alert rule title when the title includes a slash ([issue #4](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/4))
+
 ## [1.1.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/1.0.0...1.1.0) (2019-02-01)
 
 ### Features
