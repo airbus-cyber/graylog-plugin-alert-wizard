@@ -182,7 +182,7 @@ const AlertRuleList = React.createClass({
 
         const updateAlert = (
             <IfPermitted permissions="wizard_alerts_rules:read">
-                <LinkContainer to={Routes.pluginRoute('WIZARD_UPDATEALERT_ALERTRULETITLE')(alert.title)} disabled={!alertValid}>
+                <LinkContainer to={Routes.pluginRoute('WIZARD_UPDATEALERT_ALERTRULETITLE')(alert.title.replace(/\//g, '%2F'))} disabled={!alertValid}>
                     <Button bsStyle="info" type="submit" title={this.state.messages.infoUpdate} >
                         <FormattedMessage id ="wizard.edit" defaultMessage="Edit" />
                     </Button>
