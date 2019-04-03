@@ -402,7 +402,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String notificationId = oldAlert.getNotificationID();
         if(alertRuleUtils.isValidSeverity(request.getSeverity())){
 	        try {
-	        	updateNotification(alertTitle, oldAlert.getNotificationID(), getParametersNotification(request.getSeverity()));
+	        	updateNotification(alertTitle, oldAlert.getNotificationID(), request.getSeverity());
 	        } catch (ValidationException | AlarmCallbackConfigurationException | ConfigurationException e) {
 	            LOG.error(ERROR_ALARM_CALLBACK_CONFIGURATION, e);
 	        } catch (ClassNotFoundException e) {
@@ -856,12 +856,14 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return alarmCallbackConfigurationService.save(alarmCallbackConfiguration);
     }
     
-    private void updateNotification(String title, String notificationID, Map<String, Object> parameters) throws NotFoundException, ClassNotFoundException, ConfigurationException, AlarmCallbackConfigurationException, ValidationException {
+    private void updateNotification(String title, String notificationID, String severity) throws NotFoundException, ClassNotFoundException, ConfigurationException, AlarmCallbackConfigurationException, ValidationException {
     	final AlarmCallbackConfiguration callbackConfiguration = alarmCallbackConfigurationService.load(notificationID);
         if (callbackConfiguration != null) {
+            Map<String, Object> configuration = callbackConfiguration.getConfiguration();
+            configuration.replace(AlertRuleUtils.SEVERITY, severity);
 	        final AlarmCallbackConfiguration updatedConfig = ((AlarmCallbackConfigurationImpl) callbackConfiguration).toBuilder()
 	                .setTitle(title)
-	                .setConfiguration(parameters)
+	                .setConfiguration(configuration)
 	                .build();
 	        
 	        alarmCallbackFactory.create(updatedConfig).checkConfiguration();
