@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.2](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/1.1.1...1.1.2) (2019-04-03)
+
+### Bug Fixes
+* Fix the issue of notification reset ([issue #5](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/5))
+
 ## [1.1.1](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/1.1.0...1.1.1) (2019-02-19)
 
 ### Bug Fixes

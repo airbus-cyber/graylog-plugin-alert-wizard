@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/airbus-cyber/graylog-plugin-alert-wizard.svg?branch=master)](https://travis-ci.org/airbus-cyber/graylog-plugin-alert-wizard)
 [![License](https://img.shields.io/badge/license-GPL--3.0-orange.svg)](https://www.gnu.org/licenses/gpl-3.0.txt)
-[![GitHub Release](https://img.shields.io/badge/release-v1.1.1-blue.svg)](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/releases)
+[![GitHub Release](https://img.shields.io/badge/release-v1.1.2-blue.svg)](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/releases)
 
 #### Alert Wizard plugin for Graylog to manage the alert rules
 
