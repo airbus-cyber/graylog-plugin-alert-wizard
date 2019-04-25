@@ -1,14 +1,15 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Alert, Button, Col, Row, Table, FormGroup, Tooltip} from 'react-bootstrap';
-import {LinkContainer} from 'react-router-bootstrap';
+import createReactClass from 'create-react-class';
+import {Button, Col, Table, FormGroup, Tooltip} from 'react-bootstrap';
 import {Select, SortableList, Spinner, OverlayElement} from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import {BootstrapModalForm, Input} from 'components/bootstrap';
 import {FormattedMessage} from 'react-intl';
 import FormsUtils from 'util/FormsUtils';
 
-const ManageSettings = React.createClass({
+const ManageSettings = createReactClass({
+    displayName: 'ManageSettings',
 
     propTypes: {
         onSave: PropTypes.func.isRequired,

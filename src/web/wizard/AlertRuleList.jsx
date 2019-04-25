@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import Reflux from 'reflux';
+import createReactClass from 'create-react-class';
 import AlertRuleStore from './AlertRuleStore';
 import AlertRuleActions from './AlertRuleActions';
 import StoreProvider from 'injection/StoreProvider';
@@ -10,7 +11,6 @@ import PermissionsMixin from 'util/PermissionsMixin';
 import Routes from 'routing/Routes';
 import {LinkContainer} from 'react-router-bootstrap';
 import AlertForm from './AlertForm';
-import {IntlProvider} from 'react-intl';
 import DateTime from 'logic/datetimes/DateTime';
 import {FormattedMessage} from 'react-intl';
 import AlertRuleText from 'wizard/AlertRuleText'
@@ -18,7 +18,9 @@ import AlertRuleText from 'wizard/AlertRuleText'
 const CurrentUserStore = StoreProvider.getStore('CurrentUser');
 const StreamsStore = StoreProvider.getStore('Streams');
 
-const AlertRuleList = React.createClass({
+const AlertRuleList = createReactClass({
+    displayName: 'AlertRuleList',
+
     mixins: [Reflux.connect(CurrentUserStore), Reflux.connect(AlertRuleStore), PermissionsMixin],
 
     propTypes: {

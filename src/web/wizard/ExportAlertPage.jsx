@@ -1,12 +1,11 @@
-import PropTypes from 'prop-types';
 import React from 'react';
-import Reflux from 'reflux';
+import createReactClass from 'create-react-class';
 import Routes from 'routing/Routes';
 import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
 import messages_fr from '../translations/fr.json';
 import { Row, Col, Button } from 'react-bootstrap';
 import AlertRuleActions from './AlertRuleActions';
-import {DocumentTitle, PageHeader, Spinner} from 'components/common';
+import {DocumentTitle, PageHeader} from 'components/common';
 import {LinkContainer} from 'react-router-bootstrap';
 import FileSaver from 'logic/files/FileSaver';
 import UserNotification from 'util/UserNotification';
@@ -20,7 +19,9 @@ const messages = {
         'fr': messages_fr
     };
 
-const ExportAlertPage = React.createClass({
+const ExportAlertPage = createReactClass({
+    displayName: 'ExportAlertPage',
+
     getInitialState() {
         return {};
     },

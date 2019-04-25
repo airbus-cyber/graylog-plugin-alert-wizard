@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import createReactClass from 'create-react-class';
 import Reflux from 'reflux';
 import {Button, Col, Row, Nav, NavItem} from 'react-bootstrap';
 import {Spinner} from 'components/common';
@@ -20,7 +21,6 @@ import CorrelationCondition from 'wizard/ruletype/CorrelationCondition'
 import OrCondition from 'wizard/ruletype/OrCondition'
 import CountCondition from 'wizard/ruletype/CountCondition'
 
-const CurrentUserStore = StoreProvider.getStore('CurrentUser');
 const StreamsStore = StoreProvider.getStore('Streams');
 const PluginsStore = StoreProvider.getStore('Plugins');
 
@@ -49,7 +49,9 @@ const INIT_ALERT = {
         },
     };
 
-const CreateAlertInput = React.createClass({
+const CreateAlertInput = createReactClass({
+    displayName: 'CreateAlertInput',
+
     mixins: [Reflux.connect(AlertRuleStore)],
 
     propTypes: {

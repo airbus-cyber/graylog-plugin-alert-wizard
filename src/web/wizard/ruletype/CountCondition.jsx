@@ -1,14 +1,15 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import createReactClass from 'create-react-class';
 import ObjectUtils from 'util/ObjectUtils';
-import {FormattedMessage} from 'react-intl';
 import TitleSeverity from 'wizard/components/TitleSeverity';
 import FieldsCondition from 'wizard/components/FieldsCondition';
 import NumberCondition from 'wizard/components/NumberCondition';
 import TimeRangeCondition from 'wizard/components/TimeRangeCondition';
 import Description from 'wizard/components/Description';
 
-const CountCondition = React.createClass({
+const CountCondition = createReactClass({
+    displayName: 'CountCondition',
 
     propTypes: {
         onUpdate: PropTypes.func,

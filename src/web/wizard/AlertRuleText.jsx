@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Reflux from 'reflux';
+import createReactClass from 'create-react-class';
 import {Spinner} from 'components/common';
 import {FormattedMessage} from 'react-intl';
 
+const AlertRuleText = createReactClass({
+    displayName: 'AlertRuleText',
 
-const AlertRuleText = React.createClass({
     propTypes: {
         alert: PropTypes.object,
     },

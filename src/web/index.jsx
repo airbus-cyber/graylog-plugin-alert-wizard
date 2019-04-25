@@ -1,4 +1,3 @@
-import webpackEntry from 'webpack-entry';
 import packageJson from '../../package.json';
 import {PluginManifest, PluginStore} from 'graylog-web-plugin/plugin';
 import WizardPage from 'wizard/WizardPage'

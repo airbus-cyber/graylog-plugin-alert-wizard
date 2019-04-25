@@ -1,14 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Reflux from 'reflux';
+import createReactClass from 'create-react-class';
 import {Input} from 'components/bootstrap';
-import {Select, Spinner} from 'components/common';
 import {Col, Row} from 'react-bootstrap';
-import ObjectUtils from 'util/ObjectUtils';
 import {FormattedMessage} from 'react-intl';
 
-
-const Description = React.createClass({
+const Description = createReactClass({
+    displayName: 'Description',
 
     propTypes: {
         onUpdate: PropTypes.func,
