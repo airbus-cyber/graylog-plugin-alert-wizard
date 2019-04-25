@@ -1,6 +1,5 @@
-import PropTypes from 'prop-types';
 import React from 'react';
-import Reflux from 'reflux';
+import createReactClass from 'create-react-class';
 import Routes from 'routing/Routes';
 import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
 import messages_fr from '../translations/fr.json';
@@ -17,7 +16,9 @@ const messages = {
         'fr': messages_fr
     };
 
-const ImportAlertPage = React.createClass({
+const ImportAlertPage = createReactClass({
+    displayName: 'ImportAlertPage',
+
     getInitialState() {
         return {};
     },

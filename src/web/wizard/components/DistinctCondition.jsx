@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Reflux from 'reflux';
+import createReactClass from 'create-react-class';
 import {Input} from 'components/bootstrap';
-import {Select, Spinner, MultiSelect} from 'components/common';
-import ObjectUtils from 'util/ObjectUtils';
+import {Spinner, MultiSelect} from 'components/common';
 import {FormattedMessage} from 'react-intl';
 import StoreProvider from 'injection/StoreProvider';
 import naturalSort from 'javascript-natural-sort';
@@ -11,7 +10,8 @@ import {Col, Row} from 'react-bootstrap';
 
 const FieldsStore = StoreProvider.getStore('Fields');
 
-const DistinctCondition = React.createClass({
+const DistinctCondition = createReactClass({
+    displayName: 'DistinctCondition',
 
     propTypes: {
         onUpdate: PropTypes.func,

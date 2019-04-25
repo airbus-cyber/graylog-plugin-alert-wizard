@@ -1,16 +1,13 @@
 import React from 'react';
-import Reflux from 'reflux';
-import {Alert, Button, Col, Row, Table} from 'react-bootstrap';
-import {LinkContainer} from 'react-router-bootstrap';
+import createReactClass from 'create-react-class';
+import {Col, Row} from 'react-bootstrap';
 import {IfPermitted, PageHeader, Spinner, DocumentTitle} from 'components/common';
 import AlertRuleList from './AlertRuleList';
 import ManageSettings from './ManageSettings';
-import StoreProvider from 'injection/StoreProvider';
 import ActionsProvider from 'injection/ActionsProvider';
 import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
 import messages_fr from '../translations/fr.json';
 
-const ConfigurationsStore = StoreProvider.getStore('Configurations');
 const ConfigurationActions = ActionsProvider.getActions('Configuration');
 
 let frLocaleData = require('react-intl/locale-data/fr');
@@ -21,9 +18,8 @@ const messages = {
             'fr': messages_fr
         };
 
-
-const WizardPage = React.createClass({
-    mixins: [Reflux.connect(ConfigurationsStore)],
+const WizardPage = createReactClass({
+    displayName: 'WizardPage',
     
     getInitialState() {
         return {

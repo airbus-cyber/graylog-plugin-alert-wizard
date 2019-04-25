@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import createReactClass from 'create-react-class';
 import ObjectUtils from 'util/ObjectUtils';
-import {FormattedMessage} from 'react-intl';
 import TitleSeverity from 'wizard/components/TitleSeverity';
 import FieldsCondition from 'wizard/components/FieldsCondition';
 import NumberCondition from 'wizard/components/NumberCondition';
@@ -10,7 +10,8 @@ import Description from 'wizard/components/Description';
 import GroupByCondition from 'wizard/components/GroupByCondition';
 import DistinctCondition from 'wizard/components/DistinctCondition';
 
-const GroupDistinctCondition = React.createClass({
+const GroupDistinctCondition = createReactClass({
+    displayName: 'GroupDistinctCondition',
 
     propTypes: {
         onUpdate: PropTypes.func,

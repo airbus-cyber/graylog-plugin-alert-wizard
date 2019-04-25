@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import createReactClass from 'create-react-class';
 import Reflux from 'reflux';
 import {Col, Row, Button} from 'react-bootstrap';
 import {Input} from 'components/bootstrap';
@@ -19,7 +20,9 @@ const STREAM = {
     field_rule: [{field: '', type: '', value: ''}],
 };
 
-const FieldsCondition = React.createClass({
+const FieldsCondition = createReactClass({
+    displayName: 'FieldsCondition',
+
     mixins: [Reflux.connect(IndexSetsStore)],
 
     propTypes: {

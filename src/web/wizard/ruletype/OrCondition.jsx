@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import createReactClass from 'create-react-class';
 import ObjectUtils from 'util/ObjectUtils';
 import {FormattedMessage} from 'react-intl';
 import TitleSeverity from 'wizard/components/TitleSeverity';
@@ -14,7 +15,8 @@ const STREAM = {
         field_rule: [{field: '', type: '', value: ''}],
     };
 
-const OrCondition = React.createClass({
+const OrCondition = createReactClass({
+    displayName: 'OrCondition',
 
     propTypes: {
         onUpdate: PropTypes.func,

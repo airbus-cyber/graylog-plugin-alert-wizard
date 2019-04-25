@@ -1,14 +1,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Reflux from 'reflux';
+import createReactClass from 'create-react-class';
 import {Input} from 'components/bootstrap';
 import {Select, Spinner} from 'components/common';
 import {Col, Row} from 'react-bootstrap';
-import ObjectUtils from 'util/ObjectUtils';
 import {FormattedMessage} from 'react-intl';
 
-
-const TitleSeverity = React.createClass({
+const TitleSeverity = createReactClass({
+    displayName: 'TitleSeverity',
 
     propTypes: {
         onUpdate: PropTypes.func,

@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Reflux from 'reflux';
-import {Button, Col, Row} from 'react-bootstrap';
+import createReactClass from 'create-react-class';
 import {Input} from 'components/bootstrap';
-import {IfPermitted, Select, Spinner} from 'components/common';
+import {Select, Spinner} from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import StoreProvider from 'injection/StoreProvider';
 import naturalSort from 'javascript-natural-sort';
@@ -11,7 +10,9 @@ import {FormattedMessage} from 'react-intl';
 
 const FieldsStore = StoreProvider.getStore('Fields');
 
-const FieldRule = React.createClass({
+const FieldRule = createReactClass({
+    displayName: 'FieldRule',
+
     propTypes: {
         rule: PropTypes.object,
         onUpdate: PropTypes.func,

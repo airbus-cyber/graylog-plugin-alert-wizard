@@ -19,7 +19,6 @@ import org.graylog2.indexer.IndexSet;
 import org.graylog2.indexer.IndexSetRegistry;
 import org.graylog2.indexer.indexset.IndexSetConfig;
 import org.graylog2.plugin.alarms.AlertCondition;
-import org.graylog2.plugin.alarms.callbacks.AlarmCallbackException;
 import org.graylog2.plugin.cluster.ClusterConfigService;
 import org.graylog2.plugin.database.ValidationException;
 import org.graylog2.plugin.streams.Stream;
@@ -40,7 +39,6 @@ import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetAlertRul
 import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetDataAlertRule;
 import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetListAlertRule;
 import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetListDataAlertRule;
-import com.airbus_cyber_security.graylog.alert.utilities.AlertRuleUtils;
 
 import org.mockito.Mock;
 

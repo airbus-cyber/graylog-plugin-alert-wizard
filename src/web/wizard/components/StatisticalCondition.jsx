@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import createReactClass from 'create-react-class';
 import {Col, Row} from 'react-bootstrap';
 import {Input} from 'components/bootstrap';
-import {DocumentTitle, Select, Spinner} from 'components/common';
+import {Select, Spinner} from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import {FormattedMessage} from 'react-intl';
 import StoreProvider from 'injection/StoreProvider';
@@ -10,7 +11,8 @@ import naturalSort from 'javascript-natural-sort';
 
 const FieldsStore = StoreProvider.getStore('Fields');
 
-const StatisticalCondition = React.createClass({
+const StatisticalCondition = createReactClass({
+    displayName: 'StatisticalCondition',
 
     propTypes: {
         onUpdate: PropTypes.func.isRequired,

@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import Reflux from 'reflux';
+import createReactClass from 'create-react-class';
 import {Button, Col, Row} from 'react-bootstrap';
 import {LinkContainer} from 'react-router-bootstrap';
 import {DocumentTitle, PageHeader, Spinner} from 'components/common';
@@ -22,7 +23,9 @@ const messages = {
             'fr': messages_fr
         };
 
-const UpdateAlertPage = React.createClass({
+const UpdateAlertPage = createReactClass({
+    displayName: 'UpdateAlertPage',
+
     mixins: [Reflux.connect(CurrentUserStore), Reflux.connect(NodesStore, 'nodes')],
     propTypes() {
         return {

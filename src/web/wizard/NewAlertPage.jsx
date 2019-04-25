@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import Reflux from 'reflux';
+import createReactClass from 'create-react-class';
 import {Button, Col, Row} from 'react-bootstrap';
 import {LinkContainer} from 'react-router-bootstrap';
 import {DocumentTitle, PageHeader, Spinner} from 'components/common';
@@ -24,7 +25,9 @@ const messages = {
             'fr': messages_fr
         };
 
-const NewAlertPage = React.createClass({
+const NewAlertPage = createReactClass({
+    displayName: 'NewAlertPage',
+
     mixins: [Reflux.connect(CurrentUserStore), Reflux.connect(ConfigurationsStore), Reflux.connect(NodesStore, 'nodes')],
 
     WIZARD_CLUSTER_CONFIG: 'com.airbus_cyber_security.graylog.config.rest.AlertWizardConfig',
