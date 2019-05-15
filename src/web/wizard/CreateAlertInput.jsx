@@ -61,7 +61,7 @@ const CreateAlertInput = createReactClass({
         nodes: PropTypes.object,
     },
     contextTypes: {
-        intl: React.PropTypes.object.isRequired
+        intl: PropTypes.object.isRequired,
     },
     componentWillMount(){
         const messages = {
