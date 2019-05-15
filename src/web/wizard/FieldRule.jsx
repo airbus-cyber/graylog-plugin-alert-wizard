@@ -20,7 +20,7 @@ const FieldRule = createReactClass({
         matchData: PropTypes.array,
     },
     contextTypes: {
-        intl: React.PropTypes.object.isRequired
+        intl: PropTypes.object.isRequired,
     },
     
     getDefaultProps() {

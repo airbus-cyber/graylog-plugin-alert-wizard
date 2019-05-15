@@ -32,7 +32,7 @@ const FieldsCondition = createReactClass({
         matchData: PropTypes.object,
     },   
     contextTypes: {
-        intl: React.PropTypes.object.isRequired
+        intl: PropTypes.object.isRequired,
     },
     getDefaultProps() {
         return {

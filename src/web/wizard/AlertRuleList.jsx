@@ -28,7 +28,7 @@ const AlertRuleList = createReactClass({
     },
 
     contextTypes: {
-        intl: React.PropTypes.object.isRequired
+        intl: PropTypes.object.isRequired,
     },
     
     componentWillMount(){
