@@ -1,14 +1,14 @@
 import React from 'react';
+import Reflux from "reflux";
 import createReactClass from 'create-react-class';
 import {Col, Row} from 'react-bootstrap';
 import {IfPermitted, PageHeader, Spinner, DocumentTitle} from 'components/common';
 import AlertRuleList from './AlertRuleList';
 import ManageSettings from './ManageSettings';
-import ActionsProvider from 'injection/ActionsProvider';
 import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
 import messages_fr from '../translations/fr.json';
-
-const ConfigurationActions = ActionsProvider.getActions('Configuration');
+import WizardConfigurationsActions from '../config/WizardConfigurationsActions';
+import WizardConfigurationStore from "../config/WizardConfigurationsStore";
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
@@ -20,30 +20,30 @@ const messages = {
 
 const WizardPage = createReactClass({
     displayName: 'WizardPage',
-    
+
+    mixins: [Reflux.connect(WizardConfigurationStore)],
+
     getInitialState() {
         return {
-            configuration: null,
+            configurations: null,
         };
     },
 
-    WIZARD_CLUSTER_CONFIG: 'com.airbus_cyber_security.graylog.config.rest.AlertWizardConfig',
-
     componentWillMount() {
-        ConfigurationActions.list(this.WIZARD_CLUSTER_CONFIG);
+        WizardConfigurationsActions.list();
     },
 
     _saveConfig(config) {
-        ConfigurationActions.update(this.WIZARD_CLUSTER_CONFIG, config);
+        WizardConfigurationsActions.update(config);
     },
 
     _isLoading() {
-        return !this.state.configuration;
+        return !this.state.configurations;
     },
 
     _getConfig() {
-        if (this.state.configuration && this.state.configuration[this.WIZARD_CLUSTER_CONFIG]) {
-            return this.state.configuration[this.WIZARD_CLUSTER_CONFIG]
+        if (this.state.configurations) {
+            return this.state.configurations;
         }
         return {
             field_order: [{name: 'Severity', enabled: true}, 

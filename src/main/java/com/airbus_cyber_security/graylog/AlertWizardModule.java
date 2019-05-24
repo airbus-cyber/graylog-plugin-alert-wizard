@@ -7,6 +7,7 @@ import com.airbus_cyber_security.graylog.alert.AlertRuleServiceImpl;
 import com.airbus_cyber_security.graylog.alert.rest.AlertRuleResource;
 import com.airbus_cyber_security.graylog.permissions.AlertRuleRestPermissions;
 import com.airbus_cyber_security.graylog.audit.AlertWizardAuditEventTypes;
+import com.airbus_cyber_security.graylog.config.rest.AlertWizardConfigResource;
 
 import java.util.Collections;
 import java.util.Set;
@@ -32,5 +33,6 @@ public class AlertWizardModule extends PluginModule {
     	addPermissions(AlertRuleRestPermissions.class);
         addRestResource(AlertRuleResource.class);
         addAuditEventTypes(AlertWizardAuditEventTypes.class);
+        addRestResource(AlertWizardConfigResource.class);
     }
 }
