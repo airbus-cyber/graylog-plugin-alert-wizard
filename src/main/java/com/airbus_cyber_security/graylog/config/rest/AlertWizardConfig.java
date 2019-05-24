@@ -35,21 +35,33 @@ public abstract class AlertWizardConfig {
                 .build();
     }
 
-	
+
 	public static AlertWizardConfig defaultConfig() {
 		return builder()
-	                .accessFieldOrder(ImmutableList.of(
-	                		FieldWizard.create("Severity", true),
-	                		FieldWizard.create("Description", true),
-	                		FieldWizard.create("Created", true),
-	                		FieldWizard.create("Last Modified", true),
-	                		FieldWizard.create("User", true),
-	                		FieldWizard.create("Alerts", true),
-	                		FieldWizard.create("Status", true),
-	                		FieldWizard.create("Rule", false)))
-	                .accessDefaultValues(null)
-	                .accessImportPolicy(ImportPolicyType.DONOTHING)
-	                .build();
+				.accessFieldOrder(ImmutableList.of(
+						FieldWizard.create("Severity", true),
+						FieldWizard.create("Description", true),
+						FieldWizard.create("Created", true),
+						FieldWizard.create("Last Modified", true),
+						FieldWizard.create("User", true),
+						FieldWizard.create("Alerts", true),
+						FieldWizard.create("Status", true),
+						FieldWizard.create("Rule", false)))
+				.accessDefaultValues(DefaultValues.create("",
+						"",
+						"",
+						"",
+						0,
+						0,
+						0,
+						"",
+						0,
+						"",
+						false,
+						1000,
+						0))
+				.accessImportPolicy(ImportPolicyType.DONOTHING)
+				.build();
 	}
 	
     public static Builder builder() {
