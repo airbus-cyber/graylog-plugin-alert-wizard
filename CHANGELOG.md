@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.3](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/1.1.2...1.1.3) (2019-06-12)
+
+### Bug Fixes
+* Fix the issue of infinite loading for the Field Rule component
+
 ## [1.1.2](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/1.1.1...1.1.2) (2019-04-03)
 
 ### Bug Fixes

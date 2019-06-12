@@ -33,13 +33,14 @@ const FieldRule = React.createClass({
             rule: ObjectUtils.clone(this.props.rule),
             isModified: false,
             isValid: false,
+            fields: null,
         };
     },
 
     componentDidMount() {
-        FieldsStore.loadFields().then((fields) => {
+       FieldsStore.loadFields().then((fields) => {
             //add value to list fields if not present
-            if (this.state.rule.field !== '' && fields.indexOf(this.state.rule.field) < 0) {
+            if (this.state.rule.field && this.state.rule.field !== '' && fields.indexOf(this.state.rule.field) < 0) {
                 fields.push(this.state.rule.field);
             }
             this.setState({fields: fields});
@@ -113,7 +114,7 @@ const FieldRule = React.createClass({
     },
 
     _isLoading() {
-        return (!this.state.rule || !this.state.fields);
+        return (!this.state.rule);
     },
 
     _checkForm() {
@@ -145,9 +146,13 @@ const FieldRule = React.createClass({
         }
         const isMatchDataPesent = (this.props.matchData && this.props.matchData.rules.hasOwnProperty(this.props.rule.id));
         const color = (isMatchDataPesent ? this._getMatchDataColor() : '#FFFFFF');
-        
-        const formattedOptions = Object.keys(this.state.fields).map(key => this._formatOption(this.state.fields[key], this.state.fields[key]))
-            .sort((s1, s2) => naturalSort(s1.label.toLowerCase(), s2.label.toLowerCase()));
+
+        let formattedOptions = null;
+        if(this.state.fields) {
+            formattedOptions = Object.keys(this.state.fields).map(key => this._formatOption(this.state.fields[key], this.state.fields[key]))
+                .sort((s1, s2) => naturalSort(s1.label.toLowerCase(), s2.label.toLowerCase()));
+        }
+
         const valueBox = (this.state.rule.type !== 5 && this.state.rule.type !== -5 ?
             <Input style={{backgroundColor: color, borderTopLeftRadius: '0px', borderBottomLeftRadius: '0px', height:'36px'}} 
                 ref="value" id="value" name="value" type="text"
