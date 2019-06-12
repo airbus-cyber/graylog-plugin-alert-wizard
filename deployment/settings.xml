@@ -1,0 +1,36 @@
+<settings>
+  <servers>
+    <server>
+      <id>ossrh</id>
+      <username>${env.SONATYPE_USERNAME}</username>
+      <password>${env.SONATYPE_PASSWORD}</password>
+    </server>
+    <server>
+      <id>gpg.passphrase</id>
+      <passphrase>${env.PASSPHRASE}</passphrase>
+    </server>
+  </servers>
+  <profiles>
+    <profile>
+      <id>ossrh</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <gpg.executable>gpg2</gpg.executable>
+        <gpg.passphrase>${env.PASSPHRASE}</gpg.passphrase>
+        <gpg.keyname>Airbus CyberSecurity</gpg.keyname>
+      </properties>
+    </profile>
+    <profile>
+      <id>jdeb-signing</id>
+      <properties>
+        <jdeb.key>F8D87B13</jdeb.key>
+        <jdeb.passphrase>${env.PASSPHRASE}</jdeb.passphrase>
+      </properties>
+    </profile>
+  </profiles>
+  <activeProfiles>
+    <activeProfile>jdeb-signing</activeProfile>
+  </activeProfiles>
+</settings>
