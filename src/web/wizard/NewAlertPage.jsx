@@ -35,7 +35,6 @@ const NewAlertPage = createReactClass({
     propTypes: {
         location: PropTypes.object.isRequired,
         params: PropTypes.object.isRequired,
-        history: PropTypes.object.isRequired,
         children: PropTypes.element,
     },
 
@@ -95,7 +94,7 @@ const NewAlertPage = createReactClass({
                     </PageHeader>
                     <Row className="content">
                         <Col md={12}>
-                            <CreateAlertInput create={true} history={this.props.history} default_values={configWizard.default_values} nodes={this.state.nodes}/>
+                            <CreateAlertInput create={true} default_values={configWizard.default_values} nodes={this.state.nodes}/>
                         </Col>
                     </Row>
                 </div>
