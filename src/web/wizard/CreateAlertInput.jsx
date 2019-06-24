@@ -20,6 +20,7 @@ import GroupDistinctCondition from 'wizard/ruletype/GroupDistinctCondition'
 import CorrelationCondition from 'wizard/ruletype/CorrelationCondition'
 import OrCondition from 'wizard/ruletype/OrCondition'
 import CountCondition from 'wizard/ruletype/CountCondition'
+import history from 'util/History';
 
 const StreamsStore = StoreProvider.getStore('Streams');
 const PluginsStore = StoreProvider.getStore('Plugins');
@@ -55,7 +56,6 @@ const CreateAlertInput = createReactClass({
     mixins: [Reflux.connect(AlertRuleStore)],
 
     propTypes: {
-        history: PropTypes.object.isRequired,
         alert: PropTypes.object,
         create: PropTypes.bool.isRequired,
         nodes: PropTypes.object,
@@ -215,11 +215,11 @@ const CreateAlertInput = createReactClass({
             buttons: [
                 {
                     label: this.state.messages.advancedSettings,
-                    onClick: () => this.props.history.push({pathname: Routes.show_alert_condition(this.state.alert.stream.id, this.state.alert.condition)})
+                    onClick: () => history.push({pathname: Routes.show_alert_condition(this.state.alert.stream.id, this.state.alert.condition)})
                 },
                 {
                     label: this.state.messages.done,
-                    onClick: () => this.props.history.push({pathname: Routes.pluginRoute('WIZARD')})
+                    onClick: () => history.push({pathname: Routes.pluginRoute('WIZARD')})
                 },
             ]
         };

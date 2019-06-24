@@ -72,7 +72,7 @@ const UpdateAlertPage = createReactClass({
                     </PageHeader>
                     <Row className="content">
                         <Col md={12}>
-                            <CreateAlertInput create={false} history={this.props.history} alert={this.state.alertData} nodes={this.state.nodes}/>
+                            <CreateAlertInput create={false} alert={this.state.alertData} nodes={this.state.nodes}/>
                         </Col>
                     </Row>
                 </div>
