@@ -169,7 +169,7 @@ const AlertRuleList = createReactClass({
         }
         
         let streamId2 = null;
-        if(alert.second_stream !== null){
+        if(alert.second_stream){
             streamId2 = alert.second_stream.id;
         }
         
