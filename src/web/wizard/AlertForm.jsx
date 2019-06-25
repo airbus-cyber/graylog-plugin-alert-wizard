@@ -53,6 +53,10 @@ const AlertForm = createReactClass({
         this.refs.modal.close();
     },
 
+    _onValueChanged(event) {
+        this.setState({[event.target.name]: event.target.value});
+    },
+
     render() {
         return (
             <BootstrapModalForm ref="modal"
@@ -60,11 +64,11 @@ const AlertForm = createReactClass({
                                 onSubmitForm={this._onSubmit}
                                 cancelButtonText={<FormattedMessage id= "wizard.cancel" defaultMessage= "Cancel" />}
                                 submitButtonText={<FormattedMessage id= "wizard.save" defaultMessage= "Save" />}>
-                <Input id="Title" type="text" required label={<FormattedMessage id ="wizard.title" defaultMessage="Title" />} name="Title"
+                <Input id="title" type="text" required label={<FormattedMessage id ="wizard.title" defaultMessage="Title" />} name="title"
                        placeholder={this.state.messages.placeholderTitle}
-                       valueLink={this.linkState('title')} autoFocus/>
-                <Input id="Description" type="text" label={<FormattedMessage id= "wizard.fieldDescription" defaultMessage= "Description" />} name="Description"
-                       valueLink={this.linkState('description')}/>
+                       onChange={this._onValueChanged} autoFocus/>
+                <Input id="description" type="text" label={<FormattedMessage id= "wizard.fieldDescription" defaultMessage= "Description" />} name="description"
+                       onChange={this._onValueChanged}/>
             </BootstrapModalForm>
         );
     },
