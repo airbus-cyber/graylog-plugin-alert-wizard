@@ -20,10 +20,11 @@ install:
 - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -Dskip.web.build=true -Dsource.skip=true -Dgpg.skip -B -V
 script:
 - mvn package -Dmaven.javadoc.skip=true -Dsource.skip=true -Dgpg.skip -B
-before_deploy:
+after_success:
 - openssl aes-256-cbc -K $encrypted_89bb32f62978_key -iv $encrypted_89bb32f62978_iv -in deployment/signingkey.asc.enc -out deployment/signingkey.asc -d
 - gpg2 --import deployment/signingkey.asc
 - gpg2 --allow-secret-key-import --import deployment/signingkey.asc
+before_deploy:
 - mvn jdeb:jdeb --settings deployment/settings.xml && export RELEASE_DEB_FILE=$(ls target/*.deb)
 - mvn rpm:rpm --settings deployment/settings.xml && export RELEASE_RPM_FILE=$(find target/ -name '*.rpm' | tail -1)
 - rm -f target/original-*.jar
