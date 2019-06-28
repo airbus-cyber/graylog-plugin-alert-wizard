@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/1.1.2...1.1.3) (2019-06-28)
+### Features
+* Export and Import all the notification parameters
+
 ## [1.1.3](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/1.1.2...1.1.3) (2019-06-12)
 
 ### Bug Fixes
