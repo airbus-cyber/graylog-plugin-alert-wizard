@@ -1,7 +1,7 @@
 package com.airbus_cyber_security.graylog.alert;
 
+import com.airbus_cyber_security.graylog.alert.bundles.ExportAlertRule;
 import com.airbus_cyber_security.graylog.alert.rest.models.requests.AlertRuleRequest;
-import com.airbus_cyber_security.graylog.alert.rest.models.requests.CloneAlertRuleRequest;
 import com.airbus_cyber_security.graylog.alert.utilities.AlertRuleUtils;
 import com.google.common.collect.Lists;
 import com.mongodb.BasicDBObject;
@@ -10,7 +10,6 @@ import com.mongodb.DBCollection;
 import org.graylog2.bindings.providers.MongoJackObjectMapperProvider;
 import org.graylog2.database.CollectionName;
 import org.graylog2.database.MongoConnection;
-import org.joda.time.DateTime;
 import org.mongojack.DBCursor;
 import org.mongojack.DBQuery;
 import org.mongojack.JacksonDBCollection;
@@ -101,10 +100,7 @@ public class AlertRuleServiceImpl implements AlertRuleService {
 	
 	@Override
 	public boolean isPresent(String title) {
-		if(coll.getCount(DBQuery.is(TITLE, title)) > 0) {
-			return true;
-		}
-		return false;
+		return (coll.getCount(DBQuery.is(TITLE, title)) > 0);
 	}
 
 	private List<AlertRule> toAbstractListType(DBCursor<AlertRuleImpl> alerts) {
@@ -185,4 +181,10 @@ public class AlertRuleServiceImpl implements AlertRuleService {
 				isValidStream(request.getStream()) &&
 				isValidCondition(request.getConditionType(), request.conditionParameters(), request.getSecondStream()) );
     }
+
+	@Override
+	public boolean isValidImportRequest(ExportAlertRule request){
+		return (isValidTitle(request.getTitle()) &&
+				isValidStream(request.getStream()) );
+	}
 }

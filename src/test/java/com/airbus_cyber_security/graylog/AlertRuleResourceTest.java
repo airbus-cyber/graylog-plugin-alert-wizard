@@ -19,7 +19,6 @@ import org.graylog2.indexer.IndexSet;
 import org.graylog2.indexer.IndexSetRegistry;
 import org.graylog2.indexer.indexset.IndexSetConfig;
 import org.graylog2.plugin.alarms.AlertCondition;
-import org.graylog2.plugin.alarms.callbacks.AlarmCallbackException;
 import org.graylog2.plugin.cluster.ClusterConfigService;
 import org.graylog2.plugin.database.ValidationException;
 import org.graylog2.plugin.streams.Stream;
@@ -34,13 +33,12 @@ import org.junit.rules.ExpectedException;
 
 import com.airbus_cyber_security.graylog.alert.AlertRuleServiceImpl;
 import com.airbus_cyber_security.graylog.alert.bundles.ExportAlertRuleRequest;
+import com.airbus_cyber_security.graylog.alert.bundles.ExportAlertRule;
 import com.airbus_cyber_security.graylog.alert.rest.AlertRuleResource;
-import com.airbus_cyber_security.graylog.alert.rest.models.requests.AlertRuleRequest;
 import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetAlertRule;
 import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetDataAlertRule;
 import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetListAlertRule;
 import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetListDataAlertRule;
-import com.airbus_cyber_security.graylog.alert.utilities.AlertRuleUtils;
 
 import org.mockito.Mock;
 
@@ -205,7 +203,7 @@ public class AlertRuleResourceTest extends MongoDBServiceTest{
     	titles.add("Test Count");
 
     	ExportAlertRuleRequest request = ExportAlertRuleRequest.create(titles);
-    	List<AlertRuleRequest> listExportAlertRule = alertRuleResource.getExportAlertRule(request);
+    	List<ExportAlertRule> listExportAlertRule = alertRuleResource.getExportAlertRule(request);
     	
     	assertNotNull("Returned list should not be null", listExportAlertRule);
     	assertEquals("There should be one alert rule in the collection", 1, listExportAlertRule.size());

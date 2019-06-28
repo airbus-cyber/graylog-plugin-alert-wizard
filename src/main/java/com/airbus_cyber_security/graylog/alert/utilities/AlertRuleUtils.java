@@ -37,7 +37,7 @@ public class AlertRuleUtils {
     public static final String TYPE_LOGGING_ALERT = "com.airbus_cyber_security.graylog.LoggingAlert";
     public static final String TYPE_CORRELATION = "com.airbus_cyber_security.graylog.CorrelationCount";
     public static final String TYPE_AGGREGATION = "com.airbus_cyber_security.graylog.AggregationCount";
-    
+
 	public Map<String, Object> getConditionParameters(String streamID, String alertRuleCondType, Map<String, Object> alertRuleCondParameters){
     	
     	Map<String, Object> parameters = Maps.newHashMap();
@@ -86,7 +86,7 @@ public class AlertRuleUtils {
     	return parameters;
     }
 	
-    public String getconditionType(String alertRuleConditionType) {
+    public String getGraylogConditionType(String alertRuleConditionType) {
     	String conditionType;
         switch (alertRuleConditionType) {
 		case "STATISTICAL":

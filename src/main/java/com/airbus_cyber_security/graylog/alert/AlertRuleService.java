@@ -3,12 +3,11 @@ package com.airbus_cyber_security.graylog.alert;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import com.airbus_cyber_security.graylog.alert.bundles.ExportAlertRule;
 import org.graylog2.database.NotFoundException;
 
 import com.airbus_cyber_security.graylog.alert.rest.models.requests.AlertRuleRequest;
-import com.airbus_cyber_security.graylog.alert.rest.models.requests.CloneAlertRuleRequest;
 import com.mongodb.MongoException;
-import org.joda.time.DateTime;
 
 public interface AlertRuleService {
     long count();
@@ -26,4 +25,7 @@ public interface AlertRuleService {
     boolean isPresent(String title);
 
     boolean isValidRequest(AlertRuleRequest request);
+
+    boolean isValidImportRequest(ExportAlertRule request);
+
 }

@@ -50,12 +50,12 @@ public class AlertRuleUtilsTest {
 	@Test
 	public void testGetconditionType() {
 		AlertRuleUtils alertRuleUtils = new AlertRuleUtils();
-		assertEquals(alertRuleUtils.getconditionType(STATISTICAL), AbstractAlertCondition.Type.FIELD_VALUE.toString());
-		assertEquals(alertRuleUtils.getconditionType(GROUP_DISTINCT), TYPE_AGGREGATION);
-		assertEquals(alertRuleUtils.getconditionType(THEN), TYPE_CORRELATION);
-		assertEquals(alertRuleUtils.getconditionType(AND), TYPE_CORRELATION);
-		assertEquals(alertRuleUtils.getconditionType(OR), AbstractAlertCondition.Type.MESSAGE_COUNT.toString());
-		assertEquals(alertRuleUtils.getconditionType(EMPTY), AbstractAlertCondition.Type.MESSAGE_COUNT.toString());
+		assertEquals(alertRuleUtils.getGraylogConditionType(STATISTICAL), AbstractAlertCondition.Type.FIELD_VALUE.toString());
+		assertEquals(alertRuleUtils.getGraylogConditionType(GROUP_DISTINCT), TYPE_AGGREGATION);
+		assertEquals(alertRuleUtils.getGraylogConditionType(THEN), TYPE_CORRELATION);
+		assertEquals(alertRuleUtils.getGraylogConditionType(AND), TYPE_CORRELATION);
+		assertEquals(alertRuleUtils.getGraylogConditionType(OR), AbstractAlertCondition.Type.MESSAGE_COUNT.toString());
+		assertEquals(alertRuleUtils.getGraylogConditionType(EMPTY), AbstractAlertCondition.Type.MESSAGE_COUNT.toString());
 	}
 	
 	@Test
