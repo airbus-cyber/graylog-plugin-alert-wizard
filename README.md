@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/airbus-cyber/graylog-plugin-alert-wizard.svg?branch=master)](https://travis-ci.org/airbus-cyber/graylog-plugin-alert-wizard)
 [![License](https://img.shields.io/badge/license-GPL--3.0-orange.svg)](https://www.gnu.org/licenses/gpl-3.0.txt)
-[![GitHub Release](https://img.shields.io/badge/release-v2.0.0-blue.svg)](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/releases)
+[![GitHub Release](https://img.shields.io/badge/release-v3.0.0-blue.svg)](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/releases)
 
 #### Alert Wizard plugin for Graylog to manage the alert rules
 
@@ -10,7 +10,7 @@ An alert wizard for configuring alert rules on Graylog.
  
 Perfect for example to configure together and at the same time a stream, an alert condition and a logging alert notification.  
 
-**Required Graylog version:** 2.5.x  
+**Required Graylog version:** 3.0.x  
 
 **Required Graylog plugins:**
 * [graylog-plugin-logging-alert](https://github.com/airbus-cyber/graylog-plugin-logging-alert)
@@ -24,10 +24,15 @@ Perfect for example to configure together and at the same time a stream, an aler
 | 1.0.0                 | 2.4.x           | 1.0.x                        | 1.0.x                            | 1.0.x                            |
 | 1.1.x                 | 2.5.x           | 1.0.x                        | 1.0.x                            | 1.0.x                            |
 | 2.0.x                 | 2.5.x           | 1.1.x                        | 1.1.x                            | 1.1.x                            |
+| 3.0.x                 | 3.0.x           | 1.2.x                        | 1.2.x                            | 1.2.x                            |
+
+### Upgrading to 3.0.0
+
+> **WARNING**: The REST API for the Wizard Configuration has changed.
 
 ### Upgrading to 2.0.0
 
-> **WARNING**: With Wizard plugin in version 2.0.0 you can't import alert rules that have been exported from version 1.X.X.
+> **WARNING**: With Wizard plugin in version 2.0.0 and higher you can't import alert rules that have been exported from version 1.X.X.
 
 **Upgrading notice:**
 1. Import your alert rules from version 1.X.X
