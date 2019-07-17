@@ -8,7 +8,7 @@
  	<parent>
 		<groupId>org.graylog.plugins</groupId>
 		<artifactId>graylog-plugin-web-parent</artifactId>
-		<version>3.0.1</version>
+		<version>3.0.2</version>
 	</parent>
 		
 	<groupId>com.airbus-cyber-security.graylog</groupId>
@@ -57,10 +57,10 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        	<graylog.version>3.0.1</graylog.version>
+		<graylog.version>3.0.2</graylog.version>
 		<graylog2.plugin-dir>/usr/share/graylog-server/plugin</graylog2.plugin-dir>
 		<auto-value.version>1.5.1</auto-value.version>
-		<graylog-plugin-logging-alert.version>1.0.1</graylog-plugin-logging-alert.version>
+		<graylog-plugin-logging-alert.version>1.2.0</graylog-plugin-logging-alert.version>
 
 		<!-- Test dependencies -->
 		<junit.version>4.12</junit.version>
