@@ -9,6 +9,10 @@ import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
 import messages_fr from '../translations/fr.json';
 import WizardConfigurationsActions from '../config/WizardConfigurationsActions';
 import WizardConfigurationStore from "../config/WizardConfigurationsStore";
+import StoreProvider from 'injection/StoreProvider';
+
+const PluginsStore = StoreProvider.getStore('Plugins');
+const NodesStore = StoreProvider.getStore('Nodes');
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
@@ -21,16 +25,31 @@ const messages = {
 const WizardPage = createReactClass({
     displayName: 'WizardPage',
 
-    mixins: [Reflux.connect(WizardConfigurationStore)],
+    mixins: [Reflux.connect(WizardConfigurationStore), Reflux.connect(NodesStore, 'nodes')],
 
     getInitialState() {
         return {
             configurations: null,
+            version: '',
         };
     },
 
     componentWillMount() {
         WizardConfigurationsActions.list();
+    },
+
+    _getPlugins() {
+        if(this.state.nodes && this.state.nodes.nodes) {
+            const nodeIds = Object.keys(this.state.nodes.nodes)
+            PluginsStore.list(nodeIds[0]).then((plugins) => {
+                this.setState({plugins: plugins});
+                for (var i=0; i < plugins.length; i++) {
+                   if (plugins[i].unique_id === "com.airbus-cyber-security.graylog.AlertWizardPlugin") {
+                       this.setState({version: plugins[i].version});
+                   }
+                }
+            });
+        }
     },
 
     _saveConfig(config) {
@@ -78,20 +97,27 @@ const WizardPage = createReactClass({
             return <Spinner/>;
         }
 
+        if(!this.state.plugins && this.state.nodes){
+            this._getPlugins();
+        }
         const configWizard = this._getConfig();
 
         return (
         <IntlProvider locale={language} messages={messages[language]}>         
             <DocumentTitle title="Wizard">
                 <div>
-                    <PageHeader title="Wizard">
+                    <PageHeader title='Wizard'>
                       <span><FormattedMessage id ="wizard.description" 
                             defaultMessage="With the wizard, you can manage the alert rules. An alert rule consists of one or more streams with rules, an alert condition and an alert notification." 
                             />
                       </span>
                       <span>
                             <FormattedMessage id ="wizard.documentation" 
-                            defaultMessage="Read more about Wizard alert rules in the documentation." />
+                            defaultMessage="Read more about Wizard alert rules in the documentation" />
+                          {this.state.version &&
+                          <FormattedMessage id="wizard.version" defaultMessage=" (wizard version : {version})."
+                                            values={{version: this.state.version}}/>
+                          }
                       </span>
                       <span>
                         <IfPermitted permissions="wizard_alerts_rules:read">
