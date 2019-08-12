@@ -1,11 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
-import Reflux from 'reflux';
 import {Button, Col, Row, Nav, NavItem} from 'react-bootstrap';
 import {Spinner} from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
-import AlertRuleStore from './AlertRuleStore';
 import AlertRuleActions from './AlertRuleActions';
 import Routes from 'routing/Routes';
 import {LinkContainer} from 'react-router-bootstrap';
@@ -21,7 +19,9 @@ import CorrelationCondition from 'wizard/ruletype/CorrelationCondition'
 import OrCondition from 'wizard/ruletype/OrCondition'
 import CountCondition from 'wizard/ruletype/CountCondition'
 import history from 'util/History';
+import ActionsProvider from 'injection/ActionsProvider';
 
+const NodesActions = ActionsProvider.getActions('Nodes');
 const StreamsStore = StoreProvider.getStore('Streams');
 const PluginsStore = StoreProvider.getStore('Plugins');
 
@@ -53,12 +53,9 @@ const INIT_ALERT = {
 const CreateAlertInput = createReactClass({
     displayName: 'CreateAlertInput',
 
-    mixins: [Reflux.connect(AlertRuleStore)],
-
     propTypes: {
         alert: PropTypes.object,
         create: PropTypes.bool.isRequired,
-        nodes: PropTypes.object,
     },
     contextTypes: {
         intl: PropTypes.object.isRequired,
@@ -80,12 +77,9 @@ const CreateAlertInput = createReactClass({
                 tooltipOrCondition: this.context.intl.formatMessage({id: "wizard.tooltipOrCondition", defaultMessage: "OR Condition"}),
             };
         this.setState({messages:messages});
-        this._isPluginsPresent();
     },
-    componentWillReceiveProps(nextProps) {
-        if(!_.isEqual(nextProps.nodes, this.props.nodes)){
-            this._isPluginsPresent();
-        }
+    componentDidMount() {
+        this._isPluginsPresent();
     },
     getDefaultProps() {
         return {
@@ -102,8 +96,8 @@ const CreateAlertInput = createReactClass({
                 field_type: '',
                 field_value: '',
                 repeat_notifications: false,
-                backlog: 1000,
-                grace: 0
+                grace: 0,
+                backlog: 1000
             },
         };
     },
@@ -158,33 +152,36 @@ const CreateAlertInput = createReactClass({
         };
     },
     _isPluginsPresent(){
-        if(this.props.nodes && this.props.nodes.nodes){
-            const nodeIds = Object.keys(this.props.nodes.nodes)
-            PluginsStore.list(nodeIds[0]).then(plugins => {
-                var isPluginAggregationPresent = false;
-                var isPluginCorrelationPresent = false;
-                var isPluginLoggingAlertPresent = false;
-                for(var i=0; i < plugins.length; i++){
-                    if(plugins[i].unique_id === "com.airbus-cyber-security.graylog.AggregationCountPlugin"){
-                        isPluginAggregationPresent = true;
-                    }else if(plugins[i].unique_id === "com.airbus-cyber-security.graylog.CorrelationCountPlugin"){
-                        isPluginCorrelationPresent = true;   
-                    }else if(plugins[i].unique_id === "com.airbus-cyber-security.graylog.LoggingAlertPlugin"){
-                        isPluginLoggingAlertPresent = true;  
+        NodesActions.list().then(nodes => {
+            if(nodes.nodes[0]) {
+                PluginsStore.list(nodes.nodes[0].node_id).then(plugins => {
+                    let isPluginAggregationPresent = false;
+                    let isPluginCorrelationPresent = false;
+                    let isPluginLoggingAlertPresent = false;
+                    for (let i = 0; i < plugins.length; i++) {
+                        if (plugins[i].unique_id === "com.airbus-cyber-security.graylog.AggregationCountPlugin") {
+                            isPluginAggregationPresent = true;
+                        } else if (plugins[i].unique_id === "com.airbus-cyber-security.graylog.CorrelationCountPlugin") {
+                            isPluginCorrelationPresent = true;
+                        } else if (plugins[i].unique_id === "com.airbus-cyber-security.graylog.LoggingAlertPlugin") {
+                            isPluginLoggingAlertPresent = true;
+                        }
                     }
-                }    
-                this.setState({ isPluginAggregation: isPluginAggregationPresent });
-                this.setState({ isPluginCorrelation: isPluginCorrelationPresent });   
-                this.setState({ isPluginLoggingAlert: isPluginLoggingAlertPresent });
-                if(isPluginLoggingAlertPresent === false && this.state.alert.severiry !== ''){
-                    const update = ObjectUtils.clone(this.state.alert);
-                    update['severity'] = '';
-                    this.setState({alert: update});
-                }
-           
-				this._handleSelect(this.state.alert.condition_type);
- 			});
-        }  
+                    this.setState({
+                        isPluginAggregation: isPluginAggregationPresent,
+                        isPluginCorrelation: isPluginCorrelationPresent,
+                        isPluginLoggingAlert: isPluginLoggingAlertPresent
+                    });
+                    if (isPluginLoggingAlertPresent === false && this.state.alert.severiry !== '') {
+                        const update = ObjectUtils.clone(this.state.alert);
+                        update['severity'] = '';
+                        this.setState({alert: update});
+                    }
+
+                    this._handleSelect(this.state.alert.condition_type);
+                });
+            }
+        });
     },
     _save() {
         AlertRuleActions.create.triggerPromise(this.state.alert).then((response) => {
@@ -283,7 +280,7 @@ const CreateAlertInput = createReactClass({
         }
     },
     
-    onMessageLoaded(message) {
+    _onMessageLoaded(message) {
         this.setState({message: message});
         if (message !== undefined && this.state.alert.stream.id) {
             StreamsStore.testMatch(this.state.alert.stream.id, {message: message.fields}, (resultData) => {
@@ -416,7 +413,7 @@ const CreateAlertInput = createReactClass({
                     </h2>
                     <div className="stream-loader">
                         <LoaderTabs messageId={this.props.messageId} index={this.props.index}
-                                    onMessageLoaded={this.onMessageLoaded}/>
+                                    onMessageLoaded={this._onMessageLoaded}/>
                     </div>
                     <hr/>
                     <h2><FormattedMessage id= "wizard.titleParameters" defaultMessage= "Alert rule parameters" /></h2>

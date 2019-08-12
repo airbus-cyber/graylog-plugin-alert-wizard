@@ -15,13 +15,12 @@ import DateTime from 'logic/datetimes/DateTime';
 import {FormattedMessage} from 'react-intl';
 import AlertRuleText from 'wizard/AlertRuleText'
 
-const CurrentUserStore = StoreProvider.getStore('CurrentUser');
 const StreamsStore = StoreProvider.getStore('Streams');
 
 const AlertRuleList = createReactClass({
     displayName: 'AlertRuleList',
 
-    mixins: [Reflux.connect(CurrentUserStore), Reflux.connect(AlertRuleStore), PermissionsMixin],
+    mixins: [Reflux.connect(AlertRuleStore), PermissionsMixin],
 
     propTypes: {
         config: PropTypes.object.isRequired,
@@ -308,7 +307,6 @@ const AlertRuleList = createReactClass({
     },
 
     render() {
-
         const filterKeys = ['title', 'severity', 'created_at', 'last_modified', 'creator_user_id'];
         let headers = [this.state.fieldsTitle.title];
         this.props.config.field_order.map((field) => {
@@ -318,7 +316,6 @@ const AlertRuleList = createReactClass({
         });
         headers.push(this.state.fieldsTitle.actions);
 
-        
         if (this.state.alerts) {
             return (
                 <div>

@@ -1,19 +1,14 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Reflux from 'reflux';
 import createReactClass from 'create-react-class';
 import {Button, Col, Row} from 'react-bootstrap';
 import {LinkContainer} from 'react-router-bootstrap';
 import {DocumentTitle, PageHeader, Spinner} from 'components/common';
 import CreateAlertInput from './CreateAlertInput';
 import AlertRuleActions from './AlertRuleActions';
-import StoreProvider from 'injection/StoreProvider';
 import Routes from 'routing/Routes';
 import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
 import messages_fr from '../translations/fr.json';
-
-const CurrentUserStore = StoreProvider.getStore('CurrentUser');
-const NodesStore = StoreProvider.getStore('Nodes');
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
@@ -26,7 +21,12 @@ const messages = {
 const UpdateAlertPage = createReactClass({
     displayName: 'UpdateAlertPage',
 
-    mixins: [Reflux.connect(CurrentUserStore), Reflux.connect(NodesStore, 'nodes')],
+    getInitialState() {
+        return {
+            alert: null,
+            alertData: null,
+        };
+    },
     propTypes() {
         return {
             params: PropTypes.object.isRequired,
@@ -72,7 +72,7 @@ const UpdateAlertPage = createReactClass({
                     </PageHeader>
                     <Row className="content">
                         <Col md={12}>
-                            <CreateAlertInput create={false} alert={this.state.alertData} nodes={this.state.nodes}/>
+                            <CreateAlertInput create={false} alert={this.state.alertData}/>
                         </Col>
                     </Row>
                 </div>

@@ -161,7 +161,6 @@ const FieldRule = createReactClass({
             <span style={{marginRight: 199}}/>);
 
         const deleteAction = (
-
                 <button id="delete-alert" type="button" className="btn btn-md btn-primary" title={this.state.messages.delete} style={{marginRight: '0.5em'}}
                     onClick={this._delete}>
                     <i className="fa fa-trash-o"/>
@@ -172,7 +171,7 @@ const FieldRule = createReactClass({
             this._checkForm();
         }
 
-        if (this.state.isModified && !this.props.create) {
+        if (this.state.isModified) {
             this.setState({isModified: false});
             this._update();
         }

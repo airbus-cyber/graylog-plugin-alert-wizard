@@ -141,7 +141,7 @@ const FieldsCondition = createReactClass({
                                 value: this.state.stream.field_rule[index].value,
                                 field: this.state.stream.field_rule[index].field,
                                 inverted: inverted
-                    }
+                    };
                     tempRules.push(rule);
                 }   
             }
@@ -164,7 +164,7 @@ const FieldsCondition = createReactClass({
                                 field: stream.rules[index].field,
                                 id: stream.rules[index].id,
                                 type: stream.rules[index].inverted ? -stream.rules[index].type : stream.rules[index].type
-                        }
+                        };
                         newRules.push(rule);
                     }
                     const update = ObjectUtils.clone(this.state.stream);
@@ -209,7 +209,7 @@ const FieldsCondition = createReactClass({
                 <br/>
             </div>
         );
-        
+
         return (
         <Row>
             <Col md={2} style={{ marginTop: 5, marginBottom: 0 }}>

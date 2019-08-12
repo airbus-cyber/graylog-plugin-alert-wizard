@@ -10,9 +10,9 @@ import messages_fr from '../translations/fr.json';
 import WizardConfigurationsActions from '../config/WizardConfigurationsActions';
 import WizardConfigurationStore from "../config/WizardConfigurationsStore";
 import StoreProvider from 'injection/StoreProvider';
-
+import ActionsProvider from 'injection/ActionsProvider';
 const PluginsStore = StoreProvider.getStore('Plugins');
-const NodesStore = StoreProvider.getStore('Nodes');
+const NodesActions = ActionsProvider.getActions('Nodes');
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
@@ -25,7 +25,7 @@ const messages = {
 const WizardPage = createReactClass({
     displayName: 'WizardPage',
 
-    mixins: [Reflux.connect(WizardConfigurationStore), Reflux.connect(NodesStore, 'nodes')],
+    mixins: [Reflux.connect(WizardConfigurationStore)],
 
     getInitialState() {
         return {
@@ -34,30 +34,23 @@ const WizardPage = createReactClass({
         };
     },
 
-    componentWillMount() {
+    componentDidMount() {
         WizardConfigurationsActions.list();
-    },
-
-    _getPlugins() {
-        if(this.state.nodes && this.state.nodes.nodes) {
-            const nodeIds = Object.keys(this.state.nodes.nodes)
-            PluginsStore.list(nodeIds[0]).then((plugins) => {
-                this.setState({plugins: plugins});
-                for (var i=0; i < plugins.length; i++) {
-                   if (plugins[i].unique_id === "com.airbus-cyber-security.graylog.AlertWizardPlugin") {
-                       this.setState({version: plugins[i].version});
-                   }
-                }
-            });
-        }
+        NodesActions.list().then(nodes => {
+            if(nodes.nodes[0]) {
+                PluginsStore.list(nodes.nodes[0].node_id).then((plugins) => {
+                    for (let i = 0; i < plugins.length; i++) {
+                        if (plugins[i].unique_id === "com.airbus-cyber-security.graylog.AlertWizardPlugin") {
+                            this.setState({version: plugins[i].version});
+                        }
+                    }
+                });
+            }
+        });
     },
 
     _saveConfig(config) {
         WizardConfigurationsActions.update(config);
-    },
-
-    _isLoading() {
-        return !this.state.configurations;
     },
 
     _getConfig() {
@@ -93,15 +86,7 @@ const WizardPage = createReactClass({
     },
     
     render() {
-        if (this._isLoading()) {
-            return <Spinner/>;
-        }
-
-        if(!this.state.plugins && this.state.nodes){
-            this._getPlugins();
-        }
         const configWizard = this._getConfig();
-
         return (
         <IntlProvider locale={language} messages={messages[language]}>         
             <DocumentTitle title="Wizard">
