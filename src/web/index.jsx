@@ -5,6 +5,8 @@ import NewAlertPage from 'wizard/NewAlertPage'
 import UpdateAlertPage from 'wizard/UpdateAlertPage'
 import ExportAlertPage from 'wizard/ExportAlertPage'
 import ImportAlertPage from 'wizard/ImportAlertPage'
+import WizardListsPage from './wizard/Lists/WizardListsPage';
+import NewAlertListPage from './wizard/Lists/NewAlertListPage'
 
 PluginStore.register(new PluginManifest(packageJson, {
 
@@ -14,10 +16,17 @@ PluginStore.register(new PluginManifest(packageJson, {
         {path: '/wizard/UpdateAlert/:alertRuleTitle', component: UpdateAlertPage, permissions: 'WIZARD_ALERTS_RULES_UPDATE'},
         {path: '/wizard/ExportAlert', component: ExportAlertPage, permissions: 'WIZARD_ALERTS_RULES_READ'},
         {path: '/wizard/ImportAlert', component: ImportAlertPage, permissions: 'WIZARD_ALERTS_RULES_READ'},
+        {path: '/wizard/Lists', component: WizardListsPage},
+        {path: '/wizard/NewList', component: NewAlertListPage},
     ],
 
-    navigation: [
-        {path: '/wizard', description: 'Wizard'}
-    ],
-
+     navigation: [
+         {
+             description: 'Wizard',
+             children: [
+                 { path: '/wizard', description: 'Alert Rules' },
+                 { path: '/wizard/Lists', description: 'Lists' },
+           ],
+        },
+     ],
 }));

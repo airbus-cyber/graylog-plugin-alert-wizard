@@ -116,7 +116,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
     @GET
     @Timed
-    @ApiOperation(value = "Lists all existing alerts")
+    @ApiOperation(value = "AlertListDisplay all existing alerts")
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_READ)
     public GetListAlertRule list() {
@@ -166,7 +166,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     @GET
     @Path("/data")
     @Timed
-    @ApiOperation(value = "Lists all existing alerts with additional data")
+    @ApiOperation(value = "AlertListDisplay all existing alerts with additional data")
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_READ)
     public GetListDataAlertRule listWithData() {

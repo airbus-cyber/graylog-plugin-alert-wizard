@@ -10,3 +10,7 @@
 :local(.divider) {
     border-bottom: #D1D1D1 solid 1px;
 }
+
+:local(.bigText) {
+    height: 300px;
+}
