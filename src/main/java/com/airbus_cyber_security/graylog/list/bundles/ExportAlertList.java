@@ -7,7 +7,6 @@ import com.google.auto.value.AutoValue;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
-import java.util.Map;
 
 
 @AutoValue

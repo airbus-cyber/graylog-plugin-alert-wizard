@@ -45,9 +45,8 @@ const NewAlertListPage = createReactClass({
         ConfigurationActions.list(this.WIZARD_CLUSTER_CONFIG);
     },
 
-    _getConfig() {
-        // affiche la page pour créer les nouvelles listes d'alertes
-      /*  if (this.state.configuration && this.state.configuration[this.WIZARD_CLUSTER_CONFIG]) {
+    /* _getConfig() {
+       if (this.state.configuration && this.state.configuration[this.WIZARD_CLUSTER_CONFIG]) {
             return this.state.configuration[this.WIZARD_CLUSTER_CONFIG]
         }
         return {
@@ -63,8 +62,8 @@ const NewAlertListPage = createReactClass({
                 field_type: '',
                 field_value: ''
             },
-        }; */
-    },
+        };
+    },  */
 
     _isLoading() {
         return !this.state.configuration;
