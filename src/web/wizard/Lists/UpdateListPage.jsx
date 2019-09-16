@@ -5,16 +5,14 @@ import createReactClass from 'create-react-class';
 import {Button, Col, Row} from 'react-bootstrap';
 import {LinkContainer} from 'react-router-bootstrap';
 import {DocumentTitle, PageHeader, Spinner} from 'components/common';
+import CreateListFormInput from './CreateListFormInput';
+import AlertListActions from './AlertListActions';
 import StoreProvider from 'injection/StoreProvider';
 import Routes from 'routing/Routes';
-import ActionsProvider from 'injection/ActionsProvider';
 import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
 import messages_fr from '../../translations/fr.json';
-import CreateListFormInput from "./CreateListFormInput";
 
 const CurrentUserStore = StoreProvider.getStore('CurrentUser');
-const ConfigurationActions = ActionsProvider.getActions('Configuration');
-const ConfigurationsStore = StoreProvider.getStore('Configurations');
 const NodesStore = StoreProvider.getStore('Nodes');
 
 let frLocaleData = require('react-intl/locale-data/fr');
@@ -25,59 +23,42 @@ const messages = {
     'fr': messages_fr
 };
 
-const NewAlertListPage = createReactClass({
-    displayName: 'NewAlertListPage',
+const UpdateListPage = createReactClass({
+    displayName: 'UpdateListPage',
 
-    mixins: [Reflux.connect(CurrentUserStore), Reflux.connect(ConfigurationsStore), Reflux.connect(NodesStore, 'nodes')],
-
-    WIZARD_CLUSTER_CONFIG: 'com.airbus_cyber_security.graylog.config.rest.AlertWizardConfig',
-
-    propTypes: {
-        location: PropTypes.object.isRequired,
-        params: PropTypes.object.isRequired,
-        children: PropTypes.element,
-    },
-
-    componentDidMount() {
-        ConfigurationActions.list(this.WIZARD_CLUSTER_CONFIG);
-    },
-
-     _getConfig() {
-       if (this.state.configuration && this.state.configuration[this.WIZARD_CLUSTER_CONFIG]) {
-            return this.state.configuration[this.WIZARD_CLUSTER_CONFIG]
-        }
+    mixins: [Reflux.connect(CurrentUserStore), Reflux.connect(NodesStore, 'nodes')],
+    propTypes() {
         return {
-            default_values: {
-                title: '',
-                description: '',
-                lists: '',
-            },
+            params: PropTypes.object.isRequired,
         };
     },
-
+    componentDidMount() {
+        AlertListActions.get(this.props.params.alertListTitle).then(list => {
+            this.setState({list: list});
+        });
+    },
     _isLoading() {
-        return !this.state.configuration;
+        return !this.state.list;
     },
 
     render() {
-
         if (this._isLoading()) {
             return <Spinner/>;
         }
 
-        const configWizard = this._getConfig();
-
         return (
             <IntlProvider locale={language} messages={messages[language]}>
-                <DocumentTitle title="New alert rule">
+                <DocumentTitle title="Edit alert list">
                     <div>
-                        <PageHeader title={<FormattedMessage id= "wizard.newAlertList" defaultMessage= "Wizard: New alert list" />}>
+                        <PageHeader title={<FormattedMessage id= "wizard.updateAlertList"
+                                                             defaultMessage= 'Wizard: Editing alert list "{title}"'
+                                                             values={{title: this.state.list.title }} />} >
                         <span>
                             <FormattedMessage id= "wizard.definelist" defaultMessage= "You can define an alert list." />
                         </span>
                             <span>
                             <FormattedMessage id="wizard.documentationlist"
-                                              defaultMessage= "Read more about Wizard alert list in the documentation." />
+                                              defaultMessage= "Read more about Wizard alert lists in the documentation." />
                         </span>
                             <span>
                             <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
@@ -88,7 +69,7 @@ const NewAlertListPage = createReactClass({
                         </PageHeader>
                         <Row className="content">
                             <Col md={12}>
-                               <CreateListFormInput create={true} default_values={configWizard.default_values} nodes={this.state.nodes}/>
+                                <CreateListFormInput create={false} list={this.state.list} nodes={this.state.nodes}/>
                             </Col>
                         </Row>
                     </div>
@@ -98,4 +79,4 @@ const NewAlertListPage = createReactClass({
     },
 });
 
-export default NewAlertListPage;
+export default UpdateListPage;

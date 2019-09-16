@@ -318,7 +318,6 @@ const AlertRuleList = createReactClass({
         });
         headers.push(this.state.fieldsTitle.actions);
 
-        
         if (this.state.alerts) {
             return (
                 <div>
@@ -356,7 +355,7 @@ const AlertRuleList = createReactClass({
             );
         }
 
-        return <Spinner/>;
+        return <Spinner/>
     },
 });
 

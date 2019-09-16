@@ -21,7 +21,7 @@ const AlertListForm = createReactClass({
 
     componentWillMount(){
         const messages = {
-            placeholderTitle: this.context.intl.formatMessage({id: "wizard.placeholderCloneTitle", defaultMessage: "A descriptive name of the new alert list"}),
+            placeholderTitle: this.context.intl.formatMessage({id: "wizard.placeholderCloneTitleList", defaultMessage: "A descriptive name of the new alert list"}),
         };
         this.setState({messages:messages});
     },

@@ -49,15 +49,8 @@ const NewAlertPage = createReactClass({
         return {
             default_values: {
                 title: '',
-                severity: '',
-                matching_type: '',
-                threshold_type: '',
-                threshold: 0,
-                time: 0,
-                time_type: 1,
-                field: '',
-                field_type: '',
-                field_value: ''
+                description: '',
+                lists: '',
             },
         };
     },

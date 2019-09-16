@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import Reflux from 'reflux';
 import createReactClass from 'create-react-class';
-import AlertRuleStore from '../AlertRuleStore';
+import AlertListStore from './AlertListStore';
 import AlertListActions from './AlertListActions';
 import StoreProvider from 'injection/StoreProvider';
 import {Button, Tooltip} from 'react-bootstrap';
@@ -10,20 +10,16 @@ import {DataTable, IfPermitted, OverlayElement, Spinner, Timestamp} from 'compon
 import PermissionsMixin from 'util/PermissionsMixin';
 import Routes from 'routing/Routes';
 import {LinkContainer} from 'react-router-bootstrap';
-import AlertForm from '../AlertForm';
 import DateTime from 'logic/datetimes/DateTime';
 import {FormattedMessage} from 'react-intl';
-import AlertRuleText from 'wizard/AlertRuleText'
-import AlertRuleActions from "../AlertRuleActions";
 import AlertListForm from "./AlertListForm";
 
 const CurrentUserStore = StoreProvider.getStore('CurrentUser');
-const StreamsStore = StoreProvider.getStore('Streams');
 
 const AlertListDisplay = createReactClass({
         displayName: 'AlertListDisplay',
 
-    mixins: [Reflux.connect(CurrentUserStore), Reflux.connect(AlertRuleStore), PermissionsMixin],
+    mixins: [Reflux.connect(CurrentUserStore), Reflux.connect(AlertListStore), PermissionsMixin],
 
     propTypes: {
         config: PropTypes.object.isRequired,
@@ -41,29 +37,30 @@ const AlertListDisplay = createReactClass({
             lastModified: this.context.intl.formatMessage({id: "wizard.lastModified", defaultMessage: "Last Modified"}),
             user: this.context.intl.formatMessage({id: "wizard.user", defaultMessage: "User"}),
             usage: this.context.intl.formatMessage({id: "wizard.usage", defaultMessage: "Usage"}),
-            list: this.context.intl.formatMessage({id: "wizard.list", defaultMessage: "List"}),
+            lists: this.context.intl.formatMessage({id: "wizard.lists", defaultMessage: "Lists"}),
             actions: this.context.intl.formatMessage({id: "wizard.actions", defaultMessage: "Actions"}),
-            rule: this.context.intl.formatMessage({id: "wizard.rule", defaultMessage: "Rule"}),
         };
         const messages = {
-            infoDelete: this.context.intl.formatMessage({id: "wizard.buttonInfoDelete", defaultMessage: "Delete this alert list"}),
-            infoUpdate: this.context.intl.formatMessage({id: "wizard.buttonInfoUpdate", defaultMessage: "Edit this alert list"}),
-            infoClone: this.context.intl.formatMessage({id: "wizard.buttonInfoClone", defaultMessage: "Clone this alert list"}),
-            createAlertList: this.context.intl.formatMessage({id: "wizard.createAlert", defaultMessage: "Create alert list"}),
-            importAlertList: this.context.intl.formatMessage({id: "wizard.importAlert", defaultMessage: "Import alert list"}),
-            exportAlertList: this.context.intl.formatMessage({id: "wizard.exportAlert",  defaultMessage :"Export alert list"}),
-            confirmDeletion: this.context.intl.formatMessage({id: "wizard.confirmDeletion",  defaultMessage :"Do you really want to delete the alert list"}),
+            infoDelete: this.context.intl.formatMessage({id: "wizard.buttonInfoDeleteList", defaultMessage: "Delete this alert list"}),
+            infoUpdate: this.context.intl.formatMessage({id: "wizard.buttonInfoUpdateList", defaultMessage: "Edit this alert list"}),
+            infoClone: this.context.intl.formatMessage({id: "wizard.buttonInfoCloneList", defaultMessage: "Clone this alert list"}),
+            createAlertList: this.context.intl.formatMessage({id: "wizard.createAlertList", defaultMessage: "Create alert list"}),
+            importAlertList: this.context.intl.formatMessage({id: "wizard.importAlertList", defaultMessage: "Import alert list"}),
+            exportAlertList: this.context.intl.formatMessage({id: "wizard.exportAlertList",  defaultMessage :"Export alert list"}),
+            confirmDeletion: this.context.intl.formatMessage({id: "wizard.confirmDeletionList",  defaultMessage :"Do you really want to delete the alert list"}),
         };
 
         this.setState({fieldsTitle:fieldsTitle});
         this.setState({messages:messages});
         this.list();
     },
+
     list() {
-      AlertListActions.listWithData().then(newAlerts => {
-            this.setState({alerts: newAlerts});
-          });
+        AlertListActions.list().then(lists => {
+            this.setState({lists: lists});
+        });
     },
+
     deleteAlertList(name) {
         AlertListActions.deleteByName(name);
     },
@@ -109,50 +106,30 @@ const AlertListDisplay = createReactClass({
             {value: 'Last Modified', label: this.state.fieldsTitle.lastModified},
             {value: 'User', label: this.state.fieldsTitle.user},
             {value: 'Usage', label: this.state.fieldsTitle.usage},
-            {value: 'List', label: this.state.fieldsTitle.list},
-            {value: 'Rule', label: this.state.fieldsTitle.rule},
+            {value: 'Lists', label: this.state.fieldsTitle.lists},
         ];
     },
     _getFieldName(field) {
         return this._availableFieldName().filter((t) => t.value === field)[0].label;
     },
 
-    // a remplacer par list ???
-   /* _alertInfoFormatter(alert) {
+    _listInfoFormatter(list) {
 
-        let alertValid;
-        let colorValid;
-        let streamID;
-        if(alert.condition_parameters === null || alert.stream === null){
-            alertValid = false;
-            colorValid = "#F7230C";
-            streamID = '';
-        }else{
-            alertValid = true;
-            colorValid = "#000000";
-            streamID = alert.stream.id;
-            if(alert.disabled){
-                colorValid = "#ABABAB";
-            }
-        }
-
-        let streamId2 = null;
-        if(alert.second_stream){
-            streamId2 = alert.second_stream.id;
-        }
+        let colorValid = "#000000";
+        let listValid = true;
 
         const deleteAction = (
             <IfPermitted permissions="wizard_alerts_rules:delete">
-                <button id="delete-alert" type="button" className="btn btn-md btn-primary"
-                        title={this.state.messages.infoDelete} onClick={this._deleteAlertFunction(alert.title)}>
+                <button id="delete-list" type="button" className="btn btn-md btn-primary"
+                        title={this.state.messages.infoDelete} onClick={this._deleteAlertListFunction(list.title)}>
                     <FormattedMessage id ="wizard.delete" defaultMessage="Delete" />
                 </button>
             </IfPermitted>
         );
 
-        const updateAlert = (
+        const updateList = (
             <IfPermitted permissions="wizard_alerts_rules:read">
-                <LinkContainer to={Routes.pluginRoute('WIZARD_UPDATEALERT_ALERTRULETITLE')(alert.title.replace(/\//g, '%2F'))} disabled={!alertValid}>
+                <LinkContainer to={Routes.pluginRoute('WIZARD_UPDATELIST_ALERTLISTTITLE')(list.title.replace(/\//g, '%2F'))} disabled={!listValid}>
                     <Button bsStyle="info" type="submit" title={this.state.messages.infoUpdate} >
                         <FormattedMessage id ="wizard.edit" defaultMessage="Edit" />
                     </Button>
@@ -160,33 +137,8 @@ const AlertListDisplay = createReactClass({
             </IfPermitted>
         );
 
-        let toggleStreamLink;
-        if (alert.disabled) {
-            toggleStreamLink = (
-                <Button bsStyle="success" onClick={this._onResume(streamID, streamId2)} disabled={!alertValid}
-                        title={this.state.messages.infoEnable} style={{whiteSpace: 'pre'}} >
-                    <FormattedMessage id ="wizard.enable" defaultMessage="Enable " />
-                </Button>
-            );
-        } else {
-            toggleStreamLink = (
-                <Button bsStyle="primary" onClick={this._onPause(alert.title, streamID, streamId2)} disabled={!alertValid}
-                        title={this.state.messages.infoDisable} >
-                    <FormattedMessage id ="wizard.disable" defaultMessage="Disable" />
-                </Button>
-            );
-        }
-
-        const customizeLink = (
-            <LinkContainer disabled={!alertValid} to={Routes.show_alert_condition(streamID, alert.condition)} >
-                <Button bsStyle="info" title={this.state.messages.infoAdvanced} >
-                    <FormattedMessage id ="wizard.advancedSettings" defaultMessage="Advanced settings" />
-                </Button>
-            </LinkContainer>
-        );
-
-        const cloneAlert = (
-            <Button id="clone-alert" type="button" bsStyle="info" onClick={this._onClone(alert.title)} disabled={!alertValid}
+        const cloneList = (
+            <Button id="clone-list" type="button" bsStyle="info" onClick={this._onClone(list.title)}
                     title={this.state.messages.infoClone} >
                 <FormattedMessage id ="wizard.clone" defaultMessage="Clone" />
             </Button>
@@ -194,113 +146,105 @@ const AlertListDisplay = createReactClass({
 
         const actions = (
             <div className="alert-actions pull-left">
-                {updateAlert}{' '}
-                {customizeLink}{' '}
-                {cloneAlert}{' '}
+                {updateList}{' '}
+                {cloneList}{' '}
                 {deleteAction}{' '}
-                {toggleStreamLink}{' '}
             </div>
         );
 
-        const tooltipAlertCount = (
-            <Tooltip id="default-alert-count-tooltip">
-                <FormattedMessage id ="wizard.tooltipAlerts" defaultMessage="The daily throughput and the total number of triggered alerts since the last modification of the alert rule" />
-            </Tooltip>);
-
         const tooltipUser = (
             <Tooltip id="default-user-tooltip">
-                <FormattedMessage id ="wizard.tooltipUser" defaultMessage="The last user who modified the alert rule" />
+                <FormattedMessage id ="wizard.tooltipUser" defaultMessage="The last user who modified the alert list" />
             </Tooltip>);
 
-        let nbDays = (DateTime.now() - DateTime.parseFromString(alert.last_modified).toMoment()) / 1000 / 60 / 60 / 24;
-        let nbAlertDay = Math.round(alert.alert_count / Math.ceil(nbDays));
-
-        let tabFields = [<td className="limited">{alert.title_condition}</td>];
+        let tabFields = [<td className="limited">{list.title}</td>];
         this.props.config.field_order.map((field) => {
             if (field.enabled) {
                 switch (field.name) {
-                    case 'Severity':
-                        tabFields.push(<td className="limited">{alert.severity ? this._getSeverityType(alert.severity) : ''}</td>);
-                        break;
                     case 'Description':
-                        tabFields.push(<td className="limited"><span style={{whiteSpace: 'pre-line'}}>{alert.description}</span></td>);
+                        tabFields.push(<td className="limited"><span style={{whiteSpace: 'pre-line'}}>{list.description}</span></td>);
                         break;
                     case 'Created':
-                        tabFields.push(<td className="limited"><Timestamp dateTime={DateTime.parseFromString(alert.created_at).toString(DateTime.Formats.DATETIME)} relative/></td>);
+                        tabFields.push(<td className="limited"><Timestamp dateTime={DateTime.parseFromString(list.created_at).toString(DateTime.Formats.DATETIME)} relative/></td>);
                         break;
                     case 'Last Modified':
-                        tabFields.push(<td className="limited"><Timestamp dateTime={DateTime.parseFromString(alert.last_modified).toString(DateTime.Formats.DATETIME)} relative/>
+                        tabFields.push(<td className="limited"><Timestamp dateTime={DateTime.parseFromString(list.last_modified).toString(DateTime.Formats.DATETIME)} relative/>
                         </td>);
                         break;
                     case 'User':
                         tabFields.push(<td className="limited">
                             <OverlayElement overlay={tooltipUser} placement="top" useOverlay={true}
                                             trigger={['hover', 'focus']}>
-                                {alert.creator_user_id}
+                                {list.creator_user_id}
                             </OverlayElement>
                         </td>);
                         break;
-                    case 'Alerts':
-                        tabFields.push(<td className="limited">
-                            <OverlayElement overlay={tooltipAlertCount} placement="top" useOverlay={true}
-                                            trigger={['hover', 'focus']}>
-                                <div><FormattedMessage id ="wizard.manualCount" defaultMessage="{alertDay} alerts/day ({alertCount} total)"
-                                                       values={{alertDay: nbAlertDay, alertCount: alert.alert_count}}/></div>
-                            </OverlayElement>
-                        </td>);
+                    case 'Usage':
+                        tabFields.push(<td className="limited"><span style={{whiteSpace: 'pre-line'}}>{list.usage}</span></td>);
                         break;
-                    case 'Status':
-                        if(alertValid){
-                            tabFields.push(<td className="limited">{alert.disabled ?
-                                <span style={{backgroundColor: 'orange', color: 'white'}}><FormattedMessage id ="wizard.disabled" defaultMessage="Disabled" /></span> :
-                                <FormattedMessage id ="wizard.enabled" defaultMessage="Enabled" />}</td>);
-                        }else{
-                            tabFields.push(<td className="limited"><FormattedMessage id ="wizard.corrupted" defaultMessage="Corrupted" /></td>);
-                        }
-                        break;
-                    case 'Rule':
-                        tabFields.push(<td className="limited"><AlertRuleText alert={alert} /></td>);
-                        break;
-                    default:
+                    case 'Lists':
+                        tabFields.push(<td className="limited"><span style={{whiteSpace: 'pre-line'}}>{list.lists}</span></td>);
                         break;
                 }
             }
         });
 
         return (
-            <tr key={alert.title} style={{color:colorValid}}>
+            <tr key={list.title} style={{color:colorValid}}>
                 {tabFields}
                 <td style={{whiteSpace: 'nowrap'}}>{actions}</td>
             </tr>
         );
-    },*/
+    },
 
     render () {
 
-      // if (this.state.lists)
-        return (
-            <div>
-                <div className="alert-actions pull-right">
-                    <LinkContainer to={Routes.pluginRoute('WIZARD_NEWLIST')}>
-                        <Button bsStyle="success" type="submit" title={this.state.messages.createAlertList}>
-                            <FormattedMessage id ="wizard.create" defaultMessage="Create" />
-                        </Button>
-                    </LinkContainer>
-                    {' '}
-                    <LinkContainer to={Routes.pluginRoute('WIZARD_IMPORTALERT')}>
-                        <Button bsStyle="success" type="submit" title={this.state.messages.importAlertList}>
-                            <FormattedMessage id ="wizard.import" defaultMessage="Import" />
-                        </Button>
-                    </LinkContainer>
-                    {' '}
-                    <LinkContainer to={Routes.pluginRoute('WIZARD_EXPORTALERT')}>
-                        <Button bsStyle="success" type="submit" title={this.state.messages.exportAlertList}>
-                            <FormattedMessage id ="wizard.export" defaultMessage="Export" />
-                        </Button>
-                    </LinkContainer>
-                </div>
-            </div>
-        );
+        const filterKeys = ['title', 'created_at', 'last_modified', 'creator_user_id'];
+        let headers = [this.state.fieldsTitle.title];
+        this.props.config.field_order.map((field) => {
+            if (field.enabled) {
+                headers.push(this._getFieldName(field.name));
+            }
+        });
+        headers.push(this.state.fieldsTitle.actions);
+
+          if(this.state.lists) {
+              return (
+                  <div>
+                      <div className="alert-actions pull-right">
+                          <LinkContainer to={Routes.pluginRoute('WIZARD_NEWLIST')}>
+                              <Button bsStyle="success" type="submit" title={this.state.messages.createAlertList}>
+                                  <FormattedMessage id="wizard.create" defaultMessage="Create"/>
+                              </Button>
+                          </LinkContainer>
+                          {' '}
+                          <LinkContainer to={Routes.pluginRoute('WIZARD_IMPORTLIST')}>
+                              <Button bsStyle="success" type="submit" title={this.state.messages.importAlertList}>
+                                  <FormattedMessage id="wizard.import" defaultMessage="Import"/>
+                              </Button>
+                          </LinkContainer>
+                          {' '}
+                          <LinkContainer to={Routes.pluginRoute('WIZARD_EXPORTLIST')}>
+                              <Button bsStyle="success" type="submit" title={this.state.messages.exportAlertList}>
+                                  <FormattedMessage id="wizard.export" defaultMessage="Export"/>
+                              </Button>
+                          </LinkContainer>
+                      </div>
+                      <DataTable id="alert-list"
+                                 className="table-hover"
+                                 headers={headers}
+                                 headerCellFormatter={this._headerCellFormatter}
+                                 sortByKey={"title"}
+                                 rows={this.state.lists}
+                                 filterBy="title"
+                                 dataRowFormatter={this._listInfoFormatter}
+                                 filterLabel={<FormattedMessage id="wizard.filterlists" defaultMessage="Filter alert lists"/>}
+                                 filterKeys={filterKeys}/>
+                      <AlertListForm ref="cloneForm" onSubmit={this._onCloneSubmit}/>
+                  </div>
+              );
+          }
+          return <Spinner/>
     },
 });
 
