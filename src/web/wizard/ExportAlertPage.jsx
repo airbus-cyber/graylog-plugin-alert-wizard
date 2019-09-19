@@ -82,7 +82,7 @@ const ExportAlertPage = createReactClass({
                                 defaultMessage= "Read more about Wizard alert rules in the documentation." />
                             </span>
                             <span>
-                                <LinkContainer to={Routes.pluginRoute('WIZARD')}>
+                                <LinkContainer to={Routes.pluginRoute('WIZARD_ALERTRULES')}>
                                     <Button bsStyle="info"><FormattedMessage id= "wizard.back" defaultMessage= "Back to alert rules" /></Button>
                                 </LinkContainer>
                                 &nbsp;

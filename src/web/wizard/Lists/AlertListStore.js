@@ -50,7 +50,6 @@ const AlertListStore = Reflux.createStore({
         const request = {
             title: newList.title,
             description: newList.description,
-            usage: newList.usage,
             lists: newList.lists,
         };
 

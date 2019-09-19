@@ -19,10 +19,14 @@ public abstract class CloneAlertListRequest {
     @Nullable
     public abstract String getDescription();
 
+    @JsonProperty("lists")
+    @Nullable
+    public abstract String getLists();
 
     @JsonCreator
     public static CloneAlertListRequest create(@JsonProperty("title") String title,
-                                               @JsonProperty("description") String description) {
-        return new AutoValue_CloneAlertListRequest(title, description);
+                                               @JsonProperty("description") String description,
+                                               @JsonProperty("lists") String lists) {
+        return new AutoValue_CloneAlertListRequest(title, description, lists);
     }
 }

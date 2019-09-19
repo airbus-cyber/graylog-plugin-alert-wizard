@@ -208,7 +208,7 @@ const AlertListDisplay = createReactClass({
         });
         headers.push(this.state.fieldsTitle.actions);
 
-          if(this.state.lists) {
+        if(this.state.lists) {
               return (
                   <div>
                       <div className="alert-actions pull-right">

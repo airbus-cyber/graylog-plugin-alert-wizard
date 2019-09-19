@@ -152,6 +152,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
 
         alertListUtilsService.checkIsValidRequest(request);
         String listTitle = checkImportPolicyAndGetTitle(request.getTitle());
+        int usage = 1;
 
         alertListService.create(AlertListImpl.create(
                 listTitle,
@@ -159,7 +160,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
                 getCurrentUser().getName(),
                 DateTime.now(),
                 request.getDescription(),
-                request.getUsage(),
+                usage,
                 request.getLists()));
 
         return Response.accepted().build();
@@ -209,9 +210,10 @@ public class AlertListResource extends RestResource implements PluginRestResourc
                           @ApiParam(name = "JSON body", required = true) @Valid @NotNull CloneAlertListRequest request
     ) throws NotFoundException, ValidationException {
 
+        AlertList sourcelist = alertListService.load(title);
         String listTitle = request.getTitle();
         int usage = 1;
-        String lists = null;
+        String lists = sourcelist.getLists();
 
         alertListService.create(AlertListImpl.create(
                 listTitle,
@@ -265,7 +267,6 @@ public class AlertListResource extends RestResource implements PluginRestResourc
             throws ValidationException, BadRequestException{
         String listTitle = checkImportPolicyAndGetTitle(alertList.getTitle());
         int usage = 1;
-        String lists = null;
 
         alertListService.create(AlertListImpl.create(
                 listTitle,
@@ -274,7 +275,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
                 DateTime.now(),
                 alertList.getDescription(),
                 usage,
-                lists));
+                alertList.getLists()));
     }
 
     @PUT

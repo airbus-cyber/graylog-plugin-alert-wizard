@@ -33,15 +33,6 @@ const CreateListFormInput = createReactClass({
         intl: PropTypes.object.isRequired,
     },
 
-    componentWillMount(){
-    },
-
-    componentWillReceiveProps(nextProps) {
-        if(!_.isEqual(nextProps.nodes, this.props.nodes)){
-           // this._isPluginsPresent();
-        }
-    },
-
     getDefaultProps() {
         return {
             list: INIT_LIST,
@@ -162,9 +153,9 @@ const CreateListFormInput = createReactClass({
                 </Row>
                 <Row style={style}>
                     <Col md={5}>
-                    <Input style={{minWidth: 600}} ref="list" id="wizard.fieldList" name="list" type="textarea" rows="10"
+                    <Input style={{minWidth: 600}} ref="lists" id="lists" name="lists" type="textarea" rows="10"
                            label={<FormattedMessage id ="wizard.fieldList" defaultMessage="List" />}
-                           onChange={this._onUpdate('wizard.fieldList')}/>
+                           onChange={this._onUpdate('lists')}/>
                         {actions}
                     </Col>
                     <Col md={3}>

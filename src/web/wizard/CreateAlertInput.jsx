@@ -219,7 +219,7 @@ const CreateAlertInput = createReactClass({
                 },
                 {
                     label: this.state.messages.done,
-                    onClick: () => history.push({pathname: Routes.pluginRoute('WIZARD')})
+                    onClick: () => history.push({pathname: Routes.pluginRoute('WIZARD_ALERTRULES')})
                 },
             ]
         };
@@ -342,7 +342,7 @@ const CreateAlertInput = createReactClass({
     render: function () {
         let actions;
         const buttonCancel = (
-            <LinkContainer to={Routes.pluginRoute('WIZARD')}>
+            <LinkContainer to={Routes.pluginRoute('WIZARD_ALERTRULES')}>
                 <Button><FormattedMessage id= "wizard.cancel" defaultMessage= "Cancel" /></Button>
             </LinkContainer>
         );

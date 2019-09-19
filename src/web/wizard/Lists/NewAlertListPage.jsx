@@ -69,7 +69,7 @@ const NewAlertListPage = createReactClass({
 
         return (
             <IntlProvider locale={language} messages={messages[language]}>
-                <DocumentTitle title="New alert rule">
+                <DocumentTitle title="New alert list">
                     <div>
                         <PageHeader title={<FormattedMessage id= "wizard.newAlertList" defaultMessage= "Wizard: New alert list" />}>
                         <span>

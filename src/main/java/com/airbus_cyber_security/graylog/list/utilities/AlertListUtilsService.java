@@ -2,9 +2,6 @@ package com.airbus_cyber_security.graylog.list.utilities;
 
 import com.airbus_cyber_security.graylog.list.rest.models.requests.AlertListRequest;
 import com.airbus_cyber_security.graylog.list.AlertListService;
-import com.airbus_cyber_security.graylog.list.AlertList;
-import com.airbus_cyber_security.graylog.list.rest.models.responses.GetDataAlertList;
-import org.graylog2.database.NotFoundException;
 import org.graylog2.plugin.cluster.ClusterConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,16 +26,5 @@ public class AlertListUtilsService {
             LOG.error("Invalid alert list request");
             throw new BadRequestException("Invalid alert list request.");
         }
-    }
-
-    public GetDataAlertList constructDataAlertList(AlertList list) throws NotFoundException {
-
-        return GetDataAlertList.create(list.getTitle(),
-                list.getCreatedAt(),
-                list.getCreatorUserId(),
-                list.getLastModified(),
-                list.getDescription(),
-                list.getUsage(),
-                list.getLists());
     }
 }

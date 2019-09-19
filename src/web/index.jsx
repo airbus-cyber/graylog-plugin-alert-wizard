@@ -11,10 +11,11 @@ import UpdateListPage from './wizard/Lists/UpdateListPage';
 import ImportListPage from './wizard/Lists/ImportListPage';
 import ExportListPage from './wizard/Lists/ExportListPage';
 
+
 PluginStore.register(new PluginManifest(packageJson, {
 
     routes: [
-        {path: '/wizard', component: WizardPage, permissions: 'WIZARD_ALERTS_RULES_READ'},
+        {path: '/wizard/AlertRules', component: WizardPage, permissions: 'WIZARD_ALERTS_RULES_READ'},
         {path: '/wizard/NewAlert', component: NewAlertPage, permissions: 'WIZARD_ALERTS_RULES_CREATE'},
         {path: '/wizard/UpdateAlert/:alertRuleTitle', component: UpdateAlertPage, permissions: 'WIZARD_ALERTS_RULES_UPDATE'},
         {path: '/wizard/ExportAlert', component: ExportAlertPage, permissions: 'WIZARD_ALERTS_RULES_READ'},
@@ -26,13 +27,13 @@ PluginStore.register(new PluginManifest(packageJson, {
         {path: '/wizard/ExportList', component: ExportListPage},
     ],
 
-     navigation: [
-         {
-             description: 'Wizard',
-             children: [
-                 { path: '/wizard', description: 'Alert Rules' },
-                 { path: '/wizard/Lists', description: 'Lists' },
-           ],
+    navigation: [
+        {
+            description: 'Wizard',
+            children: [
+                { path: '/wizard/AlertRules', description: 'Alert Rules' },
+                { path: '/wizard/Lists', description: 'Lists' },
+            ],
         },
-     ],
+    ],
 }));

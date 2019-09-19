@@ -52,6 +52,7 @@ const ImportListPage = createReactClass({
             <div className="checkbox" key={`alertList_checkbox-${alertList.title}`}>
                 <label className="checkbox"><input ref={`alertLists.${alertList.title}`} type="checkbox" name="alertLists" id={`alertList_${alertList.title}`} value={JSON.stringify(alertList)} />{alertList.title}</label>
                 <span className="help-inline"><FormattedMessage id= "wizard.fieldDescription" defaultMessage= "Description" />: <tt>{alertList.description}</tt></span>
+                <span className="help-inline"><FormattedMessage id= "wizard.fieldLists" defaultMessage= "Lists" />: <tt>{alertList.lists}</tt></span>
             </div>
         );
     },
