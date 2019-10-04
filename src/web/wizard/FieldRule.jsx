@@ -192,7 +192,6 @@ const FieldRule = createReactClass({
                    onChange={this._onValueChanged("value")} value={this.state.rule.value}/>
             : this.state.rule.type === 7 || this.state.rule.type === -7 ?
                 <Input ref="alertList" id="alertList" name="alertList">
-                    <Tooltip title={"omg"}> 
                     <Select style={{backgroundColor: color, borderRadius: '0px'}}
                             autosize={false}
                             required
@@ -201,7 +200,6 @@ const FieldRule = createReactClass({
                             matchProp="value"
                             onChange={this._onListTypeSelect}
                             placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..."/>} />
-                    </Tooltip>
                 </Input>
                 : <span style={{marginRight: 199}}/>);
 
