@@ -12,6 +12,7 @@ import {FormattedMessage} from 'react-intl';
 import {Input} from 'components/bootstrap';
 import AlertListActions from "./AlertListActions";
 import AlertListStore from "./AlertListStore";
+import {confirmAlert} from "react-confirm-alert";
 
 const INIT_LIST = {
     title: '',
@@ -57,7 +58,7 @@ const CreateListFormInput = createReactClass({
         return {
             list: list,
             isModified: false,
-            isValid: true,
+            isValid: false,
             contentComponent: <Spinner/>,
         };
     },
@@ -109,6 +110,7 @@ const CreateListFormInput = createReactClass({
     render: function() {
 
         let actions;
+
         const buttonCancel = (
             <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
                 <Button><FormattedMessage id= "wizard.cancel" defaultMessage= "Cancel" /></Button>
@@ -118,17 +120,21 @@ const CreateListFormInput = createReactClass({
         let buttonSave;
         if (this.props.create) {
             buttonSave = (
-                <Button onClick={this._save} disabled={!this.state.isValid} className="btn btn-md btn-primary">
-                    <FormattedMessage id="wizard.save" defaultMessage="Save"/>
-                </Button>
+                <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
+                    <Button onClick={this._save} disabled={this.state.list.title === ''} className="btn btn-md btn-primary">
+                        <FormattedMessage id="wizard.save" defaultMessage="Save"/>
+                    </Button>
+                </LinkContainer>
             );
         }
-         else {
+        else {
             buttonSave = (
-                <Button onClick={this._update} disabled={!this.state.isValid}
-                        className="btn btn-md btn-primary">
-                    <FormattedMessage id= "wizard.save" defaultMessage= "Save" />
-                </Button>
+                <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
+                    <Button onClick={this._update}
+                            className="btn btn-md btn-primary">
+                        <FormattedMessage id= "wizard.save" defaultMessage= "Save" />
+                    </Button>
+                </LinkContainer>
             );
         }
 

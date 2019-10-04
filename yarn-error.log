@@ -14,7 +14,7 @@ Platform:
   linux x64
 
 Trace: 
-  Error: ENOSPC: no space left on device, copyfile '/home/thomas/wrk/graylog-project-repos/graylog2-server/graylog2-web-interface/packages/graylog-web-plugin/node_modules/lodash/fp/array.js' -> '/home/thomas/.cache/yarn/v4/npm-graylog-web-plugin-3.0.2-SNAPSHOT-f9ac33d7-befb-49bc-8c5e-4e70a260eb46-1565616146454/node_modules/graylog-web-plugin/node_modules/lodash/fp/array.js'
+  Error: ENOSPC: no space left on device, mkdir '/home/thomas/.cache/yarn/v4/npm-graylog-web-plugin-3.0.2-SNAPSHOT-ca57b51b-b101-4f1d-80ed-3e9d06370316-1569253371734/node_modules/graylog-web-plugin/node_modules/@babel/preset-env/node_modules/.bin'
 
 npm manifest: 
   {

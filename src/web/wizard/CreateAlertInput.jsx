@@ -223,7 +223,7 @@ const CreateAlertInput = createReactClass({
                 },
             ]
         };
-        confirmAlert(options);
+       confirmAlert(options);
     },
     _updateAlertField(field, value) {
         const update = ObjectUtils.clone(this.state.alert);

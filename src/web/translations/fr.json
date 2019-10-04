@@ -1,4 +1,6 @@
 {
+  "wizard.listpresent": "est présente dans la liste",
+  "wizard.listnotpresent": "n'est pas présente dans la liste",
   "wizard.lists": "Listes",
   "wizard.version": " (version du wizard : {version}).",
   "wizard.description": "Avec le wizard, vous pouvez configurer les règles d'alerte. Une règle d'alerte consiste en une ou plusieurs streams avec des règles, une condition d'alerte et une notification d'alerte.",
@@ -78,7 +80,9 @@
   "wizard.maxValue": "valeur max",
   "wizard.sum": "somme",
   "wizard.titlePopup": "Règle d'alerte sauvegardée",
+  "wizard.titleListPopup": "Liste d'alerte sauvegardée",
   "wizard.messagePopup": "Aller aux paramètres avancés ?",
+  "wizard.messagePopupList": "Retour aux listes d'alerte ?",
   "wizard.done": "J'ai fini !",
   "wizard.edit": "Modifier",
   "wizard.clone": "Dupliquer",

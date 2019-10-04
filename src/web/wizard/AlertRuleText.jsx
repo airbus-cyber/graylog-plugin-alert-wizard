@@ -62,6 +62,8 @@ const AlertRuleText = createReactClass({
             {value: -5, label: <FormattedMessage id= "wizard.notPresent" defaultMessage= "is not present" />},
             {value: 6, label: <FormattedMessage id= "wizard.contains" defaultMessage= "contains" />},
             {value: -6, label: <FormattedMessage id= "wizard.notContain" defaultMessage= "does not contain" />},
+            {value: 7, label: <FormattedMessage id= "wizard.listpresent" defaultMessage= "is present in list" />},
+            {value: -7, label: <FormattedMessage id= "wizard.listnotpresent" defaultMessage= "is not present in list" />},
         ];
     },
     _getRuleType(type) {

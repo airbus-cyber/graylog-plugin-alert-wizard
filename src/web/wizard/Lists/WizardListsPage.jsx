@@ -33,13 +33,6 @@ const WizardListsPage = createReactClass ({
 
     render() {
 
-        const title = (
-            <span>
-                <FormattedMessage id="wizard.alertsList"
-                          defaultMessage= "Alert lists" />
-            </span>
-        );
-
         const configWizard = this._getConfig();
 
         return (
@@ -47,7 +40,7 @@ const WizardListsPage = createReactClass ({
                 <DocumentTitle title="Alert lists">
                     <div>
                         <span>
-                            <PageHeader title={title}>
+                            <PageHeader title={<FormattedMessage id="wizard.alertsList" defaultMessage= "Alert lists" />}>
                                 <span>
                                     <FormattedMessage id="wizard.documentationlist"
                                               defaultMessage= "Read more about Wizard alert list in the documentation." />
