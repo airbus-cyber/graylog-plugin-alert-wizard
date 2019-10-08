@@ -4,13 +4,12 @@ import Reflux from 'reflux';
 import AlertListActions from './Lists/AlertListActions';
 import createReactClass from 'create-react-class';
 import {Input} from 'components/bootstrap';
-import {Select, Spinner} from 'components/common';
+import {Select, Spinner, OverlayElement} from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import StoreProvider from 'injection/StoreProvider';
 import naturalSort from 'javascript-natural-sort';
 import {FormattedMessage} from 'react-intl';
 import AlertListStore from "./Lists/AlertListStore";
-import {Tooltip} from 'react-bootstrap';
 
 const FieldsStore = StoreProvider.getStore('Fields');
 const CurrentUserStore = StoreProvider.getStore('CurrentUser');
@@ -63,6 +62,7 @@ const FieldRule = createReactClass({
     componentWillMount(){
         const messages = {
                 delete: this.context.intl.formatMessage({id: "wizard.delete", defaultMessage: "Delete"}),
+                tooltipOrCondition: this.context.intl.formatMessage({id: "wizard.tooltipOrCondition", defaultMessage: "OR Condition"}),
             };
         this.setState({messages:messages});
         this.list();
@@ -97,7 +97,7 @@ const FieldRule = createReactClass({
         let items = [];
 
         for (let i=0; i < list.length; i++) {
-            items.push({value: list[i].title, label: list[i].title});
+            items.push({value: list[i].title, label:<span title={list[i].lists}><FormattedMessage id={list[i].title} defaultMessage={list[i].title} /></span>});
         }
         return items;
     },
