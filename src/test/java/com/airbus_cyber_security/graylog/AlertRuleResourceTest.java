@@ -1,5 +1,8 @@
 package com.airbus_cyber_security.graylog;
 
+import org.graylog.plugins.pipelineprocessor.db.PipelineService;
+import org.graylog.plugins.pipelineprocessor.db.RuleService;
+import org.graylog.plugins.pipelineprocessor.parser.PipelineRuleParser;
 import org.graylog2.alarmcallbacks.AlarmCallbackConfiguration;
 import org.graylog2.alarmcallbacks.AlarmCallbackConfigurationService;
 import org.graylog2.alarmcallbacks.AlarmCallbackFactory;
@@ -8,6 +11,7 @@ import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 
 import org.graylog2.alerts.Alert;
 import org.graylog2.alerts.AlertService;
+import org.graylog2.configuration.HttpConfiguration;
 import org.graylog2.database.NotFoundException;
 
 import com.airbus_cyber_security.graylog.database.MongoDBServiceTest;
@@ -18,6 +22,9 @@ import org.graylog2.events.ClusterEventBus;
 import org.graylog2.indexer.IndexSet;
 import org.graylog2.indexer.IndexSetRegistry;
 import org.graylog2.indexer.indexset.IndexSetConfig;
+import org.graylog2.lookup.db.DBCacheService;
+import org.graylog2.lookup.db.DBDataAdapterService;
+import org.graylog2.lookup.db.DBLookupTableService;
 import org.graylog2.plugin.alarms.AlertCondition;
 import org.graylog2.plugin.cluster.ClusterConfigService;
 import org.graylog2.plugin.database.ValidationException;
@@ -66,7 +73,22 @@ public class AlertRuleResourceTest extends MongoDBServiceTest{
     private ClusterConfigService clusterConfigService;
     @Mock
     private Validator validator;
-    
+    @Mock
+    private RuleService ruleService;
+    @Mock
+    private PipelineRuleParser pipelineRuleParser;
+    @Mock
+    private PipelineService pipelineService;
+    @Mock
+    private DBDataAdapterService dbDataAdapterService;
+    @Mock
+    private HttpConfiguration httpConfiguration;
+    @Mock
+    private DBCacheService dbCacheService;
+    @Mock
+    private DBLookupTableService dbTableService;
+
+
     private StreamService streamService;
 	private AlertRuleResource alertRuleResource;
 
@@ -107,7 +129,7 @@ public class AlertRuleResourceTest extends MongoDBServiceTest{
         when(alertService.loadRecentOfStream(eq("5bc894ded9e3770323a780a7"), any(DateTime.class), eq(999))).thenReturn(new ArrayList<Alert>());
     	
         AlertRuleServiceImpl alertRuleService = new AlertRuleServiceImpl(mongoRule.getMongoConnection(), mapperProvider, validator);
-    	this.alertRuleResource = new AlertRuleResource(alertRuleService, streamService, streamRuleService, clusterEventBus, indexSetRegistry, 
+    	this.alertRuleResource = new AlertRuleResource(alertRuleService, ruleService, pipelineRuleParser, pipelineService, dbDataAdapterService, httpConfiguration, dbCacheService, dbTableService,streamService, streamRuleService, clusterEventBus, indexSetRegistry,
     										alertService, alarmCallbackConfigurationService, alarmCallbackFactory, clusterConfigService);
     }
     

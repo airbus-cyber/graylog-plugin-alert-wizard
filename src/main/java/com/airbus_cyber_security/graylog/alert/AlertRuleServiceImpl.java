@@ -61,7 +61,7 @@ public class AlertRuleServiceImpl implements AlertRuleService {
 	
 	@Override
 	public AlertRule update(String title, AlertRule alert) {
-		
+
 		if (alert instanceof AlertRuleImpl) {
 			final AlertRuleImpl alertImpl = (AlertRuleImpl) alert;
 			LOG.debug("Alert to be updated [{}]", alertImpl);
@@ -122,7 +122,7 @@ public class AlertRuleServiceImpl implements AlertRuleService {
 		if(stream.getMatchingType().equals("AND") || stream.getMatchingType().equals("OR")){
 			for (FieldRuleImpl fieldRule : stream.getFieldRules()) {
 				if(fieldRule.getField() == null || fieldRule.getField().isEmpty() ||
-						fieldRule.getType() < -6 || fieldRule.getType() > 6	) {
+						fieldRule.getType() < -7 || fieldRule.getType() > 7	) {
 					return false;
 				}
 			}

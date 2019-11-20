@@ -48,21 +48,21 @@ const UpdateListPage = createReactClass({
 
         return (
             <IntlProvider locale={language} messages={messages[language]}>
-                <DocumentTitle title="Edit alert list">
+                <DocumentTitle title="Edit list">
                     <div>
-                        <PageHeader title={<FormattedMessage id= "wizard.updateAlertList"
-                                                             defaultMessage= 'Wizard: Editing alert list "{title}"'
+                        <PageHeader title={<FormattedMessage id= "wizard.updateList"
+                                                             defaultMessage= 'Wizard: Editing list "{title}"'
                                                              values={{title: this.state.list.title }} />} >
                         <span>
-                            <FormattedMessage id= "wizard.definelist" defaultMessage= "You can define an alert list." />
+                            <FormattedMessage id= "wizard.definelist" defaultMessage= "You can define a list." />
                         </span>
                             <span>
                             <FormattedMessage id="wizard.documentationlist"
-                                              defaultMessage= "Read more about Wizard alert lists in the documentation." />
+                                              defaultMessage= "Read more about Wizard lists in the documentation." />
                         </span>
                             <span>
                             <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
-                                <Button bsStyle="info"><FormattedMessage id= "wizard.backlist" defaultMessage= "Back to alert lists" /></Button>
+                                <Button bsStyle="info"><FormattedMessage id= "wizard.backlist" defaultMessage= "Back to lists" /></Button>
                             </LinkContainer>
                                 &nbsp;
                         </span>

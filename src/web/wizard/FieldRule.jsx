@@ -31,7 +31,7 @@ const FieldRule = createReactClass({
 
     getDefaultProps() {
         return {
-            rule: {field: '', type: '', value: '', alertList: ''},
+            rule: {field: '', type: '', value: ''},
         };
     },
 
@@ -42,6 +42,7 @@ const FieldRule = createReactClass({
             isValid: false,
             fields: null,
             hover: false,
+            lists: null,
         };
     },
 
@@ -62,7 +63,6 @@ const FieldRule = createReactClass({
     componentWillMount(){
         const messages = {
                 delete: this.context.intl.formatMessage({id: "wizard.delete", defaultMessage: "Delete"}),
-                tooltipOrCondition: this.context.intl.formatMessage({id: "wizard.tooltipOrCondition", defaultMessage: "OR Condition"}),
             };
         this.setState({messages:messages});
         this.list();
@@ -96,14 +96,19 @@ const FieldRule = createReactClass({
     _createSelectItemsListTitle(list) {
         let items = [];
 
-        for (let i=0; i < list.length; i++) {
-            items.push({value: list[i].title, label:<span title={list[i].lists}><FormattedMessage id={list[i].title} defaultMessage={list[i].title} /></span>});
+        if (list !== null) {
+            for (let i = 0; i < list.length; i++) {
+                items.push({value: list[i].title,
+                    label: <span title={list[i].lists}><FormattedMessage id={list[i].title}
+                                                                         defaultMessage={list[i].title}/></span>
+                });
+            }
         }
         return items;
     },
 
     _onListTypeSelect(value) {
-        this._updateAlertField('alertList', value);
+        this._updateAlertField('value', value)
     },
 
     _onRuleTypeSelect(value) {
@@ -191,11 +196,11 @@ const FieldRule = createReactClass({
                    ref="value" id="value" name="value" type="text"
                    onChange={this._onValueChanged("value")} value={this.state.rule.value}/>
             : this.state.rule.type === 7 || this.state.rule.type === -7 ?
-                <Input ref="alertList" id="alertList" name="alertList">
+                <Input ref="alertLists" id="alertLists" name="alertLists">
                     <Select style={{backgroundColor: color, borderRadius: '0px'}}
                             autosize={false}
                             required
-                            value={this.state.rule.alertList}
+                            value={this.state.rule.value}
                             options={this._createSelectItemsListTitle(this.state.lists)}
                             matchProp="value"
                             onChange={this._onListTypeSelect}

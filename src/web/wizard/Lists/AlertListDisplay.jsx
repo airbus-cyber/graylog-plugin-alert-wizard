@@ -154,7 +154,7 @@ const AlertListDisplay = createReactClass({
 
         const tooltipUser = (
             <Tooltip id="default-user-tooltip">
-                <FormattedMessage id ="wizard.tooltipUser" defaultMessage="The last user who modified the alert list" />
+                <FormattedMessage id ="wizard.tooltipUserList" defaultMessage="The last user who modified the list" />
             </Tooltip>);
 
         let tabFields = [<td className="limited">{list.title}</td>];
@@ -238,7 +238,7 @@ const AlertListDisplay = createReactClass({
                                  rows={this.state.lists}
                                  filterBy="title"
                                  dataRowFormatter={this._listInfoFormatter}
-                                 filterLabel={<FormattedMessage id="wizard.filterlists" defaultMessage="Filter alert lists"/>}
+                                 filterLabel={<FormattedMessage id="wizard.filterlists" defaultMessage="Filter lists"/>}
                                  filterKeys={filterKeys}/>
                       <AlertListForm ref="cloneForm" onSubmit={this._onCloneSubmit}/>
                   </div>

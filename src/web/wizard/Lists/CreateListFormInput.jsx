@@ -152,7 +152,7 @@ const CreateListFormInput = createReactClass({
                     <Col md={4}>
                         <Input id="title" type="text" required label={<FormattedMessage id ="wizard.title" defaultMessage="Title" />}
                                onChange={this._onUpdate('title')}                               name="title" />
-                        <Input id="description" type="text" label={<FormattedMessage id= "wizard.fieldDescription" defaultMessage= "Description" />}
+                        <Input id="description" type="text" label={<FormattedMessage id= "wizard.fieldOptionalDescription" defaultMessage= "Description (optional)" />}
                                onChange={this._onUpdate('description')}
                                name="description"/>
                     </Col>
@@ -160,7 +160,7 @@ const CreateListFormInput = createReactClass({
                 <Row style={style}>
                     <Col md={5}>
                     <Input style={{minWidth: 600}} ref="lists" id="lists" name="lists" type="textarea" rows="10"
-                           label={<FormattedMessage id ="wizard.fieldList" defaultMessage="List" />}
+                           label={<FormattedMessage id ="wizard.fieldListwithexemple" defaultMessage="List (example : 172.10.0.1; 192.168.1.4; ...)" />}
                            onChange={this._onUpdate('lists')}/>
                         {actions}
                     </Col>

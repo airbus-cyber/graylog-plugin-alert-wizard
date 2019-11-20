@@ -73,19 +73,19 @@ const ImportListPage = createReactClass({
 
         return (
             <IntlProvider locale={language} messages={messages[language]}>
-                <DocumentTitle title="Import alert list">
+                <DocumentTitle title="Import list">
                     <div>
-                        <PageHeader title={<FormattedMessage id= "wizard.importWizardAlertList" defaultMessage= "Wizard: Import alert lists" />}>
+                        <PageHeader title={<FormattedMessage id= "wizard.importWizardList" defaultMessage= "Wizard: Import lists" />}>
                             <span>
-                                <FormattedMessage id= "wizard.importList" defaultMessage= "You can import an alert list." />
+                                <FormattedMessage id= "wizard.importLists" defaultMessage= "You can import a list." />
                             </span>
                             <span>
                                 <FormattedMessage id="wizard.documentationlist"
-                                                  defaultMessage= "Read more about Wizard alert lists in the documentation." />
+                                                  defaultMessage= "Read more about Wizard lists in the documentation." />
                             </span>
                             <span>
                                 <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
-                                    <Button bsStyle="info"><FormattedMessage id= "wizard.backlist" defaultMessage= "Back to alert lists" /></Button>
+                                    <Button bsStyle="info"><FormattedMessage id= "wizard.backlist" defaultMessage= "Back to lists" /></Button>
                                 </LinkContainer>
                                 &nbsp;
                             </span>
@@ -108,13 +108,13 @@ const ImportListPage = createReactClass({
                                     <div className="form-group">
                                         <Col sm={2}>
                                             <label className="control-label" htmlFor="name">
-                                                <FormattedMessage id ="wizard.alertsList" defaultMessage="Alert lists" />
+                                                <FormattedMessage id ="wizard.alertsList" defaultMessage="Lists" />
                                             </label>
                                         </Col>
                                         <Col sm={10}>
                                             {this.isEmpty(this.state.alertLists) ?
                                                 <span className="help-block help-standalone">
-                                                    <FormattedMessage id ="wizard.noAlertListsToExport" defaultMessage="There is no alert list to import." />
+                                                    <FormattedMessage id ="wizard.noAlertListsToExport" defaultMessage="There is no list to import." />
                                                 </span>
                                                 :
                                                 <span>
@@ -129,7 +129,7 @@ const ImportListPage = createReactClass({
                                     <div className="form-group">
                                         <Col smOffset={2} sm={10}>
                                             <Button bsStyle="success" type="submit">
-                                                <FormattedMessage id ="wizard.applyAlertLists" defaultMessage="Apply alert lists" />
+                                                <FormattedMessage id ="wizard.applyLists" defaultMessage="Apply lists" />
                                             </Button>
                                         </Col>
                                     </div>

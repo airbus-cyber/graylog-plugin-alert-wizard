@@ -1,5 +1,6 @@
 package com.airbus_cyber_security.graylog.alert.rest.models.requests;
 
+import com.airbus_cyber_security.graylog.alert.AlertRuleStreamImpl;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -18,7 +19,6 @@ public abstract class CloneAlertRuleRequest {
     @JsonProperty("description")
     @Nullable
     public abstract String getDescription();
-
 
     @JsonCreator    
     public static CloneAlertRuleRequest create(@JsonProperty("title") String title,

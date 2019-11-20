@@ -55,7 +55,7 @@ import javax.ws.rs.core.Response;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
-@Api(value = "Wizard/Lists", description = "Management of Wizard alerts lists.")
+@Api(value = "Wizard/Lists", description = "Management of Wizard lists.")
 @Path("/lists")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -129,12 +129,12 @@ public class AlertListResource extends RestResource implements PluginRestResourc
                 try {
                     this.delete(listTitle);
                 } catch (MongoException | UnsupportedEncodingException e) {
-                    LOG.error("Failed to replace alert list");
+                    LOG.error("Failed to replace list");
                     throw new BadRequestException("Failed to replace alert list.");
                 }
             }else{
-                LOG.error("Failed to create alert list : Alert list title already exist");
-                throw new BadRequestException("Failed to create alert list : Alert list title already exist.");
+                LOG.error("Failed to create alert list : list title already exist");
+                throw new BadRequestException("Failed to create list : list title already exist.");
             }
         }
         return listTitle;
@@ -254,7 +254,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
     @POST
     @Path("/export")
     @Timed
-    @ApiOperation(value = "Export alert lists")
+    @ApiOperation(value = "Export lists")
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_READ)
     @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_READ)
@@ -291,12 +291,12 @@ public class AlertListResource extends RestResource implements PluginRestResourc
 
         for (ExportAlertList alertList : request) {
             if(!alertListService.isValidImportRequest(alertList)){
-                LOG.error("Invalid alert list:" + alertList.getTitle() );
+                LOG.error("Invalid list:" + alertList.getTitle() );
             }else {
                 try {
                     importAlertList(alertList);
                 } catch (Exception e) {
-                    LOG.error("Cannot create alert "+ alertList.getTitle() + ": ", e.getMessage());
+                    LOG.error("Cannot create list "+ alertList.getTitle() + ": ", e.getMessage());
                     responses = Response.serverError().build();
                 }
             }

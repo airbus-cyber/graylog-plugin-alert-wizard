@@ -60,7 +60,7 @@ const AlertListForm = createReactClass({
     render() {
         return (
             <BootstrapModalForm ref="modal"
-                                title={<FormattedMessage id= "wizard.cloneAlertList" defaultMessage= 'Cloning Alert List "{title}"' values={{title: this.state.origTitle }} />}
+                                title={<FormattedMessage id= "wizard.cloneList" defaultMessage= 'Cloning List "{title}"' values={{title: this.state.origTitle }} />}
                                 onSubmitForm={this._onSubmit}
                                 cancelButtonText={<FormattedMessage id= "wizard.cancel" defaultMessage= "Cancel" />}
                                 submitButtonText={<FormattedMessage id= "wizard.save" defaultMessage= "Save" />}>

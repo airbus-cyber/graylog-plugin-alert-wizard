@@ -72,19 +72,19 @@ const ExportListPage = createReactClass({
 
         return (
             <IntlProvider locale={language} messages={messages[language]}>
-                <DocumentTitle title="Export alert list">
+                <DocumentTitle title="Export list">
                     <div>
-                        <PageHeader title={<FormattedMessage id= "wizard.exportWizardAlertList" defaultMessage= "Wizard: Export alert lists" />}>
+                        <PageHeader title={<FormattedMessage id= "wizard.exportWizardList" defaultMessage= "Wizard: Export lists" />}>
                             <span>
-                                <FormattedMessage id= "wizard.exportAlertList" defaultMessage= "You can export an alert list." />
+                                <FormattedMessage id= "wizard.exportAlertList" defaultMessage= "You can export a list." />
                             </span>
                             <span>
                                 <FormattedMessage id="wizard.documentationlist"
-                                                  defaultMessage= "Read more about Wizard alert lists in the documentation." />
+                                                  defaultMessage= "Read more about Wizard lists in the documentation." />
                             </span>
                             <span>
                                 <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
-                                    <Button bsStyle="info"><FormattedMessage id= "wizard.backlist" defaultMessage= "Back to alert lists" /></Button>
+                                    <Button bsStyle="info"><FormattedMessage id= "wizard.backlist" defaultMessage= "Back to lists" /></Button>
                                 </LinkContainer>
                                 &nbsp;
                             </span>
@@ -95,13 +95,13 @@ const ExportListPage = createReactClass({
                                     <div className="form-group">
                                         <Col sm={2}>
                                             <label className="control-label" htmlFor="name">
-                                                <FormattedMessage id ="wizard.alertsLists" defaultMessage="Alert lists" />
+                                                <FormattedMessage id ="wizard.alertsLists" defaultMessage="Lists" />
                                             </label>
                                         </Col>
                                         <Col sm={10}>
                                             {this.isEmpty(this.state.alertLists) ?
                                                 <span className="help-block help-standalone">
-                                                    <FormattedMessage id ="wizard.noAlertListsToExport" defaultMessage="There is no alert lists to export." />
+                                                    <FormattedMessage id ="wizard.noListsToExport" defaultMessage="There is no lists to export." />
                                                 </span>
                                                 :
                                                 <span>

@@ -69,19 +69,19 @@ const NewAlertListPage = createReactClass({
 
         return (
             <IntlProvider locale={language} messages={messages[language]}>
-                <DocumentTitle title="New alert list">
+                <DocumentTitle title="New list">
                     <div>
-                        <PageHeader title={<FormattedMessage id= "wizard.newAlertList" defaultMessage= "Wizard: New alert list" />}>
+                        <PageHeader title={<FormattedMessage id= "wizard.newList" defaultMessage= "Wizard: New list" />}>
                         <span>
-                            <FormattedMessage id= "wizard.definelist" defaultMessage= "You can define an alert list." />
+                            <FormattedMessage id= "wizard.definelist" defaultMessage= "You can define a list." />
                         </span>
                             <span>
                             <FormattedMessage id="wizard.documentationlist"
-                                              defaultMessage= "Read more about Wizard alert list in the documentation." />
+                                              defaultMessage= "Read more about Wizard list in the documentation." />
                         </span>
                             <span>
                             <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
-                                <Button bsStyle="info"><FormattedMessage id= "wizard.backlist" defaultMessage= "Back to alert lists" /></Button>
+                                <Button bsStyle="info"><FormattedMessage id= "wizard.backlist" defaultMessage= "Back to lists" /></Button>
                             </LinkContainer>
                                 &nbsp;
                         </span>

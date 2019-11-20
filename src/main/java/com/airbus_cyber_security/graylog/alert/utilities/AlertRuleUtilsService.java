@@ -4,27 +4,54 @@ import com.airbus_cyber_security.graylog.alert.*;
 import com.airbus_cyber_security.graylog.alert.rest.models.requests.AlertRuleRequest;
 import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetDataAlertRule;
 import com.airbus_cyber_security.graylog.config.LoggingAlertConfig;
+import com.airbus_cyber_security.graylog.list.utilities.AlertListUtilsService;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import org.bson.types.ObjectId;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.graylog.plugins.pipelineprocessor.db.PipelineDao;
+import org.graylog.plugins.pipelineprocessor.db.PipelineService;
+import org.graylog.plugins.pipelineprocessor.db.RuleDao;
+import org.graylog.plugins.pipelineprocessor.db.RuleService;
+import org.graylog.plugins.pipelineprocessor.parser.PipelineRuleParser;
 import org.graylog2.alarmcallbacks.AlarmCallbackConfiguration;
 import org.graylog2.alarmcallbacks.AlarmCallbackConfigurationImpl;
 import org.graylog2.alarmcallbacks.AlarmCallbackConfigurationService;
 import org.graylog2.alarmcallbacks.AlarmCallbackFactory;
 import org.graylog2.alerts.Alert;
 import org.graylog2.alerts.AlertService;
+import org.graylog2.configuration.HttpConfiguration;
 import org.graylog2.database.NotFoundException;
 import org.graylog2.events.ClusterEventBus;
+import org.graylog2.lookup.LookupDefaultMultiValue;
+import org.graylog2.lookup.LookupDefaultSingleValue;
+import org.graylog2.lookup.LookupDefaultValue;
+import org.graylog2.lookup.LookupTable;
+import org.graylog2.lookup.adapters.HTTPJSONPathDataAdapter;
+import org.graylog2.lookup.caches.NullCache;
+import org.graylog2.lookup.db.DBCacheService;
+import org.graylog2.lookup.db.DBDataAdapterService;
+import org.graylog2.lookup.db.DBLookupTableService;
+import org.graylog2.lookup.dto.CacheDto;
+import org.graylog2.lookup.dto.DataAdapterDto;
+import org.graylog2.lookup.dto.LookupTableDto;
 import org.graylog2.plugin.Tools;
 import org.graylog2.plugin.alarms.AlertCondition;
 import org.graylog2.plugin.alarms.callbacks.AlarmCallbackConfigurationException;
 import org.graylog2.plugin.cluster.ClusterConfigService;
 import org.graylog2.plugin.configuration.ConfigurationException;
 import org.graylog2.plugin.database.ValidationException;
+import org.graylog2.plugin.lookup.LookupCache;
+import org.graylog2.plugin.lookup.LookupDataAdapter;
+import org.graylog2.plugin.lookup.LookupDataAdapterConfiguration;
 import org.graylog2.plugin.streams.Stream;
 import org.graylog2.plugin.streams.StreamRule;
 import org.graylog2.rest.models.alarmcallbacks.requests.CreateAlarmCallbackRequest;
 import org.graylog2.rest.models.streams.alerts.requests.CreateConditionRequest;
+import org.graylog2.rest.models.system.lookup.DataAdapterApi;
+import org.graylog2.rest.models.system.lookup.LookupTableApi;
 import org.graylog2.rest.resources.streams.requests.CreateStreamRequest;
+import org.graylog2.rest.resources.system.lookup.LookupTableResource;
 import org.graylog2.streams.StreamImpl;
 import org.graylog2.streams.StreamRuleImpl;
 import org.graylog2.streams.StreamRuleService;
@@ -32,14 +59,14 @@ import org.graylog2.streams.StreamService;
 import org.graylog2.streams.events.StreamDeletedEvent;
 import org.graylog2.streams.events.StreamsChangedEvent;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
+import javax.validation.constraints.NotEmpty;
 import javax.ws.rs.BadRequestException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AlertRuleUtilsService {
 
@@ -48,6 +75,8 @@ public class AlertRuleUtilsService {
     private static final String ERROR_ALARM_CONDITION_CONFIGURATION = "Invalid alarm Condition configuration.";
     public static final String ERROR_ALARM_CALLBACK_CONFIGURATION = "Invalid alarm callback configuration.";
     private static final String ERROR_ALARM_CALLBACK_TYPE = "Invalid alarm callback type.";
+
+    private static final Logger log = LoggerFactory.getLogger(AlertListUtilsService.class);
 
     private final AlertRuleService alertRuleService;
     private final StreamService streamService;
@@ -59,6 +88,13 @@ public class AlertRuleUtilsService {
     private final ClusterConfigService clusterConfigService;
     private final String indexSetID;
     private final AlertRuleUtils alertRuleUtils;
+    private final RuleService ruleService;
+    private final PipelineRuleParser pipelineRuleParser;
+    private final PipelineService pipelineService;
+    private final DBDataAdapterService dbDataAdapterService;
+    private final HttpConfiguration httpConfiguration;
+    private final DBCacheService dbCacheService;
+    private final DBLookupTableService dbTableService;
 
     public AlertRuleUtilsService(AlertRuleService alertRuleService,
                                  StreamService streamService,
@@ -69,6 +105,13 @@ public class AlertRuleUtilsService {
                                  AlarmCallbackConfigurationService alarmCallbackConfigurationService,
                                  AlarmCallbackFactory alarmCallbackFactory,
                                  ClusterConfigService clusterConfigService,
+                                 RuleService ruleService,
+                                 PipelineRuleParser pipelineRuleParser,
+                                 PipelineService pipelineService,
+                                 DBDataAdapterService dbDataAdapterService,
+                                 HttpConfiguration httpConfiguration,
+                                 DBCacheService dbCacheService,
+                                 DBLookupTableService dbTableService,
                                  AlertRuleUtils alertRuleUtils) {
         this.alertRuleService = alertRuleService;
         this.streamService = streamService;
@@ -79,6 +122,13 @@ public class AlertRuleUtilsService {
         this.alarmCallbackFactory = alarmCallbackFactory;
         this.clusterConfigService = clusterConfigService;
         this.indexSetID = indexSetID;
+        this.ruleService = ruleService;
+        this.pipelineRuleParser = pipelineRuleParser;
+        this.pipelineService = pipelineService;
+        this.dbDataAdapterService = dbDataAdapterService;
+        this.httpConfiguration = httpConfiguration;
+        this.dbCacheService = dbCacheService;
+        this.dbTableService = dbTableService;
         this.alertRuleUtils = alertRuleUtils;
     }
 
@@ -94,25 +144,115 @@ public class AlertRuleUtilsService {
         return alerts.size();
     }
 
-    private void createStreamRule(List<FieldRuleImpl> listfieldRule, String streamID) throws ValidationException {
+    public void createStreamRule(List<FieldRuleImpl> listfieldRule, String streamID) throws ValidationException {
         for (FieldRule fieldRule:listfieldRule) {
-            final Map<String, Object> streamRuleData = Maps.newHashMapWithExpectedSize(6);
+            if (fieldRule.getType() != -7 || fieldRule.getType() != 7) {
+                final Map<String, Object> streamRuleData = Maps.newHashMapWithExpectedSize(6);
 
-            if(fieldRule.getType() >= 0){
-                streamRuleData.put(StreamRuleImpl.FIELD_TYPE, fieldRule.getType());
-                streamRuleData.put(StreamRuleImpl.FIELD_INVERTED, false);
-            }else{
-                streamRuleData.put(StreamRuleImpl.FIELD_TYPE, Math.abs(fieldRule.getType()));
-                streamRuleData.put(StreamRuleImpl.FIELD_INVERTED, true);
+                if (fieldRule.getType() >= 0) {
+                    streamRuleData.put(StreamRuleImpl.FIELD_TYPE, fieldRule.getType());
+                    streamRuleData.put(StreamRuleImpl.FIELD_INVERTED, false);
+                } else {
+                    streamRuleData.put(StreamRuleImpl.FIELD_TYPE, Math.abs(fieldRule.getType()));
+                    streamRuleData.put(StreamRuleImpl.FIELD_INVERTED, true);
+                }
+                streamRuleData.put(StreamRuleImpl.FIELD_FIELD, fieldRule.getField());
+                streamRuleData.put(StreamRuleImpl.FIELD_VALUE, fieldRule.getValue());
+                streamRuleData.put(StreamRuleImpl.FIELD_STREAM_ID, new ObjectId(streamID));
+                streamRuleData.put(StreamRuleImpl.FIELD_DESCRIPTION, AlertRuleUtils.COMMENT_ALERT_WIZARD);
+
+                final StreamRule newStreamRule = streamRuleService.create(streamRuleData);
+                streamRuleService.save(newStreamRule);
             }
-            streamRuleData.put(StreamRuleImpl.FIELD_FIELD, fieldRule.getField());
-            streamRuleData.put(StreamRuleImpl.FIELD_VALUE, fieldRule.getValue());
-            streamRuleData.put(StreamRuleImpl.FIELD_STREAM_ID, new ObjectId(streamID));
-            streamRuleData.put(StreamRuleImpl.FIELD_DESCRIPTION, AlertRuleUtils.COMMENT_ALERT_WIZARD);
-
-            final StreamRule newStreamRule = streamRuleService.create(streamRuleData);
-            streamRuleService.save(newStreamRule);
         }
+    }
+
+    public String createStringField(FieldRule fieldRule, String condition) {
+
+        String fields = "  (has_field(\"" + fieldRule.getField() + "\")" + condition +
+                "contains(to_string(lookup_value(\"wizard_lookup\", \"" + fieldRule.getValue() + "\", \"\")), to_string($message." +
+                fieldRule.getField() + "), true))\n";
+
+        return fields;
+    }
+
+    public String createRuleSource(String alertTitle, List<FieldRuleImpl> listfieldRule, Stream stream) throws ValidationException{
+        StringBuilder fields = new StringBuilder();
+        for (FieldRule fieldRule : listfieldRule) {
+            if (fieldRule.getType() == 7) {
+                fields.append(createStringField(fieldRule, " AND "));
+            } else if (fieldRule.getType() == -7) {
+                fields.append(createStringField(fieldRule, " NOT "));
+            }
+        }
+
+        String ruleSource = "rule \"function " + alertTitle + "\"\nwhen\n" + fields + "\nthen\n  route_to_stream(\"" + alertTitle + "\", \"" +
+                stream.getId() + "\");\nend";
+
+        return ruleSource;
+    }
+
+    public RuleDao createPipelineRule(String alertTitle, List<FieldRuleImpl> listfieldRule, Stream stream, String ruleID) throws ValidationException {
+
+        final DateTime now = DateTime.now(DateTimeZone.UTC);
+
+        if (ruleID == null) {
+            ruleID = RandomStringUtils.random(24, "0123456789abcdef");
+        }
+        final RuleDao cr = RuleDao.create(ruleID, alertTitle, AlertRuleUtils.COMMENT_ALERT_WIZARD, createRuleSource(alertTitle, listfieldRule, stream), now, now);
+
+        final RuleDao save = ruleService.save(cr);
+
+        log.debug("Created new rule {}", save);
+        return cr;
+    }
+
+    public String createPipelineStringSource(String alertTitle) {
+
+        String pipelineSource = "pipeline \""+alertTitle+"\"\nstage 0 match either\nrule \""+alertTitle+"\"\nend";
+
+        return pipelineSource;
+    }
+
+    public PipelineDao createPipeline(String alertTitle, String pipelineID) throws ValidationException {
+
+        final DateTime now = DateTime.now(DateTimeZone.UTC);
+
+        if (pipelineID == null) {
+            pipelineID = RandomStringUtils.random(24, "0123456789abcdef");
+        }
+        final PipelineDao cr = PipelineDao.create(pipelineID, alertTitle, AlertRuleUtils.COMMENT_ALERT_WIZARD, createPipelineStringSource(alertTitle), now, now);
+
+         final PipelineDao save = pipelineService.save(cr);
+
+        log.debug("Created new pipeline {}", save);
+        return cr;
+    }
+
+    public void updatePipeline(Stream stream, List<FieldRuleImpl> listfieldRule, PipelineDao pipeline, String alertTitle, RuleDao rule) throws ValidationException {
+
+        pipelineService.delete(pipeline.id());
+        ruleService.delete(rule.id());
+
+        createPipeline(alertTitle, pipeline.id());
+        createPipelineRule(alertTitle, listfieldRule, stream, rule.id());
+    }
+
+    public void deletePipeline(PipelineDao pipeline, RuleDao rule) {
+
+        pipelineService.delete(pipeline.id());
+        ruleService.delete(rule.id());
+    }
+
+    public RuleDao clonePipelineRule(Stream sourceStream, String newTitle) throws NotFoundException, ValidationException {
+
+        List<FieldRuleImpl> listFieldRule = new ArrayList<FieldRuleImpl>();
+        final List<StreamRule> sourceStreamRules = streamRuleService.loadForStream(sourceStream);
+        for (StreamRule streamRule : sourceStreamRules) {
+            listFieldRule.add(FieldRuleImpl.create(streamRule.getId(), streamRule.getField(), streamRule.getType().toInteger(), streamRule.getValue()));
+        }
+
+        return createPipelineRule(newTitle, listFieldRule, sourceStream, null);
     }
 
     public Stream createStream(AlertRuleStream alertRuleStream, String title, String userName) throws ValidationException {
@@ -412,4 +552,93 @@ public class AlertRuleUtilsService {
         }
     }
 
+    public void createUniqueLookup(CacheDto cache, DataAdapterDto adapter) {
+
+        final Collection<LookupTableDto> tables = dbTableService.findAll();
+        for (LookupTableDto lookupTableDto:tables) {
+            if (lookupTableDto.title().equals("wizard lookup")) {
+                return;
+            }
+        }
+
+        LookupTableDto dto = LookupTableDto.builder()
+                .title("wizard lookup")
+                .description("Generated by the wizard")
+                .name("wizard_lookup")
+                .cacheId(cache.id())
+                .dataAdapterId(adapter.id())
+                .defaultSingleValue("")
+                .defaultSingleValueType(LookupDefaultSingleValue.Type.OBJECT)
+                .defaultMultiValue("")
+                .defaultMultiValueType(LookupDefaultMultiValue.Type.OBJECT)
+                .build();
+
+        LookupTableDto saved = dbTableService.save(dto);
+    }
+
+    public CacheDto createUniqueCache() {
+
+        final Collection<CacheDto> caches = dbCacheService.findAll();
+        for (CacheDto cacheDto:caches) {
+            if(cacheDto.title().equals("wizard cache")){
+                return null;
+            }
+        }
+
+        final String cacheID = RandomStringUtils.random(24, "0123456789abcdef");
+
+        NullCache.Config config = NullCache.Config.builder()
+                .type("none")
+                .build();
+
+        CacheDto dto = CacheDto.builder()
+                .id(cacheID)
+                .name("wizard-cache")
+                .description("Generated by the wizard")
+                .title("wizard cache")
+                .config(config)
+                .build();
+
+        CacheDto saved = dbCacheService.save(dto);
+
+        return saved;
+    }
+
+    public DataAdapterDto createUniqueDataAdapter(String userName) {
+
+        final Collection<DataAdapterDto> adapters = dbDataAdapterService.findAll();
+        for (DataAdapterDto dataAdapters:adapters) {
+            if (dataAdapters.title().equals("Wizard data adapter")){
+                return null;
+            }
+        }
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Authorization", "Basic user:password(base64)");
+
+        final String adapterID = RandomStringUtils.random(24, "0123456789abcdef");
+        final String url = httpConfiguration.getHttpPublishUri().resolve(HttpConfiguration.PATH_API).toString() + "plugins/com.airbus_cyber_security.graylog/lists/${key}";
+
+        HTTPJSONPathDataAdapter.Config config = HTTPJSONPathDataAdapter.Config.builder()
+                .type("")
+                .url(url)
+                .singleValueJSONPath("$.lists.lists")
+                .multiValueJSONPath("$.lists.lists")
+                .userAgent(userName)
+                .headers(headers)
+                .build();
+
+        DataAdapterDto dto = DataAdapterDto.builder()
+                .id(adapterID)
+                .title("Wizard data adapter")
+                .description("generated by the wizard")
+                .name("wizard-data-adapter")
+                .contentPack(null)
+                .config(config)
+                .build();
+
+        DataAdapterDto saved = dbDataAdapterService.save(dto);
+
+        return saved;
+    }
 }

@@ -250,7 +250,9 @@ const CreateAlertInput = createReactClass({
                     rule.type === 2 || rule.type === -2 ||
                     rule.type === 3 || rule.type === -3 ||
                     rule.type === 4 || rule.type === -4 ||
-                    rule.type === 6 || rule.type === -6))) {
+                    rule.type === 6 || rule.type === -6) &&
+                    (rule.type === 7 || rule.type === -7) ||
+                rule.field !== '' && rule.value !== '')) {
                 return false;
             }
         return true;

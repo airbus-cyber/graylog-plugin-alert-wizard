@@ -2,6 +2,8 @@ package com.airbus_cyber_security.graylog.alert;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
+
+import org.graylog.plugins.pipelineprocessor.rest.StageSource;
 import org.graylog2.database.CollectionName;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -10,6 +12,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import com.google.auto.value.AutoValue;
 import org.joda.time.DateTime;
+
+import java.util.List;
 
 @AutoValue
 @JsonAutoDetect
@@ -67,7 +71,27 @@ public abstract class AlertRuleImpl implements AlertRule {
     @Override
     @Nullable
     public abstract String getSecondStreamID();
-    
+
+    @JsonProperty("pipeline")
+    @Override
+    @Nullable
+    public abstract String getPipelineID();
+
+    @JsonProperty("pipeline_rule")
+    @Override
+    @Nullable
+    public abstract List<String> getPipelineRuleID();
+
+    @JsonProperty("second pipeline")
+    @Override
+    @Nullable
+    public abstract String getSecondPipelineID();
+
+    @JsonProperty("second pipeline_rule")
+    @Override
+    @Nullable
+    public abstract List<String> getSecondPipelineRuleID();
+
 	@JsonCreator
     public static AlertRuleImpl create(@JsonProperty("_id") String objectId,
                                        @JsonProperty("title") String title,
@@ -79,9 +103,13 @@ public abstract class AlertRuleImpl implements AlertRule {
                                        @JsonProperty("last_modified") DateTime lastModified,
                                        @JsonProperty("description") String description,
                                        @JsonProperty("condition_type") String conditionType,
-                                       @JsonProperty("stream2") String streamID2){
+                                       @JsonProperty("stream2") String streamID2,
+                                       @JsonProperty("pipeline") String pipelineID,
+                                       @JsonProperty("pipeline_rule") List<String> pipelineRuleID,
+                                        @JsonProperty("second pipeline") String pipelineID2,
+                                       @JsonProperty("second pipeline_rule") List<String> pipelineRuleID2){
         return new AutoValue_AlertRuleImpl(title, streamID, conditionID, notificationID, createdAt, creatorUserId,
-                lastModified, description, conditionType, streamID2);
+                lastModified, description, conditionType, streamID2, pipelineID, pipelineRuleID, pipelineID2, pipelineRuleID2);
     }
 	
 	public static AlertRuleImpl create(
@@ -94,8 +122,12 @@ public abstract class AlertRuleImpl implements AlertRule {
             DateTime lastModified,
             String description,
             String conditionType,
-            String streamID2) {
+            String streamID2,
+            String pipelineID,
+            List<String> pipelineRuleID,
+            String pipelineID2,
+            List<String> pipelineRuleID2) {
 		return new AutoValue_AlertRuleImpl(title, streamID, conditionID, notificationID, createdAt, creatorUserId,
-                lastModified, description, conditionType,streamID2);
+                lastModified, description, conditionType,streamID2, pipelineID, pipelineRuleID, pipelineID2, pipelineRuleID2);
 	}
 }
