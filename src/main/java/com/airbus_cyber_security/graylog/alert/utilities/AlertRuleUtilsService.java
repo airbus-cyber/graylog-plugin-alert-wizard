@@ -251,7 +251,11 @@ public class AlertRuleUtilsService {
         List<FieldRuleImpl> listFieldRule = new ArrayList<FieldRuleImpl>();
         final List<StreamRule> sourceStreamRules = streamRuleService.loadForStream(sourceStream);
         for (StreamRule streamRule : sourceStreamRules) {
-            listFieldRule.add(FieldRuleImpl.create(streamRule.getId(), streamRule.getField(), streamRule.getType().toInteger(), streamRule.getValue()));
+            if(streamRule.getInverted()){
+                listFieldRule.add(FieldRuleImpl.create(streamRule.getId(), streamRule.getField(), -streamRule.getType().toInteger(), streamRule.getValue()));
+            }else{
+                listFieldRule.add(FieldRuleImpl.create(streamRule.getId(), streamRule.getField(), streamRule.getType().toInteger(), streamRule.getValue()));
+            }
         }
 
         return createPipelineRule(newTitle, listFieldRule, sourceStream, null);
