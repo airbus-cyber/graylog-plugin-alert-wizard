@@ -290,14 +290,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         CacheDto cache = alertRuleUtilsService.createUniqueCache();
         alertRuleUtilsService.createUniqueLookup(cache, adapter);
 
-/*
-
-        System.out.println("PIPELINERULEIDSIZE === " + pipelineRuleID.size());
-        for (int i=0;i<pipelineRuleID.size();i++) {
-            System.out.println("PIPELINERULEID === " + pipelineRuleID.get(i));
-        }
-*/
-
         // Create second stream.
         String streamID2 = null;
         Stream stream2 = null;

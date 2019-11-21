@@ -12,7 +12,6 @@ import {FormattedMessage} from 'react-intl';
 import {Input} from 'components/bootstrap';
 import AlertListActions from "./AlertListActions";
 import AlertListStore from "./AlertListStore";
-import {confirmAlert} from "react-confirm-alert";
 
 const INIT_LIST = {
     title: '',
@@ -28,11 +27,11 @@ const CreateListFormInput = createReactClass({
     propTypes: {
         list: PropTypes.object,
         create: PropTypes.bool.isRequired,
-        nodes: PropTypes.object,
     },
     contextTypes: {
         intl: PropTypes.object.isRequired,
     },
+
 
     getDefaultProps() {
         return {
@@ -52,13 +51,11 @@ const CreateListFormInput = createReactClass({
             list.title = this.props.default_values.title;
             list.description = this.props.default_values.description;
             list.lists = this.props.default_values.lists;
-
         }
 
         return {
             list: list,
             isModified: false,
-            isValid: false,
             contentComponent: <Spinner/>,
         };
     },
@@ -81,7 +78,8 @@ const CreateListFormInput = createReactClass({
         this.setState({isModified: false});
     },
 
-    onSubmitUploadFile(submitEvent) {
+    // TODO add le bouton pour importer un fichier de listes dans le champ liste
+    /*onSubmitUploadFile(submitEvent) {
         submitEvent.preventDefault();
         if (!this.refs.uploadedFile.files || !this.refs.uploadedFile.files[0]) {
             return;
@@ -93,7 +91,7 @@ const CreateListFormInput = createReactClass({
         };
 
         reader.readAsText(this.refs.uploadedFile.files[0]);
-    },
+    },*/
 
     _updateConfigField(field, value) {
         const update = ObjectUtils.clone(this.state.list);
@@ -121,7 +119,7 @@ const CreateListFormInput = createReactClass({
         if (this.props.create) {
             buttonSave = (
                 <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
-                    <Button onClick={this._save} disabled={this.state.list.title === ''} className="btn btn-md btn-primary">
+                    <Button onClick={this._save} disabled={this.state.list.title === '' || this.state.list.lists === ''} className="btn btn-md btn-primary">
                         <FormattedMessage id="wizard.save" defaultMessage="Save"/>
                     </Button>
                 </LinkContainer>
@@ -151,9 +149,10 @@ const CreateListFormInput = createReactClass({
                 <Row>
                     <Col md={4}>
                         <Input id="title" type="text" required label={<FormattedMessage id ="wizard.title" defaultMessage="Title" />}
-                               onChange={this._onUpdate('title')}                               name="title" />
+                               onChange={this._onUpdate('title')} defaultValue={this.state.list.title} name="title" />
                         <Input id="description" type="text" label={<FormattedMessage id= "wizard.fieldOptionalDescription" defaultMessage= "Description (optional)" />}
                                onChange={this._onUpdate('description')}
+                               defaultValue = {this.state.list.description}
                                name="description"/>
                     </Col>
                 </Row>
@@ -161,13 +160,8 @@ const CreateListFormInput = createReactClass({
                     <Col md={5}>
                     <Input style={{minWidth: 600}} ref="lists" id="lists" name="lists" type="textarea" rows="10"
                            label={<FormattedMessage id ="wizard.fieldListwithexemple" defaultMessage="List (example : 172.10.0.1; 192.168.1.4; ...)" />}
-                           onChange={this._onUpdate('lists')}/>
+                           onChange={this._onUpdate('lists')} defaultValue = {this.state.list.lists}/>
                         {actions}
-                    </Col>
-                    <Col md={3}>
-                        <form onSubmit={this.onSubmitUploadFile} className="upload" encType="multipart/form-data">
-                                <input ref="uploadedFile" type="file" name="bundle" />
-                        </form>
                     </Col>
                 </Row>
             </div>
