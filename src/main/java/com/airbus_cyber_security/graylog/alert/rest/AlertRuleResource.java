@@ -267,7 +267,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         // Create stream.
         Stream stream = alertRuleUtilsService.createStream(request.getStream(), alertTitle, userName);
         RuleDao pipelineRule = alertRuleUtilsService.createPipelineRule(alertTitle, request.getStream().getFieldRules(), stream, null);
-        PipelineDao pipeline = alertRuleUtilsService.createPipeline(alertTitle, null);
+        PipelineDao pipeline = alertRuleUtilsService.createPipeline(alertTitle, null, stream);
         String pipelineID = pipeline.id();
         pipelineRuleID.add(pipelineRule.id());
 
@@ -286,7 +286,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         	streamID2 = stream2.getId();
 
         	RuleDao pipelineRule2 = alertRuleUtilsService.createPipelineRule(alertTitle+"#2", request.getSecondStream().getFieldRules(), stream2, null);
-        	PipelineDao pipeline2 = alertRuleUtilsService.createPipeline(alertTitle+"#2", null);
+        	PipelineDao pipeline2 = alertRuleUtilsService.createPipeline(alertTitle+"#2", null, stream);
         	pipelineID2 = pipeline2.id();
         	pipelineRuleID2.add(pipelineRule2.id());
         }
@@ -445,7 +445,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         //create pipeline
         RuleDao pipelineRule = alertRuleUtilsService.clonePipelineRule(firstStream, alertTitle);
-        PipelineDao pipeline = alertRuleUtilsService.createPipeline(alertTitle, null);
+        PipelineDao pipeline = alertRuleUtilsService.createPipeline(alertTitle, null, firstStream);
         String pipelineID = pipeline.id();
         pipelineRuleID.add(pipelineRule.id());
 
@@ -461,7 +461,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         	secondStreamID = secondStream.getId();
 
             RuleDao pipelineRule2 = alertRuleUtilsService.clonePipelineRule(secondStream, alertTitle+"#2");
-            PipelineDao pipeline2 = alertRuleUtilsService.createPipeline(alertTitle+"#2", null);
+            PipelineDao pipeline2 = alertRuleUtilsService.createPipeline(alertTitle+"#2", null, secondStream);
             pipelineID2 = pipeline2.id();
             pipelineRuleID2.add(pipelineRule2.id());
         }
@@ -579,18 +579,33 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             throws ValidationException, BadRequestException{
         String alertTitle = checkImportPolicyAndGetTitle(alertRule.getTitle());
         String userName = getCurrentUser().getName();
+        List<String> pipelineRuleID = new ArrayList<String>();
+
         // Create stream.
         Stream stream = alertRuleUtilsService.createStream(alertRule.getStream(), alertTitle, userName);
+        RuleDao pipelineRule = alertRuleUtilsService.createPipelineRule(alertTitle, alertRule.getStream().getFieldRules(), stream, null);
+        PipelineDao pipeline = alertRuleUtilsService.createPipeline(alertTitle, null, stream);
+        String pipelineID = pipeline.id();
+        pipelineRuleID.add(pipelineRule.id());
 
-        String pipelineID = null;
-        List<String> pipelineRuleID = null;
+        //Create unique data adapter
+        DataAdapterDto adapter = alertRuleUtilsService.createUniqueDataAdapter(userName);
+        CacheDto cache = alertRuleUtilsService.createUniqueCache();
+        alertRuleUtilsService.createUniqueLookup(cache, adapter);
 
+        List<String> pipelineRuleID2 = new ArrayList<String>();
+        String pipelineID2 = null;
         // Create second stream.
         String streamID2 = null;
         Stream stream2 = null;
         if(alertRule.getConditionType().equals("THEN") || alertRule.getConditionType().equals("AND") || alertRule.getConditionType().equals("OR")) {
             stream2 = alertRuleUtilsService.createStream(alertRule.getSecondStream(), alertTitle+"#2", userName);
             streamID2 = stream2.getId();
+
+            RuleDao pipelineRule2 = alertRuleUtilsService.createPipelineRule(alertTitle+"#2", alertRule.getSecondStream().getFieldRules(), stream2, null);
+            PipelineDao pipeline2 = alertRuleUtilsService.createPipeline(alertTitle+"#2", null, stream);
+            pipelineID2 = pipeline2.id();
+            pipelineRuleID2.add(pipelineRule2.id());
         }
 
         //Create Condition
@@ -629,8 +644,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 streamID2,
                 pipelineID,
                 pipelineRuleID,
-                null,
-                null));
+                pipelineID2,
+                pipelineRuleID2));
     }
 
     @PUT

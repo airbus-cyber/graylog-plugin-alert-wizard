@@ -170,15 +170,24 @@ public class AlertRuleUtilsService {
 
     public String createRuleSource(String alertTitle, List<FieldRuleImpl> listfieldRule, Stream stream) throws ValidationException{
         StringBuilder fields = new StringBuilder();
+
+        if (listfieldRule.get(0).getType() == 7) {
+            fields.append(createStringField(listfieldRule.get(0), " AND "));
+        } else if (listfieldRule.get(0).getType() == -7) {
+            fields.append(createStringField(listfieldRule.get(0), " AND NOT "));
+        }
+        listfieldRule.remove(0);
         for (FieldRule fieldRule : listfieldRule) {
+            fields.append("  ");
+            fields.append(stream.getMatchingType());
             if (fieldRule.getType() == 7) {
                 fields.append(createStringField(fieldRule, " AND "));
             } else if (fieldRule.getType() == -7) {
-                fields.append(createStringField(fieldRule, " NOT "));
+                fields.append(createStringField(fieldRule, " AND NOT "));
             }
         }
 
-        String ruleSource = "rule \"function " + alertTitle + "\"\nwhen\n" + fields + "\nthen\n  route_to_stream(\"" + alertTitle + "\", \"" +
+        String ruleSource = "rule \"function " + alertTitle + "\"\nwhen\n" + fields + "then\n  route_to_stream(\"" + alertTitle + "\", \"" +
                 stream.getId() + "\");\nend";
 
         return ruleSource;
@@ -206,8 +215,9 @@ public class AlertRuleUtilsService {
         return pipelineSource;
     }
 
-    public PipelineDao createPipeline(String alertTitle, String pipelineID) throws ValidationException {
+    public PipelineDao createPipeline(String alertTitle, String pipelineID, Stream stream) throws ValidationException {
 
+        Set<String> pipelineIds = null;
         final DateTime now = DateTime.now(DateTimeZone.UTC);
 
         if (pipelineID == null) {
@@ -215,9 +225,9 @@ public class AlertRuleUtilsService {
         }
         final PipelineDao cr = PipelineDao.create(pipelineID, alertTitle, AlertRuleUtils.COMMENT_ALERT_WIZARD, createPipelineStringSource(alertTitle), now, now);
 
-         final PipelineDao save = pipelineService.save(cr);
+        final PipelineDao save = pipelineService.save(cr);
 
-      //   final PipelineConnections connection = PipelineConnections.create(null, stream.getId(), save.id());
+     //   final PipelineConnections connection = PipelineConnections.create(null, stream.getId(), pipelineIds);
 
         log.debug("Created new pipeline {}", save);
         return save;
@@ -228,7 +238,7 @@ public class AlertRuleUtilsService {
         pipelineService.delete(pipeline.id());
         ruleService.delete(rule.id());
 
-        createPipeline(alertTitle, pipeline.id());
+        createPipeline(alertTitle, pipeline.id(), stream);
         createPipelineRule(alertTitle, listfieldRule, stream, rule.id());
     }
 
