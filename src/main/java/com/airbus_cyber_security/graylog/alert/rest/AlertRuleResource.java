@@ -44,7 +44,6 @@ import org.graylog2.configuration.HttpConfiguration;
 import org.graylog2.database.NotFoundException;
 import org.graylog2.events.ClusterEventBus;
 import org.graylog2.indexer.IndexSetRegistry;
-import org.graylog2.lookup.LookupTableService;
 import org.graylog2.lookup.db.DBCacheService;
 import org.graylog2.lookup.db.DBDataAdapterService;
 import org.graylog2.lookup.db.DBLookupTableService;
@@ -81,7 +80,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.channels.Pipe;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -96,8 +94,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 	private static final String ENCODING = "UTF-8";
     private static final String TITLE = "title";
 
-    private final String cacheID = new String();
-
     private final AlertRuleService alertRuleService;
     private final StreamService streamService;
     private final ClusterEventBus clusterEventBus;
@@ -107,12 +103,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private final AlertRuleExporter alertRuleExporter;
     private final AlertRuleUtilsService alertRuleUtilsService;
     private final RuleService ruleService;
-    private final PipelineRuleParser pipelineRuleParser;
     private final PipelineService pipelineService;
-    private final DBDataAdapterService dbDataAdapterService;
-    private final HttpConfiguration httpConfiguration;
-    private final DBCacheService dbCacheService;
-    private final DBLookupTableService dbTableService;
 
     @Inject
     public AlertRuleResource(AlertRuleService alertRuleService,
@@ -137,12 +128,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.alarmCallbackConfigurationService = alarmCallbackConfigurationService;
         this.clusterConfigService = clusterConfigService;
         this.ruleService = ruleService;
-        this.pipelineRuleParser = pipelineRuleParser;
         this.pipelineService = pipelineService;
-        this.dbDataAdapterService = dbDataAdapterService;
-        this.httpConfiguration = httpConfiguration;
-        this.dbCacheService = dbCacheService;
-        this.dbTableService = dbTableService;
         this.alertRuleUtils = new AlertRuleUtils();
         this.alertRuleUtilsService = new AlertRuleUtilsService(alertRuleService, streamService, streamRuleService, clusterEventBus,
                 indexSetRegistry.getDefault().getConfig().id(), alertService, alarmCallbackConfigurationService,
@@ -371,12 +357,19 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         // Update stream 2.
         Stream stream2 = alertRuleUtilsService.createOrUpdateSecondStream(request.getSecondStream(), alertTitle, userName, request.getConditionType(), oldAlert);
         String streamID2 = null;
+        RuleDao rule2 = null;
+        PipelineDao pipeline2 = null;
         if(stream2 != null){
             streamID2 = stream2.getId();
 
-            RuleDao rule2 = ruleService.load(oldAlert.getSecondPipelineRuleID().get(0));
-            PipelineDao pipeline2 = pipelineService.load(oldAlert.getSecondPipelineID());
+            rule2 = ruleService.load(oldAlert.getSecondPipelineRuleID().get(0));
+            pipeline2 = pipelineService.load(oldAlert.getSecondPipelineID());
             alertRuleUtilsService.updatePipeline(stream2, request.getSecondStream().getFieldRules(), pipeline2, alertTitle+"#2", rule2);
+            
+        } else if (oldAlert.getSecondStreamID() != null) {
+            rule2 = ruleService.load(oldAlert.getSecondPipelineRuleID().get(0));
+            pipeline2 = pipelineService.load(oldAlert.getSecondPipelineID());
+            alertRuleUtilsService.deletePipeline(pipeline2, rule2);
         }
 
         //Update Condition   

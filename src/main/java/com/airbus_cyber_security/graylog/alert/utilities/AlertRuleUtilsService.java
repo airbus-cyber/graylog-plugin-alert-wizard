@@ -5,7 +5,6 @@ import com.airbus_cyber_security.graylog.alert.rest.models.requests.AlertRuleReq
 import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetDataAlertRule;
 import com.airbus_cyber_security.graylog.config.LoggingAlertConfig;
 import com.airbus_cyber_security.graylog.list.utilities.AlertListUtilsService;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import org.bson.types.ObjectId;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -14,6 +13,7 @@ import org.graylog.plugins.pipelineprocessor.db.PipelineService;
 import org.graylog.plugins.pipelineprocessor.db.RuleDao;
 import org.graylog.plugins.pipelineprocessor.db.RuleService;
 import org.graylog.plugins.pipelineprocessor.parser.PipelineRuleParser;
+import org.graylog.plugins.pipelineprocessor.rest.PipelineConnections;
 import org.graylog2.alarmcallbacks.AlarmCallbackConfiguration;
 import org.graylog2.alarmcallbacks.AlarmCallbackConfigurationImpl;
 import org.graylog2.alarmcallbacks.AlarmCallbackConfigurationService;
@@ -25,8 +25,6 @@ import org.graylog2.database.NotFoundException;
 import org.graylog2.events.ClusterEventBus;
 import org.graylog2.lookup.LookupDefaultMultiValue;
 import org.graylog2.lookup.LookupDefaultSingleValue;
-import org.graylog2.lookup.LookupDefaultValue;
-import org.graylog2.lookup.LookupTable;
 import org.graylog2.lookup.adapters.HTTPJSONPathDataAdapter;
 import org.graylog2.lookup.caches.NullCache;
 import org.graylog2.lookup.db.DBCacheService;
@@ -41,17 +39,11 @@ import org.graylog2.plugin.alarms.callbacks.AlarmCallbackConfigurationException;
 import org.graylog2.plugin.cluster.ClusterConfigService;
 import org.graylog2.plugin.configuration.ConfigurationException;
 import org.graylog2.plugin.database.ValidationException;
-import org.graylog2.plugin.lookup.LookupCache;
-import org.graylog2.plugin.lookup.LookupDataAdapter;
-import org.graylog2.plugin.lookup.LookupDataAdapterConfiguration;
 import org.graylog2.plugin.streams.Stream;
 import org.graylog2.plugin.streams.StreamRule;
 import org.graylog2.rest.models.alarmcallbacks.requests.CreateAlarmCallbackRequest;
 import org.graylog2.rest.models.streams.alerts.requests.CreateConditionRequest;
-import org.graylog2.rest.models.system.lookup.DataAdapterApi;
-import org.graylog2.rest.models.system.lookup.LookupTableApi;
 import org.graylog2.rest.resources.streams.requests.CreateStreamRequest;
-import org.graylog2.rest.resources.system.lookup.LookupTableResource;
 import org.graylog2.streams.StreamImpl;
 import org.graylog2.streams.StreamRuleImpl;
 import org.graylog2.streams.StreamRuleService;
@@ -63,8 +55,6 @@ import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotEmpty;
 import javax.ws.rs.BadRequestException;
 import java.util.*;
 
@@ -206,7 +196,7 @@ public class AlertRuleUtilsService {
         final RuleDao save = ruleService.save(cr);
 
         log.debug("Created new rule {}", save);
-        return cr;
+        return save;
     }
 
     public String createPipelineStringSource(String alertTitle) {
@@ -227,8 +217,10 @@ public class AlertRuleUtilsService {
 
          final PipelineDao save = pipelineService.save(cr);
 
+      //   final PipelineConnections connection = PipelineConnections.create(null, stream.getId(), save.id());
+
         log.debug("Created new pipeline {}", save);
-        return cr;
+        return save;
     }
 
     public void updatePipeline(Stream stream, List<FieldRuleImpl> listfieldRule, PipelineDao pipeline, String alertTitle, RuleDao rule) throws ValidationException {
