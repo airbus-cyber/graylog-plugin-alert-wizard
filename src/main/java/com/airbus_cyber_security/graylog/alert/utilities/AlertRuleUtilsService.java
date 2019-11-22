@@ -138,7 +138,7 @@ public class AlertRuleUtilsService {
 
     public void createStreamRule(List<FieldRuleImpl> listfieldRule, String streamID) throws ValidationException {
         for (FieldRule fieldRule:listfieldRule) {
-            if (fieldRule.getType() != -7 || fieldRule.getType() != 7) {
+            if (fieldRule.getType() != -7 && fieldRule.getType() != 7) {
                 final Map<String, Object> streamRuleData = Maps.newHashMapWithExpectedSize(6);
 
                 if (fieldRule.getType() >= 0) {
@@ -227,6 +227,7 @@ public class AlertRuleUtilsService {
 
         final PipelineDao save = pipelineService.save(cr);
 
+        //TODO
      //   final PipelineConnections connection = PipelineConnections.create(null, stream.getId(), pipelineIds);
 
         log.debug("Created new pipeline {}", save);
