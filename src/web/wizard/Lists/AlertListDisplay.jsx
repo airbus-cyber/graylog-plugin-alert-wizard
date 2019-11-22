@@ -199,7 +199,7 @@ const AlertListDisplay = createReactClass({
 
     render () {
 
-        const filterKeys = ['title', 'created_at', 'last_modified', 'creator_user_id'];
+        const filterKeys = ['title', 'created_at', 'last_modified', 'creator_user_id', 'lists'];
         let headers = [this.state.fieldsTitle.title];
         this.props.config.field_order.map((field) => {
             if (field.enabled) {
