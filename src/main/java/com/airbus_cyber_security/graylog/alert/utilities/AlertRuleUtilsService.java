@@ -8,11 +8,7 @@ import com.airbus_cyber_security.graylog.list.utilities.AlertListUtilsService;
 import com.google.common.collect.Maps;
 import org.bson.types.ObjectId;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.graylog.plugins.pipelineprocessor.db.PipelineDao;
-import org.graylog.plugins.pipelineprocessor.db.PipelineService;
-import org.graylog.plugins.pipelineprocessor.db.RuleDao;
-import org.graylog.plugins.pipelineprocessor.db.RuleService;
-import org.graylog.plugins.pipelineprocessor.parser.PipelineRuleParser;
+import org.graylog.plugins.pipelineprocessor.db.*;
 import org.graylog.plugins.pipelineprocessor.rest.PipelineConnections;
 import org.graylog2.alarmcallbacks.AlarmCallbackConfiguration;
 import org.graylog2.alarmcallbacks.AlarmCallbackConfigurationImpl;
@@ -81,12 +77,12 @@ public class AlertRuleUtilsService {
     private final String indexSetID;
     private final AlertRuleUtils alertRuleUtils;
     private final RuleService ruleService;
-    private final PipelineRuleParser pipelineRuleParser;
     private final PipelineService pipelineService;
     private final DBDataAdapterService dbDataAdapterService;
     private final HttpConfiguration httpConfiguration;
     private final DBCacheService dbCacheService;
     private final DBLookupTableService dbTableService;
+    private final PipelineStreamConnectionsService pipelineStreamConnectionsService;
 
     public AlertRuleUtilsService(AlertRuleService alertRuleService,
                                  StreamService streamService,
@@ -98,12 +94,12 @@ public class AlertRuleUtilsService {
                                  AlarmCallbackFactory alarmCallbackFactory,
                                  ClusterConfigService clusterConfigService,
                                  RuleService ruleService,
-                                 PipelineRuleParser pipelineRuleParser,
                                  PipelineService pipelineService,
                                  DBDataAdapterService dbDataAdapterService,
                                  HttpConfiguration httpConfiguration,
                                  DBCacheService dbCacheService,
                                  DBLookupTableService dbTableService,
+                                 PipelineStreamConnectionsService pipelineStreamConnectionsService,
                                  AlertRuleUtils alertRuleUtils) {
         this.alertRuleService = alertRuleService;
         this.streamService = streamService;
@@ -115,13 +111,13 @@ public class AlertRuleUtilsService {
         this.clusterConfigService = clusterConfigService;
         this.indexSetID = indexSetID;
         this.ruleService = ruleService;
-        this.pipelineRuleParser = pipelineRuleParser;
         this.pipelineService = pipelineService;
         this.dbDataAdapterService = dbDataAdapterService;
         this.httpConfiguration = httpConfiguration;
         this.dbCacheService = dbCacheService;
         this.dbTableService = dbTableService;
         this.alertRuleUtils = alertRuleUtils;
+        this.pipelineStreamConnectionsService = pipelineStreamConnectionsService;
     }
 
     public void checkIsValidRequest(AlertRuleRequest request){
@@ -215,20 +211,20 @@ public class AlertRuleUtilsService {
         return pipelineSource;
     }
 
-    public PipelineDao createPipeline(String alertTitle, String pipelineID, Stream stream) throws ValidationException {
+    public PipelineDao createPipeline(String alertTitle, String pipelineID) throws ValidationException {
 
-        Set<String> pipelineIds = null;
         final DateTime now = DateTime.now(DateTimeZone.UTC);
 
         if (pipelineID == null) {
             pipelineID = RandomStringUtils.random(24, "0123456789abcdef");
         }
         final PipelineDao cr = PipelineDao.create(pipelineID, alertTitle, AlertRuleUtils.COMMENT_ALERT_WIZARD, createPipelineStringSource(alertTitle), now, now);
-
         final PipelineDao save = pipelineService.save(cr);
 
         //TODO
-     //   final PipelineConnections connection = PipelineConnections.create(null, stream.getId(), pipelineIds);
+        Set<String> pipelineIds =  new HashSet<String>();
+        pipelineIds.add(save.id());
+        pipelineStreamConnectionsService.save(PipelineConnections.create(null, "000000000000000000000001", pipelineIds));
 
         log.debug("Created new pipeline {}", save);
         return save;
@@ -239,7 +235,7 @@ public class AlertRuleUtilsService {
         pipelineService.delete(pipeline.id());
         ruleService.delete(rule.id());
 
-        createPipeline(alertTitle, pipeline.id(), stream);
+        createPipeline(alertTitle, pipeline.id());
         createPipelineRule(alertTitle, listfieldRule, stream, rule.id());
     }
 

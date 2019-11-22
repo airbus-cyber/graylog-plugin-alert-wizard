@@ -1,8 +1,8 @@
 package com.airbus_cyber_security.graylog;
 
 import org.graylog.plugins.pipelineprocessor.db.PipelineService;
+import org.graylog.plugins.pipelineprocessor.db.PipelineStreamConnectionsService;
 import org.graylog.plugins.pipelineprocessor.db.RuleService;
-import org.graylog.plugins.pipelineprocessor.parser.PipelineRuleParser;
 import org.graylog2.alarmcallbacks.AlarmCallbackConfiguration;
 import org.graylog2.alarmcallbacks.AlarmCallbackConfigurationService;
 import org.graylog2.alarmcallbacks.AlarmCallbackFactory;
@@ -76,8 +76,6 @@ public class AlertRuleResourceTest extends MongoDBServiceTest{
     @Mock
     private RuleService ruleService;
     @Mock
-    private PipelineRuleParser pipelineRuleParser;
-    @Mock
     private PipelineService pipelineService;
     @Mock
     private DBDataAdapterService dbDataAdapterService;
@@ -87,7 +85,8 @@ public class AlertRuleResourceTest extends MongoDBServiceTest{
     private DBCacheService dbCacheService;
     @Mock
     private DBLookupTableService dbTableService;
-
+    @Mock
+    private PipelineStreamConnectionsService pipelineStreamConnectionsService;
 
     private StreamService streamService;
 	private AlertRuleResource alertRuleResource;
@@ -129,8 +128,8 @@ public class AlertRuleResourceTest extends MongoDBServiceTest{
         when(alertService.loadRecentOfStream(eq("5bc894ded9e3770323a780a7"), any(DateTime.class), eq(999))).thenReturn(new ArrayList<Alert>());
     	
         AlertRuleServiceImpl alertRuleService = new AlertRuleServiceImpl(mongoRule.getMongoConnection(), mapperProvider, validator);
-    	this.alertRuleResource = new AlertRuleResource(alertRuleService, ruleService, pipelineRuleParser, pipelineService, dbDataAdapterService, httpConfiguration, dbCacheService, dbTableService,streamService, streamRuleService, clusterEventBus, indexSetRegistry,
-    										alertService, alarmCallbackConfigurationService, alarmCallbackFactory, clusterConfigService);
+    	this.alertRuleResource = new AlertRuleResource(alertRuleService, ruleService, pipelineService, dbDataAdapterService, httpConfiguration, dbCacheService, dbTableService,streamService, streamRuleService, clusterEventBus, indexSetRegistry,
+    										alertService, alarmCallbackConfigurationService, alarmCallbackFactory, clusterConfigService, pipelineStreamConnectionsService);
     }
     
     @Test
