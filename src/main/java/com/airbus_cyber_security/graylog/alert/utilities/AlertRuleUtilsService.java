@@ -5,6 +5,7 @@ import com.airbus_cyber_security.graylog.alert.rest.models.requests.AlertRuleReq
 import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetDataAlertRule;
 import com.airbus_cyber_security.graylog.config.LoggingAlertConfig;
 import com.airbus_cyber_security.graylog.list.utilities.AlertListUtilsService;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import org.bson.types.ObjectId;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -167,19 +168,19 @@ public class AlertRuleUtilsService {
     public String createRuleSource(String alertTitle, List<FieldRuleImpl> listfieldRule, Stream stream) throws ValidationException{
         StringBuilder fields = new StringBuilder();
 
-        if (listfieldRule.get(0).getType() == 7) {
-            fields.append(createStringField(listfieldRule.get(0), " AND "));
-        } else if (listfieldRule.get(0).getType() == -7) {
-            fields.append(createStringField(listfieldRule.get(0), " AND NOT "));
-        }
-        listfieldRule.remove(0);
+        int nbList = 0;
         for (FieldRule fieldRule : listfieldRule) {
-            fields.append("  ");
-            fields.append(stream.getMatchingType());
-            if (fieldRule.getType() == 7) {
-                fields.append(createStringField(fieldRule, " AND "));
-            } else if (fieldRule.getType() == -7) {
-                fields.append(createStringField(fieldRule, " AND NOT "));
+            if (fieldRule.getType() == 7 || fieldRule.getType() == -7){
+                if( nbList > 0) {
+                    fields.append("  ");
+                    fields.append(stream.getMatchingType());
+                }
+                nbList++;
+                if (fieldRule.getType() == 7) {
+                    fields.append(createStringField(fieldRule, " AND "));
+                } else {
+                    fields.append(createStringField(fieldRule, " AND NOT "));
+                }
             }
         }
 
@@ -221,8 +222,12 @@ public class AlertRuleUtilsService {
         final PipelineDao cr = PipelineDao.create(pipelineID, alertTitle, AlertRuleUtils.COMMENT_ALERT_WIZARD, createPipelineStringSource(alertTitle), now, now);
         final PipelineDao save = pipelineService.save(cr);
 
-        //TODO
-        Set<String> pipelineIds =  new HashSet<String>();
+        Set<String> pipelineIds;
+        try {
+            pipelineIds = pipelineStreamConnectionsService.load("000000000000000000000001").pipelineIds();
+        } catch (NotFoundException e) {
+            pipelineIds =  new HashSet<String>();
+        }
         pipelineIds.add(save.id());
         pipelineStreamConnectionsService.save(PipelineConnections.create(null, "000000000000000000000001", pipelineIds));
 
