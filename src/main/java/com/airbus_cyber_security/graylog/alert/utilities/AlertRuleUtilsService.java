@@ -5,10 +5,9 @@ import com.airbus_cyber_security.graylog.alert.rest.models.requests.AlertRuleReq
 import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetDataAlertRule;
 import com.airbus_cyber_security.graylog.config.LoggingAlertConfig;
 import com.airbus_cyber_security.graylog.list.utilities.AlertListUtilsService;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-import org.bson.types.ObjectId;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.bson.types.ObjectId;
 import org.graylog.plugins.pipelineprocessor.db.*;
 import org.graylog.plugins.pipelineprocessor.rest.PipelineConnections;
 import org.graylog2.alarmcallbacks.AlarmCallbackConfiguration;
@@ -252,7 +251,7 @@ public class AlertRuleUtilsService {
 
     public RuleDao clonePipelineRule(Stream sourceStream, String newTitle) throws NotFoundException, ValidationException {
 
-        List<FieldRuleImpl> listFieldRule = new ArrayList<FieldRuleImpl>();
+        List<FieldRuleImpl> listFieldRule = new ArrayList<>();
         final List<StreamRule> sourceStreamRules = streamRuleService.loadForStream(sourceStream);
         for (StreamRule streamRule : sourceStreamRules) {
             if(streamRule.getInverted()){
@@ -421,14 +420,18 @@ public class AlertRuleUtilsService {
             parametersCondition.put(AlertRuleUtils.THRESHOLD_TYPE, parametersCondition.remove(AlertRuleUtils.MAIN_THRESHOLD_TYPE));
         }
 
-        AlertRuleStream alertRuleStream = AlertRuleStreamImpl.create(streamID,
-                stream.getMatchingType().toString(), alertRuleUtils.getListFieldRule(stream.getStreamRules()));
+        List<FieldRuleImpl> fieldRules = new ArrayList<>();
+        Optional.ofNullable(alert.getPipelineFieldRules()).ifPresent(fieldRules::addAll);
+        Optional.ofNullable(alertRuleUtils.getListFieldRule(stream.getStreamRules())).ifPresent(fieldRules::addAll);
+        AlertRuleStream alertRuleStream = AlertRuleStreamImpl.create(streamID, stream.getMatchingType().toString(), fieldRules);
 
         AlertRuleStream alertRuleStream2 = null;
         if(alert.getSecondStreamID() != null && !alert.getSecondStreamID().isEmpty()) {
             final Stream stream2 = streamService.load(alert.getSecondStreamID());
-            alertRuleStream2 = AlertRuleStreamImpl.create(alert.getSecondStreamID(),
-                    stream2.getMatchingType().toString(), alertRuleUtils.getListFieldRule(stream2.getStreamRules()));
+            List<FieldRuleImpl> fieldRules2 = new ArrayList<>();
+            Optional.ofNullable(alert.getSecondPipelineFieldRules()).ifPresent(fieldRules2::addAll);
+            Optional.ofNullable(alertRuleUtils.getListFieldRule(stream2.getStreamRules())).ifPresent(fieldRules2::addAll);
+            alertRuleStream2 = AlertRuleStreamImpl.create(alert.getSecondStreamID(), stream2.getMatchingType().toString(), fieldRules2);
         }
 
         final AlarmCallbackConfiguration callbackConfiguration = alarmCallbackConfigurationService.load(alert.getNotificationID());
@@ -650,5 +653,15 @@ public class AlertRuleUtilsService {
         DataAdapterDto saved = dbDataAdapterService.save(dto);
 
         return saved;
+    }
+
+    public List<FieldRuleImpl> extractPipelineFieldRules(List<FieldRuleImpl> listFieldRule){
+        List<FieldRuleImpl> listPipelineFieldRule = new ArrayList<>();
+        for (FieldRuleImpl fieldRule : listFieldRule) {
+            if (fieldRule.getType() == 7 || fieldRule.getType() == -7) {
+                listPipelineFieldRule.add(fieldRule);
+            }
+        }
+        return listPipelineFieldRule;
     }
 }

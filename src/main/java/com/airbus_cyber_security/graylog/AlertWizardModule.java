@@ -1,16 +1,16 @@
 package com.airbus_cyber_security.graylog;
-import com.airbus_cyber_security.graylog.list.AlertListService;
-import com.airbus_cyber_security.graylog.list.AlertListServiceImpl;
-import org.graylog2.plugin.PluginConfigBean;
-import org.graylog2.plugin.PluginModule;
 
 import com.airbus_cyber_security.graylog.alert.AlertRuleService;
 import com.airbus_cyber_security.graylog.alert.AlertRuleServiceImpl;
 import com.airbus_cyber_security.graylog.alert.rest.AlertRuleResource;
-import com.airbus_cyber_security.graylog.permissions.AlertRuleRestPermissions;
 import com.airbus_cyber_security.graylog.audit.AlertWizardAuditEventTypes;
 import com.airbus_cyber_security.graylog.config.rest.AlertWizardConfigResource;
+import com.airbus_cyber_security.graylog.list.AlertListService;
+import com.airbus_cyber_security.graylog.list.AlertListServiceImpl;
 import com.airbus_cyber_security.graylog.list.rest.AlertListResource;
+import com.airbus_cyber_security.graylog.permissions.AlertRuleRestPermissions;
+import org.graylog2.plugin.PluginConfigBean;
+import org.graylog2.plugin.PluginModule;
 
 import java.util.Collections;
 import java.util.Set;

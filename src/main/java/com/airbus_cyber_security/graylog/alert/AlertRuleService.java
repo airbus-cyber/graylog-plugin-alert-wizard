@@ -1,13 +1,12 @@
 package com.airbus_cyber_security.graylog.alert;
 
-import java.io.UnsupportedEncodingException;
-import java.util.List;
-
 import com.airbus_cyber_security.graylog.alert.bundles.ExportAlertRule;
-import org.graylog2.database.NotFoundException;
-
 import com.airbus_cyber_security.graylog.alert.rest.models.requests.AlertRuleRequest;
 import com.mongodb.MongoException;
+import org.graylog2.database.NotFoundException;
+
+import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 public interface AlertRuleService {
     long count();

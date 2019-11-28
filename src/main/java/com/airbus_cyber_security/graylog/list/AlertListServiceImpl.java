@@ -5,7 +5,6 @@ import com.airbus_cyber_security.graylog.list.rest.models.requests.AlertListRequ
 import com.google.common.collect.Lists;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
-
 import org.graylog2.bindings.providers.MongoJackObjectMapperProvider;
 import org.graylog2.database.CollectionName;
 import org.graylog2.database.MongoConnection;
@@ -18,7 +17,8 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
 public class AlertListServiceImpl implements AlertListService {
 

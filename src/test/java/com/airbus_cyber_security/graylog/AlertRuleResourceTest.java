@@ -1,23 +1,27 @@
 package com.airbus_cyber_security.graylog;
 
+import com.airbus_cyber_security.graylog.alert.AlertRuleServiceImpl;
+import com.airbus_cyber_security.graylog.alert.bundles.ExportAlertRule;
+import com.airbus_cyber_security.graylog.alert.bundles.ExportAlertRuleRequest;
+import com.airbus_cyber_security.graylog.alert.rest.AlertRuleResource;
+import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetAlertRule;
+import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetDataAlertRule;
+import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetListAlertRule;
+import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetListDataAlertRule;
+import com.airbus_cyber_security.graylog.database.MongoDBServiceTest;
+import com.google.common.collect.Maps;
+import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
+import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
 import org.graylog.plugins.pipelineprocessor.db.PipelineService;
 import org.graylog.plugins.pipelineprocessor.db.PipelineStreamConnectionsService;
 import org.graylog.plugins.pipelineprocessor.db.RuleService;
 import org.graylog2.alarmcallbacks.AlarmCallbackConfiguration;
 import org.graylog2.alarmcallbacks.AlarmCallbackConfigurationService;
 import org.graylog2.alarmcallbacks.AlarmCallbackFactory;
-
-import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
-
 import org.graylog2.alerts.Alert;
 import org.graylog2.alerts.AlertService;
 import org.graylog2.configuration.HttpConfiguration;
 import org.graylog2.database.NotFoundException;
-
-import com.airbus_cyber_security.graylog.database.MongoDBServiceTest;
-import com.google.common.collect.Maps;
-import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
-
 import org.graylog2.events.ClusterEventBus;
 import org.graylog2.indexer.IndexSet;
 import org.graylog2.indexer.IndexSetRegistry;
@@ -34,34 +38,21 @@ import org.graylog2.streams.StreamRuleService;
 import org.graylog2.streams.StreamService;
 import org.joda.time.DateTime;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
-import com.airbus_cyber_security.graylog.alert.AlertRuleServiceImpl;
-import com.airbus_cyber_security.graylog.alert.bundles.ExportAlertRuleRequest;
-import com.airbus_cyber_security.graylog.alert.bundles.ExportAlertRule;
-import com.airbus_cyber_security.graylog.alert.rest.AlertRuleResource;
-import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetAlertRule;
-import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetDataAlertRule;
-import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetListAlertRule;
-import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetListDataAlertRule;
-
 import org.mockito.Mock;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
+import javax.validation.Validator;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.validation.Validator;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class AlertRuleResourceTest extends MongoDBServiceTest{
 	 

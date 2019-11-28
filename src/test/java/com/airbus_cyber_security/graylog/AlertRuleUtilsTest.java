@@ -1,15 +1,14 @@
 package com.airbus_cyber_security.graylog;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Map;
-
+import com.airbus_cyber_security.graylog.alert.utilities.AlertRuleUtils;
+import com.google.common.collect.Maps;
 import org.graylog2.alerts.AbstractAlertCondition;
 import org.junit.Test;
 
-import com.airbus_cyber_security.graylog.alert.utilities.AlertRuleUtils;
-import com.google.common.collect.Maps;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class AlertRuleUtilsTest {
 	

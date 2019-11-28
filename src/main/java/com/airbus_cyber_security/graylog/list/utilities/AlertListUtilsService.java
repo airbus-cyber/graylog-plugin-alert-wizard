@@ -1,7 +1,7 @@
 package com.airbus_cyber_security.graylog.list.utilities;
 
-import com.airbus_cyber_security.graylog.list.rest.models.requests.AlertListRequest;
 import com.airbus_cyber_security.graylog.list.AlertListService;
+import com.airbus_cyber_security.graylog.list.rest.models.requests.AlertListRequest;
 import org.graylog2.plugin.cluster.ClusterConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

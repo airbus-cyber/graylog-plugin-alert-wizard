@@ -1,29 +1,23 @@
 package com.airbus_cyber_security.graylog.list.rest;
 
+import com.airbus_cyber_security.graylog.audit.AlertWizardAuditEventTypes;
+import com.airbus_cyber_security.graylog.config.rest.AlertWizardConfig;
+import com.airbus_cyber_security.graylog.config.rest.ImportPolicyType;
 import com.airbus_cyber_security.graylog.list.AlertList;
 import com.airbus_cyber_security.graylog.list.AlertListImpl;
 import com.airbus_cyber_security.graylog.list.AlertListService;
 import com.airbus_cyber_security.graylog.list.bundles.AlertListExporter;
-import com.airbus_cyber_security.graylog.list.bundles.ExportAlertListRequest;
 import com.airbus_cyber_security.graylog.list.bundles.ExportAlertList;
+import com.airbus_cyber_security.graylog.list.bundles.ExportAlertListRequest;
 import com.airbus_cyber_security.graylog.list.rest.models.requests.AlertListRequest;
 import com.airbus_cyber_security.graylog.list.rest.models.requests.CloneAlertListRequest;
 import com.airbus_cyber_security.graylog.list.rest.models.responses.GetAlertList;
 import com.airbus_cyber_security.graylog.list.rest.models.responses.GetListAlertList;
 import com.airbus_cyber_security.graylog.list.utilities.AlertListUtilsService;
-import com.airbus_cyber_security.graylog.audit.AlertWizardAuditEventTypes;
 import com.airbus_cyber_security.graylog.permissions.AlertRuleRestPermissions;
 import com.codahale.metrics.annotation.Timed;
 import com.mongodb.MongoException;
-
-import com.airbus_cyber_security.graylog.config.rest.AlertWizardConfig;
-import com.airbus_cyber_security.graylog.config.rest.ImportPolicyType;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.graylog2.audit.jersey.AuditEvent;
@@ -40,18 +34,9 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 

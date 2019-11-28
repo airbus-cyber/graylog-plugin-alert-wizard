@@ -1,7 +1,5 @@
 package com.airbus_cyber_security.graylog.alert;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.graylog.plugins.pipelineprocessor.rest.StageSource;
 import org.joda.time.DateTime;
 
 import java.util.List;
@@ -30,10 +28,14 @@ public interface AlertRule {
 
 	public String getPipelineID();
 
-    public List<String> getPipelineRuleID();
+    public String getPipelineRuleID();
+
+    public List<FieldRuleImpl> getPipelineFieldRules();
 
     public String getSecondPipelineID();
 
-    public List<String> getSecondPipelineRuleID();
+    public String getSecondPipelineRuleID();
+
+    public List<FieldRuleImpl> getSecondPipelineFieldRules();
 
 }

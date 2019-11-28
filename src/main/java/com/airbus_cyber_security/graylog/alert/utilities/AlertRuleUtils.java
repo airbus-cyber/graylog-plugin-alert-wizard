@@ -1,13 +1,15 @@
 package com.airbus_cyber_security.graylog.alert.utilities;
 
+import com.airbus_cyber_security.graylog.alert.FieldRule;
+import com.airbus_cyber_security.graylog.alert.FieldRuleImpl;
+import com.google.common.collect.Maps;
+import org.graylog2.alerts.AbstractAlertCondition;
+import org.graylog2.plugin.streams.StreamRule;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import org.graylog2.alerts.AbstractAlertCondition;
-import org.graylog2.plugin.streams.StreamRule;
-import com.airbus_cyber_security.graylog.alert.FieldRuleImpl;
-import com.google.common.collect.Maps;
 
 public class AlertRuleUtils {
 

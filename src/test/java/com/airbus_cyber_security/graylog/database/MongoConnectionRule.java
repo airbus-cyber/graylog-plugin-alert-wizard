@@ -17,7 +17,6 @@
 package com.airbus_cyber_security.graylog.database;
 
 import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
-
 import org.graylog2.database.MongoConnection;
 import org.graylog2.database.MongoConnectionForTests;
 import org.junit.rules.MethodRule;
