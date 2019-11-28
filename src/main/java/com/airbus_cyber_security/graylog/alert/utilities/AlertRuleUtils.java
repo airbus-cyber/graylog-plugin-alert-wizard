@@ -6,10 +6,7 @@ import com.google.common.collect.Maps;
 import org.graylog2.alerts.AbstractAlertCondition;
 import org.graylog2.plugin.streams.StreamRule;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AlertRuleUtils {
 
@@ -126,5 +123,9 @@ public class AlertRuleUtils {
 	public boolean isValidSeverity(String severity) {
 		return  (severity.equals("info") || severity.equals("low") ||
 				severity.equals("medium") || severity.equals("high"));
+	}
+
+	public <T> Collection<T> nullSafe(Collection<T> c) {
+		return (c == null) ? Collections.<T>emptyList() : c;
 	}
 }

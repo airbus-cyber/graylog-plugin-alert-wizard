@@ -15,6 +15,8 @@ import com.airbus_cyber_security.graylog.alert.utilities.AlertRuleUtilsService;
 import com.airbus_cyber_security.graylog.audit.AlertWizardAuditEventTypes;
 import com.airbus_cyber_security.graylog.config.rest.AlertWizardConfig;
 import com.airbus_cyber_security.graylog.config.rest.ImportPolicyType;
+import com.airbus_cyber_security.graylog.list.AlertListService;
+import com.airbus_cyber_security.graylog.list.utilities.AlertListUtilsService;
 import com.airbus_cyber_security.graylog.permissions.AlertRuleRestPermissions;
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.collect.Maps;
@@ -83,6 +85,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private final AlertRuleUtilsService alertRuleUtilsService;
     private final RuleService ruleService;
     private final PipelineService pipelineService;
+    private final AlertListUtilsService alertListUtilsService;
+
 
     @Inject
     public AlertRuleResource(AlertRuleService alertRuleService,
@@ -100,7 +104,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                              AlarmCallbackConfigurationService alarmCallbackConfigurationService,
                              AlarmCallbackFactory alarmCallbackFactory,
                              ClusterConfigService clusterConfigService,
-                             PipelineStreamConnectionsService pipelineStreamConnectionsService) {
+                             PipelineStreamConnectionsService pipelineStreamConnectionsService,
+                             AlertListService alertListService) {
         this.alertRuleService = alertRuleService;
         this.streamService = streamService;
         this.clusterEventBus = clusterEventBus;
@@ -114,6 +119,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 alarmCallbackFactory, clusterConfigService, ruleService, pipelineService, dbDataAdapterService,
                 httpConfiguration, dbCacheService, dbTableService, pipelineStreamConnectionsService, alertRuleUtils);
         this.alertRuleExporter = new AlertRuleExporter(alertRuleService, alarmCallbackConfigurationService, streamService, alertRuleUtils);
+        this.alertListUtilsService = new AlertListUtilsService(alertListService);
     }
 
     @GET
@@ -306,7 +312,13 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 pipelineRuleID2,
                 listPipelineFieldRule2));
 
-        //TODO Update list usage
+        //Update list usage
+        for (FieldRule fieldRule:alertRuleUtils.nullSafe(listPipelineFieldRule)) {
+            alertListUtilsService.incrementUsage(fieldRule.getValue());
+        }
+        for (FieldRule fieldRule:alertRuleUtils.nullSafe(listPipelineFieldRule2)) {
+            alertListUtilsService.incrementUsage(fieldRule.getValue());
+        }
         
         return Response.accepted().build();
     }
@@ -404,6 +416,21 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                         oldAlert.getSecondPipelineID(),
                         oldAlert.getSecondPipelineRuleID(),
                         listPipelineFieldRule2));
+
+        //Decrement list usage
+        for (FieldRule fieldRule:alertRuleUtils.nullSafe(oldAlert.getPipelineFieldRules())) {
+            alertListUtilsService.decrementUsage(fieldRule.getValue());
+        }
+        for (FieldRule fieldRule:alertRuleUtils.nullSafe(oldAlert.getSecondPipelineFieldRules())) {
+            alertListUtilsService.decrementUsage(fieldRule.getValue());
+        }
+        //Increment list usage
+        for (FieldRule fieldRule:alertRuleUtils.nullSafe(listPipelineFieldRule)) {
+            alertListUtilsService.incrementUsage(fieldRule.getValue());
+        }
+        for (FieldRule fieldRule:alertRuleUtils.nullSafe(listPipelineFieldRule2)) {
+            alertListUtilsService.incrementUsage(fieldRule.getValue());
+        }
 
         return Response.accepted().build();
     }
@@ -504,6 +531,14 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 pipelineRuleID2,
                 sourceAlert.getSecondPipelineFieldRules()));
 
+        //Update list usage
+        for (FieldRule fieldRule:alertRuleUtils.nullSafe(sourceAlert.getPipelineFieldRules())) {
+            alertListUtilsService.incrementUsage(fieldRule.getValue());
+        }
+        for (FieldRule fieldRule:alertRuleUtils.nullSafe(sourceAlert.getSecondPipelineFieldRules())) {
+            alertListUtilsService.incrementUsage(fieldRule.getValue());
+        }
+
         return Response.accepted().build();
     }
     
@@ -542,6 +577,14 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 RuleDao rule2 = ruleService.load(alertRule.getSecondPipelineRuleID());
                 PipelineDao pipeline2 = pipelineService.load(alertRule.getSecondPipelineID());
                 alertRuleUtilsService.deletePipeline(pipeline2, rule2);
+            }
+
+            //Update list usage
+            for (FieldRule fieldRule:alertRuleUtils.nullSafe(alertRule.getPipelineFieldRules())) {
+                alertListUtilsService.decrementUsage(fieldRule.getValue());
+            }
+            for (FieldRule fieldRule:alertRuleUtils.nullSafe(alertRule.getSecondPipelineFieldRules())) {
+                alertListUtilsService.decrementUsage(fieldRule.getValue());
             }
         }catch(NotFoundException e){
             LOG.error("Cannot find alert " + alertTitle , e);
@@ -639,6 +682,14 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 pipelineID2,
                 pipelineRuleID2,
                 listPipelineFieldRule2));
+
+        //Update list usage
+        for (FieldRule fieldRule:alertRuleUtils.nullSafe(listPipelineFieldRule)) {
+            alertListUtilsService.incrementUsage(fieldRule.getValue());
+        }
+        for (FieldRule fieldRule:alertRuleUtils.nullSafe(listPipelineFieldRule2)) {
+            alertListUtilsService.incrementUsage(fieldRule.getValue());
+        }
     }
 
     @PUT

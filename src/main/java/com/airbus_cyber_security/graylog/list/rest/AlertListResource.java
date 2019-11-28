@@ -62,8 +62,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
                              ClusterConfigService clusterConfigService) {
         this.alertListService = alertListService;
         this.clusterConfigService = clusterConfigService;
-        this.alertListUtilsService = new AlertListUtilsService(alertListService,
-                 clusterConfigService);
+        this.alertListUtilsService = new AlertListUtilsService(alertListService);
         this.alertListExporter = new AlertListExporter(alertListService);
     }
 
@@ -137,7 +136,6 @@ public class AlertListResource extends RestResource implements PluginRestResourc
 
         alertListUtilsService.checkIsValidRequest(request);
         String listTitle = checkImportPolicyAndGetTitle(request.getTitle());
-        int usage = 1;
 
         alertListService.create(AlertListImpl.create(
                 listTitle,
@@ -145,7 +143,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
                 getCurrentUser().getName(),
                 DateTime.now(),
                 request.getDescription(),
-                usage,
+                0,
                 request.getLists()));
 
         return Response.accepted().build();
@@ -196,18 +194,15 @@ public class AlertListResource extends RestResource implements PluginRestResourc
     ) throws NotFoundException, ValidationException {
 
         AlertList sourcelist = alertListService.load(title);
-        String listTitle = request.getTitle();
-        int usage = 1;
-        String lists = sourcelist.getLists();
 
         alertListService.create(AlertListImpl.create(
-                listTitle,
+                request.getTitle(),
                 DateTime.now(),
                 getCurrentUser().getName(),
                 DateTime.now(),
                 request.getDescription(),
-                usage,
-                lists));
+                0,
+                sourcelist.getLists()));
 
         return Response.accepted().build();
     }
@@ -251,7 +246,6 @@ public class AlertListResource extends RestResource implements PluginRestResourc
     public void importAlertList(ExportAlertList alertList)
             throws ValidationException, BadRequestException{
         String listTitle = checkImportPolicyAndGetTitle(alertList.getTitle());
-        int usage = 1;
 
         alertListService.create(AlertListImpl.create(
                 listTitle,
@@ -259,7 +253,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
                 getCurrentUser().getName(),
                 DateTime.now(),
                 alertList.getDescription(),
-                usage,
+                0,
                 alertList.getLists()));
     }
 

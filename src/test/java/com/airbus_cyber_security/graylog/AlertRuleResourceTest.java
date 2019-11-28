@@ -9,6 +9,7 @@ import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetDataAler
 import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetListAlertRule;
 import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetListDataAlertRule;
 import com.airbus_cyber_security.graylog.database.MongoDBServiceTest;
+import com.airbus_cyber_security.graylog.list.AlertListService;
 import com.google.common.collect.Maps;
 import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
@@ -78,9 +79,12 @@ public class AlertRuleResourceTest extends MongoDBServiceTest{
     private DBLookupTableService dbTableService;
     @Mock
     private PipelineStreamConnectionsService pipelineStreamConnectionsService;
+    @Mock
+    private AlertListService alertListService;
 
     private StreamService streamService;
 	private AlertRuleResource alertRuleResource;
+
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -120,7 +124,7 @@ public class AlertRuleResourceTest extends MongoDBServiceTest{
     	
         AlertRuleServiceImpl alertRuleService = new AlertRuleServiceImpl(mongoRule.getMongoConnection(), mapperProvider, validator);
     	this.alertRuleResource = new AlertRuleResource(alertRuleService, ruleService, pipelineService, dbDataAdapterService, httpConfiguration, dbCacheService, dbTableService,streamService, streamRuleService, clusterEventBus, indexSetRegistry,
-    										alertService, alarmCallbackConfigurationService, alarmCallbackFactory, clusterConfigService, pipelineStreamConnectionsService);
+    										alertService, alarmCallbackConfigurationService, alarmCallbackFactory, clusterConfigService, pipelineStreamConnectionsService, alertListService);
     }
     
     @Test

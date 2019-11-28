@@ -180,7 +180,7 @@ const AlertListDisplay = createReactClass({
                         </td>);
                         break;
                     case 'Usage':
-                        tabFields.push(<td className="limited"><span style={{whiteSpace: 'pre-line'}}></span></td>);
+                        tabFields.push(<td className="limited"><span style={{whiteSpace: 'pre-line'}}>{list.usage}</span></td>);
                         break;
                     case 'Lists':
                         tabFields.push(<td className="limited"><span style={{whiteSpace: 'pre-line'}}>{list.lists}</span></td>);
