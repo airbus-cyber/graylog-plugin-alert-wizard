@@ -1,9 +1,8 @@
 package com.airbus_cyber_security.graylog.alert.bundles;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.airbus_cyber_security.graylog.alert.FieldRuleImpl;
 import org.graylog2.alarmcallbacks.AlarmCallbackConfiguration;
 import org.graylog2.alarmcallbacks.AlarmCallbackConfigurationService;
 import org.graylog2.plugin.alarms.AlertCondition;
@@ -46,14 +45,18 @@ public class AlertRuleExporter {
 				final String streamID = alert.getStreamID();
 		        final Stream stream = streamService.load(streamID);
 		        final AlertCondition alertCondition = streamService.getAlertCondition(stream, alert.getConditionID());
-				AlertRuleStreamImpl alertRuleStream = AlertRuleStreamImpl.create(streamID,
-		    			stream.getMatchingType().toString(), alertRuleUtils.getListFieldRule(stream.getStreamRules()));
+				List<FieldRuleImpl> fieldRules = new ArrayList<>();
+				Optional.ofNullable(alert.getPipelineFieldRules()).ifPresent(fieldRules::addAll);
+				Optional.ofNullable(alertRuleUtils.getListFieldRule(stream.getStreamRules())).ifPresent(fieldRules::addAll);
+				AlertRuleStreamImpl alertRuleStream = AlertRuleStreamImpl.create(streamID, stream.getMatchingType().toString(), fieldRules);
 
 				AlertRuleStreamImpl alertRuleStream2;
 		        if(alert.getSecondStreamID() != null && !alert.getSecondStreamID().isEmpty()) {
 		        	final Stream stream2 = streamService.load(alert.getSecondStreamID());
-		        	alertRuleStream2 = AlertRuleStreamImpl.create(alert.getSecondStreamID(), 
-		        			stream2.getMatchingType().toString(), alertRuleUtils.getListFieldRule(stream2.getStreamRules()));
+					List<FieldRuleImpl> fieldRules2 = new ArrayList<>();
+					Optional.ofNullable(alert.getSecondPipelineFieldRules()).ifPresent(fieldRules2::addAll);
+					Optional.ofNullable(alertRuleUtils.getListFieldRule(stream2.getStreamRules())).ifPresent(fieldRules2::addAll);
+		        	alertRuleStream2 = AlertRuleStreamImpl.create(alert.getSecondStreamID(), stream2.getMatchingType().toString(), fieldRules2);
 		        }else {
 		        	alertRuleStream2 = AlertRuleStreamImpl.create("", "", Collections.emptyList());
 		        }			
