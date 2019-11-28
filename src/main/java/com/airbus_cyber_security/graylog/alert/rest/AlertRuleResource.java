@@ -430,7 +430,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         Stream firstStream = alertRuleUtilsService.cloneStream(sourceFirstStream, alertTitle, creatorUser);
 
         //create pipeline
-        RuleDao pipelineRule = alertRuleUtilsService.clonePipelineRule(firstStream, alertTitle);
+        RuleDao pipelineRule = alertRuleUtilsService.createPipelineRule(alertTitle, sourceAlert.getPipelineFieldRules(), firstStream, null);
         PipelineDao pipeline = alertRuleUtilsService.createPipeline(alertTitle, null);
         String pipelineID = pipeline.id();
         String pipelineRuleID = pipelineRule.id();
@@ -446,7 +446,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         	secondStream = alertRuleUtilsService.cloneStream(sourceSecondStream, alertTitle+"#2", creatorUser);
         	secondStreamID = secondStream.getId();
 
-            RuleDao pipelineRule2 = alertRuleUtilsService.clonePipelineRule(secondStream, alertTitle+"#2");
+            RuleDao pipelineRule2 = alertRuleUtilsService.createPipelineRule(alertTitle+"#2", sourceAlert.getSecondPipelineFieldRules(), secondStream, null);
             PipelineDao pipeline2 = alertRuleUtilsService.createPipeline(alertTitle+"#2", null);
             pipelineID2 = pipeline2.id();
             pipelineRuleID2 = pipelineRule2.id();

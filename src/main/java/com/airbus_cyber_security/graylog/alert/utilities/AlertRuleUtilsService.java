@@ -249,21 +249,6 @@ public class AlertRuleUtilsService {
         ruleService.delete(rule.id());
     }
 
-    public RuleDao clonePipelineRule(Stream sourceStream, String newTitle) throws NotFoundException, ValidationException {
-
-        List<FieldRuleImpl> listFieldRule = new ArrayList<>();
-        final List<StreamRule> sourceStreamRules = streamRuleService.loadForStream(sourceStream);
-        for (StreamRule streamRule : sourceStreamRules) {
-            if(streamRule.getInverted()){
-                listFieldRule.add(FieldRuleImpl.create(streamRule.getId(), streamRule.getField(), -streamRule.getType().toInteger(), streamRule.getValue()));
-            }else{
-                listFieldRule.add(FieldRuleImpl.create(streamRule.getId(), streamRule.getField(), streamRule.getType().toInteger(), streamRule.getValue()));
-            }
-        }
-
-        return createPipelineRule(newTitle, listFieldRule, sourceStream, null);
-    }
-
     public Stream createStream(AlertRuleStream alertRuleStream, String title, String userName) throws ValidationException {
 
         final CreateStreamRequest cr = CreateStreamRequest.create(title, AlertRuleUtils.COMMENT_ALERT_WIZARD,
