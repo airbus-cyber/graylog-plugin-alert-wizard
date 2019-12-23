@@ -224,11 +224,15 @@ public class AlertListResource extends RestResource implements PluginRestResourc
 
         try{
             AlertList alertList = alertListService.load(listTitle);
+            if(alertList.getUsage() <= 0){
+                alertListService.destroy(listTitle);
+            }else{
+                throw new javax.ws.rs.BadRequestException("List " + listTitle + " used in alert rules");
+            }
         }catch(NotFoundException e){
-            LOG.error("Cannot find list " + listTitle , e);
+            throw new javax.ws.rs.NotFoundException("Cannot find list " + listTitle );
         }
 
-        alertListService.destroy(listTitle);
     }
 
     @POST

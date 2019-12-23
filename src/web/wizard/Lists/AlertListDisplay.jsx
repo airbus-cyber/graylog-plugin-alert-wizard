@@ -42,6 +42,7 @@ const AlertListDisplay = createReactClass({
         };
         const messages = {
             infoDelete: this.context.intl.formatMessage({id: "wizard.buttonInfoDeleteList", defaultMessage: "Delete this alert list"}),
+            infoNoDelete: this.context.intl.formatMessage({id: "wizard.buttonInfoNoDeleteList", defaultMessage: "List used in alert rules"}),
             infoUpdate: this.context.intl.formatMessage({id: "wizard.buttonInfoUpdateList", defaultMessage: "Edit this alert list"}),
             infoClone: this.context.intl.formatMessage({id: "wizard.buttonInfoCloneList", defaultMessage: "Clone this alert list"}),
             createAlertList: this.context.intl.formatMessage({id: "wizard.createAlertList", defaultMessage: "Create alert list"}),
@@ -115,13 +116,12 @@ const AlertListDisplay = createReactClass({
 
     _listInfoFormatter(list) {
 
-        let colorValid = "#000000";
-        let listValid = true;
 
         const deleteAction = (
             <IfPermitted permissions="wizard_alerts_rules:delete">
-                <button id="delete-list" type="button" className="btn btn-md btn-primary"
-                        title={this.state.messages.infoDelete} onClick={this._deleteAlertListFunction(list.title)}>
+                <button id="delete-list" type="button" className="btn btn-md btn-primary" disabled={list.usage > 0}
+                        title={list.usage ? this.state.messages.infoNoDelete : this.state.messages.infoDelete}
+                        onClick={this._deleteAlertListFunction(list.title)}>
                     <FormattedMessage id ="wizard.delete" defaultMessage="Delete" />
                 </button>
             </IfPermitted>
@@ -129,7 +129,7 @@ const AlertListDisplay = createReactClass({
 
         const updateList = (
             <IfPermitted permissions="wizard_alerts_rules:read">
-                <LinkContainer to={Routes.pluginRoute('WIZARD_UPDATELIST_ALERTLISTTITLE')(list.title.replace(/\//g, '%2F'))} disabled={!listValid}>
+                <LinkContainer to={Routes.pluginRoute('WIZARD_UPDATELIST_ALERTLISTTITLE')(list.title.replace(/\//g, '%2F'))}>
                     <Button bsStyle="info" type="submit" title={this.state.messages.infoUpdate} >
                         <FormattedMessage id ="wizard.edit" defaultMessage="Edit" />
                     </Button>
@@ -190,7 +190,7 @@ const AlertListDisplay = createReactClass({
         });
 
         return (
-            <tr key={list.title} style={{color:colorValid}}>
+            <tr key={list.title}>
                 {tabFields}
                 <td style={{whiteSpace: 'nowrap'}}>{actions}</td>
             </tr>
