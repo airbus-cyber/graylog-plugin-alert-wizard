@@ -190,7 +190,7 @@ const AlertListDisplay = createReactClass({
         });
 
         return (
-            <tr key={list.title}>
+            <tr key={list.title} style={{color:"#000000"}}>
                 {tabFields}
                 <td style={{whiteSpace: 'nowrap'}}>{actions}</td>
             </tr>

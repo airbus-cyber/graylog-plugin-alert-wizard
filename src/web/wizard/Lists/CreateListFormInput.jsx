@@ -149,7 +149,7 @@ const CreateListFormInput = createReactClass({
                 <Row>
                     <Col md={4}>
                         <Input id="title" type="text" required label={<FormattedMessage id ="wizard.title" defaultMessage="Title" />}
-                               onChange={this._onUpdate('title')} defaultValue={this.state.list.title} name="title" />
+                               onChange={this._onUpdate('title')} defaultValue={this.state.list.title} name="title" disabled={this.state.list.usage}/>
                         <Input id="description" type="text" label={<FormattedMessage id= "wizard.fieldOptionalDescription" defaultMessage= "Description (optional)" />}
                                onChange={this._onUpdate('description')}
                                defaultValue = {this.state.list.description}
