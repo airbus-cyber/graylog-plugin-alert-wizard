@@ -5,8 +5,6 @@ import com.airbus_cyber_security.graylog.list.AlertListImpl;
 import com.airbus_cyber_security.graylog.list.AlertListService;
 import com.airbus_cyber_security.graylog.list.rest.models.requests.AlertListRequest;
 import org.graylog2.database.NotFoundException;
-import org.graylog2.plugin.cluster.ClusterConfigService;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

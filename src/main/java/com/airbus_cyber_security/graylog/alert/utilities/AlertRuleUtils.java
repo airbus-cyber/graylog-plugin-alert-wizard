@@ -1,6 +1,5 @@
 package com.airbus_cyber_security.graylog.alert.utilities;
 
-import com.airbus_cyber_security.graylog.alert.FieldRule;
 import com.airbus_cyber_security.graylog.alert.FieldRuleImpl;
 import com.google.common.collect.Maps;
 import org.graylog2.alerts.AbstractAlertCondition;
@@ -95,12 +94,10 @@ public class AlertRuleUtils {
 			conditionType = TYPE_AGGREGATION;
 			break;
 		case "THEN":
-			conditionType = TYPE_CORRELATION;
-			break;
 		case "AND":
 			conditionType = TYPE_CORRELATION;
 			break;
-			
+
 		default:
 			conditionType = AbstractAlertCondition.Type.MESSAGE_COUNT.toString();
 			break;

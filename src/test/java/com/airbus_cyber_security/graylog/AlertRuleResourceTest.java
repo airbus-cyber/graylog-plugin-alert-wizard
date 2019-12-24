@@ -137,13 +137,13 @@ public class AlertRuleResourceTest extends MongoDBServiceTest{
     
     @Test
     @UsingDataSet(locations = "alertWizardSingleRuleCount.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testDeleteAlertRule() throws UnsupportedEncodingException, NotFoundException {
+    public void testDeleteAlertRule() throws UnsupportedEncodingException {
     	alertRuleResource.delete("Test Count");
     }
     
     @Test
     @UsingDataSet(locations = "alertWizardSingleRuleCount.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testGetListAlertRuleOneRule() throws UnsupportedEncodingException, NotFoundException {
+    public void testGetListAlertRuleOneRule() {
     	GetListAlertRule listAlertRule = alertRuleResource.list();
     	
     	assertNotNull("Returned list should not be null", listAlertRule);
@@ -152,7 +152,7 @@ public class AlertRuleResourceTest extends MongoDBServiceTest{
     
     @Test
     @UsingDataSet(locations = "alertWizardTwoRules.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testGetListAlertRuleMultipleRule() throws UnsupportedEncodingException, NotFoundException {
+    public void testGetListAlertRuleMultipleRule() {
     	GetListAlertRule listAlertRule = alertRuleResource.list();
     	
     	assertNotNull("Returned list should not be null", listAlertRule);
@@ -176,7 +176,7 @@ public class AlertRuleResourceTest extends MongoDBServiceTest{
     
     @Test
     @UsingDataSet(locations = "alertWizardSingleRuleCount.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testGetListDataAlertRule() throws UnsupportedEncodingException, NotFoundException {
+    public void testGetListDataAlertRule() {
     	GetListDataAlertRule listDataAlertRule = alertRuleResource.listWithData();
 
     	assertNotNull("Returned list data alert rule should not be null", listDataAlertRule);
@@ -214,7 +214,7 @@ public class AlertRuleResourceTest extends MongoDBServiceTest{
     
     @Test
     @UsingDataSet(locations = "alertWizardSingleRuleCount.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testExportAlertRule() throws UnsupportedEncodingException, NotFoundException, ValidationException {
+    public void testExportAlertRule() {
     	List<String> titles = new ArrayList<>();
     	titles.add("Test Count");
 

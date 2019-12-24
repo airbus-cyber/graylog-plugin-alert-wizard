@@ -1,8 +1,12 @@
 package com.airbus_cyber_security.graylog.alert.bundles;
 
-import java.util.*;
-
+import com.airbus_cyber_security.graylog.alert.AlertRule;
+import com.airbus_cyber_security.graylog.alert.AlertRuleService;
+import com.airbus_cyber_security.graylog.alert.AlertRuleStreamImpl;
 import com.airbus_cyber_security.graylog.alert.FieldRuleImpl;
+import com.airbus_cyber_security.graylog.alert.utilities.AlertRuleUtils;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.graylog2.alarmcallbacks.AlarmCallbackConfiguration;
 import org.graylog2.alarmcallbacks.AlarmCallbackConfigurationService;
 import org.graylog2.plugin.alarms.AlertCondition;
@@ -11,12 +15,7 @@ import org.graylog2.streams.StreamService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.airbus_cyber_security.graylog.alert.AlertRule;
-import com.airbus_cyber_security.graylog.alert.AlertRuleService;
-import com.airbus_cyber_security.graylog.alert.AlertRuleStreamImpl;
-import com.airbus_cyber_security.graylog.alert.utilities.AlertRuleUtils;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.util.*;
 
 public class AlertRuleExporter {
 	

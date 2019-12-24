@@ -55,9 +55,9 @@ public class AlertRuleServiceImpl implements AlertRuleService {
 			} else {
 				throw new IllegalArgumentException("Specified object failed validation: " + violations);
 			}
-		} else
-			throw new IllegalArgumentException(
-					"Specified object is not of correct implementation type (" + alert.getClass() + ")!");
+		} else {
+			throw new IllegalArgumentException("Specified object is not of correct implementation type (" + alert.getClass() + ")!");
+		}
 	}
 	
 	@Override
@@ -69,19 +69,16 @@ public class AlertRuleServiceImpl implements AlertRuleService {
 
 			final Set<ConstraintViolation<AlertRuleImpl>> violations = validator.validate(alertImpl);
 			if (violations.isEmpty()) {
-
 				return coll.findAndModify(DBQuery.is(TITLE, title), new BasicDBObject(), new BasicDBObject(),
 						false, alertImpl, true, false);
-
 			} else {
 				throw new IllegalArgumentException("Specified object failed validation: " + violations);
 			}
 
-		} else
-			throw new IllegalArgumentException(
-					"Specified object is not of correct implementation type (" + alert.getClass() + ")!");
+		} else {
+			throw new IllegalArgumentException("Specified object is not of correct implementation type (" + alert.getClass() + ")!");
+		}
 	}
-
 
 	@Override
 	public List<AlertRule> all() {
