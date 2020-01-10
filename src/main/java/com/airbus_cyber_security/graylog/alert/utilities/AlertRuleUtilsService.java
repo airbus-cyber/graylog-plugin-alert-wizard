@@ -198,18 +198,24 @@ public class AlertRuleUtilsService {
         return save;
     }
 
-    public String createPipelineStringSource(String alertTitle) {
-        return "pipeline \""+alertTitle+"\"\nstage 0 match either\nrule \"function "+alertTitle+"\"\nend";
+    public String createPipelineStringSource(String alertTitle, String matchingType) {
+        String match;
+        if (matchingType.equals("OR")){
+            match="either";
+        }else{
+            match="all";
+        }
+        return "pipeline \""+alertTitle+"\"\nstage 0 match "+match+"\nrule \"function "+alertTitle+"\"\nend";
     }
 
-    public PipelineDao createPipeline(String alertTitle, String pipelineID) {
+    public PipelineDao createPipeline(String alertTitle, String pipelineID, String matchingType) {
 
         final DateTime now = DateTime.now(DateTimeZone.UTC);
 
         if (pipelineID == null) {
             pipelineID = RandomStringUtils.random(RANDOM_COUNT, RANDOM_CHARS);
         }
-        final PipelineDao cr = PipelineDao.create(pipelineID, alertTitle, AlertRuleUtils.COMMENT_ALERT_WIZARD, createPipelineStringSource(alertTitle), now, now);
+        final PipelineDao cr = PipelineDao.create(pipelineID, alertTitle, AlertRuleUtils.COMMENT_ALERT_WIZARD, createPipelineStringSource(alertTitle, matchingType), now, now);
         final PipelineDao save = pipelineService.save(cr);
 
         Set<String> pipelineIds;
@@ -230,7 +236,7 @@ public class AlertRuleUtilsService {
         pipelineService.delete(pipeline.id());
         ruleService.delete(rule.id());
 
-        createPipeline(alertTitle, pipeline.id());
+        createPipeline(alertTitle, pipeline.id(), stream.getMatchingType().toString());
         createPipelineRule(alertTitle, listfieldRule, stream, rule.id());
     }
 

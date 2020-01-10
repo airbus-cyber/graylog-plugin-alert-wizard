@@ -252,7 +252,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         Stream stream = alertRuleUtilsService.createStream(request.getStream(), alertTitle, userName);
         List<FieldRuleImpl> listPipelineFieldRule = alertRuleUtilsService.extractPipelineFieldRules(request.getStream().getFieldRules());
         RuleDao pipelineRule = alertRuleUtilsService.createPipelineRule(alertTitle, listPipelineFieldRule, stream, null);
-        PipelineDao pipeline = alertRuleUtilsService.createPipeline(alertTitle, null);
+        PipelineDao pipeline = alertRuleUtilsService.createPipeline(alertTitle, null, request.getStream().getMatchingType());
         String pipelineID = pipeline.id();
         String pipelineRuleID = pipelineRule.id();
 
@@ -273,7 +273,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
             listPipelineFieldRule2 = alertRuleUtilsService.extractPipelineFieldRules(request.getSecondStream().getFieldRules());
             RuleDao pipelineRule2 = alertRuleUtilsService.createPipelineRule(alertTitle+"#2", listPipelineFieldRule2, stream2, null);
-        	PipelineDao pipeline2 = alertRuleUtilsService.createPipeline(alertTitle+"#2", null);
+        	PipelineDao pipeline2 = alertRuleUtilsService.createPipeline(alertTitle+"#2", null, request.getStream().getMatchingType());
         	pipelineID2 = pipeline2.id();
         	pipelineRuleID2 = pipelineRule2.id();
         }
@@ -458,7 +458,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         //create pipeline
         RuleDao pipelineRule = alertRuleUtilsService.createPipelineRule(alertTitle, sourceAlert.getPipelineFieldRules(), firstStream, null);
-        PipelineDao pipeline = alertRuleUtilsService.createPipeline(alertTitle, null);
+        PipelineDao pipeline = alertRuleUtilsService.createPipeline(alertTitle, null, sourceFirstStream.getMatchingType().toString());
         String pipelineID = pipeline.id();
         String pipelineRuleID = pipelineRule.id();
 
@@ -474,7 +474,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         	secondStreamID = secondStream.getId();
 
             RuleDao pipelineRule2 = alertRuleUtilsService.createPipelineRule(alertTitle+"#2", sourceAlert.getSecondPipelineFieldRules(), secondStream, null);
-            PipelineDao pipeline2 = alertRuleUtilsService.createPipeline(alertTitle+"#2", null);
+            PipelineDao pipeline2 = alertRuleUtilsService.createPipeline(alertTitle+"#2", null, sourceFirstStream.getMatchingType().toString());
             pipelineID2 = pipeline2.id();
             pipelineRuleID2 = pipelineRule2.id();
         }
@@ -615,7 +615,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         Stream stream = alertRuleUtilsService.createStream(alertRule.getStream(), alertTitle, userName);
         List<FieldRuleImpl> listPipelineFieldRule = alertRuleUtilsService.extractPipelineFieldRules(alertRule.getStream().getFieldRules());
         RuleDao pipelineRule = alertRuleUtilsService.createPipelineRule(alertTitle, listPipelineFieldRule, stream, null);
-        PipelineDao pipeline = alertRuleUtilsService.createPipeline(alertTitle, null);
+        PipelineDao pipeline = alertRuleUtilsService.createPipeline(alertTitle, null, alertRule.getStream().getMatchingType());
         String pipelineID = pipeline.id();
         String pipelineRuleID = pipelineRule.id();
 
@@ -636,7 +636,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
             listPipelineFieldRule2 = alertRuleUtilsService.extractPipelineFieldRules(alertRule.getSecondStream().getFieldRules());
             RuleDao pipelineRule2 = alertRuleUtilsService.createPipelineRule(alertTitle+"#2", listPipelineFieldRule2, stream2, null);
-            PipelineDao pipeline2 = alertRuleUtilsService.createPipeline(alertTitle+"#2", null);
+            PipelineDao pipeline2 = alertRuleUtilsService.createPipeline(alertTitle+"#2", null, alertRule.getStream().getMatchingType());
             pipelineID2 = pipeline2.id();
             pipelineRuleID2 = pipelineRule2.id();
         }
