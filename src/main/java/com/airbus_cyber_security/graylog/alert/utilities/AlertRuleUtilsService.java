@@ -190,7 +190,7 @@ public class AlertRuleUtilsService {
         if (ruleID == null) {
             ruleID = RandomStringUtils.random(RANDOM_COUNT, RANDOM_CHARS);
         }
-        final RuleDao cr = RuleDao.create(ruleID, alertTitle, AlertRuleUtils.COMMENT_ALERT_WIZARD, createRuleSource(alertTitle, listfieldRule, stream), now, now);
+        final RuleDao cr = RuleDao.create(ruleID, "function "+alertTitle, AlertRuleUtils.COMMENT_ALERT_WIZARD, createRuleSource(alertTitle, listfieldRule, stream), now, now);
 
         final RuleDao save = ruleService.save(cr);
 
@@ -199,7 +199,7 @@ public class AlertRuleUtilsService {
     }
 
     public String createPipelineStringSource(String alertTitle) {
-        return "pipeline \""+alertTitle+"\"\nstage 0 match either\nrule \""+alertTitle+"\"\nend";
+        return "pipeline \""+alertTitle+"\"\nstage 0 match either\nrule \"function "+alertTitle+"\"\nend";
     }
 
     public PipelineDao createPipeline(String alertTitle, String pipelineID) {
