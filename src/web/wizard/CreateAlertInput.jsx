@@ -216,11 +216,11 @@ const CreateAlertInput = createReactClass({
                 },
                 {
                     label: this.state.messages.done,
-                    onClick: () => history.push({pathname: Routes.pluginRoute('WIZARD')})
+                    onClick: () => history.push({pathname: Routes.pluginRoute('WIZARD_ALERTRULES')})
                 },
             ]
         };
-        confirmAlert(options);
+       confirmAlert(options);
     },
     _updateAlertField(field, value) {
         const update = ObjectUtils.clone(this.state.alert);
@@ -247,7 +247,9 @@ const CreateAlertInput = createReactClass({
                     rule.type === 2 || rule.type === -2 ||
                     rule.type === 3 || rule.type === -3 ||
                     rule.type === 4 || rule.type === -4 ||
-                    rule.type === 6 || rule.type === -6))) {
+                    rule.type === 6 || rule.type === -6) &&
+                    (rule.type === 7 || rule.type === -7) ||
+                rule.field !== '' && rule.value !== '')) {
                 return false;
             }
         return true;
@@ -339,7 +341,7 @@ const CreateAlertInput = createReactClass({
     render: function () {
         let actions;
         const buttonCancel = (
-            <LinkContainer to={Routes.pluginRoute('WIZARD')}>
+            <LinkContainer to={Routes.pluginRoute('WIZARD_ALERTRULES')}>
                 <Button><FormattedMessage id= "wizard.cancel" defaultMessage= "Cancel" /></Button>
             </LinkContainer>
         );

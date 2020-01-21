@@ -1,0 +1,457 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/home/thomas/wrk/graylog-project-repos/graylog-plugin-alert-wizard/node/node',
+1 verbose cli   '/home/thomas/wrk/graylog-project-repos/graylog-plugin-alert-wizard/node/node_modules/npm/bin/npm-cli.js',
+1 verbose cli   'install' ]
+2 info using npm@4.0.3
+3 info using node@v6.9.2
+4 silly loadCurrentTree Starting
+5 silly install loadCurrentTree
+6 silly install readLocalPackageData
+7 silly install normalizeTree
+8 silly loadCurrentTree Finishing
+9 silly loadIdealTree Starting
+10 silly install loadIdealTree
+11 silly cloneCurrentTree Starting
+12 silly install cloneCurrentTreeToIdealTree
+13 silly cloneCurrentTree Finishing
+14 silly loadShrinkwrap Starting
+15 silly install loadShrinkwrap
+16 silly loadShrinkwrap Finishing
+17 silly loadAllDepsIntoIdealTree Starting
+18 silly install loadAllDepsIntoIdealTree
+19 silly fetchDirectoryPackageData graylog-web-plugin
+20 silly fetchNamedPackageData react
+21 silly mapToRegistry name react
+22 silly mapToRegistry using default registry
+23 silly mapToRegistry registry https://registry.npmjs.org/
+24 silly mapToRegistry data Result {
+24 silly mapToRegistry   raw: 'react',
+24 silly mapToRegistry   scope: null,
+24 silly mapToRegistry   escapedName: 'react',
+24 silly mapToRegistry   name: 'react',
+24 silly mapToRegistry   rawSpec: '',
+24 silly mapToRegistry   spec: 'latest',
+24 silly mapToRegistry   type: 'tag' }
+25 silly mapToRegistry uri https://registry.npmjs.org/react
+26 silly fetchNamedPackageData react-dom
+27 silly mapToRegistry name react-dom
+28 silly mapToRegistry using default registry
+29 silly mapToRegistry registry https://registry.npmjs.org/
+30 silly mapToRegistry data Result {
+30 silly mapToRegistry   raw: 'react-dom',
+30 silly mapToRegistry   scope: null,
+30 silly mapToRegistry   escapedName: 'react-dom',
+30 silly mapToRegistry   name: 'react-dom',
+30 silly mapToRegistry   rawSpec: '',
+30 silly mapToRegistry   spec: 'latest',
+30 silly mapToRegistry   type: 'tag' }
+31 silly mapToRegistry uri https://registry.npmjs.org/react-dom
+32 verbose request uri https://registry.npmjs.org/react
+33 verbose request no auth needed
+34 info attempt registry request try #1 at 14:31:02
+35 verbose request id 99e0354d7a00ef57
+36 verbose etag W/"f5adbe6474eb2ba70bf152c650ca49d1"
+37 verbose lastModified Thu, 11 Jul 2019 13:42:37 GMT
+38 http request GET https://registry.npmjs.org/react
+39 verbose request uri https://registry.npmjs.org/react-dom
+40 verbose request no auth needed
+41 info attempt registry request try #1 at 14:31:03
+42 verbose etag W/"26ec96767710a5b04c7d1f3a05c02ad3"
+43 verbose lastModified Fri, 05 Jul 2019 05:22:47 GMT
+44 http request GET https://registry.npmjs.org/react-dom
+45 silly resolveWithNewModule graylog-web-plugin@3.0.2-SNAPSHOT checking installable status
+46 silly cache add args [ 'graylog-web-plugin@file:../graylog2-server/graylog2-web-interface/packages/graylog-web-plugin',
+46 silly cache add   null ]
+47 verbose cache add spec graylog-web-plugin@file:../graylog2-server/graylog2-web-interface/packages/graylog-web-plugin
+48 silly cache add parsed spec Result {
+48 silly cache add   raw: 'graylog-web-plugin@file:../graylog2-server/graylog2-web-interface/packages/graylog-web-plugin',
+48 silly cache add   scope: null,
+48 silly cache add   escapedName: 'graylog-web-plugin',
+48 silly cache add   name: 'graylog-web-plugin',
+48 silly cache add   rawSpec: 'file:../graylog2-server/graylog2-web-interface/packages/graylog-web-plugin',
+48 silly cache add   spec: '/home/thomas/wrk/graylog-project-repos/graylog2-server/graylog2-web-interface/packages/graylog-web-plugin',
+48 silly cache add   type: 'directory' }
+49 verbose addLocalDirectory /home/thomas/.npm/graylog-web-plugin/3.0.2-SNAPSHOT/package.tgz not in flight; packing
+50 verbose correctMkdir /home/thomas/.npm correctMkdir not in flight; initializing
+51 warn prepublish-on-install As of npm@5, `prepublish` scripts will run only for `npm publish`.
+52 warn prepublish-on-install (In npm@4 and previous versions, it also runs for `npm install`.)
+53 warn prepublish-on-install See the deprecation note in `npm help scripts` for more information.
+54 info lifecycle graylog-web-plugin@3.0.2-SNAPSHOT~prepublish: graylog-web-plugin@3.0.2-SNAPSHOT
+55 verbose lifecycle graylog-web-plugin@3.0.2-SNAPSHOT~prepublish: unsafe-perm in lifecycle true
+56 verbose lifecycle graylog-web-plugin@3.0.2-SNAPSHOT~prepublish: PATH: /home/thomas/wrk/graylog-project-repos/graylog-plugin-alert-wizard/node/node_modules/npm/bin/node-gyp-bin:/home/thomas/wrk/graylog-project-repos/graylog2-server/graylog2-web-interface/packages/graylog-web-plugin/node_modules/.bin:/home/thomas/wrk/graylog-project-repos/graylog-plugin-alert-wizard/node:/home/thomas/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:
+57 verbose lifecycle graylog-web-plugin@3.0.2-SNAPSHOT~prepublish: CWD: /home/thomas/wrk/graylog-project-repos/graylog2-server/graylog2-web-interface/packages/graylog-web-plugin
+58 silly lifecycle graylog-web-plugin@3.0.2-SNAPSHOT~prepublish: Args: [ '-c', 'yarn run compile' ]
+59 http 304 https://registry.npmjs.org/react
+60 verbose headers { date: 'Fri, 12 Jul 2019 12:31:04 GMT',
+60 verbose headers   connection: 'keep-alive',
+60 verbose headers   'set-cookie': [ '__cfduid=da8ee8e24bcbe65aa81cf3e1b32f941821562934664; expires=Sat, 11-Jul-20 12:31:04 GMT; path=/; domain=.npmjs.org; HttpOnly' ],
+60 verbose headers   'cf-cache-status': 'HIT',
+60 verbose headers   'cache-control': 'max-age=300',
+60 verbose headers   'cf-ray': '4f5308352e6d69a4-CDG',
+60 verbose headers   age: '2436',
+60 verbose headers   etag: '"f5adbe6474eb2ba70bf152c650ca49d1"',
+60 verbose headers   'expect-ct': 'max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"',
+60 verbose headers   'last-modified': 'Thu, 11 Jul 2019 13:42:37 GMT',
+60 verbose headers   vary: 'accept-encoding, accept',
+60 verbose headers   'x-amz-meta-rev': '1266-f2e5e54f0efcea2701d5207322222bb9',
+60 verbose headers   server: 'cloudflare' }
+61 silly get cb [ 304,
+61 silly get   { date: 'Fri, 12 Jul 2019 12:31:04 GMT',
+61 silly get     connection: 'keep-alive',
+61 silly get     'set-cookie': [ '__cfduid=da8ee8e24bcbe65aa81cf3e1b32f941821562934664; expires=Sat, 11-Jul-20 12:31:04 GMT; path=/; domain=.npmjs.org; HttpOnly' ],
+61 silly get     'cf-cache-status': 'HIT',
+61 silly get     'cache-control': 'max-age=300',
+61 silly get     'cf-ray': '4f5308352e6d69a4-CDG',
+61 silly get     age: '2436',
+61 silly get     etag: '"f5adbe6474eb2ba70bf152c650ca49d1"',
+61 silly get     'expect-ct': 'max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"',
+61 silly get     'last-modified': 'Thu, 11 Jul 2019 13:42:37 GMT',
+61 silly get     vary: 'accept-encoding, accept',
+61 silly get     'x-amz-meta-rev': '1266-f2e5e54f0efcea2701d5207322222bb9',
+61 silly get     server: 'cloudflare' } ]
+62 verbose etag https://registry.npmjs.org/react from cache
+63 verbose get saving react to /home/thomas/.npm/registry.npmjs.org/react/.cache.json
+64 verbose correctMkdir /home/thomas/.npm correctMkdir not in flight; initializing
+65 http 304 https://registry.npmjs.org/react-dom
+66 verbose headers { date: 'Fri, 12 Jul 2019 12:31:04 GMT',
+66 verbose headers   connection: 'keep-alive',
+66 verbose headers   'set-cookie': [ '__cfduid=dd934ea48f277956da9d0217b797422d11562934664; expires=Sat, 11-Jul-20 12:31:04 GMT; path=/; domain=.npmjs.org; HttpOnly' ],
+66 verbose headers   'cf-cache-status': 'HIT',
+66 verbose headers   'cache-control': 'max-age=300',
+66 verbose headers   'cf-ray': '4f5308352faacd9f-CDG',
+66 verbose headers   age: '954',
+66 verbose headers   etag: '"26ec96767710a5b04c7d1f3a05c02ad3"',
+66 verbose headers   'expect-ct': 'max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"',
+66 verbose headers   'last-modified': 'Fri, 05 Jul 2019 05:22:47 GMT',
+66 verbose headers   vary: 'accept-encoding, accept',
+66 verbose headers   'x-amz-meta-rev': '501-a70b95b08ead6e3b80f144f215372ee7',
+66 verbose headers   server: 'cloudflare' }
+67 silly get cb [ 304,
+67 silly get   { date: 'Fri, 12 Jul 2019 12:31:04 GMT',
+67 silly get     connection: 'keep-alive',
+67 silly get     'set-cookie': [ '__cfduid=dd934ea48f277956da9d0217b797422d11562934664; expires=Sat, 11-Jul-20 12:31:04 GMT; path=/; domain=.npmjs.org; HttpOnly' ],
+67 silly get     'cf-cache-status': 'HIT',
+67 silly get     'cache-control': 'max-age=300',
+67 silly get     'cf-ray': '4f5308352faacd9f-CDG',
+67 silly get     age: '954',
+67 silly get     etag: '"26ec96767710a5b04c7d1f3a05c02ad3"',
+67 silly get     'expect-ct': 'max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"',
+67 silly get     'last-modified': 'Fri, 05 Jul 2019 05:22:47 GMT',
+67 silly get     vary: 'accept-encoding, accept',
+67 silly get     'x-amz-meta-rev': '501-a70b95b08ead6e3b80f144f215372ee7',
+67 silly get     server: 'cloudflare' } ]
+68 verbose etag https://registry.npmjs.org/react-dom from cache
+69 verbose get saving react-dom to /home/thomas/.npm/registry.npmjs.org/react-dom/.cache.json
+70 verbose correctMkdir /home/thomas/.npm correctMkdir not in flight; initializing
+71 silly resolveWithNewModule react@0.14.9 checking installable status
+72 silly cache add args [ 'react@^0.14.9', null ]
+73 verbose cache add spec react@^0.14.9
+74 silly cache add parsed spec Result {
+74 silly cache add   raw: 'react@^0.14.9',
+74 silly cache add   scope: null,
+74 silly cache add   escapedName: 'react',
+74 silly cache add   name: 'react',
+74 silly cache add   rawSpec: '^0.14.9',
+74 silly cache add   spec: '>=0.14.9 <0.15.0',
+74 silly cache add   type: 'range' }
+75 silly addNamed react@>=0.14.9 <0.15.0
+76 verbose addNamed ">=0.14.9 <0.15.0" is a valid semver range for react
+77 silly addNameRange { name: 'react', range: '>=0.14.9 <0.15.0', hasData: false }
+78 silly mapToRegistry name react
+79 silly mapToRegistry using default registry
+80 silly mapToRegistry registry https://registry.npmjs.org/
+81 silly mapToRegistry data Result {
+81 silly mapToRegistry   raw: 'react',
+81 silly mapToRegistry   scope: null,
+81 silly mapToRegistry   escapedName: 'react',
+81 silly mapToRegistry   name: 'react',
+81 silly mapToRegistry   rawSpec: '',
+81 silly mapToRegistry   spec: 'latest',
+81 silly mapToRegistry   type: 'tag' }
+82 silly mapToRegistry uri https://registry.npmjs.org/react
+83 verbose addNameRange registry:https://registry.npmjs.org/react not in flight; fetching
+84 silly resolveWithNewModule react-dom@0.14.9 checking installable status
+85 silly cache add args [ 'react-dom@^0.14.9', null ]
+86 verbose cache add spec react-dom@^0.14.9
+87 silly cache add parsed spec Result {
+87 silly cache add   raw: 'react-dom@^0.14.9',
+87 silly cache add   scope: null,
+87 silly cache add   escapedName: 'react-dom',
+87 silly cache add   name: 'react-dom',
+87 silly cache add   rawSpec: '^0.14.9',
+87 silly cache add   spec: '>=0.14.9 <0.15.0',
+87 silly cache add   type: 'range' }
+88 silly addNamed react-dom@>=0.14.9 <0.15.0
+89 verbose addNamed ">=0.14.9 <0.15.0" is a valid semver range for react-dom
+90 silly addNameRange { name: 'react-dom', range: '>=0.14.9 <0.15.0', hasData: false }
+91 silly mapToRegistry name react-dom
+92 silly mapToRegistry using default registry
+93 silly mapToRegistry registry https://registry.npmjs.org/
+94 silly mapToRegistry data Result {
+94 silly mapToRegistry   raw: 'react-dom',
+94 silly mapToRegistry   scope: null,
+94 silly mapToRegistry   escapedName: 'react-dom',
+94 silly mapToRegistry   name: 'react-dom',
+94 silly mapToRegistry   rawSpec: '',
+94 silly mapToRegistry   spec: 'latest',
+94 silly mapToRegistry   type: 'tag' }
+95 silly mapToRegistry uri https://registry.npmjs.org/react-dom
+96 verbose addNameRange registry:https://registry.npmjs.org/react-dom not in flight; fetching
+97 verbose get https://registry.npmjs.org/react not expired, no request
+98 silly addNameRange number 2 { name: 'react', range: '>=0.14.9 <0.15.0', hasData: true }
+99 silly addNameRange versions [ 'react',
+99 silly addNameRange   [ '0.0.1',
+99 silly addNameRange     '0.0.2',
+99 silly addNameRange     '0.0.3',
+99 silly addNameRange     '0.1.2',
+99 silly addNameRange     '0.2.0',
+99 silly addNameRange     '0.2.1',
+99 silly addNameRange     '0.2.2',
+99 silly addNameRange     '0.2.3',
+99 silly addNameRange     '0.2.4',
+99 silly addNameRange     '0.2.5',
+99 silly addNameRange     '0.2.6',
+99 silly addNameRange     '0.3.0',
+99 silly addNameRange     '0.3.4',
+99 silly addNameRange     '0.3.5',
+99 silly addNameRange     '0.5.0',
+99 silly addNameRange     '0.5.1',
+99 silly addNameRange     '0.5.2',
+99 silly addNameRange     '0.6.0',
+99 silly addNameRange     '0.6.1',
+99 silly addNameRange     '0.6.2',
+99 silly addNameRange     '0.6.3',
+99 silly addNameRange     '0.7.0',
+99 silly addNameRange     '0.7.1',
+99 silly addNameRange     '0.8.0',
+99 silly addNameRange     '0.9.0-rc1',
+99 silly addNameRange     '0.9.0',
+99 silly addNameRange     '0.10.0-rc1',
+99 silly addNameRange     '0.10.0',
+99 silly addNameRange     '0.11.0-rc1',
+99 silly addNameRange     '0.11.0',
+99 silly addNameRange     '0.11.1',
+99 silly addNameRange     '0.11.2',
+99 silly addNameRange     '0.12.0-rc1',
+99 silly addNameRange     '0.12.0',
+99 silly addNameRange     '0.12.1',
+99 silly addNameRange     '0.12.2',
+99 silly addNameRange     '0.13.0-alpha.1',
+99 silly addNameRange     '0.13.0-alpha.2',
+99 silly addNameRange     '0.13.0-beta.1',
+99 silly addNameRange     '0.13.0-beta.2',
+99 silly addNameRange     '0.13.0-rc1',
+99 silly addNameRange     '0.13.0-rc2',
+99 silly addNameRange     '0.13.0',
+99 silly addNameRange     '0.13.1',
+99 silly addNameRange     '0.13.2',
+99 silly addNameRange     '0.13.3',
+99 silly addNameRange     '0.14.0-alpha1',
+99 silly addNameRange     '0.14.0-alpha2',
+99 silly addNameRange     '0.14.0-alpha3',
+99 silly addNameRange     '0.14.0-beta1',
+99 silly addNameRange     '0.14.0-beta2',
+99 silly addNameRange     '0.14.0-beta3',
+99 silly addNameRange     '0.14.0-rc1',
+99 silly addNameRange     '0.14.0',
+99 silly addNameRange     '0.14.1',
+99 silly addNameRange     '0.14.2',
+99 silly addNameRange     '0.14.3',
+99 silly addNameRange     '0.14.4',
+99 silly addNameRange     '0.14.5',
+99 silly addNameRange     '0.14.6',
+99 silly addNameRange     '0.15.0-alpha.1',
+99 silly addNameRange     '0.14.7',
+99 silly addNameRange     '15.0.0-rc.1',
+99 silly addNameRange     '15.0.0-rc.2',
+99 silly addNameRange     '0.14.8',
+99 silly addNameRange     '15.0.0',
+99 silly addNameRange     '15.0.1',
+99 silly addNameRange     '15.0.2-alpha.1',
+99 silly addNameRange     '15.0.2-alpha.2',
+99 silly addNameRange     '15.0.2-alpha.3',
+99 silly addNameRange     '15.0.2-alpha.4',
+99 silly addNameRange     '15.0.2',
+99 silly addNameRange     '15.0.3-alpha.1',
+99 silly addNameRange     '15.0.3-alpha.2',
+99 silly addNameRange     '15.1.0-alpha.1',
+99 silly addNameRange     '15.1.0',
+99 silly addNameRange     '15.2.0-rc.1',
+99 silly addNameRange     '15.2.0-rc.2',
+99 silly addNameRange     '15.2.0',
+99 silly addNameRange     '15.2.1',
+99 silly addNameRange     '15.3.0-rc.1',
+99 silly addNameRange     '15.3.0-rc.2',
+99 silly addNameRange     '15.3.0-rc.3',
+99 silly addNameRange     '15.3.0',
+99 silly addNameRange     '15.3.1-rc.1',
+99 silly addNameRange     '15.3.1-rc.2',
+99 silly addNameRange     '15.3.1',
+99 silly addNameRange     '15.3.2-rc.1',
+99 silly addNameRange     '15.3.2',
+99 silly addNameRange     '15.4.0-rc.1',
+99 silly addNameRange     '15.4.0-rc.2',
+99 silly addNameRange     '15.4.0-rc.3',
+99 silly addNameRange     '15.4.0-rc.4',
+99 silly addNameRange     '15.4.0',
+99 silly addNameRange     '15.4.1',
+99 silly addNameRange     '15.4.2',
+99 silly addNameRange     '16.0.0-alpha',
+99 silly addNameRange     '16.0.0-alpha.0',
+99 silly addNameRange     '16.0.0-alpha.2',
+99 silly addNameRange     '16.0.0-alpha.3',
+99 silly addNameRange     ... 108 more items ] ]
+100 silly addNamed react@0.14.9
+101 verbose addNamed "0.14.9" is a plain semver version for react
+102 verbose get https://registry.npmjs.org/react-dom not expired, no request
+103 silly addNameRange number 2 { name: 'react-dom', range: '>=0.14.9 <0.15.0', hasData: true }
+104 silly addNameRange versions [ 'react-dom',
+104 silly addNameRange   [ '0.1.0',
+104 silly addNameRange     '0.14.0-beta1',
+104 silly addNameRange     '0.14.0-beta2',
+104 silly addNameRange     '0.14.0-beta3',
+104 silly addNameRange     '0.14.0-rc1',
+104 silly addNameRange     '0.14.0',
+104 silly addNameRange     '0.14.1',
+104 silly addNameRange     '0.14.2',
+104 silly addNameRange     '0.14.3',
+104 silly addNameRange     '0.14.4',
+104 silly addNameRange     '0.14.5',
+104 silly addNameRange     '0.14.6',
+104 silly addNameRange     '0.15.0-alpha.1',
+104 silly addNameRange     '0.14.7',
+104 silly addNameRange     '15.0.0-rc.1',
+104 silly addNameRange     '15.0.0-rc.2',
+104 silly addNameRange     '0.14.8',
+104 silly addNameRange     '15.0.0',
+104 silly addNameRange     '15.0.1',
+104 silly addNameRange     '15.0.2-alpha.1',
+104 silly addNameRange     '15.0.2-alpha.2',
+104 silly addNameRange     '15.0.2-alpha.3',
+104 silly addNameRange     '15.0.2-alpha.4',
+104 silly addNameRange     '15.0.2',
+104 silly addNameRange     '15.0.3-alpha.1',
+104 silly addNameRange     '15.0.3-alpha.2',
+104 silly addNameRange     '15.1.0-alpha.1',
+104 silly addNameRange     '15.1.0',
+104 silly addNameRange     '15.2.0-rc.1',
+104 silly addNameRange     '15.2.0-rc.2',
+104 silly addNameRange     '15.2.0',
+104 silly addNameRange     '15.2.1',
+104 silly addNameRange     '15.3.0-rc.1',
+104 silly addNameRange     '15.3.0-rc.2',
+104 silly addNameRange     '15.3.0-rc.3',
+104 silly addNameRange     '15.3.0',
+104 silly addNameRange     '15.3.1-rc.1',
+104 silly addNameRange     '15.3.1-rc.2',
+104 silly addNameRange     '15.3.1',
+104 silly addNameRange     '15.3.2-rc.1',
+104 silly addNameRange     '15.3.2',
+104 silly addNameRange     '15.4.0-rc.1',
+104 silly addNameRange     '15.4.0-rc.2',
+104 silly addNameRange     '15.4.0-rc.3',
+104 silly addNameRange     '15.4.0-rc.4',
+104 silly addNameRange     '15.4.0',
+104 silly addNameRange     '15.4.1',
+104 silly addNameRange     '15.4.2',
+104 silly addNameRange     '16.0.0-alpha',
+104 silly addNameRange     '16.0.0-alpha.0',
+104 silly addNameRange     '16.0.0-alpha.2',
+104 silly addNameRange     '16.0.0-alpha.3',
+104 silly addNameRange     '16.0.0-alpha.4',
+104 silly addNameRange     '16.0.0-alpha.5',
+104 silly addNameRange     '16.0.0-alpha.6',
+104 silly addNameRange     '15.5.0-rc.1',
+104 silly addNameRange     '16.0.0-alpha.7',
+104 silly addNameRange     '15.5.0-rc.2',
+104 silly addNameRange     '16.0.0-alpha.8',
+104 silly addNameRange     '15.5.0',
+104 silly addNameRange     '15.5.1',
+104 silly addNameRange     '15.5.2',
+104 silly addNameRange     '15.5.3',
+104 silly addNameRange     '15.5.4',
+104 silly addNameRange     '16.0.0-alpha.9',
+104 silly addNameRange     '0.14.9',
+104 silly addNameRange     '16.0.0-alpha.10',
+104 silly addNameRange     '16.0.0-alpha.11',
+104 silly addNameRange     '16.0.0-alpha.12',
+104 silly addNameRange     '15.6.0-rc.1',
+104 silly addNameRange     '16.0.0-alpha.13',
+104 silly addNameRange     '15.6.0',
+104 silly addNameRange     '15.6.1',
+104 silly addNameRange     '16.0.0-beta.1',
+104 silly addNameRange     '16.0.0-beta.2',
+104 silly addNameRange     '16.0.0-beta.3',
+104 silly addNameRange     '16.0.0-beta.4',
+104 silly addNameRange     '16.0.0-beta.5',
+104 silly addNameRange     '16.0.0-rc.1',
+104 silly addNameRange     '16.0.0-rc.2',
+104 silly addNameRange     '16.0.0-rc.3',
+104 silly addNameRange     '15.6.2',
+104 silly addNameRange     '16.0.0',
+104 silly addNameRange     '16.1.0-beta',
+104 silly addNameRange     '16.1.0-beta.1',
+104 silly addNameRange     '16.1.0-rc',
+104 silly addNameRange     '16.1.0',
+104 silly addNameRange     '16.1.1',
+104 silly addNameRange     '16.2.0',
+104 silly addNameRange     '16.3.0-alpha.0',
+104 silly addNameRange     '16.3.0-alpha.1',
+104 silly addNameRange     '16.4.0-alpha.7926752',
+104 silly addNameRange     '16.4.0-alpha.3174632',
+104 silly addNameRange     '16.4.0-alpha.0911da3',
+104 silly addNameRange     '16.3.0-alpha.2',
+104 silly addNameRange     '16.3.0-alpha.3',
+104 silly addNameRange     '16.3.0-rc.0',
+104 silly addNameRange     '16.3.0',
+104 silly addNameRange     '16.3.1',
+104 silly addNameRange     '16.3.2',
+104 silly addNameRange     ... 63 more items ] ]
+105 silly addNamed react-dom@0.14.9
+106 verbose addNamed "0.14.9" is a plain semver version for react-dom
+107 silly cache afterAdd react@0.14.9
+108 verbose afterAdd /home/thomas/.npm/react/0.14.9/package/package.json not in flight; writing
+109 verbose correctMkdir /home/thomas/.npm correctMkdir not in flight; initializing
+110 silly cache afterAdd react-dom@0.14.9
+111 verbose afterAdd /home/thomas/.npm/react-dom/0.14.9/package/package.json not in flight; writing
+112 verbose correctMkdir /home/thomas/.npm correctMkdir not in flight; initializing
+113 verbose afterAdd /home/thomas/.npm/react/0.14.9/package/package.json written
+114 verbose afterAdd /home/thomas/.npm/react-dom/0.14.9/package/package.json written
+115 silly lifecycle graylog-web-plugin@3.0.2-SNAPSHOT~prepublish: Returned: code: 1  signal: null
+116 info lifecycle graylog-web-plugin@3.0.2-SNAPSHOT~prepublish: Failed to exec prepublish script
+117 error addLocal Could not install /home/thomas/wrk/graylog-project-repos/graylog2-server/graylog2-web-interface/packages/graylog-web-plugin
+118 silly rollbackFailedOptional Starting
+119 silly rollbackFailedOptional Finishing
+120 silly runTopLevelLifecycles Finishing
+121 silly install printInstalled
+122 verbose stack Error: graylog-web-plugin@3.0.2-SNAPSHOT prepublish: `yarn run compile`
+122 verbose stack Exit status 1
+122 verbose stack     at EventEmitter.<anonymous> (/home/thomas/wrk/graylog-project-repos/graylog-plugin-alert-wizard/node/node_modules/npm/lib/utils/lifecycle.js:279:16)
+122 verbose stack     at emitTwo (events.js:106:13)
+122 verbose stack     at EventEmitter.emit (events.js:191:7)
+122 verbose stack     at ChildProcess.<anonymous> (/home/thomas/wrk/graylog-project-repos/graylog-plugin-alert-wizard/node/node_modules/npm/lib/utils/spawn.js:40:14)
+122 verbose stack     at emitTwo (events.js:106:13)
+122 verbose stack     at ChildProcess.emit (events.js:191:7)
+122 verbose stack     at maybeClose (internal/child_process.js:877:16)
+122 verbose stack     at Process.ChildProcess._handle.onexit (internal/child_process.js:226:5)
+123 verbose pkgid graylog-web-plugin@3.0.2-SNAPSHOT
+124 verbose cwd /home/thomas/wrk/graylog-project-repos/graylog-plugin-alert-wizard
+125 error Linux 4.18.0-25-generic
+126 error argv "/home/thomas/wrk/graylog-project-repos/graylog-plugin-alert-wizard/node/node" "/home/thomas/wrk/graylog-project-repos/graylog-plugin-alert-wizard/node/node_modules/npm/bin/npm-cli.js" "install"
+127 error node v6.9.2
+128 error npm  v4.0.3
+129 error code ELIFECYCLE
+130 error graylog-web-plugin@3.0.2-SNAPSHOT prepublish: `yarn run compile`
+130 error Exit status 1
+131 error Failed at the graylog-web-plugin@3.0.2-SNAPSHOT prepublish script 'yarn run compile'.
+131 error Make sure you have the latest version of node.js and npm installed.
+131 error If you do, this is most likely a problem with the graylog-web-plugin package,
+131 error not with npm itself.
+131 error Tell the author that this fails on your system:
+131 error     yarn run compile
+131 error You can get information on how to open an issue for this project with:
+131 error     npm bugs graylog-web-plugin
+131 error Or if that isn't available, you can get their info via:
+131 error     npm owner ls graylog-web-plugin
+131 error There is likely additional logging output above.
+132 verbose exit [ 1, true ]

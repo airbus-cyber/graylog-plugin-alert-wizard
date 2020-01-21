@@ -1,23 +1,35 @@
 package com.airbus_cyber_security.graylog;
 
+import com.airbus_cyber_security.graylog.alert.AlertRuleServiceImpl;
+import com.airbus_cyber_security.graylog.alert.bundles.ExportAlertRule;
+import com.airbus_cyber_security.graylog.alert.bundles.ExportAlertRuleRequest;
+import com.airbus_cyber_security.graylog.alert.rest.AlertRuleResource;
+import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetAlertRule;
+import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetDataAlertRule;
+import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetListAlertRule;
+import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetListDataAlertRule;
+import com.airbus_cyber_security.graylog.database.MongoDBServiceTest;
+import com.airbus_cyber_security.graylog.list.AlertListService;
+import com.google.common.collect.Maps;
+import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
+import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
+import org.graylog.plugins.pipelineprocessor.db.PipelineService;
+import org.graylog.plugins.pipelineprocessor.db.PipelineStreamConnectionsService;
+import org.graylog.plugins.pipelineprocessor.db.RuleService;
 import org.graylog2.alarmcallbacks.AlarmCallbackConfiguration;
 import org.graylog2.alarmcallbacks.AlarmCallbackConfigurationService;
 import org.graylog2.alarmcallbacks.AlarmCallbackFactory;
-
-import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
-
 import org.graylog2.alerts.Alert;
 import org.graylog2.alerts.AlertService;
+import org.graylog2.configuration.HttpConfiguration;
 import org.graylog2.database.NotFoundException;
-
-import com.airbus_cyber_security.graylog.database.MongoDBServiceTest;
-import com.google.common.collect.Maps;
-import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
-
 import org.graylog2.events.ClusterEventBus;
 import org.graylog2.indexer.IndexSet;
 import org.graylog2.indexer.IndexSetRegistry;
 import org.graylog2.indexer.indexset.IndexSetConfig;
+import org.graylog2.lookup.db.DBCacheService;
+import org.graylog2.lookup.db.DBDataAdapterService;
+import org.graylog2.lookup.db.DBLookupTableService;
 import org.graylog2.plugin.alarms.AlertCondition;
 import org.graylog2.plugin.cluster.ClusterConfigService;
 import org.graylog2.plugin.database.ValidationException;
@@ -27,34 +39,21 @@ import org.graylog2.streams.StreamRuleService;
 import org.graylog2.streams.StreamService;
 import org.joda.time.DateTime;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
-import com.airbus_cyber_security.graylog.alert.AlertRuleServiceImpl;
-import com.airbus_cyber_security.graylog.alert.bundles.ExportAlertRuleRequest;
-import com.airbus_cyber_security.graylog.alert.bundles.ExportAlertRule;
-import com.airbus_cyber_security.graylog.alert.rest.AlertRuleResource;
-import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetAlertRule;
-import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetDataAlertRule;
-import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetListAlertRule;
-import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetListDataAlertRule;
-
 import org.mockito.Mock;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
+import javax.validation.Validator;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.validation.Validator;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class AlertRuleResourceTest extends MongoDBServiceTest{
 	 
@@ -66,9 +65,26 @@ public class AlertRuleResourceTest extends MongoDBServiceTest{
     private ClusterConfigService clusterConfigService;
     @Mock
     private Validator validator;
-    
+    @Mock
+    private RuleService ruleService;
+    @Mock
+    private PipelineService pipelineService;
+    @Mock
+    private DBDataAdapterService dbDataAdapterService;
+    @Mock
+    private HttpConfiguration httpConfiguration;
+    @Mock
+    private DBCacheService dbCacheService;
+    @Mock
+    private DBLookupTableService dbTableService;
+    @Mock
+    private PipelineStreamConnectionsService pipelineStreamConnectionsService;
+    @Mock
+    private AlertListService alertListService;
+
     private StreamService streamService;
 	private AlertRuleResource alertRuleResource;
+
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -107,8 +123,8 @@ public class AlertRuleResourceTest extends MongoDBServiceTest{
         when(alertService.loadRecentOfStream(eq("5bc894ded9e3770323a780a7"), any(DateTime.class), eq(999))).thenReturn(new ArrayList<Alert>());
     	
         AlertRuleServiceImpl alertRuleService = new AlertRuleServiceImpl(mongoRule.getMongoConnection(), mapperProvider, validator);
-    	this.alertRuleResource = new AlertRuleResource(alertRuleService, streamService, streamRuleService, clusterEventBus, indexSetRegistry, 
-    										alertService, alarmCallbackConfigurationService, alarmCallbackFactory, clusterConfigService);
+    	this.alertRuleResource = new AlertRuleResource(alertRuleService, ruleService, pipelineService, dbDataAdapterService, httpConfiguration, dbCacheService, dbTableService,streamService, streamRuleService, clusterEventBus, indexSetRegistry,
+    										alertService, alarmCallbackConfigurationService, alarmCallbackFactory, clusterConfigService, pipelineStreamConnectionsService, alertListService);
     }
     
     @Test
@@ -121,13 +137,13 @@ public class AlertRuleResourceTest extends MongoDBServiceTest{
     
     @Test
     @UsingDataSet(locations = "alertWizardSingleRuleCount.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testDeleteAlertRule() throws UnsupportedEncodingException, NotFoundException {
+    public void testDeleteAlertRule() throws UnsupportedEncodingException {
     	alertRuleResource.delete("Test Count");
     }
     
     @Test
     @UsingDataSet(locations = "alertWizardSingleRuleCount.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testGetListAlertRuleOneRule() throws UnsupportedEncodingException, NotFoundException {
+    public void testGetListAlertRuleOneRule() {
     	GetListAlertRule listAlertRule = alertRuleResource.list();
     	
     	assertNotNull("Returned list should not be null", listAlertRule);
@@ -136,7 +152,7 @@ public class AlertRuleResourceTest extends MongoDBServiceTest{
     
     @Test
     @UsingDataSet(locations = "alertWizardTwoRules.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testGetListAlertRuleMultipleRule() throws UnsupportedEncodingException, NotFoundException {
+    public void testGetListAlertRuleMultipleRule() {
     	GetListAlertRule listAlertRule = alertRuleResource.list();
     	
     	assertNotNull("Returned list should not be null", listAlertRule);
@@ -160,7 +176,7 @@ public class AlertRuleResourceTest extends MongoDBServiceTest{
     
     @Test
     @UsingDataSet(locations = "alertWizardSingleRuleCount.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testGetListDataAlertRule() throws UnsupportedEncodingException, NotFoundException {
+    public void testGetListDataAlertRule() {
     	GetListDataAlertRule listDataAlertRule = alertRuleResource.listWithData();
 
     	assertNotNull("Returned list data alert rule should not be null", listDataAlertRule);
@@ -198,7 +214,7 @@ public class AlertRuleResourceTest extends MongoDBServiceTest{
     
     @Test
     @UsingDataSet(locations = "alertWizardSingleRuleCount.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testExportAlertRule() throws UnsupportedEncodingException, NotFoundException, ValidationException {
+    public void testExportAlertRule() {
     	List<String> titles = new ArrayList<>();
     	titles.add("Test Count");
 

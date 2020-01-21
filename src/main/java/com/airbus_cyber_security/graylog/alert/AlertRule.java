@@ -2,6 +2,8 @@ package com.airbus_cyber_security.graylog.alert;
 
 import org.joda.time.DateTime;
 
+import java.util.List;
+
 public interface AlertRule {
 	
 	public String getTitle();
@@ -20,7 +22,20 @@ public interface AlertRule {
 
     public String getDescription();
     
-    public String getConditionType();	
+    public String getConditionType();
     
 	public String getSecondStreamID();
+
+	public String getPipelineID();
+
+    public String getPipelineRuleID();
+
+    public List<FieldRuleImpl> getPipelineFieldRules();
+
+    public String getSecondPipelineID();
+
+    public String getSecondPipelineRuleID();
+
+    public List<FieldRuleImpl> getSecondPipelineFieldRules();
+
 }

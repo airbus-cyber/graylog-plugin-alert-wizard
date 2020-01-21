@@ -1,17 +1,23 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import Reflux from 'reflux';
+import AlertListActions from './Lists/AlertListActions';
 import createReactClass from 'create-react-class';
 import {Input} from 'components/bootstrap';
-import {Select, Spinner} from 'components/common';
+import {Select, Spinner, OverlayElement} from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import StoreProvider from 'injection/StoreProvider';
 import naturalSort from 'javascript-natural-sort';
 import {FormattedMessage} from 'react-intl';
+import AlertListStore from "./Lists/AlertListStore";
 
 const FieldsStore = StoreProvider.getStore('Fields');
+const CurrentUserStore = StoreProvider.getStore('CurrentUser');
 
 const FieldRule = createReactClass({
     displayName: 'FieldRule',
+
+    mixins: [Reflux.connect(CurrentUserStore), Reflux.connect(AlertListStore)],
 
     propTypes: {
         rule: PropTypes.object,
@@ -22,7 +28,7 @@ const FieldRule = createReactClass({
     contextTypes: {
         intl: PropTypes.object.isRequired,
     },
-    
+
     getDefaultProps() {
         return {
             rule: {field: '', type: '', value: ''},
@@ -35,6 +41,8 @@ const FieldRule = createReactClass({
             isModified: false,
             isValid: false,
             fields: null,
+            hover: false,
+            lists: null,
         };
     },
 
@@ -57,6 +65,13 @@ const FieldRule = createReactClass({
                 delete: this.context.intl.formatMessage({id: "wizard.delete", defaultMessage: "Delete"}),
             };
         this.setState({messages:messages});
+        this.list();
+    },
+
+    list() {
+        AlertListActions.list().then(lists => {
+            this.setState({lists: lists});
+        });
     },
 
     _availableRuleType() {
@@ -73,7 +88,27 @@ const FieldRule = createReactClass({
             {value: -5, label: <FormattedMessage id= "wizard.notPresent" defaultMessage= "is not present" />},
             {value: 6, label: <FormattedMessage id= "wizard.contains" defaultMessage= "contains" />},
             {value: -6, label: <FormattedMessage id= "wizard.notContain" defaultMessage= "does not contain" />},
+            {value: 7, label: <FormattedMessage id= "wizard.listpresent" defaultMessage= "is present in list" />},
+            {value: -7, label: <FormattedMessage id= "wizard.listnotpresent" defaultMessage= "is not present in list" />},
         ];
+    },
+
+    _createSelectItemsListTitle(list) {
+        let items = [];
+
+        if (list !== null) {
+            for (let i = 0; i < list.length; i++) {
+                items.push({value: list[i].title,
+                    label: <span title={list[i].lists}><FormattedMessage id={list[i].title}
+                                                                         defaultMessage={list[i].title}/></span>
+                });
+            }
+        }
+        return items;
+    },
+
+    _onListTypeSelect(value) {
+        this._updateAlertField('value', value)
     },
 
     _onRuleTypeSelect(value) {
@@ -126,7 +161,8 @@ const FieldRule = createReactClass({
                 this.state.rule.type === 2 || this.state.rule.type === -2 ||
                 this.state.rule.type === 3 || this.state.rule.type === -3 ||
                 this.state.rule.type === 4 || this.state.rule.type === -4 ||
-                this.state.rule.type === 6 || this.state.rule.type === -6)) {
+                this.state.rule.type === 6 || this.state.rule.type === -6 ||
+                this.state.rule.type === 7 || this.state.rule.type === -7)) {
             this.setState({isValid: true});
         }
     },
@@ -145,6 +181,7 @@ const FieldRule = createReactClass({
                 </div>
             );
         }
+
         const isMatchDataPesent = (this.props.matchData && this.props.matchData.rules.hasOwnProperty(this.props.rule.id));
         const color = (isMatchDataPesent ? this._getMatchDataColor() : '#FFFFFF');
 
@@ -154,11 +191,22 @@ const FieldRule = createReactClass({
                 .sort((s1, s2) => naturalSort(s1.label.toLowerCase(), s2.label.toLowerCase()));
         }
 
-        const valueBox = (this.state.rule.type !== 5 && this.state.rule.type !== -5 ?
-            <Input style={{backgroundColor: color, borderTopLeftRadius: '0px', borderBottomLeftRadius: '0px', height:'36px'}} 
-                ref="value" id="value" name="value" type="text"
-                   onChange={this._onValueChanged("value")} value={this.state.rule.value}/> :
-            <span style={{marginRight: 199}}/>);
+        const valueBox = (this.state.rule.type !== 5 && this.state.rule.type !== -5 && this.state.rule.type !== 7 && this.state.rule.type !== -7 ?
+            <Input style={{backgroundColor: color, borderTopLeftRadius: '0px', borderBottomLeftRadius: '0px', height:'36px'}}
+                   ref="value" id="value" name="value" type="text"
+                   onChange={this._onValueChanged("value")} value={this.state.rule.value}/>
+            : this.state.rule.type === 7 || this.state.rule.type === -7 ?
+                <Input ref="alertLists" id="alertLists" name="alertLists">
+                    <Select style={{backgroundColor: color, borderRadius: '0px'}}
+                            autosize={false}
+                            required
+                            value={this.state.rule.value}
+                            options={this._createSelectItemsListTitle(this.state.lists)}
+                            matchProp="value"
+                            onChange={this._onListTypeSelect}
+                            placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..."/>} />
+                </Input>
+                : <span style={{marginRight: 199}}/>);
 
         const deleteAction = (
                 <button id="delete-alert" type="button" className="btn btn-md btn-primary" title={this.state.messages.delete} style={{marginRight: '0.5em'}}
@@ -176,35 +224,42 @@ const FieldRule = createReactClass({
             this._update();
         }
 
-        return (
+        if (this.state.lists) {
+            return (
                 <form className="form-inline">
                     {deleteAction}
                     <Input ref="field" id="field" name="field">
-                        <Select style={{backgroundColor: color, borderTopRightRadius: '0px', borderBottomRightRadius: '0px'}}
-                            autosize={false}
-                            required
-                            value={this.state.rule.field}
-                            options={formattedOptions}
-                            matchProp="value"
-                            onChange={this._onRuleFieldSelect}
-                            allowCreate={true}
-                            placeholder={<FormattedMessage id= "wizard.select" defaultMessage= "Select..." />}
+                        <Select style={{
+                            backgroundColor: color,
+                            borderTopRightRadius: '0px',
+                            borderBottomRightRadius: '0px'
+                        }}
+                                autosize={false}
+                                required
+                                value={this.state.rule.field}
+                                options={formattedOptions}
+                                matchProp="value"
+                                onChange={this._onRuleFieldSelect}
+                                allowCreate={true}
+                                placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..."/>}
                         />
                     </Input>
                     <Input ref="type" id="type" name="type">
-                        <Select  style={{backgroundColor: color, borderRadius: '0px'}}
-                            autosize={false}
-                            required
-                            value={this.state.rule.type}
-                            options={this._availableRuleType()}
-                            matchProp="value"
-                            onChange={this._onRuleTypeSelect}
-                            placeholder={<FormattedMessage id= "wizard.select" defaultMessage= "Select..." />}
+                        <Select style={{backgroundColor: color, borderRadius: '0px'}}
+                                autosize={false}
+                                required
+                                value={this.state.rule.type}
+                                options={this._availableRuleType()}
+                                matchProp="value"
+                                onChange={this._onRuleTypeSelect}
+                                placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..."/>}
                         />
                     </Input>
                     {valueBox}
                 </form>
-        );
+            );
+        }
+        return <Spinner/>
     },
 });
 

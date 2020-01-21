@@ -6,7 +6,6 @@ import com.airbus_cyber_security.graylog.alert.utilities.AlertRuleUtils;
 import com.google.common.collect.Lists;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
-
 import org.graylog2.bindings.providers.MongoJackObjectMapperProvider;
 import org.graylog2.database.CollectionName;
 import org.graylog2.database.MongoConnection;
@@ -19,7 +18,9 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class AlertRuleServiceImpl implements AlertRuleService {
 
@@ -54,33 +55,30 @@ public class AlertRuleServiceImpl implements AlertRuleService {
 			} else {
 				throw new IllegalArgumentException("Specified object failed validation: " + violations);
 			}
-		} else
-			throw new IllegalArgumentException(
-					"Specified object is not of correct implementation type (" + alert.getClass() + ")!");
+		} else {
+			throw new IllegalArgumentException("Specified object is not of correct implementation type (" + alert.getClass() + ")!");
+		}
 	}
 	
 	@Override
 	public AlertRule update(String title, AlertRule alert) {
-		
+
 		if (alert instanceof AlertRuleImpl) {
 			final AlertRuleImpl alertImpl = (AlertRuleImpl) alert;
 			LOG.debug("Alert to be updated [{}]", alertImpl);
 
 			final Set<ConstraintViolation<AlertRuleImpl>> violations = validator.validate(alertImpl);
 			if (violations.isEmpty()) {
-
 				return coll.findAndModify(DBQuery.is(TITLE, title), new BasicDBObject(), new BasicDBObject(),
 						false, alertImpl, true, false);
-
 			} else {
 				throw new IllegalArgumentException("Specified object failed validation: " + violations);
 			}
 
-		} else
-			throw new IllegalArgumentException(
-					"Specified object is not of correct implementation type (" + alert.getClass() + ")!");
+		} else {
+			throw new IllegalArgumentException("Specified object is not of correct implementation type (" + alert.getClass() + ")!");
+		}
 	}
-
 
 	@Override
 	public List<AlertRule> all() {
@@ -120,9 +118,9 @@ public class AlertRuleServiceImpl implements AlertRuleService {
 	
 	private boolean isValidStream(AlertRuleStreamImpl stream) {
 		if(stream.getMatchingType().equals("AND") || stream.getMatchingType().equals("OR")){
-			for (FieldRuleImpl fieldRule : stream.getFieldRules()) {
+			for (FieldRule fieldRule : stream.getFieldRules()) {
 				if(fieldRule.getField() == null || fieldRule.getField().isEmpty() ||
-						fieldRule.getType() < -6 || fieldRule.getType() > 6	) {
+						fieldRule.getType() < -7 || fieldRule.getType() > 7	) {
 					return false;
 				}
 			}

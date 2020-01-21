@@ -86,12 +86,21 @@ const WizardPage = createReactClass({
     },
     
     render() {
+
+        if (this._isLoading()) {
+            return <Spinner/>;
+        }
+
+        if(!this.state.plugins && this.state.nodes){
+            this._getPlugins();
+        }
         const configWizard = this._getConfig();
+
         return (
         <IntlProvider locale={language} messages={messages[language]}>         
-            <DocumentTitle title="Wizard">
+            <DocumentTitle title="Alert Rules">
                 <div>
-                    <PageHeader title='Wizard'>
+                    <PageHeader title={<FormattedMessage id="wizard.alertsRule" defaultMessage= "Alert Rules" />}>
                       <span><FormattedMessage id ="wizard.description" 
                             defaultMessage="With the wizard, you can manage the alert rules. An alert rule consists of one or more streams with rules, an alert condition and an alert notification." 
                             />

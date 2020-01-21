@@ -1,13 +1,11 @@
 package com.airbus_cyber_security.graylog.alert.utilities;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import org.graylog2.alerts.AbstractAlertCondition;
-import org.graylog2.plugin.streams.StreamRule;
 import com.airbus_cyber_security.graylog.alert.FieldRuleImpl;
 import com.google.common.collect.Maps;
+import org.graylog2.alerts.AbstractAlertCondition;
+import org.graylog2.plugin.streams.StreamRule;
+
+import java.util.*;
 
 public class AlertRuleUtils {
 
@@ -96,12 +94,10 @@ public class AlertRuleUtils {
 			conditionType = TYPE_AGGREGATION;
 			break;
 		case "THEN":
-			conditionType = TYPE_CORRELATION;
-			break;
 		case "AND":
 			conditionType = TYPE_CORRELATION;
 			break;
-			
+
 		default:
 			conditionType = AbstractAlertCondition.Type.MESSAGE_COUNT.toString();
 			break;
@@ -124,5 +120,9 @@ public class AlertRuleUtils {
 	public boolean isValidSeverity(String severity) {
 		return  (severity.equals("info") || severity.equals("low") ||
 				severity.equals("medium") || severity.equals("high"));
+	}
+
+	public <T> Collection<T> nullSafe(Collection<T> c) {
+		return (c == null) ? Collections.<T>emptyList() : c;
 	}
 }

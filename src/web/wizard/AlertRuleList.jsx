@@ -353,7 +353,7 @@ const AlertRuleList = createReactClass({
             );
         }
 
-        return <Spinner/>;
+        return <Spinner/>
     },
 });
 

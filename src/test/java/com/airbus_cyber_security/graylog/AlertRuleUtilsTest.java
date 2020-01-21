@@ -1,15 +1,14 @@
 package com.airbus_cyber_security.graylog;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Map;
-
+import com.airbus_cyber_security.graylog.alert.utilities.AlertRuleUtils;
+import com.google.common.collect.Maps;
 import org.graylog2.alerts.AbstractAlertCondition;
 import org.junit.Test;
 
-import com.airbus_cyber_security.graylog.alert.utilities.AlertRuleUtils;
-import com.google.common.collect.Maps;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class AlertRuleUtilsTest {
 	
@@ -50,12 +49,12 @@ public class AlertRuleUtilsTest {
 	@Test
 	public void testGetconditionType() {
 		AlertRuleUtils alertRuleUtils = new AlertRuleUtils();
-		assertEquals(alertRuleUtils.getGraylogConditionType(STATISTICAL), AbstractAlertCondition.Type.FIELD_VALUE.toString());
-		assertEquals(alertRuleUtils.getGraylogConditionType(GROUP_DISTINCT), TYPE_AGGREGATION);
-		assertEquals(alertRuleUtils.getGraylogConditionType(THEN), TYPE_CORRELATION);
-		assertEquals(alertRuleUtils.getGraylogConditionType(AND), TYPE_CORRELATION);
-		assertEquals(alertRuleUtils.getGraylogConditionType(OR), AbstractAlertCondition.Type.MESSAGE_COUNT.toString());
-		assertEquals(alertRuleUtils.getGraylogConditionType(EMPTY), AbstractAlertCondition.Type.MESSAGE_COUNT.toString());
+		assertEquals(AbstractAlertCondition.Type.FIELD_VALUE.toString(), alertRuleUtils.getGraylogConditionType(STATISTICAL));
+		assertEquals(TYPE_AGGREGATION, alertRuleUtils.getGraylogConditionType(GROUP_DISTINCT));
+		assertEquals(TYPE_CORRELATION, alertRuleUtils.getGraylogConditionType(THEN));
+		assertEquals(TYPE_CORRELATION, alertRuleUtils.getGraylogConditionType(AND));
+		assertEquals(AbstractAlertCondition.Type.MESSAGE_COUNT.toString(), alertRuleUtils.getGraylogConditionType(OR));
+		assertEquals(AbstractAlertCondition.Type.MESSAGE_COUNT.toString(), alertRuleUtils.getGraylogConditionType(EMPTY));
 	}
 	
 	@Test

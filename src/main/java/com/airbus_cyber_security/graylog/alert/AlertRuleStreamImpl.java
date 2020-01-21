@@ -7,10 +7,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.auto.value.AutoValue;
 import org.graylog2.database.CollectionName;
 
-import java.util.List;
-
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @AutoValue
 @JsonAutoDetect
