@@ -60,6 +60,9 @@ Restart `graylog-server` and you are done.
 
 ![](https://raw.githubusercontent.com/airbus-cyber/graylog-plugin-alert-wizard/master/images/create_alert_rule.png)
 
+### Use of lists
+> **WARNING**: The first time your create a rule with a list, the Wizard automatically create a lookup with cache and data adapter. But you must manually set up the authorization key with your login:password in base 64 for the data adapter 
+
 ## Build
 
 This project is using Maven 3 and requires Java 8 or higher.
