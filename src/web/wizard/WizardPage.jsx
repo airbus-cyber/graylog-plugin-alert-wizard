@@ -86,11 +86,6 @@ const WizardPage = createReactClass({
     },
     
     render() {
-
-        if (this._isLoading()) {
-            return <Spinner/>;
-        }
-
         if(!this.state.plugins && this.state.nodes){
             this._getPlugins();
         }
