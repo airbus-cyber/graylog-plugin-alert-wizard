@@ -1,6 +1,10 @@
 # Change Log
 
 All notable changes to this project will be documented in this file.
+## [3.1.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/3.0.1...3.1.0) (2020-01-21)
+### Features
+* Add the possibility to create lists and alert rules with condition on these lists
+
 ## [3.0.1](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/3.0.0...3.0.1) (2019-08-22)
 ### Bug Fixes
 * Fix Performance problem

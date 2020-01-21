@@ -25,6 +25,7 @@ Perfect for example to configure together and at the same time a stream, an aler
 | 1.1.x                 | 2.5.x           | 1.0.x                        | 1.0.x                            | 1.0.x                            |
 | 2.0.x                 | 2.5.x           | 1.1.x                        | 1.1.x                            | 1.1.x                            |
 | 3.0.x                 | 3.0.x           | 1.2.x                        | 1.2.x                            | 1.2.x                            |
+| 3.1.x                 | 3.0.x           | 1.2.x                        | 1.2.x                            | 1.2.x                            |
 
 ### Upgrading to 3.0.0
 
