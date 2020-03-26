@@ -61,7 +61,15 @@ Restart `graylog-server` and you are done.
 ![](https://raw.githubusercontent.com/airbus-cyber/graylog-plugin-alert-wizard/master/images/create_alert_rule.png)
 
 ### Use of lists
-> **WARNING**: The first time your create a rule with a list, the Wizard automatically create a lookup with cache and data adapter. But you must manually set up the authorization key with your login:password in base 64 for the data adapter 
+> **WARNING**: The first time your create a rule with a list, the Wizard automatically create a lookup with cache and data adapter. But you must manually set up the authorization key with your login:password in base 64 for the data adapter.
+
+>The field "Name" should be filled by "Authorization"
+
+>The field "Value" should be filled by "Basic" followed by "user:password" in base64 for example "Basic TXlVc2Vy0k15UGFzc3dvcmQK" where TXlVc2Vy0k15UGFzc3dvcmQK is the result of "echo 'MyUser:MyPassword'|base64"
+
+>MyUser must be a user with admin rights
+
+
 
 ## Build
 
