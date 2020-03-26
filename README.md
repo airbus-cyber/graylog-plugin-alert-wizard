@@ -65,7 +65,7 @@ Restart `graylog-server` and you are done.
 
 >The field "Name" should be filled by "Authorization"
 
->The field "Value" should be filled by "Basic" followed by "user:password" in base64 for example "Basic TXlVc2Vy0k15UGFzc3dvcmQK" where TXlVc2Vy0k15UGFzc3dvcmQK is the result of "echo 'MyUser:MyPassword'|base64"
+>The field "Value" should be filled by "Basic" followed by "user:password" in base64 for example "Basic TXlVc2Vy0k15UGFzc3dvcmQK" where TXlVc2Vy0k15UGFzc3dvcmQK is the result of "echo -n 'MyUser:MyPassword'|base64"
 
 >MyUser must be a user with admin rights
 
