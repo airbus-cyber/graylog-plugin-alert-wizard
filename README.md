@@ -62,6 +62,7 @@ Restart `graylog-server` and you are done.
 
 ### Use of lists
 > **WARNING**: The first time your create a rule with a list, the Wizard automatically create a lookup with cache and data adapter. But you must manually set up the authorization key with your login:password in base 64 for the data adapter.
+![](https://raw.githubusercontent.com/airbus-cyber/graylog-plugin-alert-wizard/master/images/Wizard_List4.png)
 
 >The field "Name" should be filled by "Authorization"
 
