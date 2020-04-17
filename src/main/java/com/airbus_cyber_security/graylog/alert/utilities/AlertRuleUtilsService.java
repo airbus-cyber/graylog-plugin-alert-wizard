@@ -4,7 +4,6 @@ import com.airbus_cyber_security.graylog.alert.*;
 import com.airbus_cyber_security.graylog.alert.rest.models.requests.AlertRuleRequest;
 import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetDataAlertRule;
 import com.airbus_cyber_security.graylog.config.LoggingAlertConfig;
-import com.airbus_cyber_security.graylog.list.utilities.AlertListUtilsService;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.bson.types.ObjectId;
@@ -231,19 +230,13 @@ public class AlertRuleUtilsService {
         return save;
     }
 
-    public void updatePipeline(Stream stream, List<FieldRuleImpl> listfieldRule, PipelineDao pipeline, String alertTitle, RuleDao rule) {
-
-        pipelineService.delete(pipeline.id());
-        ruleService.delete(rule.id());
-
-        createPipeline(alertTitle, pipeline.id(), stream.getMatchingType().toString());
-        createPipelineRule(alertTitle, listfieldRule, stream, rule.id());
-    }
-
-    public void deletePipeline(PipelineDao pipeline, RuleDao rule) {
-
-        pipelineService.delete(pipeline.id());
-        ruleService.delete(rule.id());
+    public void deletePipeline(String pipelineID, String ruleID){
+        if(pipelineID != null && !pipelineID.isEmpty()) {
+            pipelineService.delete(pipelineID);
+        }
+        if(ruleID != null && !ruleID.isEmpty()) {
+            ruleService.delete(ruleID);
+        }
     }
 
     public Stream createStream(AlertRuleStream alertRuleStream, String title, String userName) throws ValidationException {
@@ -639,4 +632,30 @@ public class AlertRuleUtilsService {
         }
         return listPipelineFieldRule;
     }
+
+    public StreamPipelineObject createPipelineAndRule(Stream stream, String alertTitle, List<FieldRuleImpl> listfieldRule, String matchingType){
+        String pipelineID = null;
+        String pipelineRuleID = null;
+        List<FieldRuleImpl> listPipelineFieldRule = extractPipelineFieldRules(listfieldRule);
+        if(!listPipelineFieldRule.isEmpty()) {
+            RuleDao pipelineRule = createPipelineRule(alertTitle, listPipelineFieldRule, stream, null);
+            PipelineDao pipeline = createPipeline(alertTitle, null, matchingType);
+            pipelineID = pipeline.id();
+            pipelineRuleID = pipelineRule.id();
+        }
+        return new StreamPipelineObject(stream, pipelineID, pipelineRuleID, listPipelineFieldRule);
+    }
+
+    public StreamPipelineObject createStreamAndPipeline(AlertRuleStream alertRuleStream, String alertTitle, String userName, String matchingType)
+            throws ValidationException {
+        Stream stream = createStream(alertRuleStream, alertTitle, userName);
+        return createPipelineAndRule(stream, alertTitle, alertRuleStream.getFieldRules(), matchingType);
+    }
+
+
+    public StreamPipelineObject updatePipeline(String alertTitle, String pipelineID, String pipelineRuleID, List<FieldRuleImpl> listfieldRule, Stream stream, String matchingType) {
+        deletePipeline(pipelineID, pipelineRuleID);
+        return createPipelineAndRule(stream, alertTitle, listfieldRule, matchingType);
+    }
+
 }

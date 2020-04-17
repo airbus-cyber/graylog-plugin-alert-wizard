@@ -12,6 +12,7 @@ import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetListAler
 import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetListDataAlertRule;
 import com.airbus_cyber_security.graylog.alert.utilities.AlertRuleUtils;
 import com.airbus_cyber_security.graylog.alert.utilities.AlertRuleUtilsService;
+import com.airbus_cyber_security.graylog.alert.utilities.StreamPipelineObject;
 import com.airbus_cyber_security.graylog.audit.AlertWizardAuditEventTypes;
 import com.airbus_cyber_security.graylog.config.rest.AlertWizardConfig;
 import com.airbus_cyber_security.graylog.config.rest.ImportPolicyType;
@@ -41,7 +42,6 @@ import org.graylog2.lookup.dto.CacheDto;
 import org.graylog2.lookup.dto.DataAdapterDto;
 import org.graylog2.plugin.alarms.AlertCondition;
 import org.graylog2.plugin.cluster.ClusterConfigService;
-import org.graylog2.plugin.configuration.ConfigurationException;
 import org.graylog2.plugin.database.ValidationException;
 import org.graylog2.plugin.rest.PluginRestResource;
 import org.graylog2.plugin.streams.Output;
@@ -83,8 +83,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private final AlertRuleUtils alertRuleUtils;
     private final AlertRuleExporter alertRuleExporter;
     private final AlertRuleUtilsService alertRuleUtilsService;
-    private final RuleService ruleService;
-    private final PipelineService pipelineService;
     private final AlertListUtilsService alertListUtilsService;
 
 
@@ -111,8 +109,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.clusterEventBus = clusterEventBus;
         this.alarmCallbackConfigurationService = alarmCallbackConfigurationService;
         this.clusterConfigService = clusterConfigService;
-        this.ruleService = ruleService;
-        this.pipelineService = pipelineService;
         this.alertRuleUtils = new AlertRuleUtils();
         this.alertRuleUtilsService = new AlertRuleUtilsService(alertRuleService, streamService, streamRuleService, clusterEventBus,
                 indexSetRegistry.getDefault().getConfig().id(), alertService, alarmCallbackConfigurationService,
@@ -248,75 +244,61 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         String alertTitle = checkImportPolicyAndGetTitle(request.getTitle());
         String userName = getCurrentUser().getName();
-        // Create stream.
-        Stream stream = alertRuleUtilsService.createStream(request.getStream(), alertTitle, userName);
-        List<FieldRuleImpl> listPipelineFieldRule = alertRuleUtilsService.extractPipelineFieldRules(request.getStream().getFieldRules());
-        RuleDao pipelineRule = alertRuleUtilsService.createPipelineRule(alertTitle, listPipelineFieldRule, stream, null);
-        PipelineDao pipeline = alertRuleUtilsService.createPipeline(alertTitle, null, request.getStream().getMatchingType());
-        String pipelineID = pipeline.id();
-        String pipelineRuleID = pipelineRule.id();
+
+        // Create stream and pipeline
+        StreamPipelineObject streamPilpelineObject = alertRuleUtilsService.createStreamAndPipeline(request.getStream(), alertTitle, userName, request.getStream().getMatchingType());
 
         //Create unique data adapter
         DataAdapterDto adapter = alertRuleUtilsService.createUniqueDataAdapter(userName);
         CacheDto cache = alertRuleUtilsService.createUniqueCache();
         alertRuleUtilsService.createUniqueLookup(cache, adapter);
 
-        // Create second stream.
+        // Create second stream and pipeline
         String streamID2 = null;
-        Stream stream2 = null;
-        String pipelineRuleID2 = null;
-        String pipelineID2 = null;
-        List<FieldRuleImpl> listPipelineFieldRule2 = null;
+        StreamPipelineObject streamPilpelineObject2 = new StreamPipelineObject(null,null,null,null);
         if(request.getConditionType().equals("THEN") || request.getConditionType().equals("AND") || request.getConditionType().equals("OR")) {
-        	stream2 = alertRuleUtilsService.createStream(request.getSecondStream(), alertTitle+"#2", userName);
-        	streamID2 = stream2.getId();
-
-            listPipelineFieldRule2 = alertRuleUtilsService.extractPipelineFieldRules(request.getSecondStream().getFieldRules());
-            RuleDao pipelineRule2 = alertRuleUtilsService.createPipelineRule(alertTitle+"#2", listPipelineFieldRule2, stream2, null);
-        	PipelineDao pipeline2 = alertRuleUtilsService.createPipeline(alertTitle+"#2", null, request.getStream().getMatchingType());
-        	pipelineID2 = pipeline2.id();
-        	pipelineRuleID2 = pipelineRule2.id();
+            streamPilpelineObject2 = alertRuleUtilsService.createStreamAndPipeline(request.getSecondStream(), alertTitle + "#2", userName, request.getStream().getMatchingType());
+            streamID2=streamPilpelineObject2.getStream().getId();
         }
-
         //Create Condition
         String graylogConditionType = alertRuleUtils.getGraylogConditionType(request.getConditionType());
         Map<String, Object> parameters = alertRuleUtils.getConditionParameters(streamID2, request.getConditionType(), request.conditionParameters());
-        String alertConditionID = alertRuleUtilsService.createCondition(graylogConditionType, alertTitle, parameters, stream, stream2, userName);
+        String alertConditionID = alertRuleUtilsService.createCondition(graylogConditionType, alertTitle, parameters, streamPilpelineObject.getStream(), streamPilpelineObject2.getStream(), userName);
         //Create Notification
-        String idAlarmCallBack = alertRuleUtilsService.createDefaultNotification(alertTitle, stream, request.getSeverity(), userName);
+        String idAlarmCallBack = alertRuleUtilsService.createDefaultNotification(alertTitle, streamPilpelineObject.getStream(), request.getSeverity(), userName);
 
         //Or Condition for Second Stream
-        if( request.getConditionType().equals("OR") && stream2 != null) {
+        if( request.getConditionType().equals("OR") && streamPilpelineObject2.getStream() != null) {
         	//Create Condition
-            alertRuleUtilsService.createCondition(graylogConditionType, alertTitle, parameters, stream2, stream, userName);
+            alertRuleUtilsService.createCondition(graylogConditionType, alertTitle, parameters, streamPilpelineObject2.getStream(), streamPilpelineObject.getStream(), userName);
             //Create Notification
-            alertRuleUtilsService.createDefaultNotification(alertTitle+"#2", stream2, request.getSeverity(), userName);
+            alertRuleUtilsService.createDefaultNotification(alertTitle+"#2", streamPilpelineObject2.getStream(), request.getSeverity(), userName);
         }
 
-        clusterEventBus.post(StreamsChangedEvent.create(stream.getId()));
+        clusterEventBus.post(StreamsChangedEvent.create(streamPilpelineObject.getStream().getId()));
     	alertRuleService.create(AlertRuleImpl.create(
         		alertTitle,
-        		stream.getId(),
+                streamPilpelineObject.getStream().getId(),
                 alertConditionID,
         		idAlarmCallBack,
 				DateTime.now(),
-				getCurrentUser().getName(),
+                userName,
 				DateTime.now(),
 				request.getDescription(),
 				request.getConditionType(),
-				streamID2,
-                pipelineID,
-                pipelineRuleID,
-                listPipelineFieldRule,
-                pipelineID2,
-                pipelineRuleID2,
-                listPipelineFieldRule2));
+                streamID2,
+                streamPilpelineObject.getPipelineID(),
+                streamPilpelineObject.getPipelineRuleID(),
+                streamPilpelineObject.getListPipelineFieldRule(),
+                streamPilpelineObject2.getPipelineID(),
+                streamPilpelineObject2.getPipelineRuleID(),
+                streamPilpelineObject2.getListPipelineFieldRule()));
 
         //Update list usage
-        for (FieldRule fieldRule:alertRuleUtils.nullSafe(listPipelineFieldRule)) {
+        for (FieldRule fieldRule:alertRuleUtils.nullSafe(streamPilpelineObject.getListPipelineFieldRule())) {
             alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
-        for (FieldRule fieldRule:alertRuleUtils.nullSafe(listPipelineFieldRule2)) {
+        for (FieldRule fieldRule:alertRuleUtils.nullSafe(streamPilpelineObject2.getListPipelineFieldRule())) {
             alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
         
@@ -334,40 +316,32 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     public Response update(@ApiParam(name = TITLE, required = true)
     					   @PathParam(TITLE) String title,
                            @ApiParam(name = "JSON body", required = true) @Valid @NotNull AlertRuleRequest request
-                             ) throws UnsupportedEncodingException, NotFoundException, ValidationException, ConfigurationException {
+                             ) throws UnsupportedEncodingException, NotFoundException, ValidationException {
 
         alertRuleUtilsService.checkIsValidRequest(request);
     	
     	AlertRule oldAlert = alertRuleService.load(title);
         String alertTitle = request.getTitle();
+        String userName = getCurrentUser().getName();
 
         // Update stream.
         final Stream stream = streamService.load(oldAlert.getStreamID());
         alertRuleUtilsService.updateStream(stream, request.getStream(), alertTitle);
 
         //update pipeline
-        RuleDao rule = ruleService.load(oldAlert.getPipelineRuleID());
-        PipelineDao pipeline = pipelineService.load(oldAlert.getPipelineID());
-        List<FieldRuleImpl> listPipelineFieldRule = alertRuleUtilsService.extractPipelineFieldRules(request.getStream().getFieldRules());
-        alertRuleUtilsService.updatePipeline(stream, listPipelineFieldRule, pipeline, alertTitle, rule);
+        StreamPipelineObject streamPilpelineObject = alertRuleUtilsService.updatePipeline(alertTitle, oldAlert.getPipelineID(), oldAlert.getPipelineRuleID(), request.getStream().getFieldRules(), stream, request.getStream().getMatchingType());
 
-        String userName = getCurrentUser().getName();
         // Update stream 2.
         Stream stream2 = alertRuleUtilsService.createOrUpdateSecondStream(request.getSecondStream(), alertTitle, userName, request.getConditionType(), oldAlert);
         String streamID2 = null;
-        RuleDao rule2 = null;
-        PipelineDao pipeline2 = null;
-        List<FieldRuleImpl> listPipelineFieldRule2 = null;
+
+        //update pipeline 2
+        StreamPipelineObject streamPilpelineObject2 = new StreamPipelineObject(null,null,null,null);
         if(stream2 != null){
             streamID2 = stream2.getId();
-            rule2 = ruleService.load(oldAlert.getSecondPipelineRuleID());
-            pipeline2 = pipelineService.load(oldAlert.getSecondPipelineID());
-            listPipelineFieldRule2 = alertRuleUtilsService.extractPipelineFieldRules(request.getSecondStream().getFieldRules());
-            alertRuleUtilsService.updatePipeline(stream2, listPipelineFieldRule2, pipeline2, alertTitle+"#2", rule2);
+            streamPilpelineObject2 = alertRuleUtilsService.updatePipeline(alertTitle + "#2", oldAlert.getSecondPipelineID(), oldAlert.getSecondPipelineRuleID(), request.getSecondStream().getFieldRules(), stream2, request.getStream().getMatchingType());
         } else if (oldAlert.getSecondStreamID() != null) {
-            rule2 = ruleService.load(oldAlert.getSecondPipelineRuleID());
-            pipeline2 = pipelineService.load(oldAlert.getSecondPipelineID());
-            alertRuleUtilsService.deletePipeline(pipeline2, rule2);
+            alertRuleUtilsService.deletePipeline(oldAlert.getSecondPipelineID(), oldAlert.getSecondPipelineRuleID());
         }
 
         //Update Condition   
@@ -405,17 +379,17 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                         alertConditionID,
                         notificationId,
                         oldAlert.getCreatedAt(),
-                        getCurrentUser().getName(),
+                        userName,
                         DateTime.now(),
                         request.getDescription(),
                         request.getConditionType(),
                         streamID2,
-                        oldAlert.getPipelineID(),
-                        oldAlert.getPipelineRuleID(),
-                        listPipelineFieldRule,
-                        oldAlert.getSecondPipelineID(),
-                        oldAlert.getSecondPipelineRuleID(),
-                        listPipelineFieldRule2));
+                        streamPilpelineObject.getPipelineID(),
+                        streamPilpelineObject.getPipelineRuleID(),
+                        streamPilpelineObject.getListPipelineFieldRule(),
+                        streamPilpelineObject2.getPipelineID(),
+                        streamPilpelineObject2.getPipelineRuleID(),
+                        streamPilpelineObject2.getListPipelineFieldRule()));
 
         //Decrement list usage
         for (FieldRule fieldRule:alertRuleUtils.nullSafe(oldAlert.getPipelineFieldRules())) {
@@ -425,10 +399,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             alertListUtilsService.decrementUsage(fieldRule.getValue());
         }
         //Increment list usage
-        for (FieldRule fieldRule:alertRuleUtils.nullSafe(listPipelineFieldRule)) {
+        for (FieldRule fieldRule:alertRuleUtils.nullSafe(streamPilpelineObject.getListPipelineFieldRule())) {
             alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
-        for (FieldRule fieldRule:alertRuleUtils.nullSafe(listPipelineFieldRule2)) {
+        for (FieldRule fieldRule:alertRuleUtils.nullSafe(streamPilpelineObject2.getListPipelineFieldRule())) {
             alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
 
@@ -457,26 +431,32 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         Stream firstStream = alertRuleUtilsService.cloneStream(sourceFirstStream, alertTitle, creatorUser);
 
         //create pipeline
-        RuleDao pipelineRule = alertRuleUtilsService.createPipelineRule(alertTitle, sourceAlert.getPipelineFieldRules(), firstStream, null);
-        PipelineDao pipeline = alertRuleUtilsService.createPipeline(alertTitle, null, sourceFirstStream.getMatchingType().toString());
-        String pipelineID = pipeline.id();
-        String pipelineRuleID = pipelineRule.id();
+        String pipelineID = null;
+        String pipelineRuleID = null;
+        if(!sourceAlert.getPipelineFieldRules().isEmpty()) {
+            RuleDao pipelineRule = alertRuleUtilsService.createPipelineRule(alertTitle, sourceAlert.getPipelineFieldRules(), firstStream, null);
+            PipelineDao pipeline = alertRuleUtilsService.createPipeline(alertTitle, null, sourceFirstStream.getMatchingType().toString());
+            pipelineID = pipeline.id();
+            pipelineRuleID = pipelineRule.id();
+        }
+
 
         Stream secondStream = null;
         String secondStreamID = null;
         String pipelineRuleID2 = null;
         String pipelineID2 = null;
 
-        //Create Second Stream
+        //Create Second Stream and pipeline
         if(sourceAlert.getSecondStreamID() != null && !sourceAlert.getSecondStreamID().isEmpty()) {
             final Stream sourceSecondStream = streamService.load(sourceAlert.getSecondStreamID());
         	secondStream = alertRuleUtilsService.cloneStream(sourceSecondStream, alertTitle+"#2", creatorUser);
         	secondStreamID = secondStream.getId();
-
-            RuleDao pipelineRule2 = alertRuleUtilsService.createPipelineRule(alertTitle+"#2", sourceAlert.getSecondPipelineFieldRules(), secondStream, null);
-            PipelineDao pipeline2 = alertRuleUtilsService.createPipeline(alertTitle+"#2", null, sourceFirstStream.getMatchingType().toString());
-            pipelineID2 = pipeline2.id();
-            pipelineRuleID2 = pipelineRule2.id();
+            if(!sourceAlert.getSecondPipelineFieldRules().isEmpty()) {
+                RuleDao pipelineRule2 = alertRuleUtilsService.createPipelineRule(alertTitle + "#2", sourceAlert.getSecondPipelineFieldRules(), secondStream, null);
+                PipelineDao pipeline2 = alertRuleUtilsService.createPipeline(alertTitle + "#2", null, sourceFirstStream.getMatchingType().toString());
+                pipelineID2 = pipeline2.id();
+                pipelineRuleID2 = pipelineRule2.id();
+            }
         }
 
         //Create Condition
@@ -519,7 +499,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 alertConditionID,
         		alertNotificationID,
 				DateTime.now(),
-				getCurrentUser().getName(),
+                creatorUser,
 				DateTime.now(),
 				request.getDescription(),
 				sourceAlert.getConditionType(),
@@ -568,15 +548,11 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             }
 
             if (alertRule.getPipelineID() != null && alertRule.getPipelineRuleID() != null) {
-                RuleDao rule = ruleService.load(alertRule.getPipelineRuleID());
-                PipelineDao pipeline = pipelineService.load(alertRule.getPipelineID());
-                alertRuleUtilsService.deletePipeline(pipeline, rule);
+                alertRuleUtilsService.deletePipeline(alertRule.getPipelineID(), alertRule.getPipelineRuleID());
             }
 
             if (alertRule.getSecondPipelineID() != null && alertRule.getSecondPipelineRuleID() != null) {
-                RuleDao rule2 = ruleService.load(alertRule.getSecondPipelineRuleID());
-                PipelineDao pipeline2 = pipelineService.load(alertRule.getSecondPipelineID());
-                alertRuleUtilsService.deletePipeline(pipeline2, rule2);
+                alertRuleUtilsService.deletePipeline(alertRule.getSecondPipelineID(), alertRule.getSecondPipelineRuleID());
             }
 
             //Update list usage
@@ -606,39 +582,24 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     }
 
 
-    public void importAlertRule(ExportAlertRule alertRule)
-            throws ValidationException, BadRequestException{
+    public void importAlertRule(ExportAlertRule alertRule) throws ValidationException {
         String alertTitle = checkImportPolicyAndGetTitle(alertRule.getTitle());
         String userName = getCurrentUser().getName();
 
-        // Create stream.
-        Stream stream = alertRuleUtilsService.createStream(alertRule.getStream(), alertTitle, userName);
-        List<FieldRuleImpl> listPipelineFieldRule = alertRuleUtilsService.extractPipelineFieldRules(alertRule.getStream().getFieldRules());
-        RuleDao pipelineRule = alertRuleUtilsService.createPipelineRule(alertTitle, listPipelineFieldRule, stream, null);
-        PipelineDao pipeline = alertRuleUtilsService.createPipeline(alertTitle, null, alertRule.getStream().getMatchingType());
-        String pipelineID = pipeline.id();
-        String pipelineRuleID = pipelineRule.id();
+        // Create stream and pipeline
+        StreamPipelineObject streamPilpelineObject = alertRuleUtilsService.createStreamAndPipeline(alertRule.getStream(), alertTitle, userName, alertRule.getStream().getMatchingType());
 
         //Create unique data adapter
         DataAdapterDto adapter = alertRuleUtilsService.createUniqueDataAdapter(userName);
         CacheDto cache = alertRuleUtilsService.createUniqueCache();
         alertRuleUtilsService.createUniqueLookup(cache, adapter);
 
-        String pipelineRuleID2 = null;
-        String pipelineID2 = null;
-        // Create second stream.
+        // Create second stream and pipeline
         String streamID2 = null;
-        Stream stream2 = null;
-        List<FieldRuleImpl> listPipelineFieldRule2 = null;
+        StreamPipelineObject streamPilpelineObject2 = new StreamPipelineObject(null,null,null,null);
         if(alertRule.getConditionType().equals("THEN") || alertRule.getConditionType().equals("AND") || alertRule.getConditionType().equals("OR")) {
-            stream2 = alertRuleUtilsService.createStream(alertRule.getSecondStream(), alertTitle+"#2", userName);
-            streamID2 = stream2.getId();
-
-            listPipelineFieldRule2 = alertRuleUtilsService.extractPipelineFieldRules(alertRule.getSecondStream().getFieldRules());
-            RuleDao pipelineRule2 = alertRuleUtilsService.createPipelineRule(alertTitle+"#2", listPipelineFieldRule2, stream2, null);
-            PipelineDao pipeline2 = alertRuleUtilsService.createPipeline(alertTitle+"#2", null, alertRule.getStream().getMatchingType());
-            pipelineID2 = pipeline2.id();
-            pipelineRuleID2 = pipelineRule2.id();
+            streamPilpelineObject2 = alertRuleUtilsService.createStreamAndPipeline(alertRule.getSecondStream(), alertTitle+"#2", userName, alertRule.getStream().getMatchingType());
+            streamID2 = streamPilpelineObject2.getStream().getId();
         }
 
         //Create Condition
@@ -647,47 +608,47 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         if(graylogConditionType.equals(AlertRuleUtils.TYPE_CORRELATION)){
             conditionParameters.replace(AlertRuleUtils.ADDITIONAL_STREAM, streamID2);
         }
-        String alertConditionID = alertRuleUtilsService.createCondition(graylogConditionType, alertTitle, conditionParameters, stream, stream2, userName);
+        String alertConditionID = alertRuleUtilsService.createCondition(graylogConditionType, alertTitle, conditionParameters, streamPilpelineObject.getStream(), streamPilpelineObject2.getStream(), userName);
         //Create Notification
         String idAlarmCallBack = null;
-        if(alertRule.notificationParameters() != null) {
-            idAlarmCallBack = alertRuleUtilsService.createNotificationFromParameters(alertTitle, stream, alertRule.notificationParameters(), userName);
+        if(alertRule.notificationParameters() != null && !alertRule.notificationParameters().isEmpty()) {
+            idAlarmCallBack = alertRuleUtilsService.createNotificationFromParameters(alertTitle, streamPilpelineObject.getStream(), alertRule.notificationParameters(), userName);
         }
 
         //Or Condition for Second Stream
-        if( alertRule.getConditionType().equals("OR") && stream2 != null) {
+        if( alertRule.getConditionType().equals("OR") && streamPilpelineObject2.getStream() != null) {
             //Create Condition
-            alertRuleUtilsService.createCondition(graylogConditionType, alertTitle, alertRule.conditionParameters(), stream2, stream, userName);
+            alertRuleUtilsService.createCondition(graylogConditionType, alertTitle, alertRule.conditionParameters(), streamPilpelineObject2.getStream(), streamPilpelineObject.getStream(), userName);
             //Create Notification
-            if(alertRule.notificationParameters() != null) {
-                alertRuleUtilsService.createNotificationFromParameters(alertTitle+"#2", stream2, alertRule.notificationParameters(), userName);
+            if(alertRule.notificationParameters() != null  && !alertRule.notificationParameters().isEmpty()) {
+                alertRuleUtilsService.createNotificationFromParameters(alertTitle+"#2", streamPilpelineObject2.getStream(), alertRule.notificationParameters(), userName);
             }
         }
 
-        clusterEventBus.post(StreamsChangedEvent.create(stream.getId()));
+        clusterEventBus.post(StreamsChangedEvent.create(streamPilpelineObject.getStream().getId()));
         alertRuleService.create(AlertRuleImpl.create(
                 alertTitle,
-                stream.getId(),
+                streamPilpelineObject.getStream().getId(),
                 alertConditionID,
                 idAlarmCallBack,
                 DateTime.now(),
-                getCurrentUser().getName(),
+                userName,
                 DateTime.now(),
                 alertRule.getDescription(),
                 alertRule.getConditionType(),
                 streamID2,
-                pipelineID,
-                pipelineRuleID,
-                listPipelineFieldRule,
-                pipelineID2,
-                pipelineRuleID2,
-                listPipelineFieldRule2));
+                streamPilpelineObject.getPipelineID(),
+                streamPilpelineObject.getPipelineRuleID(),
+                streamPilpelineObject.getListPipelineFieldRule(),
+                streamPilpelineObject2.getPipelineID(),
+                streamPilpelineObject2.getPipelineRuleID(),
+                streamPilpelineObject2.getListPipelineFieldRule()));
 
         //Update list usage
-        for (FieldRule fieldRule:alertRuleUtils.nullSafe(listPipelineFieldRule)) {
+        for (FieldRule fieldRule:alertRuleUtils.nullSafe(streamPilpelineObject.getListPipelineFieldRule())) {
             alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
-        for (FieldRule fieldRule:alertRuleUtils.nullSafe(listPipelineFieldRule2)) {
+        for (FieldRule fieldRule:alertRuleUtils.nullSafe(streamPilpelineObject2.getListPipelineFieldRule())) {
             alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
     }
