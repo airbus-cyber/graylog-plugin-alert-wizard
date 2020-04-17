@@ -1,6 +1,10 @@
 # Change Log
 
 All notable changes to this project will be documented in this file.
+## [3.1.1](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/3.1.0...3.1.1) (2020-04-17)
+### Features
+* Fix #19 Pipelines created with new rule
+
 ## [3.1.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/3.0.1...3.1.0) (2020-01-21)
 ### Features
 * Add the possibility to create lists and alert rules with condition on these lists
