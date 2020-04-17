@@ -78,7 +78,7 @@ const CreateListFormInput = createReactClass({
         this.setState({isModified: false});
     },
 
-    // TODO add le bouton pour importer un fichier de listes dans le champ liste
+    // TODO add a button to import a file into the list field 
     /*onSubmitUploadFile(submitEvent) {
         submitEvent.preventDefault();
         if (!this.refs.uploadedFile.files || !this.refs.uploadedFile.files[0]) {
