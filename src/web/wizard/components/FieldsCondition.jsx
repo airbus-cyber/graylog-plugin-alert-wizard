@@ -2,7 +2,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
 import Reflux from 'reflux';
-import {Col, Row, Button} from 'react-bootstrap';
+import { Row, Col } from 'components/graylog';
+import {Button} from 'react-bootstrap';
 import {Input} from 'components/bootstrap';
 import {Select, Spinner} from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
@@ -235,7 +236,7 @@ const FieldsCondition = createReactClass({
                     <FormattedMessage id ="wizard.try" defaultMessage="Try" />
                 </Button>
                 <br/><br/>
-                {listFieldRule}  
+                {listFieldRule}
                 <Button onClick={this._addFieldRule} bsStyle="info" title={this.state.messages.add}><i className="fa fa-plus-circle" style={{ fontSize: '18px' }} /></Button>
             </Col>
         </Row>

@@ -6,7 +6,7 @@ import {Spinner, MultiSelect} from 'components/common';
 import {FormattedMessage} from 'react-intl';
 import StoreProvider from 'injection/StoreProvider';
 import naturalSort from 'javascript-natural-sort';
-import {Col, Row} from 'react-bootstrap';
+import { Row, Col } from 'components/graylog';
 
 const FieldsStore = StoreProvider.getStore('Fields');
 

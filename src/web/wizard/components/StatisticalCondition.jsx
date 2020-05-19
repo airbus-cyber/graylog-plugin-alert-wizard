@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
-import {Col, Row} from 'react-bootstrap';
+import { Row, Col } from 'components/graylog';
 import {Input} from 'components/bootstrap';
 import {Select, Spinner} from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
