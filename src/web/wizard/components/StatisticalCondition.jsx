@@ -110,8 +110,8 @@ const StatisticalCondition = createReactClass({
                         <Col md={10}>
                             <label><FormattedMessage id= "wizard.the" defaultMessage= "The" /></label>
                             <Input ref="type" id="type" name="type" required>
+                                <div style={{width:'200px'}}>
                                 <Select
-                                    autosize={false}
                                     required
                                     value={this.state.type}
                                     options={this._availableAggregationTypes()}
@@ -119,12 +119,13 @@ const StatisticalCondition = createReactClass({
                                     onChange={this._onAggregationTypeSelect}
                                     placeholder={<FormattedMessage id= "wizard.select" defaultMessage= "Select..." />}
                                 />
+                                </div>
                             </Input>
                             <label>&nbsp; </label>
                             <label><FormattedMessage id= "wizard.of" defaultMessage= "of" /></label> 
                             <Input ref="field" id="field" name="field">
+                                <div style={{width:'200px'}}>
                                 <Select
-                                    autosize={false}
                                     required
                                     value={this.state.field}
                                     options={formattedOptions}
@@ -133,12 +134,13 @@ const StatisticalCondition = createReactClass({
                                     allowCreate={true}
                                     placeholder={<FormattedMessage id= "wizard.select" defaultMessage= "Select..." />}
                                 />
+                                </div>
                             </Input>
                             <label>&nbsp;</label>
                             <label><FormattedMessage id= "wizard.mustBe" defaultMessage= "must be" /></label>
                             <Input ref="threshold_type" id="threshold_type" name="threshold_type" required>
-                                <Select style={{borderTopRightRadius: '0px', borderBottomRightRadius: '0px'}}
-                                    autosize={false}
+                                <div style={{width:'150px'}}>
+                                <Select
                                     required
                                     value={this.state.threshold_type}
                                     options={this._availableThresholdTypes()}
@@ -146,6 +148,7 @@ const StatisticalCondition = createReactClass({
                                     onChange={this._onThresholdTypeSelect}
                                     placeholder={<FormattedMessage id= "wizard.select" defaultMessage= "Select..." />}
                                 />
+                                </div>
                             </Input>
                             <Input ref="threshold" id="threshold" name="threshold" type="number"
                                    onChange={this._onThresholdChanged()}

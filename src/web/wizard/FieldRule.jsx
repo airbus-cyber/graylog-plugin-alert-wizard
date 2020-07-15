@@ -229,12 +229,8 @@ const FieldRule = createReactClass({
                 <form className="form-inline">
                     {deleteAction}
                     <Input ref="field" id="field" name="field">
-                        <Select style={{
-                            backgroundColor: color,
-                            borderTopRightRadius: '0px',
-                            borderBottomRightRadius: '0px'
-                        }}
-                                autosize={false}
+                        <div style={{width:'200px'}}>
+                        <Select style={{backgroundColor: color}}
                                 required
                                 value={this.state.rule.field}
                                 options={formattedOptions}
@@ -243,10 +239,11 @@ const FieldRule = createReactClass({
                                 allowCreate={true}
                                 placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..."/>}
                         />
+                        </div>
                     </Input>
                     <Input ref="type" id="type" name="type">
-                        <Select style={{backgroundColor: color, borderRadius: '0px'}}
-                                autosize={false}
+                        <div style={{width:'200px'}}>
+                        <Select style={{backgroundColor: color}}
                                 required
                                 value={this.state.rule.type}
                                 options={this._availableRuleType()}
@@ -254,6 +251,7 @@ const FieldRule = createReactClass({
                                 onChange={this._onRuleTypeSelect}
                                 placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..."/>}
                         />
+                        </div>
                     </Input>
                     {valueBox}
                 </form>

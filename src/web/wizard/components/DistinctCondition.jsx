@@ -61,11 +61,13 @@ const DistinctCondition = createReactClass({
                     <label><FormattedMessage id= "wizard.distinctByLabel" defaultMessage= "Messages must be distincted by" /></label>
                     <Input ref="distinction_fields" id="distinction_fields"
                         name="distinction_fields">
-                        <MultiSelect autoFocus={false} autosize={true} style={{minWidth:'300px'}}
+                        <div style={{minWidth:'300px'}}>
+                        <MultiSelect autoFocus={false}
                                   options={formattedOptions}
                                   value={this.state.distinction_fields ? (Array.isArray(this.state.distinction_fields) ? this.state.distinction_fields.join(',') : this.state.distinction_fields) : undefined}
                                   onChange={this._onDistinctionFieldsChange}
                                   allowCreate={true}/>
+                        </div>
                     </Input>
                 </Col>
             </Row>

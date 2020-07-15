@@ -219,6 +219,7 @@ const FieldsCondition = createReactClass({
             <Col md={10}>
                 <label><FormattedMessage id= "wizard.messagesMatch" defaultMessage= "Messages must match" /></label>
                 <Input ref="matching_type" id="matching_type" name="matching_type" required>
+                    <div style={{width:'150px'}}>
                     <Select style={{backgroundColor: color}}
                         autosize={false}
                         required
@@ -228,6 +229,7 @@ const FieldsCondition = createReactClass({
                         onChange={this._onMatchingTypeSelect}
                         placeholder={<FormattedMessage id= "wizard.select" defaultMessage= "Select..." />}
                     />
+                    </div>
                 </Input>
                 <label>&nbsp; </label>
                 <label><FormattedMessage id= "wizard.followingRules" defaultMessage= "of the following rules:" /></label>

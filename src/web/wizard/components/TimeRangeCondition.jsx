@@ -54,8 +54,8 @@ const TimeRangeCondition = createReactClass({
                     <Input ref="time" id="time" name="time" type="number" onChange={this._onTimeChanged()} value={this.state.time}
                            style={{borderTopRightRadius: '0px', borderBottomRightRadius: '0px', height:'36px' , width:'100px'}} />
                     <Input ref="time_type" id="time_type" name="time_type" required className="form-control">
-                        <Select style={{borderTopLeftRadius: '0px', borderBottomLeftRadius: '0px'}}
-                            autosize={false}
+                        <div style={{width:'150px'}}>
+                        <Select
                             required
                             value={this.state.time_type.toString()}
                             options={this._availableTimeTypes()}
@@ -63,6 +63,7 @@ const TimeRangeCondition = createReactClass({
                             onChange={this._onTimeSelect}
                             placeholder={<FormattedMessage id= "wizard.select" defaultMessage= "Select..." />}
                         />
+                        </div>
                     </Input>
                 </Col>
             </Row>

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
 import {Input} from 'components/bootstrap';
-import {Select, Spinner} from 'components/common';
+import {Select} from 'components/common';
 import { Row, Col } from 'components/graylog';
 import {FormattedMessage} from 'react-intl';
 
@@ -63,8 +63,8 @@ const TitleSeverity = createReactClass({
                            onChange={this._onTitleChanged()}
                            defaultValue={this.state.title}/>
                     <Input ref="severity" id="severity" name="severity">
-                        <Select style={{borderTopLeftRadius: '0px', borderBottomLeftRadius: '0px'}}
-                            autosize={false}
+                        <div style={{width:'150px'}}>
+                        <Select
                             value={this.state.severity}
                             options={this._availableSeverityTypes()}
                             matchProp="value"
@@ -72,6 +72,7 @@ const TitleSeverity = createReactClass({
                             disabled={!this.props.isPluginLoggingAlertPresent}
                             placeholder={<FormattedMessage id= "wizard.select" defaultMessage= "Select..." />}
                         />
+                        </div>
                     </Input>
                 </Col>
             </Row>

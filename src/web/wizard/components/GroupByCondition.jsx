@@ -60,11 +60,13 @@ const GroupByCondition = createReactClass({
                 <Col md={10}>
                     <label><FormattedMessage id= "wizard.groupByLabel" defaultMessage= "Messages must be grouped by" /></label>
                     <Input ref="grouping_fields" id="grouping_fields" name="grouping_fields">
-                        <MultiSelect autoFocus={false} autosize={true} style={{minWidth:'300px'}}
+                        <div style={{minWidth:'300px'}}>
+                        <MultiSelect autoFocus={false}
                                  options={formattedOptions}
                                  value={this.state.grouping_fields ? (Array.isArray(this.state.grouping_fields) ? this.state.grouping_fields.join(',') : this.state.grouping_fields) : undefined}
                                  onChange={this._onGroupingFieldsChange}
                                  allowCreate={true}/>
+                        </div>
                     </Input>
                 </Col>
             </Row>
