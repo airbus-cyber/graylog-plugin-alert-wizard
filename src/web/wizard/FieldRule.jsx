@@ -112,7 +112,7 @@ const FieldRule = createReactClass({
     },
 
     _onRuleTypeSelect(value) {
-        this._updateAlertField('type', value);
+        this._updateAlertField('type', parseInt(value));
     },
 
     _onRuleFieldSelect(value) {
@@ -128,7 +128,7 @@ const FieldRule = createReactClass({
 
     _updateAlertField(field, value) {
         const update = ObjectUtils.clone(this.state.rule);
-        update[field] = parseInt(value);
+        update[field] = value;
         this.setState({rule: update});
         this.setState({isModified: true});
         if (value === '') {
