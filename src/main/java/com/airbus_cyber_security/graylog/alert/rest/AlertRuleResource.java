@@ -286,7 +286,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String idAlarmCallBack = alertRuleUtilsService.createDefaultNotification(alertTitle, stream, request.getSeverity(), userName);
 
         //Or Condition for Second Stream
-        if( request.getConditionType().equals("OR") && stream2 != null) {
+        if (request.getConditionType().equals("OR") && stream2 != null) {
         	//Create Condition
             alertRuleUtilsService.createCondition(graylogConditionType, alertTitle, parameters, stream2, stream, userName);
             //Create Notification
