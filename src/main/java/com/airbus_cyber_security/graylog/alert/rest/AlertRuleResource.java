@@ -267,7 +267,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String pipelineRuleID2 = null;
         String pipelineID2 = null;
         List<FieldRuleImpl> listPipelineFieldRule2 = null;
-        if(request.getConditionType().equals("THEN") || request.getConditionType().equals("AND") || request.getConditionType().equals("OR")) {
+        if (request.getConditionType().equals("THEN") || request.getConditionType().equals("AND") || request.getConditionType().equals("OR")) {
         	stream2 = alertRuleUtilsService.createStream(request.getSecondStream(), alertTitle+"#2", userName);
         	streamID2 = stream2.getId();
 
