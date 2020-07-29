@@ -182,9 +182,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         List<GetDataAlertRule> alertsData = new ArrayList<>();
         for(AlertRule alert : alerts) {
-            try{
+            try {
                 alertsData.add(alertRuleUtilsService.constructDataAlertRule(alert));
-            }catch(NotFoundException e){
+            } catch(NotFoundException e) {
                 LOG.warn("Alert " + alert.getTitle() + " is broken: " + e.getMessage());
                 alertsData.add(GetDataAlertRule.create(alert.getTitle(), alert.getTitle(),
                 		"",
@@ -214,10 +214,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             if(importPolicy != null && importPolicy.equals(ImportPolicyType.RENAME)) {
                 String newAlertTitle;
                 int i = 1;
-                do{
+                do {
                     newAlertTitle = alertTitle+"("+i+")";
                     i++;
-                }while (alertRuleService.isPresent(newAlertTitle));
+                } while (alertRuleService.isPresent(newAlertTitle));
                 alertTitle = newAlertTitle;
             }else if(importPolicy != null && importPolicy.equals(ImportPolicyType.REPLACE)) {
                 try {
@@ -236,7 +236,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
     @PUT
     @Timed    
-    @ApiOperation(value = "Create a alert")
+    @ApiOperation(value = "Create an alert")
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_CREATE)
     @ApiResponses(value = {@ApiResponse(code = 400, message = "The supplied request is not valid.")})
