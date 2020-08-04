@@ -106,6 +106,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private final EventDefinitionHandler eventDefinitionHandler;
     private final EventDefinitionsResource eventDefinitionsResource;
     private final NotificationResourceHandler notificationResourceHandler;
+    private final EventNotificationsResource eventNotificationsResource;
 
     @Inject
     public AlertRuleResource(AlertRuleService alertRuleService,
@@ -142,6 +143,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.eventDefinitionHandler = eventDefinitionHandler;
         this.eventDefinitionsResource = eventDefinitionsResource;
         this.notificationResourceHandler = notificationResourceHandler;
+        this.eventNotificationsResource = eventNotificationsResource;
         this.alertRuleUtilsService = new AlertRuleUtilsService(alertRuleService, streamService, streamRuleService, clusterEventBus,
                 indexSetRegistry.getDefault().getConfig().id(), alertService, alarmCallbackConfigurationService,
                 alarmCallbackFactory, clusterConfigService, ruleService, pipelineService, dbDataAdapterService,
@@ -682,6 +684,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             if(alertRule.getSecondStreamID() != null && !alertRule.getSecondStreamID().isEmpty()) {
                 alertRuleUtilsService.deleteStreamFromID(alertRule.getSecondStreamID());
             }
+
+            eventDefinitionsResource.delete(alertRule.getConditionID());
+            eventNotificationsResource.delete(alertRule.getNotificationID());
 
             if (alertRule.getPipelineID() != null && alertRule.getPipelineRuleID() != null) {
                 RuleDao rule = ruleService.load(alertRule.getPipelineRuleID());
