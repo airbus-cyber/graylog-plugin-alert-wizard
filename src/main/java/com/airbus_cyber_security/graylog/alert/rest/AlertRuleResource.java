@@ -30,6 +30,8 @@ import com.mongodb.MongoException;
 import io.swagger.annotations.*;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.graylog.events.conditions.Expr;
+import org.graylog.events.conditions.Expression;
 import org.graylog.events.notifications.EventNotificationHandler;
 import org.graylog.events.notifications.EventNotificationSettings;
 import org.graylog.events.notifications.NotificationDto;
@@ -37,6 +39,10 @@ import org.graylog.events.notifications.NotificationResourceHandler;
 import org.graylog.events.processor.EventDefinitionDto;
 import org.graylog.events.processor.EventDefinitionHandler;
 import org.graylog.events.processor.EventProcessorConfig;
+import org.graylog.events.processor.aggregation.AggregationConditions;
+import org.graylog.events.processor.aggregation.AggregationEventProcessorConfig;
+import org.graylog.events.processor.aggregation.AggregationFunction;
+import org.graylog.events.processor.aggregation.AggregationSeries;
 import org.graylog.events.rest.EventDefinitionsResource;
 import org.graylog.events.rest.EventNotificationsResource;
 import org.graylog.plugins.pipelineprocessor.db.*;
@@ -77,10 +83,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Api(value = "Wizard/Alerts", description = "Management of Wizard alerts rules.")
 @Path("/alerts")
@@ -308,6 +311,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         Map<String, Object> conditionParameter = request.conditionParameters();
 
+        LOG.info("Create condition type:" + request.getConditionType());
         //TODO
         EventProcessorConfig configuration;
         if(request.getConditionType().equals("THEN") || request.getConditionType().equals("AND")){
@@ -333,8 +337,61 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                     .searchQuery("*")
                     .build();
 
-     //   } else if (request.getConditionType().equals("STATISTICAL")){
+        } else if (request.getConditionType().equals("STATISTICAL")){
+            LOG.info("Begin Stat, type: " + conditionParameter.get("type"));
+            AggregationFunction agregationFunction;
+            switch (conditionParameter.get("type").toString()) {
+                case "MEAN":
+                    agregationFunction = AggregationFunction.AVG;
+                    break;
+                case "MIN":
+                    agregationFunction = AggregationFunction.MIN;
+                    break;
+                case "MAX":
+                    agregationFunction = AggregationFunction.MAX;
+                    break;
+                case "SUM":
+                    agregationFunction = AggregationFunction.SUM;
+                    break;
+                case "STDDEV":
+                    agregationFunction = AggregationFunction.STDDEV;
+                    break;
+                default:
+                    throw new BadRequestException();
+            }
 
+            String ID = UUID.randomUUID().toString();
+            final AggregationSeries serie = AggregationSeries.builder()
+                    .id(ID)
+                    .function(agregationFunction)
+                    .field(conditionParameter.get("field").toString())
+                    .build();
+
+            final Expr.NumberReference left = Expr.NumberReference.create(ID);
+            final Expr.NumberValue right = Expr.NumberValue.create((int) conditionParameter.get("threshold"));
+            final Expression<Boolean> expression;
+            switch (conditionParameter.get("threshold_type").toString()) {
+                case "HIGHER":
+                    expression = Expr.Greater.create(left, right);
+                    break;
+                case "LOWER":
+                    expression = Expr.Lesser.create(left, right);
+                    break;
+                default:
+                    throw new BadRequestException();
+            }
+
+            configuration = AggregationEventProcessorConfig.builder()
+                    .query("")
+                    .streams(new HashSet<String> (Collections.singleton(stream.getId())))
+                    .series(ImmutableList.of(serie))
+                    .groupBy(ImmutableList.of())
+                    .conditions(AggregationConditions.builder()
+                            .expression(expression)
+                            .build())
+                    .executeEveryMs(((int) conditionParameter.get("grace")) * 60 * 1000)
+                    .searchWithinMs(((int) conditionParameter.get("time")) * 60 * 1000)
+                    .build();
 
         } else {
              configuration = AggregationCountProcessorConfig.builder()

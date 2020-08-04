@@ -6,6 +6,7 @@ import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetDataAler
 import com.airbus_cyber_security.graylog.config.LoggingAlertConfig;
 import com.airbus_cyber_security.graylog.config.LoggingNotificationConfig;
 import com.airbus_cyber_security.graylog.events.processor.aggregation.AggregationCountProcessorConfig;
+import com.airbus_cyber_security.graylog.events.processor.correlation.CorrelationCountProcessorConfig;
 import com.airbus_cyber_security.graylog.list.utilities.AlertListUtilsService;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -13,6 +14,8 @@ import org.bson.types.ObjectId;
 import org.graylog.events.notifications.EventNotificationHandler;
 import org.graylog.events.notifications.NotificationDto;
 import org.graylog.events.processor.EventDefinitionDto;
+import org.graylog.events.processor.aggregation.AggregationEventProcessorConfig;
+import org.graylog.events.processor.aggregation.AggregationFunction;
 import org.graylog.events.rest.EventDefinitionsResource;
 import org.graylog.events.rest.EventNotificationsResource;
 import org.graylog.plugins.pipelineprocessor.db.*;
@@ -402,6 +405,28 @@ public class AlertRuleUtilsService {
         deleteStream(secondStream);
     }
 
+    private String mapAggregationFunctionToType(String aggregationFunction){
+        switch (aggregationFunction) {
+            case "AVG": return "MEAN";
+            default:
+                return aggregationFunction;
+        }
+    }
+
+    private String mapExprToThresholdType(String expr){
+        switch (expr){
+            case"<":
+            case"<=":
+                return "LOWER";
+            case">":
+            case">=":
+                return "HIGHER";
+            //case"=":
+            default:
+                return "";
+        }
+    }
+
     public GetDataAlertRule constructDataAlertRule(AlertRule alert) throws NotFoundException {
         final String streamID = alert.getStreamID();
         final Stream stream = streamService.load(streamID);
@@ -412,14 +437,32 @@ public class AlertRuleUtilsService {
 
         Map<String, Object> parametersCondition = Maps.newHashMap();
         if(event.config().type().equals("aggregation-count")) {
-            AggregationCountProcessorConfig aggregationConfig = (AggregationCountProcessorConfig) event.config();
-            parametersCondition.put("threshold", aggregationConfig.threshold());
-            parametersCondition.put("threshold_type", aggregationConfig.thresholdType());
+            AggregationCountProcessorConfig aggregationCountConfig = (AggregationCountProcessorConfig) event.config();
+            parametersCondition.put("threshold", aggregationCountConfig.threshold());
+            parametersCondition.put("threshold_type", aggregationCountConfig.thresholdType());
+            parametersCondition.put("time", aggregationCountConfig.searchWithinMs() / 60 / 1000);
+            parametersCondition.put("grouping_fields", aggregationCountConfig.groupingFields());
+            parametersCondition.put("distinction_fields", aggregationCountConfig.distinctionFields());
+        }else if(event.config().type().equals("correlation-count")) {
+            CorrelationCountProcessorConfig correlationConfig = (CorrelationCountProcessorConfig) event.config();
+            parametersCondition.put("threshold", correlationConfig.threshold());
+            parametersCondition.put("threshold_type", correlationConfig.thresholdType());
+            parametersCondition.put("additional_threshold", correlationConfig.threshold());
+            parametersCondition.put("additional_threshold_type", correlationConfig.thresholdType());
+            parametersCondition.put("time", correlationConfig.searchWithinMs() / 60 / 1000);
+            parametersCondition.put("grouping_fields", correlationConfig.groupingFields());
+        }else if(event.config().type().equals("aggregation-v1")){
+            AggregationEventProcessorConfig aggregationConfig = (AggregationEventProcessorConfig) event.config();
+            LOG.info("Expr: "+ aggregationConfig.conditions().get().expression().get().expr());
+            LOG.info("type: "+ aggregationConfig.series().get(0).function().toString());
+            LOG.info("field: "+ aggregationConfig.series().get(0).field().get());
+            LOG.info("threshold: "+ aggregationConfig.conditions().get().expression().get());
+
             parametersCondition.put("time", aggregationConfig.searchWithinMs() / 60 / 1000);
-            parametersCondition.put("grouping_fields", aggregationConfig.groupingFields());
-            parametersCondition.put("distinction_fields", aggregationConfig.distinctionFields());
-        }else if(event.config().type().equals("correlation-count")){
-            //TODO
+            parametersCondition.put("threshold", 0);
+            parametersCondition.put("threshold_type", mapExprToThresholdType(aggregationConfig.conditions().get().expression().get().expr()));
+            parametersCondition.put("type", mapAggregationFunctionToType(aggregationConfig.series().get(0).function().toString()));
+            parametersCondition.put("field", aggregationConfig.series().get(0).field().get());
         }
 
         List<FieldRuleImpl> fieldRules = new ArrayList<>();
