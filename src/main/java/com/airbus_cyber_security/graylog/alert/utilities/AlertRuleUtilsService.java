@@ -413,20 +413,6 @@ public class AlertRuleUtilsService {
         }
     }
 
-    private String mapExprToThresholdType(String expr){
-        switch (expr){
-            case"<":
-            case"<=":
-                return "LOWER";
-            case">":
-            case">=":
-                return "HIGHER";
-            //case"=":
-            default:
-                return "";
-        }
-    }
-
     public GetDataAlertRule constructDataAlertRule(AlertRule alert) throws NotFoundException {
         final String streamID = alert.getStreamID();
         final Stream stream = streamService.load(streamID);
@@ -460,7 +446,7 @@ public class AlertRuleUtilsService {
 
             parametersCondition.put("time", aggregationConfig.searchWithinMs() / 60 / 1000);
             parametersCondition.put("threshold", 0);
-            parametersCondition.put("threshold_type", mapExprToThresholdType(aggregationConfig.conditions().get().expression().get().expr()));
+            parametersCondition.put("threshold_type", aggregationConfig.conditions().get().expression().get().expr());
             parametersCondition.put("type", mapAggregationFunctionToType(aggregationConfig.series().get(0).function().toString()));
             parametersCondition.put("field", aggregationConfig.series().get(0).field().get());
         }
@@ -701,4 +687,6 @@ public class AlertRuleUtilsService {
         }
         return listPipelineFieldRule;
     }
+
+
 }

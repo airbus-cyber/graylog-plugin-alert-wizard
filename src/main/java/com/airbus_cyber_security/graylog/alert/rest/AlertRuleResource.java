@@ -371,11 +371,20 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             final Expr.NumberValue right = Expr.NumberValue.create((int) conditionParameter.get("threshold"));
             final Expression<Boolean> expression;
             switch (conditionParameter.get("threshold_type").toString()) {
-                case "HIGHER":
+                case ">":
                     expression = Expr.Greater.create(left, right);
                     break;
-                case "LOWER":
+                case ">=":
+                    expression = Expr.GreaterEqual.create(left, right);
+                    break;
+                case "<":
                     expression = Expr.Lesser.create(left, right);
+                    break;
+                case "<=":
+                    expression = Expr.LesserEqual.create(left, right);
+                    break;
+                case "=":
+                    expression = Expr.Equal.create(left, right);
                     break;
                 default:
                     throw new BadRequestException();

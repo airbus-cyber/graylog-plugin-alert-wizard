@@ -129,35 +129,5 @@ public class AlertRuleUtils {
 		return (c == null) ? Collections.<T>emptyList() : c;
 	}
 
-	/*public void createEventDefinition(String title, String description, EventProcessorConfig config){
-		EventDefinitionDto.builder()
-				.title(title)
-				.description(description)
-				.config(config)
-				.alert(true)
-				.priority(2)
-				.keySpec(ImmutableList.of())
-				.notificationSettings(EventNotificationSettings.builder()
-						.gracePeriodMs(0 * 60 * 1000)
-						.backlogSize(500)
-						.build())
-				.notifications(null)
-				.build();
-	}
 
-	public void createAggregationCountCondition(){
-		EventProcessorConfig config = AggregationCountProcessorConfig.builder()
-				.stream(stream)
-				.thresholdType(thresholdType().asString(parameters))
-				.threshold(threshold())
-				.searchWithinMs(searchWithinMs())
-				.executeEveryMs(executeEveryMs())
-				.messageBacklog(messageBacklog())
-				.groupingFields(groupingFields())
-				.distinctionFields(distinctionFields())
-				.comment(comment().asString(parameters))
-				.searchQuery(searchQuery().asString(parameters))
-				.repeatNotifications(repeatNotifications())
-				.build();
-	}*/
 }

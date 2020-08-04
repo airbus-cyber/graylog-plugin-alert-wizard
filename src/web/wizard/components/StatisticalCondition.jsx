@@ -50,8 +50,11 @@ const StatisticalCondition = createReactClass({
     },
     _availableThresholdTypes() {
         return [
-            {value: 'HIGHER', label: <FormattedMessage id= "wizard.higher" defaultMessage= "higher than" />},
-            {value: 'LOWER', label: <FormattedMessage id= "wizard.lower" defaultMessage= "lower than" />},
+            {value: '>', label: <FormattedMessage id= "wizard.higher" defaultMessage= "higher than" />},
+            {value: '>=', label: <FormattedMessage id= "wizard.higherEqual" defaultMessage= "higher or equal than" />},
+            {value: '<', label: <FormattedMessage id= "wizard.lower" defaultMessage= "lower than" />},
+            {value: '<=', label: <FormattedMessage id= "wizard.lowerEqual" defaultMessage= "lower or equal than" />},
+            {value: '=', label: <FormattedMessage id= "wizard.equal" defaultMessage= "equal" />},
         ];
     },
     _onThresholdTypeSelect(value) {
@@ -139,7 +142,7 @@ const StatisticalCondition = createReactClass({
                             <label>&nbsp;</label>
                             <label><FormattedMessage id= "wizard.mustBe" defaultMessage= "must be" /></label>
                             <Input ref="threshold_type" id="threshold_type" name="threshold_type" required>
-                                <div style={{width:'150px'}}>
+                                <div style={{width:'200px'}}>
                                 <Select
                                     required
                                     value={this.state.threshold_type}
