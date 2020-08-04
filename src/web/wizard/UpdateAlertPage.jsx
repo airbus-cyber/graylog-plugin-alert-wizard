@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
-import {Button, Col, Row} from 'react-bootstrap';
+import {Button, Col, Row} from 'components/graylog';
 import {LinkContainer} from 'react-router-bootstrap';
 import {DocumentTitle, PageHeader, Spinner} from 'components/common';
 import CreateAlertInput from './CreateAlertInput';

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
 import Reflux from 'reflux';
-import {Button, Col, Row} from 'react-bootstrap';
+import {Button, Col, Row} from 'components/graylog';
 import {Spinner} from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import Routes from 'routing/Routes';

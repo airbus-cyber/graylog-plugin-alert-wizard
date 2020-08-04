@@ -3,7 +3,7 @@ import createReactClass from 'create-react-class';
 import Routes from 'routing/Routes';
 import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
 import messages_fr from '../translations/fr.json';
-import { Row, Col, Button } from 'react-bootstrap';
+import { Row, Col, Button } from 'components/graylog';
 import AlertRuleActions from './AlertRuleActions';
 import {DocumentTitle, PageHeader} from 'components/common';
 import {LinkContainer} from 'react-router-bootstrap';
