@@ -209,7 +209,7 @@ const AlertRuleList = createReactClass({
         }
 
         const customizeLink = (
-                <LinkContainer disabled={!alertValid} to={Routes.show_alert_condition(streamID, alert.condition)} >
+                <LinkContainer disabled={!alertValid} to={Routes.ALERTS.DEFINITIONS.edit(alert.condition)} >
                     <Button bsStyle="info" title={this.state.messages.infoAdvanced} >
                         <FormattedMessage id ="wizard.advancedSettings" defaultMessage="Advanced settings" />
                     </Button>

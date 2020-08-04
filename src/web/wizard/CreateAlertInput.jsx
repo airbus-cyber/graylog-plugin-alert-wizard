@@ -213,7 +213,7 @@ const CreateAlertInput = createReactClass({
             buttons: [
                 {
                     label: this.state.messages.advancedSettings,
-                    onClick: () => history.push({pathname: Routes.show_alert_condition(this.state.alert.stream.id, this.state.alert.condition)})
+                    onClick: () => history.push({pathname: Routes.ALERTS.DEFINITIONS.edit(this.state.alert.condition)})
                 },
                 {
                     label: this.state.messages.done,
@@ -373,7 +373,7 @@ const CreateAlertInput = createReactClass({
         if(!this.props.create){
             customizeLink = (
               <div className="alert-actions pull-right">
-                <LinkContainer disabled={this.state.isModified} to={Routes.show_alert_condition(this.state.alert.stream.id, this.state.alert.condition)}>
+                <LinkContainer disabled={this.state.isModified} to={Routes.ALERTS.DEFINITIONS.edit(this.state.alert.condition)}>
                     <Button bsStyle="info" title="Advanced settings for this alert rule">
                         <FormattedMessage id= "wizard.advancedSettings" defaultMessage= "Advanced settings" />
                     </Button>
