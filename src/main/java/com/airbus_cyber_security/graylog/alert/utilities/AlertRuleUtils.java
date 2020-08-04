@@ -1,7 +1,12 @@
 package com.airbus_cyber_security.graylog.alert.utilities;
 
 import com.airbus_cyber_security.graylog.alert.FieldRuleImpl;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
+import org.graylog.events.notifications.EventNotificationSettings;
+import org.graylog.events.processor.EventDefinitionDto;
+import org.graylog.events.processor.EventProcessorConfig;
+import org.graylog.events.processor.aggregation.AggregationEventProcessorConfig;
 import org.graylog2.alerts.AbstractAlertCondition;
 import org.graylog2.plugin.streams.StreamRule;
 
@@ -90,16 +95,14 @@ public class AlertRuleUtils {
 		case "STATISTICAL":
 			conditionType = AbstractAlertCondition.Type.FIELD_VALUE.toString();
 			break;
-		case "GROUP_DISTINCT":
-			conditionType = TYPE_AGGREGATION;
-			break;
+
 		case "THEN":
 		case "AND":
 			conditionType = TYPE_CORRELATION;
 			break;
 
 		default:
-			conditionType = AbstractAlertCondition.Type.MESSAGE_COUNT.toString();
+			conditionType = TYPE_AGGREGATION;
 			break;
 		}
         return conditionType;
@@ -125,4 +128,36 @@ public class AlertRuleUtils {
 	public <T> Collection<T> nullSafe(Collection<T> c) {
 		return (c == null) ? Collections.<T>emptyList() : c;
 	}
+
+	/*public void createEventDefinition(String title, String description, EventProcessorConfig config){
+		EventDefinitionDto.builder()
+				.title(title)
+				.description(description)
+				.config(config)
+				.alert(true)
+				.priority(2)
+				.keySpec(ImmutableList.of())
+				.notificationSettings(EventNotificationSettings.builder()
+						.gracePeriodMs(0 * 60 * 1000)
+						.backlogSize(500)
+						.build())
+				.notifications(null)
+				.build();
+	}
+
+	public void createAggregationCountCondition(){
+		EventProcessorConfig config = AggregationCountProcessorConfig.builder()
+				.stream(stream)
+				.thresholdType(thresholdType().asString(parameters))
+				.threshold(threshold())
+				.searchWithinMs(searchWithinMs())
+				.executeEveryMs(executeEveryMs())
+				.messageBacklog(messageBacklog())
+				.groupingFields(groupingFields())
+				.distinctionFields(distinctionFields())
+				.comment(comment().asString(parameters))
+				.searchQuery(searchQuery().asString(parameters))
+				.repeatNotifications(repeatNotifications())
+				.build();
+	}*/
 }

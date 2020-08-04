@@ -53,8 +53,8 @@ public class AlertRuleUtilsTest {
 		assertEquals(TYPE_AGGREGATION, alertRuleUtils.getGraylogConditionType(GROUP_DISTINCT));
 		assertEquals(TYPE_CORRELATION, alertRuleUtils.getGraylogConditionType(THEN));
 		assertEquals(TYPE_CORRELATION, alertRuleUtils.getGraylogConditionType(AND));
-		assertEquals(AbstractAlertCondition.Type.MESSAGE_COUNT.toString(), alertRuleUtils.getGraylogConditionType(OR));
-		assertEquals(AbstractAlertCondition.Type.MESSAGE_COUNT.toString(), alertRuleUtils.getGraylogConditionType(EMPTY));
+		assertEquals(TYPE_AGGREGATION, alertRuleUtils.getGraylogConditionType(OR));
+		assertEquals(TYPE_AGGREGATION, alertRuleUtils.getGraylogConditionType(EMPTY));
 	}
 	
 	@Test

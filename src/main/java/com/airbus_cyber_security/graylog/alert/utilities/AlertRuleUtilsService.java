@@ -4,10 +4,17 @@ import com.airbus_cyber_security.graylog.alert.*;
 import com.airbus_cyber_security.graylog.alert.rest.models.requests.AlertRuleRequest;
 import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetDataAlertRule;
 import com.airbus_cyber_security.graylog.config.LoggingAlertConfig;
+import com.airbus_cyber_security.graylog.config.LoggingNotificationConfig;
+import com.airbus_cyber_security.graylog.events.processor.aggregation.AggregationCountProcessorConfig;
 import com.airbus_cyber_security.graylog.list.utilities.AlertListUtilsService;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.bson.types.ObjectId;
+import org.graylog.events.notifications.EventNotificationHandler;
+import org.graylog.events.notifications.NotificationDto;
+import org.graylog.events.processor.EventDefinitionDto;
+import org.graylog.events.rest.EventDefinitionsResource;
+import org.graylog.events.rest.EventNotificationsResource;
 import org.graylog.plugins.pipelineprocessor.db.*;
 import org.graylog.plugins.pipelineprocessor.rest.PipelineConnections;
 import org.graylog2.alarmcallbacks.AlarmCallbackConfiguration;
@@ -84,6 +91,8 @@ public class AlertRuleUtilsService {
     private final DBCacheService dbCacheService;
     private final DBLookupTableService dbTableService;
     private final PipelineStreamConnectionsService pipelineStreamConnectionsService;
+    private final EventDefinitionsResource eventDefinitionsResource;
+    private final EventNotificationsResource eventNotificationsResource;
 
     public AlertRuleUtilsService(AlertRuleService alertRuleService,
                                  StreamService streamService,
@@ -101,7 +110,9 @@ public class AlertRuleUtilsService {
                                  DBCacheService dbCacheService,
                                  DBLookupTableService dbTableService,
                                  PipelineStreamConnectionsService pipelineStreamConnectionsService,
-                                 AlertRuleUtils alertRuleUtils) {
+                                 AlertRuleUtils alertRuleUtils,
+                                 EventDefinitionsResource eventDefinitionsResource,
+                                 EventNotificationsResource eventNotificationsResource) {
         this.alertRuleService = alertRuleService;
         this.streamService = streamService;
         this.streamRuleService = streamRuleService;
@@ -119,6 +130,8 @@ public class AlertRuleUtilsService {
         this.dbTableService = dbTableService;
         this.alertRuleUtils = alertRuleUtils;
         this.pipelineStreamConnectionsService = pipelineStreamConnectionsService;
+        this.eventDefinitionsResource = eventDefinitionsResource;
+        this.eventNotificationsResource = eventNotificationsResource;
     }
 
     public void checkIsValidRequest(AlertRuleRequest request){
@@ -392,12 +405,21 @@ public class AlertRuleUtilsService {
     public GetDataAlertRule constructDataAlertRule(AlertRule alert) throws NotFoundException {
         final String streamID = alert.getStreamID();
         final Stream stream = streamService.load(streamID);
-        final AlertCondition alertCondition = streamService.getAlertCondition(stream, alert.getConditionID());
+
+        //Get the event
+        EventDefinitionDto event = eventDefinitionsResource.get(alert.getConditionID());
+        LOG.info("Event type: " + event.config().type());
+
         Map<String, Object> parametersCondition = Maps.newHashMap();
-        parametersCondition.putAll(alertCondition.getParameters());
-        if(alert.getConditionType().equals("THEN") || alert.getConditionType().equals("AND")) {
-            parametersCondition.put(AlertRuleUtils.THRESHOLD, parametersCondition.remove(AlertRuleUtils.MAIN_THRESHOLD));
-            parametersCondition.put(AlertRuleUtils.THRESHOLD_TYPE, parametersCondition.remove(AlertRuleUtils.MAIN_THRESHOLD_TYPE));
+        if(event.config().type().equals("aggregation-count")) {
+            AggregationCountProcessorConfig aggregationConfig = (AggregationCountProcessorConfig) event.config();
+            parametersCondition.put("threshold", aggregationConfig.threshold());
+            parametersCondition.put("threshold_type", aggregationConfig.thresholdType());
+            parametersCondition.put("time", aggregationConfig.searchWithinMs() / 60 / 1000);
+            parametersCondition.put("grouping_fields", aggregationConfig.groupingFields());
+            parametersCondition.put("distinction_fields", aggregationConfig.distinctionFields());
+        }else if(event.config().type().equals("correlation-count")){
+            //TODO
         }
 
         List<FieldRuleImpl> fieldRules = new ArrayList<>();
@@ -414,14 +436,11 @@ public class AlertRuleUtilsService {
             alertRuleStream2 = AlertRuleStreamImpl.create(alert.getSecondStreamID(), stream2.getMatchingType().toString(), fieldRules2);
         }
 
-        final AlarmCallbackConfiguration callbackConfiguration = alarmCallbackConfigurationService.load(alert.getNotificationID());
-        String severity = "";
-        if(callbackConfiguration != null) {
-            severity = callbackConfiguration.getConfiguration().getOrDefault(AlertRuleUtils.SEVERITY, "").toString();
-        }
+        LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) eventNotificationsResource.get(alert.getNotificationID()).config();
+        LOG.info("Severity: " + loggingNotificationConfig.severity().getType());
 
-        return GetDataAlertRule.create(alert.getTitle(), alertCondition.getTitle(),
-                severity,
+        return GetDataAlertRule.create(alert.getTitle(), event.title(),
+                loggingNotificationConfig.severity().getType(),
                 alert.getConditionID(),
                 alert.getNotificationID(),
                 alert.getCreatedAt(),

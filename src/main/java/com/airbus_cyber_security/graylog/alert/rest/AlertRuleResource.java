@@ -13,17 +13,32 @@ import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetListData
 import com.airbus_cyber_security.graylog.alert.utilities.AlertRuleUtils;
 import com.airbus_cyber_security.graylog.alert.utilities.AlertRuleUtilsService;
 import com.airbus_cyber_security.graylog.audit.AlertWizardAuditEventTypes;
+import com.airbus_cyber_security.graylog.config.LoggingAlertConfig;
+import com.airbus_cyber_security.graylog.config.LoggingNotificationConfig;
+import com.airbus_cyber_security.graylog.config.SeverityType;
 import com.airbus_cyber_security.graylog.config.rest.AlertWizardConfig;
 import com.airbus_cyber_security.graylog.config.rest.ImportPolicyType;
+import com.airbus_cyber_security.graylog.events.processor.aggregation.AggregationCountProcessorConfig;
+import com.airbus_cyber_security.graylog.events.processor.correlation.CorrelationCountProcessorConfig;
 import com.airbus_cyber_security.graylog.list.AlertListService;
 import com.airbus_cyber_security.graylog.list.utilities.AlertListUtilsService;
 import com.airbus_cyber_security.graylog.permissions.AlertRuleRestPermissions;
 import com.codahale.metrics.annotation.Timed;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.mongodb.MongoException;
 import io.swagger.annotations.*;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.graylog.events.notifications.EventNotificationHandler;
+import org.graylog.events.notifications.EventNotificationSettings;
+import org.graylog.events.notifications.NotificationDto;
+import org.graylog.events.notifications.NotificationResourceHandler;
+import org.graylog.events.processor.EventDefinitionDto;
+import org.graylog.events.processor.EventDefinitionHandler;
+import org.graylog.events.processor.EventProcessorConfig;
+import org.graylog.events.rest.EventDefinitionsResource;
+import org.graylog.events.rest.EventNotificationsResource;
 import org.graylog.plugins.pipelineprocessor.db.*;
 import org.graylog2.alarmcallbacks.AlarmCallbackConfiguration;
 import org.graylog2.alarmcallbacks.AlarmCallbackConfigurationService;
@@ -31,6 +46,7 @@ import org.graylog2.alarmcallbacks.AlarmCallbackFactory;
 import org.graylog2.alerts.AlertService;
 import org.graylog2.audit.jersey.AuditEvent;
 import org.graylog2.configuration.HttpConfiguration;
+import org.graylog2.contentpacks.model.entities.references.ValueReference;
 import org.graylog2.database.NotFoundException;
 import org.graylog2.events.ClusterEventBus;
 import org.graylog2.indexer.IndexSetRegistry;
@@ -62,6 +78,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -86,7 +103,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private final RuleService ruleService;
     private final PipelineService pipelineService;
     private final AlertListUtilsService alertListUtilsService;
-
+    private final EventDefinitionHandler eventDefinitionHandler;
+    private final EventDefinitionsResource eventDefinitionsResource;
+    private final NotificationResourceHandler notificationResourceHandler;
 
     @Inject
     public AlertRuleResource(AlertRuleService alertRuleService,
@@ -105,7 +124,11 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                              AlarmCallbackFactory alarmCallbackFactory,
                              ClusterConfigService clusterConfigService,
                              PipelineStreamConnectionsService pipelineStreamConnectionsService,
-                             AlertListService alertListService) {
+                             AlertListService alertListService,
+                             EventDefinitionHandler eventDefinitionHandler,
+                             EventDefinitionsResource eventDefinitionsResource,
+                             NotificationResourceHandler notificationResourceHandler,
+                             EventNotificationsResource eventNotificationsResource) {
         this.alertRuleService = alertRuleService;
         this.streamService = streamService;
         this.clusterEventBus = clusterEventBus;
@@ -114,12 +137,15 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.ruleService = ruleService;
         this.pipelineService = pipelineService;
         this.alertRuleUtils = new AlertRuleUtils();
+        this.alertRuleExporter = new AlertRuleExporter(alertRuleService, alarmCallbackConfigurationService, streamService, alertRuleUtils);
+        this.alertListUtilsService = new AlertListUtilsService(alertListService);
+        this.eventDefinitionHandler = eventDefinitionHandler;
+        this.eventDefinitionsResource = eventDefinitionsResource;
+        this.notificationResourceHandler = notificationResourceHandler;
         this.alertRuleUtilsService = new AlertRuleUtilsService(alertRuleService, streamService, streamRuleService, clusterEventBus,
                 indexSetRegistry.getDefault().getConfig().id(), alertService, alarmCallbackConfigurationService,
                 alarmCallbackFactory, clusterConfigService, ruleService, pipelineService, dbDataAdapterService,
-                httpConfiguration, dbCacheService, dbTableService, pipelineStreamConnectionsService, alertRuleUtils);
-        this.alertRuleExporter = new AlertRuleExporter(alertRuleService, alarmCallbackConfigurationService, streamService, alertRuleUtils);
-        this.alertListUtilsService = new AlertListUtilsService(alertListService);
+                httpConfiguration, dbCacheService, dbTableService, pipelineStreamConnectionsService, alertRuleUtils, eventDefinitionsResource, eventNotificationsResource);
     }
 
     @GET
@@ -182,9 +208,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         List<GetDataAlertRule> alertsData = new ArrayList<>();
         for(AlertRule alert : alerts) {
-            try {
+            try{
                 alertsData.add(alertRuleUtilsService.constructDataAlertRule(alert));
-            } catch(NotFoundException e) {
+            }catch(NotFoundException e){
                 LOG.warn("Alert " + alert.getTitle() + " is broken: " + e.getMessage());
                 alertsData.add(GetDataAlertRule.create(alert.getTitle(), alert.getTitle(),
                 		"",
@@ -214,10 +240,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             if(importPolicy != null && importPolicy.equals(ImportPolicyType.RENAME)) {
                 String newAlertTitle;
                 int i = 1;
-                do {
+                do{
                     newAlertTitle = alertTitle+"("+i+")";
                     i++;
-                } while (alertRuleService.isPresent(newAlertTitle));
+                }while (alertRuleService.isPresent(newAlertTitle));
                 alertTitle = newAlertTitle;
             }else if(importPolicy != null && importPolicy.equals(ImportPolicyType.REPLACE)) {
                 try {
@@ -236,13 +262,13 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
     @PUT
     @Timed    
-    @ApiOperation(value = "Create an alert")
+    @ApiOperation(value = "Create a alert")
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_CREATE)
     @ApiResponses(value = {@ApiResponse(code = 400, message = "The supplied request is not valid.")})
     @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_CREATE)
     public Response create(@ApiParam(name = "JSON body", required = true) @Valid @NotNull AlertRuleRequest request)
-    		throws ValidationException, BadRequestException{
+    		throws ValidationException, BadRequestException {
 
         alertRuleUtilsService.checkIsValidRequest(request);
 
@@ -267,7 +293,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String pipelineRuleID2 = null;
         String pipelineID2 = null;
         List<FieldRuleImpl> listPipelineFieldRule2 = null;
-        if (request.getConditionType().equals("THEN") || request.getConditionType().equals("AND") || request.getConditionType().equals("OR")) {
+        if(request.getConditionType().equals("THEN") || request.getConditionType().equals("AND") || request.getConditionType().equals("OR")) {
         	stream2 = alertRuleUtilsService.createStream(request.getSecondStream(), alertTitle+"#2", userName);
         	streamID2 = stream2.getId();
 
@@ -278,27 +304,115 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         	pipelineRuleID2 = pipelineRule2.id();
         }
 
+        Map<String, Object> conditionParameter = request.conditionParameters();
+
+        //TODO
+        EventProcessorConfig configuration;
+        if(request.getConditionType().equals("THEN") || request.getConditionType().equals("AND")){
+            String messsageOrder;
+            if(request.getConditionType().equals("THEN")){
+                messsageOrder = "AFTER";
+            }else{
+                messsageOrder = "ANY";
+            }
+
+            configuration = CorrelationCountProcessorConfig.builder()
+                    .stream(stream.getId())
+                    .thresholdType((String) conditionParameter.get("threshold_type"))
+                    .threshold((int) conditionParameter.get("threshold"))
+                    .additionalStream(streamID2)
+                    .additionalThresholdType((String) conditionParameter.get("additional_threshold_type"))
+                    .additionalThreshold((int) conditionParameter.get("additional_threshold"))
+                    .messagesOrder(messsageOrder)
+                    .searchWithinMs(((int) conditionParameter.get("time")) * 60 * 1000)
+                    .executeEveryMs(((int) conditionParameter.get("grace")) * 60 * 1000)
+                    .groupingFields(new HashSet<String>((List<String>) conditionParameter.get("grouping_fields")))
+                    .comment(AlertRuleUtils.COMMENT_ALERT_WIZARD)
+                    .searchQuery("*")
+                    .build();
+
+     //   } else if (request.getConditionType().equals("STATISTICAL")){
+
+
+        } else {
+             configuration = AggregationCountProcessorConfig.builder()
+                    .stream(stream.getId())
+                    .thresholdType((String) conditionParameter.get("threshold_type"))
+                    .threshold((int) conditionParameter.get("threshold"))
+                    .searchWithinMs(((int) conditionParameter.get("time")) * 60 * 1000)
+                    .executeEveryMs(((int) conditionParameter.get("grace")) * 60 * 1000)
+                    .groupingFields(new HashSet<String>((List<String>) conditionParameter.get("grouping_fields")))
+                    .distinctionFields(new HashSet<String>((List<String>) conditionParameter.get("distinction_fields")))
+                    .comment(AlertRuleUtils.COMMENT_ALERT_WIZARD)
+                    .searchQuery("*")
+                     .build();
+        }
+
+
+
+        LOG.info("After create Condition");
+
+        LoggingNotificationConfig loggingNotificationConfig = LoggingNotificationConfig.builder()
+                .singleMessage(false)
+                .severity(SeverityType.valueOf(request.getSeverity().toUpperCase()))
+                .logBody("Test")
+                .build();
+        NotificationDto notification = NotificationDto.builder()
+                .config(loggingNotificationConfig)
+                .title(alertTitle)
+                .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
+                .build();
+        notification = this.notificationResourceHandler.create(notification);
+        LOG.info("notification ID: "+notification.id());
+
+        EventNotificationHandler.Config notificationConfiguration = EventNotificationHandler.Config.builder()
+                .notificationId(notification.id())
+                .build();
+
+        EventDefinitionDto eventDefinition = EventDefinitionDto.builder()
+                .title(alertTitle)
+                .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
+                //.description(request.getDescription())
+                .config(configuration)
+                .alert(true)
+                .priority(2)
+                .keySpec(ImmutableList.of())
+                .notifications(ImmutableList.<EventNotificationHandler.Config>builder().add(notificationConfiguration).build())
+                .notificationSettings(EventNotificationSettings.builder()
+                        .gracePeriodMs(0L)
+                        .backlogSize(500)
+                        .build())
+                .build();
+
+        //TODO do it with eventDefinitionsResource to have the validation but need to get the event ID back
+        //this.eventDefinitionsResource.create(eventDefinition);
+        eventDefinition = this.eventDefinitionHandler.create(eventDefinition);
+
+        LOG.info("Event ID: " + eventDefinition.id());
+
+
         //Create Condition
-        String graylogConditionType = alertRuleUtils.getGraylogConditionType(request.getConditionType());
+     /*   String graylogConditionType = alertRuleUtils.getGraylogConditionType(request.getConditionType());
         Map<String, Object> parameters = alertRuleUtils.getConditionParameters(streamID2, request.getConditionType(), request.conditionParameters());
         String alertConditionID = alertRuleUtilsService.createCondition(graylogConditionType, alertTitle, parameters, stream, stream2, userName);
         //Create Notification
         String idAlarmCallBack = alertRuleUtilsService.createDefaultNotification(alertTitle, stream, request.getSeverity(), userName);
 
         //Or Condition for Second Stream
-        if (request.getConditionType().equals("OR") && stream2 != null) {
+        if( request.getConditionType().equals("OR") && stream2 != null) {
         	//Create Condition
             alertRuleUtilsService.createCondition(graylogConditionType, alertTitle, parameters, stream2, stream, userName);
             //Create Notification
             alertRuleUtilsService.createDefaultNotification(alertTitle+"#2", stream2, request.getSeverity(), userName);
         }
+*/
 
         clusterEventBus.post(StreamsChangedEvent.create(stream.getId()));
     	alertRuleService.create(AlertRuleImpl.create(
         		alertTitle,
         		stream.getId(),
-                alertConditionID,
-        		idAlarmCallBack,
+                eventDefinition.id(),
+                notification.id(),
 				DateTime.now(),
 				getCurrentUser().getName(),
 				DateTime.now(),
@@ -311,6 +425,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 pipelineID2,
                 pipelineRuleID2,
                 listPipelineFieldRule2));
+
+        LOG.info("After create Alert Rule");
 
         //Update list usage
         for (FieldRule fieldRule:alertRuleUtils.nullSafe(listPipelineFieldRule)) {
