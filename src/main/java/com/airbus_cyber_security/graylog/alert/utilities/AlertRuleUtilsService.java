@@ -278,7 +278,7 @@ public class AlertRuleUtilsService {
     }
 
     public Stream createStream(AlertRuleStream alertRuleStream, String title, String userName) throws ValidationException {
-
+        LOG.info("Create Stream: " + title);
         final CreateStreamRequest cr = CreateStreamRequest.create(title, AlertRuleUtils.COMMENT_ALERT_WIZARD,
                 Collections.emptyList(), "", alertRuleStream.getMatchingType(), false, indexSetID);
         final Stream stream = streamService.create(cr, userName);
@@ -300,10 +300,10 @@ public class AlertRuleUtilsService {
             if(oldAlert.getSecondStreamID() != null) {
                 Stream stream2 = streamService.load(oldAlert.getSecondStreamID());
                 updateStream(stream2, alertRuleStream, title+"#2");
-                // If request condition is not "OR" and the old one is "OR" remove stream condition and notification
-                if(!conditionType.equals("OR") && oldAlert.getConditionType().equals("OR")) {
+                // If request condition is not "OR" and the old one is "OR" remove stream condition and notification //TODO don't need to do this anymore
+               /* if(!conditionType.equals("OR") && oldAlert.getConditionType().equals("OR")) {
                     removeConditionAndNotificationFromStream(stream2);
-                }
+                }*/
                 return stream2;
             }else {
                 return createStream(alertRuleStream, title+"#2", userName);
@@ -316,7 +316,7 @@ public class AlertRuleUtilsService {
     }
 
     public void updateStream(Stream stream, AlertRuleStream alertRuleStream, String title) throws ValidationException {
-
+        LOG.info("Update Stream: " + stream.getId());
         stream.setTitle(title);
         if (alertRuleStream.getMatchingType() != null) {
             try {
@@ -337,29 +337,6 @@ public class AlertRuleUtilsService {
         createStreamRule(alertRuleStream.getFieldRules(), stream.getId());
 
         clusterEventBus.post(StreamsChangedEvent.create(stream.getId()));
-    }
-
-    public String updateCondition(Stream stream, AlertCondition oldAlertCondition, String title, String alertRuleCondType,
-                                  Map<String, Object> alertRuleCondParameters, String streamID2, String userName) throws ValidationException {
-        String alertConditionID = oldAlertCondition.getId();
-        String conditionType = alertRuleUtils.getGraylogConditionType(alertRuleCondType);
-        Map<String, Object> parameters = alertRuleUtils.getConditionParameters(streamID2, alertRuleCondType, alertRuleCondParameters);
-        try {
-            CreateConditionRequest ccr = CreateConditionRequest.create(conditionType , title, parameters);
-            //If same condition type update
-            if(oldAlertCondition.getType().equals(conditionType)) {
-                final AlertCondition updatedCondition = alertService.updateFromRequest(oldAlertCondition, ccr);
-                streamService.updateAlertCondition(stream, updatedCondition);
-            }else {
-                streamService.removeAlertCondition(stream, alertConditionID);
-                final AlertCondition newAlertCondition = alertService.fromRequest(ccr, stream, userName);
-                streamService.addAlertCondition(stream, newAlertCondition);
-                alertConditionID = newAlertCondition.getId();
-            }
-        } catch (ConfigurationException e) {
-            throw new BadRequestException("Invalid alert condition parameters", e);
-        }
-        return alertConditionID;
     }
 
     public  Stream cloneStream(Stream sourceStream, String newTitle, String creatorUser) throws ValidationException {
@@ -444,6 +421,7 @@ public class AlertRuleUtilsService {
             parametersCondition.put("time", aggregationCountConfig.searchWithinMs() / 60 / 1000);
             parametersCondition.put("grouping_fields", aggregationCountConfig.groupingFields());
             parametersCondition.put("distinction_fields", aggregationCountConfig.distinctionFields());
+            parametersCondition.put("grace",aggregationCountConfig.executeEveryMs());
         }else if(event.config().type().equals("correlation-count")) {
             CorrelationCountProcessorConfig correlationConfig = (CorrelationCountProcessorConfig) event.config();
             parametersCondition.put("threshold", correlationConfig.threshold());
@@ -452,6 +430,7 @@ public class AlertRuleUtilsService {
             parametersCondition.put("additional_threshold_type", correlationConfig.thresholdType());
             parametersCondition.put("time", correlationConfig.searchWithinMs() / 60 / 1000);
             parametersCondition.put("grouping_fields", correlationConfig.groupingFields());
+            parametersCondition.put("grace", correlationConfig.executeEveryMs());
         }else if(event.config().type().equals("aggregation-v1")){
             AggregationEventProcessorConfig aggregationConfig = (AggregationEventProcessorConfig) event.config();
             LOG.info("Expr: "+ aggregationConfig.conditions().get().expression().get().expr());
@@ -464,6 +443,7 @@ public class AlertRuleUtilsService {
             parametersCondition.put("threshold_type", aggregationConfig.conditions().get().expression().get().expr());
             parametersCondition.put("type", mapAggregationFunctionToType(aggregationConfig.series().get(0).function().toString()));
             parametersCondition.put("field", aggregationConfig.series().get(0).field().get());
+            parametersCondition.put("grace", aggregationConfig.executeEveryMs());
         }
 
         List<FieldRuleImpl> fieldRules = new ArrayList<>();
@@ -499,7 +479,7 @@ public class AlertRuleUtilsService {
                 alertRuleStream2);
     }
 
-    private void removeConditionFromStream(Stream stream) {
+ /*   private void removeConditionFromStream(Stream stream) {
         List <AlertCondition> listAlertCondition = streamService.getAlertConditions(stream);
         if(listAlertCondition != null && !listAlertCondition.isEmpty()) {
             for (AlertCondition alertCondition : listAlertCondition) {
@@ -519,7 +499,7 @@ public class AlertRuleUtilsService {
         removeConditionFromStream(stream);
         removeNotificationFromStream(stream);
     }
-
+*/
     private Map<String, Object> getParametersNotification(String severity){
         final LoggingAlertConfig configGeneral = clusterConfigService.getOrDefault(LoggingAlertConfig.class,
                 LoggingAlertConfig.createDefault());
@@ -560,38 +540,6 @@ public class AlertRuleUtilsService {
                 .build();
         final CreateAlarmCallbackRequest cacr = CreateAlarmCallbackRequest.create(updatedAlarmCallbackConfig);
         return createNotification(stream.getId(), cacr, userName);
-    }
-
-    public String createDefaultNotification(String title, Stream stream, String severity, String userName){
-        if(alertRuleUtils.isValidSeverity(severity)){
-            return createNotificationFromParameters(title, stream, getParametersNotification(severity), userName);
-        }
-        return null;
-    }
-
-    public boolean updateNotification(String title, String notificationID, String severity) {
-        if(alertRuleUtils.isValidSeverity(severity)){
-            try {
-                final AlarmCallbackConfiguration callbackConfiguration = alarmCallbackConfigurationService.load(notificationID);
-                if (callbackConfiguration != null) {
-                    Map<String, Object> configuration = callbackConfiguration.getConfiguration();
-                    configuration.replace(AlertRuleUtils.SEVERITY, severity);
-                    final AlarmCallbackConfiguration updatedConfig = ((AlarmCallbackConfigurationImpl) callbackConfiguration).toBuilder()
-                            .setTitle(title)
-                            .setConfiguration(configuration)
-                            .build();
-
-                    alarmCallbackFactory.create(updatedConfig).checkConfiguration();
-                    alarmCallbackConfigurationService.save(updatedConfig);
-                }
-                return true;
-            } catch (ValidationException | AlarmCallbackConfigurationException | ConfigurationException e) {
-                LOG.error(ERROR_ALARM_CALLBACK_CONFIGURATION, e);
-            } catch (ClassNotFoundException e) {
-                LOG.error(ERROR_ALARM_CALLBACK_TYPE, e);
-            }
-        }
-        return false;
     }
 
     public String createCondition(String conditionType ,String alertTitle, Map<String, Object>  parameters, Stream conditionStream, Stream stream2, String userName){
@@ -703,7 +651,7 @@ public class AlertRuleUtilsService {
         return listPipelineFieldRule;
     }
 
-    public EventProcessorConfig createCorrelationCondition(String type, String streamID, String streamID2, Map<String, Object> conditionParameter){
+    private EventProcessorConfig createCorrelationCondition(String type, String streamID, String streamID2, Map<String, Object> conditionParameter){
         String messsageOrder;
         if(type.equals("THEN")){
             messsageOrder = "AFTER";
@@ -822,7 +770,50 @@ public class AlertRuleUtilsService {
         return notification.id();
     }
 
+    public void updateNotification(String title, String notificationID, String severity){
+        NotificationDto notification = eventNotificationsResource.get(notificationID);
+        LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) notification.config();
+        if(!loggingNotificationConfig.severity().getType().equals(severity) || !notification.title().equals(title)){
+            LOG.info("Update Notification");
+            if(!loggingNotificationConfig.severity().getType().equals(severity)){
+                LOG.info("Update severity, old one: " + loggingNotificationConfig.severity().getType() + " New one: " + severity);
+                loggingNotificationConfig = LoggingNotificationConfig.builder()
+                        .severity(SeverityType.valueOf(severity.toUpperCase()))
+                        .logBody(loggingNotificationConfig.logBody())
+                        .splitFields(loggingNotificationConfig.splitFields())
+                        .aggregationStream(loggingNotificationConfig.aggregationStream())
+                        .aggregationTime(loggingNotificationConfig.aggregationTime())
+                        .limitOverflow(loggingNotificationConfig.limitOverflow())
+                        .fieldAlertId(loggingNotificationConfig.fieldAlertId())
+                        .alertTag(loggingNotificationConfig.alertTag())
+                        .overflowTag(loggingNotificationConfig.overflowTag())
+                        .singleMessage(loggingNotificationConfig.singleMessage())
+                        .build();
+            }
+            notification = NotificationDto.builder()
+                    .id(notification.id())
+                    .config(loggingNotificationConfig)
+                    .title(title)
+                    .description(notification.description())
+                    .build();
+            notificationResourceHandler.update(notification);
+        }
+    }
+
+    public EventProcessorConfig createCondition(String conditionType, Map<String, Object> conditionParameter, String streamID, String streamID2){
+        LOG.info("Create condition type:" + conditionType);
+
+        if(conditionType.equals("THEN") || conditionType.equals("AND")){
+            return createCorrelationCondition(conditionType, streamID, streamID2, conditionParameter);
+        } else if (conditionType.equals("STATISTICAL")){
+            return createStatisticalCondition(streamID, conditionParameter);
+        } else {
+            return createAggregationCondition(streamID, conditionParameter);
+        }
+    }
+
     public String createEvent(String alertTitle, String notificationID, EventProcessorConfig configuration){
+        LOG.info("Create Event: " + alertTitle);
         EventNotificationHandler.Config notificationConfiguration = EventNotificationHandler.Config.builder()
                 .notificationId(notificationID)
                 .build();
@@ -846,6 +837,25 @@ public class AlertRuleUtilsService {
         //this.eventDefinitionsResource.create(eventDefinition);
         eventDefinition = this.eventDefinitionHandler.create(eventDefinition);
         return eventDefinition.id();
+    }
+
+    public void updateEvent(String alertTitle, String eventID, EventProcessorConfig configuration){
+        LOG.info("Update Event: " + alertTitle + " ID: " + eventID);
+        EventDefinitionDto event = eventDefinitionsResource.get(eventID);
+        event = EventDefinitionDto.builder()
+                .id(event.id())
+                .title(alertTitle)
+                .description(event.description())
+                .priority(event.priority())
+                .alert(event.alert())
+                .config(configuration)
+                .fieldSpec(event.fieldSpec())
+                .keySpec(event.keySpec())
+                .notificationSettings(event.notificationSettings())
+                .notifications(event.notifications())
+                .storage(event.storage())
+                .build();
+        this.eventDefinitionHandler.update(event);
     }
 
 }

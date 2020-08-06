@@ -292,22 +292,11 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         	pipelineRuleID2 = pipelineRule2.id();
         }
 
-        Map<String, Object> conditionParameter = request.conditionParameters();
-
-        LOG.info("Create condition type:" + request.getConditionType());
-
-        // Create Condition
-        EventProcessorConfig configuration;
-        if(request.getConditionType().equals("THEN") || request.getConditionType().equals("AND")){
-            configuration = alertRuleUtilsService.createCorrelationCondition(request.getConditionType(), stream.getId(), streamID2, conditionParameter);
-        } else if (request.getConditionType().equals("STATISTICAL")){
-            configuration = alertRuleUtilsService.createStatisticalCondition(stream.getId(), conditionParameter);
-        } else {
-            configuration = alertRuleUtilsService.createAggregationCondition(stream.getId(), conditionParameter);
-        }
-
         // Create Notification
         String notificationID = alertRuleUtilsService.createNotification(alertTitle, request.getSeverity());
+
+        // Create Condition
+        EventProcessorConfig configuration =  alertRuleUtilsService.createCondition(request.getConditionType(),request.conditionParameters(), stream.getId(), streamID2);
 
         //Create Event
         String eventID = alertRuleUtilsService.createEvent(alertTitle, notificationID, configuration);
@@ -316,7 +305,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         //Or Event for Second Stream
         if( request.getConditionType().equals("OR") && stream2 != null) {
         	//Create Condition
-            EventProcessorConfig configuration2 = alertRuleUtilsService.createAggregationCondition(stream2.getId(), conditionParameter);
+            EventProcessorConfig configuration2 = alertRuleUtilsService.createAggregationCondition(stream2.getId(), request.conditionParameters());
             //Create Event
             eventID2 = alertRuleUtilsService.createEvent(alertTitle+"#2", notificationID, configuration2);
         }
@@ -386,6 +375,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String userName = getCurrentUser().getName();
         // Update stream 2.
         Stream stream2 = alertRuleUtilsService.createOrUpdateSecondStream(request.getSecondStream(), alertTitle, userName, request.getConditionType(), oldAlert);
+LOG.info("Step 1");
         String streamID2 = null;
         RuleDao rule2 = null;
         PipelineDao pipeline2 = null;
@@ -401,48 +391,48 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             pipeline2 = pipelineService.load(oldAlert.getSecondPipelineID());
             alertRuleUtilsService.deletePipeline(pipeline2, rule2);
         }
+LOG.info("Step 2");
+        //update Notification
+        alertRuleUtilsService.updateNotification(alertTitle, oldAlert.getNotificationID(), request.getSeverity());
+LOG.info("Step 3");
+        //Create Condition
+        EventProcessorConfig configuration =  alertRuleUtilsService.createCondition(request.getConditionType(),request.conditionParameters(), stream.getId(), streamID2);
+LOG.info("Step 4");
+        // Update Event
+        alertRuleUtilsService.updateEvent(alertTitle, oldAlert.getEventID(), configuration);
 
-        //Update Condition   
-        AlertCondition alertCondition = streamService.getAlertCondition(stream, oldAlert.getEventID());
-        String alertConditionID = alertRuleUtilsService.updateCondition(stream, alertCondition, alertTitle, request.getConditionType(), request.conditionParameters(), streamID2, userName);
-        
-        //Update Notification
-        String notificationId = oldAlert.getNotificationID();
-        if(!alertRuleUtilsService.updateNotification(alertTitle, notificationId, request.getSeverity())){
-            notificationId = alertRuleUtilsService.createDefaultNotification(alertTitle, stream, request.getSeverity(), userName);
-        }
-
+        String eventID2 = oldAlert.getSecondEventID();
         //Or Condition for Second Stream
         if( request.getConditionType().equals("OR") && stream2 != null) {
         	if(oldAlert.getConditionType().equals("OR")) {
-	        	//Update Condition
-	        	AlertCondition alertCondition2 = streamService.getAlertConditions(stream2).get(0);
-                alertRuleUtilsService.updateCondition(stream2, alertCondition2, alertTitle, request.getConditionType(), request.conditionParameters(), null, userName);
-          
-	            //Remove Notification
-                alertRuleUtilsService.removeNotificationFromStream(stream2);
+                //Create Condition
+                EventProcessorConfig configuration2 =  alertRuleUtilsService.createAggregationCondition(stream2.getId(), request.conditionParameters());
+                // Update Event
+                alertRuleUtilsService.updateEvent(alertTitle+"#2", eventID2, configuration2);
         	}else {
                 //Create Condition
-                alertRuleUtilsService.createCondition(alertRuleUtils.getGraylogConditionType(request.getConditionType()), alertTitle,
-                        alertRuleUtils.getConditionParameters(null, "OR", request.conditionParameters()), stream2, null, userName);
+                EventProcessorConfig configuration2 = alertRuleUtilsService.createAggregationCondition(stream2.getId(), request.conditionParameters());
+                //Create Event
+                eventID2 = alertRuleUtilsService.createEvent(alertTitle+"#2", oldAlert.getNotificationID(), configuration2);
         	}
-        	//Create Notification
-            alertRuleUtilsService.createDefaultNotification(alertTitle+"#2", stream2, request.getSeverity(), userName);
+        }else if(oldAlert.getConditionType().equals("OR")) {
+            //Delete Event
+            eventDefinitionsResource.delete(eventID2);
         }
 
         alertRuleService.update(java.net.URLDecoder.decode(title, ENCODING),
                 AlertRuleImpl.create(
                         alertTitle,
                         oldAlert.getStreamID(),
-                        alertConditionID,
-                        notificationId,
+                        oldAlert.getEventID(),
+                        oldAlert.getNotificationID(),
                         oldAlert.getCreatedAt(),
                         getCurrentUser().getName(),
                         DateTime.now(),
                         request.getDescription(),
                         request.getConditionType(),
                         streamID2,
-                        null,
+                        eventID2,
                         oldAlert.getPipelineID(),
                         oldAlert.getPipelineRuleID(),
                         listPipelineFieldRule,
@@ -601,12 +591,14 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 alertRuleUtilsService.deleteStreamFromID(alertRule.getSecondStreamID());
             }
 
+            //Delete Event
             eventDefinitionsResource.delete(alertRule.getEventID());
             eventNotificationsResource.delete(alertRule.getNotificationID());
             if(alertRule.getSecondEventID() != null && !alertRule.getSecondEventID().isEmpty()) {
                 eventDefinitionsResource.delete(alertRule.getSecondEventID());
             }
 
+            //Delete Pipeline
             if (alertRule.getPipelineID() != null && alertRule.getPipelineRuleID() != null) {
                 RuleDao rule = ruleService.load(alertRule.getPipelineRuleID());
                 PipelineDao pipeline = pipelineService.load(alertRule.getPipelineID());
