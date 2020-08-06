@@ -375,7 +375,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String userName = getCurrentUser().getName();
         // Update stream 2.
         Stream stream2 = alertRuleUtilsService.createOrUpdateSecondStream(request.getSecondStream(), alertTitle, userName, request.getConditionType(), oldAlert);
-LOG.info("Step 1");
+
         String streamID2 = null;
         RuleDao rule2 = null;
         PipelineDao pipeline2 = null;
@@ -391,13 +391,13 @@ LOG.info("Step 1");
             pipeline2 = pipelineService.load(oldAlert.getSecondPipelineID());
             alertRuleUtilsService.deletePipeline(pipeline2, rule2);
         }
-LOG.info("Step 2");
+
         //update Notification
         alertRuleUtilsService.updateNotification(alertTitle, oldAlert.getNotificationID(), request.getSeverity());
-LOG.info("Step 3");
+
         //Create Condition
         EventProcessorConfig configuration =  alertRuleUtilsService.createCondition(request.getConditionType(),request.conditionParameters(), stream.getId(), streamID2);
-LOG.info("Step 4");
+
         // Update Event
         alertRuleUtilsService.updateEvent(alertTitle, oldAlert.getEventID(), configuration);
 
