@@ -78,8 +78,8 @@ const WizardPage = createReactClass({
                 field_type: 0,
                 field_value: "",
                 repeat_notifications: false,
-                backlog: 1000,
-                grace: 0
+                grace: 0,
+                backlog: 1000
             },
             import_policy: "DONOTHING"
         };

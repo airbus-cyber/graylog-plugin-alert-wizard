@@ -59,8 +59,8 @@ public abstract class AlertWizardConfig {
 						0,
 						"",
 						false,
-						1000,
-						0))
+						0,
+						1000))
 				.accessImportPolicy(ImportPolicyType.DONOTHING)
 				.build();
 	}
