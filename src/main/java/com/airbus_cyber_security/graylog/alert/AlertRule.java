@@ -10,7 +10,7 @@ public interface AlertRule {
 
 	public String getStreamID();
 
-    public String getConditionID();
+    public String getEventID();
 
     public String getNotificationID();
 
@@ -25,6 +25,8 @@ public interface AlertRule {
     public String getConditionType();
     
 	public String getSecondStreamID();
+
+	public String getSecondEventID();
 
 	public String getPipelineID();
 

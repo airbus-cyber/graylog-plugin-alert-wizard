@@ -13,36 +13,20 @@ import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetListData
 import com.airbus_cyber_security.graylog.alert.utilities.AlertRuleUtils;
 import com.airbus_cyber_security.graylog.alert.utilities.AlertRuleUtilsService;
 import com.airbus_cyber_security.graylog.audit.AlertWizardAuditEventTypes;
-import com.airbus_cyber_security.graylog.config.LoggingAlertConfig;
-import com.airbus_cyber_security.graylog.config.LoggingNotificationConfig;
-import com.airbus_cyber_security.graylog.config.SeverityType;
 import com.airbus_cyber_security.graylog.config.rest.AlertWizardConfig;
 import com.airbus_cyber_security.graylog.config.rest.ImportPolicyType;
-import com.airbus_cyber_security.graylog.events.processor.aggregation.AggregationCountProcessorConfig;
-import com.airbus_cyber_security.graylog.events.processor.correlation.CorrelationCountProcessorConfig;
 import com.airbus_cyber_security.graylog.list.AlertListService;
 import com.airbus_cyber_security.graylog.list.utilities.AlertListUtilsService;
 import com.airbus_cyber_security.graylog.permissions.AlertRuleRestPermissions;
 import com.codahale.metrics.annotation.Timed;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.mongodb.MongoException;
 import io.swagger.annotations.*;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.graylog.events.conditions.Expr;
-import org.graylog.events.conditions.Expression;
-import org.graylog.events.notifications.EventNotificationHandler;
-import org.graylog.events.notifications.EventNotificationSettings;
-import org.graylog.events.notifications.NotificationDto;
 import org.graylog.events.notifications.NotificationResourceHandler;
-import org.graylog.events.processor.EventDefinitionDto;
 import org.graylog.events.processor.EventDefinitionHandler;
 import org.graylog.events.processor.EventProcessorConfig;
-import org.graylog.events.processor.aggregation.AggregationConditions;
-import org.graylog.events.processor.aggregation.AggregationEventProcessorConfig;
-import org.graylog.events.processor.aggregation.AggregationFunction;
-import org.graylog.events.processor.aggregation.AggregationSeries;
 import org.graylog.events.rest.EventDefinitionsResource;
 import org.graylog.events.rest.EventNotificationsResource;
 import org.graylog.plugins.pipelineprocessor.db.*;
@@ -52,7 +36,6 @@ import org.graylog2.alarmcallbacks.AlarmCallbackFactory;
 import org.graylog2.alerts.AlertService;
 import org.graylog2.audit.jersey.AuditEvent;
 import org.graylog2.configuration.HttpConfiguration;
-import org.graylog2.contentpacks.model.entities.references.ValueReference;
 import org.graylog2.database.NotFoundException;
 import org.graylog2.events.ClusterEventBus;
 import org.graylog2.indexer.IndexSetRegistry;
@@ -150,7 +133,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.alertRuleUtilsService = new AlertRuleUtilsService(alertRuleService, streamService, streamRuleService, clusterEventBus,
                 indexSetRegistry.getDefault().getConfig().id(), alertService, alarmCallbackConfigurationService,
                 alarmCallbackFactory, clusterConfigService, ruleService, pipelineService, dbDataAdapterService,
-                httpConfiguration, dbCacheService, dbTableService, pipelineStreamConnectionsService, alertRuleUtils, eventDefinitionsResource, eventNotificationsResource);
+                httpConfiguration, dbCacheService, dbTableService, pipelineStreamConnectionsService, alertRuleUtils, eventDefinitionsResource, eventNotificationsResource, notificationResourceHandler, eventDefinitionHandler);
     }
 
     @GET
@@ -219,7 +202,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 LOG.warn("Alert " + alert.getTitle() + " is broken: " + e.getMessage());
                 alertsData.add(GetDataAlertRule.create(alert.getTitle(), alert.getTitle(),
                 		"",
-                        alert.getConditionID(),
+                        alert.getEventID(),
                         alert.getNotificationID(),
                         alert.getCreatedAt(),
                         alert.getCreatorUserId(),
@@ -312,181 +295,46 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         Map<String, Object> conditionParameter = request.conditionParameters();
 
         LOG.info("Create condition type:" + request.getConditionType());
-        //TODO
+
+        // Create Condition
         EventProcessorConfig configuration;
         if(request.getConditionType().equals("THEN") || request.getConditionType().equals("AND")){
-            String messsageOrder;
-            if(request.getConditionType().equals("THEN")){
-                messsageOrder = "AFTER";
-            }else{
-                messsageOrder = "ANY";
-            }
-
-            configuration = CorrelationCountProcessorConfig.builder()
-                    .stream(stream.getId())
-                    .thresholdType((String) conditionParameter.get("threshold_type"))
-                    .threshold((int) conditionParameter.get("threshold"))
-                    .additionalStream(streamID2)
-                    .additionalThresholdType((String) conditionParameter.get("additional_threshold_type"))
-                    .additionalThreshold((int) conditionParameter.get("additional_threshold"))
-                    .messagesOrder(messsageOrder)
-                    .searchWithinMs(((int) conditionParameter.get("time")) * 60 * 1000)
-                    .executeEveryMs(((int) conditionParameter.get("grace")) * 60 * 1000)
-                    .groupingFields(new HashSet<String>((List<String>) conditionParameter.get("grouping_fields")))
-                    .comment(AlertRuleUtils.COMMENT_ALERT_WIZARD)
-                    .searchQuery("*")
-                    .build();
-
+            configuration = alertRuleUtilsService.createCorrelationCondition(request.getConditionType(), stream.getId(), streamID2, conditionParameter);
         } else if (request.getConditionType().equals("STATISTICAL")){
-            LOG.info("Begin Stat, type: " + conditionParameter.get("type"));
-            AggregationFunction agregationFunction;
-            switch (conditionParameter.get("type").toString()) {
-                case "MEAN":
-                    agregationFunction = AggregationFunction.AVG;
-                    break;
-                case "MIN":
-                    agregationFunction = AggregationFunction.MIN;
-                    break;
-                case "MAX":
-                    agregationFunction = AggregationFunction.MAX;
-                    break;
-                case "SUM":
-                    agregationFunction = AggregationFunction.SUM;
-                    break;
-                case "STDDEV":
-                    agregationFunction = AggregationFunction.STDDEV;
-                    break;
-                default:
-                    throw new BadRequestException();
-            }
-
-            String ID = UUID.randomUUID().toString();
-            final AggregationSeries serie = AggregationSeries.builder()
-                    .id(ID)
-                    .function(agregationFunction)
-                    .field(conditionParameter.get("field").toString())
-                    .build();
-
-            final Expr.NumberReference left = Expr.NumberReference.create(ID);
-            final Expr.NumberValue right = Expr.NumberValue.create((int) conditionParameter.get("threshold"));
-            final Expression<Boolean> expression;
-            switch (conditionParameter.get("threshold_type").toString()) {
-                case ">":
-                    expression = Expr.Greater.create(left, right);
-                    break;
-                case ">=":
-                    expression = Expr.GreaterEqual.create(left, right);
-                    break;
-                case "<":
-                    expression = Expr.Lesser.create(left, right);
-                    break;
-                case "<=":
-                    expression = Expr.LesserEqual.create(left, right);
-                    break;
-                case "=":
-                    expression = Expr.Equal.create(left, right);
-                    break;
-                default:
-                    throw new BadRequestException();
-            }
-
-            configuration = AggregationEventProcessorConfig.builder()
-                    .query("")
-                    .streams(new HashSet<String> (Collections.singleton(stream.getId())))
-                    .series(ImmutableList.of(serie))
-                    .groupBy(ImmutableList.of())
-                    .conditions(AggregationConditions.builder()
-                            .expression(expression)
-                            .build())
-                    .executeEveryMs(((int) conditionParameter.get("grace")) * 60 * 1000)
-                    .searchWithinMs(((int) conditionParameter.get("time")) * 60 * 1000)
-                    .build();
-
+            configuration = alertRuleUtilsService.createStatisticalCondition(stream.getId(), conditionParameter);
         } else {
-             configuration = AggregationCountProcessorConfig.builder()
-                    .stream(stream.getId())
-                    .thresholdType((String) conditionParameter.get("threshold_type"))
-                    .threshold((int) conditionParameter.get("threshold"))
-                    .searchWithinMs(((int) conditionParameter.get("time")) * 60 * 1000)
-                    .executeEveryMs(((int) conditionParameter.get("grace")) * 60 * 1000)
-                    .groupingFields(new HashSet<String>((List<String>) conditionParameter.get("grouping_fields")))
-                    .distinctionFields(new HashSet<String>((List<String>) conditionParameter.get("distinction_fields")))
-                    .comment(AlertRuleUtils.COMMENT_ALERT_WIZARD)
-                    .searchQuery("*")
-                     .build();
+            configuration = alertRuleUtilsService.createAggregationCondition(stream.getId(), conditionParameter);
         }
 
+        // Create Notification
+        String notificationID = alertRuleUtilsService.createNotification(alertTitle, request.getSeverity());
 
+        //Create Event
+        String eventID = alertRuleUtilsService.createEvent(alertTitle, notificationID, configuration);
 
-        LOG.info("After create Condition");
-
-        LoggingNotificationConfig loggingNotificationConfig = LoggingNotificationConfig.builder()
-                .singleMessage(false)
-                .severity(SeverityType.valueOf(request.getSeverity().toUpperCase()))
-                .logBody("Test")
-                .build();
-        NotificationDto notification = NotificationDto.builder()
-                .config(loggingNotificationConfig)
-                .title(alertTitle)
-                .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
-                .build();
-        notification = this.notificationResourceHandler.create(notification);
-        LOG.info("notification ID: "+notification.id());
-
-        EventNotificationHandler.Config notificationConfiguration = EventNotificationHandler.Config.builder()
-                .notificationId(notification.id())
-                .build();
-
-        EventDefinitionDto eventDefinition = EventDefinitionDto.builder()
-                .title(alertTitle)
-                .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
-                //.description(request.getDescription())
-                .config(configuration)
-                .alert(true)
-                .priority(2)
-                .keySpec(ImmutableList.of())
-                .notifications(ImmutableList.<EventNotificationHandler.Config>builder().add(notificationConfiguration).build())
-                .notificationSettings(EventNotificationSettings.builder()
-                        .gracePeriodMs(0L)
-                        .backlogSize(500)
-                        .build())
-                .build();
-
-        //TODO do it with eventDefinitionsResource to have the validation but need to get the event ID back
-        //this.eventDefinitionsResource.create(eventDefinition);
-        eventDefinition = this.eventDefinitionHandler.create(eventDefinition);
-
-        LOG.info("Event ID: " + eventDefinition.id());
-
-
-        //Create Condition
-     /*   String graylogConditionType = alertRuleUtils.getGraylogConditionType(request.getConditionType());
-        Map<String, Object> parameters = alertRuleUtils.getConditionParameters(streamID2, request.getConditionType(), request.conditionParameters());
-        String alertConditionID = alertRuleUtilsService.createCondition(graylogConditionType, alertTitle, parameters, stream, stream2, userName);
-        //Create Notification
-        String idAlarmCallBack = alertRuleUtilsService.createDefaultNotification(alertTitle, stream, request.getSeverity(), userName);
-
-        //Or Condition for Second Stream
+        String eventID2 = null;
+        //Or Event for Second Stream
         if( request.getConditionType().equals("OR") && stream2 != null) {
         	//Create Condition
-            alertRuleUtilsService.createCondition(graylogConditionType, alertTitle, parameters, stream2, stream, userName);
-            //Create Notification
-            alertRuleUtilsService.createDefaultNotification(alertTitle+"#2", stream2, request.getSeverity(), userName);
+            EventProcessorConfig configuration2 = alertRuleUtilsService.createAggregationCondition(stream2.getId(), conditionParameter);
+            //Create Event
+            eventID2 = alertRuleUtilsService.createEvent(alertTitle+"#2", notificationID, configuration2);
         }
-*/
+
 
         clusterEventBus.post(StreamsChangedEvent.create(stream.getId()));
     	alertRuleService.create(AlertRuleImpl.create(
         		alertTitle,
         		stream.getId(),
-                eventDefinition.id(),
-                notification.id(),
+                eventID,
+                notificationID,
 				DateTime.now(),
 				getCurrentUser().getName(),
 				DateTime.now(),
 				request.getDescription(),
 				request.getConditionType(),
 				streamID2,
+                eventID2,
                 pipelineID,
                 pipelineRuleID,
                 listPipelineFieldRule,
@@ -555,7 +403,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
 
         //Update Condition   
-        AlertCondition alertCondition = streamService.getAlertCondition(stream, oldAlert.getConditionID());
+        AlertCondition alertCondition = streamService.getAlertCondition(stream, oldAlert.getEventID());
         String alertConditionID = alertRuleUtilsService.updateCondition(stream, alertCondition, alertTitle, request.getConditionType(), request.conditionParameters(), streamID2, userName);
         
         //Update Notification
@@ -594,6 +442,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                         request.getDescription(),
                         request.getConditionType(),
                         streamID2,
+                        null,
                         oldAlert.getPipelineID(),
                         oldAlert.getPipelineRuleID(),
                         listPipelineFieldRule,
@@ -664,7 +513,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
 
         //Create Condition
-        AlertCondition alertCondition = streamService.getAlertCondition(sourceFirstStream, sourceAlert.getConditionID());
+        AlertCondition alertCondition = streamService.getAlertCondition(sourceFirstStream, sourceAlert.getEventID());
         Map<String, Object> conditionParameters = Maps.newHashMap();
         conditionParameters.putAll(alertCondition.getParameters());
         if(secondStream != null && alertCondition.getType().equals(AlertRuleUtils.TYPE_CORRELATION)) {
@@ -708,6 +557,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 				request.getDescription(),
 				sourceAlert.getConditionType(),
 				secondStreamID,
+                null,
                 pipelineID,
                 pipelineRuleID,
                 sourceAlert.getPipelineFieldRules(),
@@ -751,8 +601,11 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 alertRuleUtilsService.deleteStreamFromID(alertRule.getSecondStreamID());
             }
 
-            eventDefinitionsResource.delete(alertRule.getConditionID());
+            eventDefinitionsResource.delete(alertRule.getEventID());
             eventNotificationsResource.delete(alertRule.getNotificationID());
+            if(alertRule.getSecondEventID() != null && !alertRule.getSecondEventID().isEmpty()) {
+                eventDefinitionsResource.delete(alertRule.getSecondEventID());
+            }
 
             if (alertRule.getPipelineID() != null && alertRule.getPipelineRuleID() != null) {
                 RuleDao rule = ruleService.load(alertRule.getPipelineRuleID());
@@ -863,6 +716,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 alertRule.getDescription(),
                 alertRule.getConditionType(),
                 streamID2,
+                null,
                 pipelineID,
                 pipelineRuleID,
                 listPipelineFieldRule,

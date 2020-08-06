@@ -43,7 +43,7 @@ public class AlertRuleExporter {
 				
 				final String streamID = alert.getStreamID();
 		        final Stream stream = streamService.load(streamID);
-		        final AlertCondition alertCondition = streamService.getAlertCondition(stream, alert.getConditionID());
+		        final AlertCondition alertCondition = streamService.getAlertCondition(stream, alert.getEventID());
 				List<FieldRuleImpl> fieldRules = new ArrayList<>();
 				Optional.ofNullable(alert.getPipelineFieldRules()).ifPresent(fieldRules::addAll);
 				Optional.ofNullable(alertRuleUtils.getListFieldRule(stream.getStreamRules())).ifPresent(fieldRules::addAll);
