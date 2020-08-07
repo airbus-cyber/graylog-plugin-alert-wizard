@@ -342,18 +342,14 @@ const ManageSettings = createReactClass({
                        onChange={this._onValueChanged("field_value")}
                        value={this.state.config.default_values.field_value}/>
               </fieldset>
-              <h3><FormattedMessage id= "wizard.conditionDefaultValues" defaultMessage= "Default values of the alert condition" /></h3>
+              <h3><FormattedMessage id= "wizard.conditionDefaultValues" defaultMessage= "Default values of the event" /></h3>
               <p><FormattedMessage id= "wizard.changeDefaultValues" defaultMessage= "Change the default values." /></p>
-              <fieldset>   
-                <Input ref="repeat_notifications" id="repeat_notifications" name="repeat_notifications" type="checkbox" 
-                   label={<FormattedMessage id= "wizard.repeatNotifications" defaultMessage= "Repeat notifications" />}
-                   checked={this.state.config.default_values.repeat_notifications}
-                   onChange={this._onCheckboxClick} />    
+              <fieldset>
                 <Input ref="backlog" id="backlog" name="backlog" type="number" min="0"
                        label={<FormattedMessage id= "wizard.msgBacklog" defaultMessage= "Message Backlog" />}
                        onChange={this._onValueChanged("backlog")} value={this.state.config.default_values.backlog}/>
-                <Input ref="grace" id="grace" name="grace" type="number" min="0"
-                       label={<FormattedMessage id= "wizard.gracePeriod" defaultMessage= "Grace Period" />}
+                <Input ref="grace" id="grace" name="grace" type="number" min="1"
+                       label={<FormattedMessage id= "wizard.gracePeriod" defaultMessage= "Execute search every (minutes)" />}
                        onChange={this._onValueChanged("grace")} value={this.state.config.default_values.grace}/> 
               </fieldset>
             </Col>

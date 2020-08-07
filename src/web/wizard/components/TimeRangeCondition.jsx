@@ -51,7 +51,7 @@ const TimeRangeCondition = createReactClass({
                 </Col>
                 <Col md={10}>
                     <label><FormattedMessage id= "wizard.messagesCome" defaultMessage= "Messages must come in the last" /></label>
-                    <Input ref="time" id="time" name="time" type="number" onChange={this._onTimeChanged()} value={this.state.time}
+                    <Input ref="time" id="time" name="time" type="number" min="1" onChange={this._onTimeChanged()} value={this.state.time}
                            style={{borderTopRightRadius: '0px', borderBottomRightRadius: '0px', height:'36px' , width:'100px'}} />
                     <Input ref="time_type" id="time_type" name="time_type" required className="form-control">
                         <div style={{width:'150px'}}>

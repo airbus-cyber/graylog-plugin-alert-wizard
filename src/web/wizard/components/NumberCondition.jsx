@@ -70,7 +70,7 @@ const NumberCondition = createReactClass({
                         />
                         </div>
                     </Input>
-                    <Input ref="threshold" id="threshold" name="threshold" type="number" onChange={this._onThresholdChanged()}
+                    <Input ref="threshold" id="threshold" name="threshold" type="number" min="0" onChange={this._onThresholdChanged()}
                            value={this.state.threshold}
                            style={{borderTopLeftRadius: '0px', borderBottomLeftRadius: '0px', height:'36px', width:'100px'}} />
                     <label>&nbsp; </label>

@@ -97,8 +97,8 @@ const CreateAlertInput = createReactClass({
                 field_type: '',
                 field_value: '',
                 repeat_notifications: false,
-                grace: 0,
-                backlog: 1000
+                grace: 1,
+                backlog: 500
             },
         };
     },
