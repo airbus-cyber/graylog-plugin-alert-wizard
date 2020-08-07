@@ -13,6 +13,7 @@ import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetListData
 import com.airbus_cyber_security.graylog.alert.utilities.AlertRuleUtils;
 import com.airbus_cyber_security.graylog.alert.utilities.AlertRuleUtilsService;
 import com.airbus_cyber_security.graylog.alert.utilities.StreamPipelineObject;
+import com.airbus_cyber_security.graylog.alert.utilities.StreamPipelineService;
 import com.airbus_cyber_security.graylog.audit.AlertWizardAuditEventTypes;
 import com.airbus_cyber_security.graylog.config.rest.AlertWizardConfig;
 import com.airbus_cyber_security.graylog.config.rest.ImportPolicyType;
@@ -81,21 +82,23 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 	private static final String ENCODING = "UTF-8";
     private static final String TITLE = "title";
 
-    private final AlertRuleService alertRuleService;
+
     private final StreamService streamService;
     private final ClusterEventBus clusterEventBus;
     private final AlarmCallbackConfigurationService alarmCallbackConfigurationService;
     private final ClusterConfigService clusterConfigService;
-    private final AlertRuleUtils alertRuleUtils;
-    private final AlertRuleExporter alertRuleExporter;
-    private final AlertRuleUtilsService alertRuleUtilsService;
-    private final RuleService ruleService;
-    private final PipelineService pipelineService;
-    private final AlertListUtilsService alertListUtilsService;
     private final EventDefinitionHandler eventDefinitionHandler;
     private final EventDefinitionsResource eventDefinitionsResource;
     private final NotificationResourceHandler notificationResourceHandler;
     private final EventNotificationsResource eventNotificationsResource;
+
+    private final AlertRuleService alertRuleService;
+    private final AlertRuleUtils alertRuleUtils;
+    private final AlertRuleUtilsService alertRuleUtilsService;
+    private final StreamPipelineService streamPipelineService;
+    private final AlertListUtilsService alertListUtilsService;
+    private final AlertRuleExporter alertRuleExporter;
+
 
     @Inject
     public AlertRuleResource(AlertRuleService alertRuleService,
@@ -124,19 +127,38 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.clusterEventBus = clusterEventBus;
         this.alarmCallbackConfigurationService = alarmCallbackConfigurationService;
         this.clusterConfigService = clusterConfigService;
-        this.ruleService = ruleService;
-        this.pipelineService = pipelineService;
-        this.alertRuleUtils = new AlertRuleUtils();
-        this.alertRuleExporter = new AlertRuleExporter(alertRuleService, alarmCallbackConfigurationService, streamService, alertRuleUtils);
-        this.alertListUtilsService = new AlertListUtilsService(alertListService);
         this.eventDefinitionHandler = eventDefinitionHandler;
         this.eventDefinitionsResource = eventDefinitionsResource;
         this.notificationResourceHandler = notificationResourceHandler;
         this.eventNotificationsResource = eventNotificationsResource;
-        this.alertRuleUtilsService = new AlertRuleUtilsService(alertRuleService, streamService, streamRuleService, clusterEventBus,
-                indexSetRegistry.getDefault().getConfig().id(), alertService, alarmCallbackConfigurationService,
-                alarmCallbackFactory, clusterConfigService, ruleService, pipelineService, dbDataAdapterService,
-                httpConfiguration, dbCacheService, dbTableService, pipelineStreamConnectionsService, alertRuleUtils, eventDefinitionsResource, eventNotificationsResource, notificationResourceHandler, eventDefinitionHandler);
+
+        this.alertRuleUtils = new AlertRuleUtils();
+        this.alertRuleExporter = new AlertRuleExporter(alertRuleService, alarmCallbackConfigurationService, streamService, alertRuleUtils);
+        this.alertListUtilsService = new AlertListUtilsService(alertListService);
+        this.alertRuleUtilsService = new AlertRuleUtilsService(
+                alertRuleService,
+                streamService,
+                alertService,
+                alarmCallbackConfigurationService,
+                alarmCallbackFactory,
+                clusterConfigService,
+                alertRuleUtils,
+                eventDefinitionsResource,
+                eventNotificationsResource,
+                notificationResourceHandler,
+                eventDefinitionHandler);
+        this.streamPipelineService = new StreamPipelineService(
+                streamService,
+                streamRuleService,
+                clusterEventBus,
+                indexSetRegistry.getDefault().getConfig().id(),
+                ruleService,
+                pipelineService,
+                dbDataAdapterService,
+                httpConfiguration,
+                dbCacheService,
+                dbTableService,
+                pipelineStreamConnectionsService);
     }
 
     @GET
@@ -267,18 +289,18 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String userName = getCurrentUser().getName();
 
         // Create stream and pipeline
-        StreamPipelineObject streamPilpelineObject = alertRuleUtilsService.createStreamAndPipeline(request.getStream(), alertTitle, userName, request.getStream().getMatchingType());
+        StreamPipelineObject streamPilpelineObject = streamPipelineService.createStreamAndPipeline(request.getStream(), alertTitle, userName, request.getStream().getMatchingType());
 
         //Create unique data adapter
-        DataAdapterDto adapter = alertRuleUtilsService.createUniqueDataAdapter(userName);
-        CacheDto cache = alertRuleUtilsService.createUniqueCache();
-        alertRuleUtilsService.createUniqueLookup(cache, adapter);
+        DataAdapterDto adapter = streamPipelineService.createUniqueDataAdapter(userName);
+        CacheDto cache = streamPipelineService.createUniqueCache();
+        streamPipelineService.createUniqueLookup(cache, adapter);
 
         // Create second stream and pipeline
         String streamID2 = null;
         StreamPipelineObject streamPilpelineObject2 = new StreamPipelineObject(null,null,null,null);
         if(request.getConditionType().equals("THEN") || request.getConditionType().equals("AND") || request.getConditionType().equals("OR")) {
-            streamPilpelineObject2 = alertRuleUtilsService.createStreamAndPipeline(request.getSecondStream(), alertTitle + "#2", userName, request.getStream().getMatchingType());
+            streamPilpelineObject2 = streamPipelineService.createStreamAndPipeline(request.getSecondStream(), alertTitle + "#2", userName, request.getStream().getMatchingType());
             streamID2=streamPilpelineObject2.getStream().getId();
         }
 
@@ -352,22 +374,22 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         // Update stream.
         final Stream stream = streamService.load(oldAlert.getStreamID());
-        alertRuleUtilsService.updateStream(stream, request.getStream(), alertTitle);
+        streamPipelineService.updateStream(stream, request.getStream(), alertTitle);
 
         //update pipeline
-        StreamPipelineObject streamPilpelineObject = alertRuleUtilsService.updatePipeline(alertTitle, oldAlert.getPipelineID(), oldAlert.getPipelineRuleID(), request.getStream().getFieldRules(), stream, request.getStream().getMatchingType());
+        StreamPipelineObject streamPilpelineObject = streamPipelineService.updatePipeline(alertTitle, oldAlert.getPipelineID(), oldAlert.getPipelineRuleID(), request.getStream().getFieldRules(), stream, request.getStream().getMatchingType());
 
         // Update stream 2.
-        Stream stream2 = alertRuleUtilsService.createOrUpdateSecondStream(request.getSecondStream(), alertTitle, userName, request.getConditionType(), oldAlert);
+        Stream stream2 = streamPipelineService.createOrUpdateSecondStream(request.getSecondStream(), alertTitle, userName, request.getConditionType(), oldAlert);
         String streamID2 = null;
 
         //update pipeline 2
         StreamPipelineObject streamPilpelineObject2 = new StreamPipelineObject(null,null,null,null);
         if(stream2 != null){
             streamID2 = stream2.getId();
-            streamPilpelineObject2 = alertRuleUtilsService.updatePipeline(alertTitle + "#2", oldAlert.getSecondPipelineID(), oldAlert.getSecondPipelineRuleID(), request.getSecondStream().getFieldRules(), stream2, request.getStream().getMatchingType());
+            streamPilpelineObject2 = streamPipelineService.updatePipeline(alertTitle + "#2", oldAlert.getSecondPipelineID(), oldAlert.getSecondPipelineRuleID(), request.getSecondStream().getFieldRules(), stream2, request.getStream().getMatchingType());
         } else if (oldAlert.getSecondStreamID() != null) {
-            alertRuleUtilsService.deletePipeline(oldAlert.getSecondPipelineID(), oldAlert.getSecondPipelineRuleID());
+            streamPipelineService.deletePipeline(oldAlert.getSecondPipelineID(), oldAlert.getSecondPipelineRuleID());
         }
 
         //update Notification
@@ -455,14 +477,14 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         // Create stream.
         final Stream sourceFirstStream = streamService.load(sourceAlert.getStreamID());
-        Stream firstStream = alertRuleUtilsService.cloneStream(sourceFirstStream, alertTitle, creatorUser);
+        Stream firstStream = streamPipelineService.cloneStream(sourceFirstStream, alertTitle, creatorUser);
 
         //create pipeline
         String pipelineID = null;
         String pipelineRuleID = null;
         if(!sourceAlert.getPipelineFieldRules().isEmpty()) {
-            RuleDao pipelineRule = alertRuleUtilsService.createPipelineRule(alertTitle, sourceAlert.getPipelineFieldRules(), firstStream, null);
-            PipelineDao pipeline = alertRuleUtilsService.createPipeline(alertTitle, null, sourceFirstStream.getMatchingType().toString());
+            RuleDao pipelineRule = streamPipelineService.createPipelineRule(alertTitle, sourceAlert.getPipelineFieldRules(), firstStream, null);
+            PipelineDao pipeline = streamPipelineService.createPipeline(alertTitle, null, sourceFirstStream.getMatchingType().toString());
             pipelineID = pipeline.id();
             pipelineRuleID = pipelineRule.id();
         }
@@ -476,11 +498,11 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         //Create Second Stream and pipeline
         if(sourceAlert.getSecondStreamID() != null && !sourceAlert.getSecondStreamID().isEmpty()) {
             final Stream sourceSecondStream = streamService.load(sourceAlert.getSecondStreamID());
-        	secondStream = alertRuleUtilsService.cloneStream(sourceSecondStream, alertTitle+"#2", creatorUser);
+        	secondStream = streamPipelineService.cloneStream(sourceSecondStream, alertTitle+"#2", creatorUser);
         	secondStreamID = secondStream.getId();
             if(!sourceAlert.getSecondPipelineFieldRules().isEmpty()) {
-                RuleDao pipelineRule2 = alertRuleUtilsService.createPipelineRule(alertTitle + "#2", sourceAlert.getSecondPipelineFieldRules(), secondStream, null);
-                PipelineDao pipeline2 = alertRuleUtilsService.createPipeline(alertTitle + "#2", null, sourceFirstStream.getMatchingType().toString());
+                RuleDao pipelineRule2 = streamPipelineService.createPipelineRule(alertTitle + "#2", sourceAlert.getSecondPipelineFieldRules(), secondStream, null);
+                PipelineDao pipeline2 = streamPipelineService.createPipeline(alertTitle + "#2", null, sourceFirstStream.getMatchingType().toString());
                 pipelineID2 = pipeline2.id();
                 pipelineRuleID2 = pipelineRule2.id();
             }
@@ -568,11 +590,11 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         try{
         	AlertRule alertRule = alertRuleService.load(alertTitle);
         	//Delete first Stream
-            alertRuleUtilsService.deleteStreamFromID(alertRule.getStreamID());
+            streamPipelineService.deleteStreamFromID(alertRule.getStreamID());
 
             //Delete second Stream
             if(alertRule.getSecondStreamID() != null && !alertRule.getSecondStreamID().isEmpty()) {
-                alertRuleUtilsService.deleteStreamFromID(alertRule.getSecondStreamID());
+                streamPipelineService.deleteStreamFromID(alertRule.getSecondStreamID());
             }
 
             //Delete Event
@@ -584,11 +606,11 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
             //Delete Pipeline
             if (alertRule.getPipelineID() != null && alertRule.getPipelineRuleID() != null) {
-                alertRuleUtilsService.deletePipeline(alertRule.getPipelineID(), alertRule.getPipelineRuleID());
+                streamPipelineService.deletePipeline(alertRule.getPipelineID(), alertRule.getPipelineRuleID());
             }
 
             if (alertRule.getSecondPipelineID() != null && alertRule.getSecondPipelineRuleID() != null) {
-                alertRuleUtilsService.deletePipeline(alertRule.getSecondPipelineID(), alertRule.getSecondPipelineRuleID());
+                streamPipelineService.deletePipeline(alertRule.getSecondPipelineID(), alertRule.getSecondPipelineRuleID());
             }
 
             //Update list usage
@@ -623,18 +645,18 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String userName = getCurrentUser().getName();
 
         // Create stream and pipeline
-        StreamPipelineObject streamPilpelineObject = alertRuleUtilsService.createStreamAndPipeline(alertRule.getStream(), alertTitle, userName, alertRule.getStream().getMatchingType());
+        StreamPipelineObject streamPilpelineObject = streamPipelineService.createStreamAndPipeline(alertRule.getStream(), alertTitle, userName, alertRule.getStream().getMatchingType());
 
         //Create unique data adapter
-        DataAdapterDto adapter = alertRuleUtilsService.createUniqueDataAdapter(userName);
-        CacheDto cache = alertRuleUtilsService.createUniqueCache();
-        alertRuleUtilsService.createUniqueLookup(cache, adapter);
+        DataAdapterDto adapter = streamPipelineService.createUniqueDataAdapter(userName);
+        CacheDto cache = streamPipelineService.createUniqueCache();
+        streamPipelineService.createUniqueLookup(cache, adapter);
 
         // Create second stream and pipeline
         String streamID2 = null;
         StreamPipelineObject streamPilpelineObject2 = new StreamPipelineObject(null,null,null,null);
         if(alertRule.getConditionType().equals("THEN") || alertRule.getConditionType().equals("AND") || alertRule.getConditionType().equals("OR")) {
-            streamPilpelineObject2 = alertRuleUtilsService.createStreamAndPipeline(alertRule.getSecondStream(), alertTitle+"#2", userName, alertRule.getStream().getMatchingType());
+            streamPilpelineObject2 = streamPipelineService.createStreamAndPipeline(alertRule.getSecondStream(), alertTitle+"#2", userName, alertRule.getStream().getMatchingType());
             streamID2 = streamPilpelineObject2.getStream().getId();
         }
 
