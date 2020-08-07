@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<prerequisites>
-		<maven>3.1</maven>
-	</prerequisites>
 
  	<parent>
 		<groupId>org.graylog.plugins</groupId>
 		<artifactId>graylog-plugin-web-parent</artifactId>
-		<version>3.0.2</version>
+		<version>3.2.5</version>
 	</parent>
 		
 	<groupId>com.airbus-cyber-security.graylog</groupId>
@@ -57,7 +54,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<graylog.version>3.0.2</graylog.version>
+		<graylog.version>3.2.4</graylog.version>
 		<graylog2.plugin-dir>/usr/share/graylog-server/plugin</graylog2.plugin-dir>
 		<auto-value.version>1.6.5</auto-value.version>
 		<graylog-plugin-logging-alert.version>1.2.0</graylog-plugin-logging-alert.version>
@@ -123,11 +120,26 @@
 			<artifactId>fongo</artifactId>
 			<version>${fongo.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.airbus-cyber-security.graylog</groupId>
+			<artifactId>graylog-plugin-aggregation-count</artifactId>
+			<version>2.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.airbus-cyber-security.graylog</groupId>
+			<artifactId>graylog-plugin-correlation-count</artifactId>
+			<version>2.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.airbus-cyber-security.graylog</groupId>
+			<artifactId>graylog-plugin-logging-alert</artifactId>
+			<version>2.0.2</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<resources>
 			<resource>
-				<directory>build</directory>
+				<directory>${web.build-dir}</directory>
 			</resource>
 			<resource>
 				<directory>src/main/resources</directory>
@@ -135,6 +147,26 @@
 			</resource>
 		</resources>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>3.0.0-M3</version>
+				<executions>
+					<execution>
+						<id>enforce-maven</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireMavenVersion>
+									<version>3.0.0</version>
+								</requireMavenVersion>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>

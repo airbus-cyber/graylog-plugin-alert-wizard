@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
 import {Input} from 'components/bootstrap';
-import {Col, Row} from 'react-bootstrap';
+import { Row, Col } from 'components/graylog';
 import {FormattedMessage} from 'react-intl';
 
 const Description = createReactClass({

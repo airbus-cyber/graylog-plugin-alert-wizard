@@ -29,10 +29,10 @@ public abstract class AlertRuleImpl implements AlertRule {
     @Nullable
     public abstract String getStreamID();
 
-    @JsonProperty("condition")
+    @JsonProperty("event")
     @Override
     @Nullable
-    public abstract String getConditionID();
+    public abstract String getEventID();
 
     @JsonProperty("notification")
     @Override
@@ -69,6 +69,11 @@ public abstract class AlertRuleImpl implements AlertRule {
     @Nullable
     public abstract String getSecondStreamID();
 
+    @JsonProperty("event2")
+    @Override
+    @Nullable
+    public abstract String getSecondEventID();
+
     @JsonProperty("pipeline")
     @Override
     @Nullable
@@ -103,7 +108,7 @@ public abstract class AlertRuleImpl implements AlertRule {
     public static AlertRuleImpl create(@JsonProperty("_id") String objectId,
                                        @JsonProperty("title") String title,
                                        @JsonProperty("stream") String streamID,
-                                       @JsonProperty("condition") String conditionID,
+                                       @JsonProperty("event") String eventID,
                                        @JsonProperty("notification") String notificationID,
                                        @JsonProperty("created_at") DateTime createdAt,
                                        @JsonProperty("creator_user_id") String creatorUserId,
@@ -111,20 +116,21 @@ public abstract class AlertRuleImpl implements AlertRule {
                                        @JsonProperty("description") String description,
                                        @JsonProperty("condition_type") String conditionType,
                                        @JsonProperty("stream2") String streamID2,
+                                       @JsonProperty("event2") String eventID2,
                                        @JsonProperty("pipeline") String pipelineID,
                                        @JsonProperty("pipeline_rule") String pipelineRuleID,
                                        @JsonProperty("pipeline_field_rules")List<FieldRuleImpl> pipelineFieldRules,
                                        @JsonProperty("second pipeline") String pipelineID2,
                                        @JsonProperty("second pipeline_rule") String pipelineRuleID2,
                                        @JsonProperty("second_pipeline_field_rules") List<FieldRuleImpl> pipelineFieldRules2){
-        return new AutoValue_AlertRuleImpl(title, streamID, conditionID, notificationID, createdAt, creatorUserId, lastModified, description,
-                conditionType, streamID2, pipelineID, pipelineRuleID, pipelineFieldRules, pipelineID2, pipelineRuleID2, pipelineFieldRules2);
+        return new AutoValue_AlertRuleImpl(title, streamID, eventID, notificationID, createdAt, creatorUserId, lastModified, description,
+                conditionType, streamID2, eventID2, pipelineID, pipelineRuleID, pipelineFieldRules, pipelineID2, pipelineRuleID2, pipelineFieldRules2);
     }
 	
 	public static AlertRuleImpl create(
             String title,
             String streamID,
-            String conditionID,
+            String eventID,
             String notificationID,
             DateTime createdAt,
             String creatorUserId,
@@ -132,13 +138,14 @@ public abstract class AlertRuleImpl implements AlertRule {
             String description,
             String conditionType,
             String streamID2,
+            String eventID2,
             String pipelineID,
             String pipelineRuleID,
             List<FieldRuleImpl> pipelineFieldRules,
             String pipelineID2,
             String pipelineRuleID2,
             List<FieldRuleImpl> pipelineFieldRules2) {
-		return new AutoValue_AlertRuleImpl(title, streamID, conditionID, notificationID, createdAt, creatorUserId, lastModified, description,
-                conditionType, streamID2, pipelineID, pipelineRuleID, pipelineFieldRules, pipelineID2, pipelineRuleID2, pipelineFieldRules2);
+		return new AutoValue_AlertRuleImpl(title, streamID, eventID, notificationID, createdAt, creatorUserId, lastModified, description,
+                conditionType, streamID2, eventID2, pipelineID, pipelineRuleID, pipelineFieldRules, pipelineID2, pipelineRuleID2, pipelineFieldRules2);
 	}
 }

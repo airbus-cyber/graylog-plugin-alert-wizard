@@ -64,7 +64,7 @@ const GroupDistinctCondition = createReactClass({
                 <NumberCondition onUpdate={this._handleChangeCondition} threshold={this.props.alert.condition_parameters.threshold} 
                                 threshold_type={this.props.alert.condition_parameters.threshold_type} />
                 <br/>
-                <TimeRangeCondition onUpdate={this._handleChangeCondition} time={time} time_type={time_type} />
+                <TimeRangeCondition onUpdate={this._handleChangeCondition} time={time.toString()} time_type={time_type.toString()} />
                 <br/>
                 <GroupByCondition onUpdate={this._handleChangeCondition} grouping_fields={this.props.alert.condition_parameters.grouping_fields} />
                 <br/>

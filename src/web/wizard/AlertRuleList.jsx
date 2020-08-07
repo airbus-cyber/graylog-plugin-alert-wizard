@@ -5,8 +5,9 @@ import createReactClass from 'create-react-class';
 import AlertRuleStore from './AlertRuleStore';
 import AlertRuleActions from './AlertRuleActions';
 import StoreProvider from 'injection/StoreProvider';
-import {Button, Tooltip} from 'react-bootstrap';
+import {Tooltip} from 'react-bootstrap';
 import {DataTable, IfPermitted, OverlayElement, Spinner, Timestamp} from 'components/common';
+import {Button} from 'components/graylog';
 import PermissionsMixin from 'util/PermissionsMixin';
 import Routes from 'routing/Routes';
 import {LinkContainer} from 'react-router-bootstrap';
@@ -209,7 +210,7 @@ const AlertRuleList = createReactClass({
         }
 
         const customizeLink = (
-                <LinkContainer disabled={!alertValid} to={Routes.show_alert_condition(streamID, alert.condition)} >
+                <LinkContainer disabled={!alertValid} to={Routes.ALERTS.DEFINITIONS.edit(alert.condition)} >
                     <Button bsStyle="info" title={this.state.messages.infoAdvanced} >
                         <FormattedMessage id ="wizard.advancedSettings" defaultMessage="Advanced settings" />
                     </Button>

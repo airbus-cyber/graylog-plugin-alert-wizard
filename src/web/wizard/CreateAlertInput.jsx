@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
-import {Button, Col, Row, Nav, NavItem} from 'react-bootstrap';
+import {Nav, NavItem} from 'components/graylog';
+import {Button, Col, Row} from 'components/graylog';
 import {Spinner} from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import AlertRuleActions from './AlertRuleActions';
@@ -114,7 +115,7 @@ const CreateAlertInput = createReactClass({
             alert.condition_parameters.threshold = this.props.default_values.threshold;
             alert.stream.matching_type = this.props.default_values.matching_type;
             alert.stream.field_rule[0].field = this.props.default_values.field;
-            alert.stream.field_rule[0].type = this.props.default_values.field_type;
+            alert.stream.field_rule[0].type = this.props.default_values.field_type.toString();
             alert.stream.field_rule[0].value = this.props.default_values.field_value;
             time = this.props.default_values.time;
             time_type = this.props.default_values.time_type;
@@ -212,7 +213,7 @@ const CreateAlertInput = createReactClass({
             buttons: [
                 {
                     label: this.state.messages.advancedSettings,
-                    onClick: () => history.push({pathname: Routes.show_alert_condition(this.state.alert.stream.id, this.state.alert.condition)})
+                    onClick: () => history.push({pathname: Routes.ALERTS.DEFINITIONS.edit(this.state.alert.condition)})
                 },
                 {
                     label: this.state.messages.done,
@@ -303,7 +304,7 @@ const CreateAlertInput = createReactClass({
         switch (selectedKey) {
             case 'COUNT':
                 this.setState({
-                    contentComponent: <CountCondition onUpdate={this._updateAlertField} alert={alert} message={this.state.message} 
+                    contentComponent: <CountCondition onUpdate={this._updateAlertField} alert={alert} message={this.state.message}
                         matchData={this.state.matchData} isPluginLoggingAlertPresent={this.state.isPluginLoggingAlert} />
                 });
                 break;
@@ -372,7 +373,7 @@ const CreateAlertInput = createReactClass({
         if(!this.props.create){
             customizeLink = (
               <div className="alert-actions pull-right">
-                <LinkContainer disabled={this.state.isModified} to={Routes.show_alert_condition(this.state.alert.stream.id, this.state.alert.condition)}>
+                <LinkContainer disabled={this.state.isModified} to={Routes.ALERTS.DEFINITIONS.edit(this.state.alert.condition)}>
                     <Button bsStyle="info" title="Advanced settings for this alert rule">
                         <FormattedMessage id= "wizard.advancedSettings" defaultMessage= "Advanced settings" />
                     </Button>

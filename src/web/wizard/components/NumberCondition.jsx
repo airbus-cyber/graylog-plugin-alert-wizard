@@ -3,7 +3,7 @@ import React from 'react';
 import createReactClass from 'create-react-class';
 import {Input} from 'components/bootstrap';
 import {Select} from 'components/common';
-import {Col, Row} from 'react-bootstrap';
+import { Row, Col } from 'components/graylog';
 import {FormattedMessage} from 'react-intl';
 
 const NumberCondition = createReactClass({
@@ -59,8 +59,8 @@ const NumberCondition = createReactClass({
                 <Col md={10}>
                     <label><FormattedMessage id= "wizard.thereMustBe" defaultMessage= "There must be " /></label>
                     <Input ref="threshold_type" id="threshold_type" name="threshold_type" required>
-                        <Select style={{borderTopRightRadius: '0px', borderBottomRightRadius: '0px'}} 
-                            autosize={false}
+                        <div style={{width:'150px'}}>
+                        <Select
                             required
                             value={this.state.threshold_type}
                             options={this._availableThresholdTypes()}
@@ -68,6 +68,7 @@ const NumberCondition = createReactClass({
                             onChange={this._onThresholdTypeSelect}
                             placeholder={<FormattedMessage id= "wizard.select" defaultMessage= "Select..." />}
                         />
+                        </div>
                     </Input>
                     <Input ref="threshold" id="threshold" name="threshold" type="number" onChange={this._onThresholdChanged()}
                            value={this.state.threshold}

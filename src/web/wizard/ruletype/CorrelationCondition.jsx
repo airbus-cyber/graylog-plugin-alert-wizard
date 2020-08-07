@@ -9,7 +9,8 @@ import NumberCondition from 'wizard/components/NumberCondition';
 import TimeRangeCondition from 'wizard/components/TimeRangeCondition';
 import Description from 'wizard/components/Description';
 import GroupByCondition from 'wizard/components/GroupByCondition';
-import {Col, Row, Button} from 'react-bootstrap';
+import { Row, Col } from 'components/graylog';
+import {Button} from 'react-bootstrap';
 
 const STREAM = {
         matching_type: '',
@@ -129,7 +130,7 @@ const CorrelationCondition = createReactClass({
                                     threshold_type={this.state.alert.condition_parameters.additional_threshold_type} />
                 </div>
                 <br/>
-                <TimeRangeCondition onUpdate={this._handleChangeCondition} time={time} time_type={time_type} />
+                <TimeRangeCondition onUpdate={this._handleChangeCondition} time={time.toString()} time_type={time_type.toString()} />
                 <br/>
                 <GroupByCondition onUpdate={this._handleChangeCondition} grouping_fields={this.state.alert.condition_parameters.grouping_fields} />
                 <br/>

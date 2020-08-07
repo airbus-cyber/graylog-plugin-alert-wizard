@@ -76,20 +76,20 @@ const FieldRule = createReactClass({
 
     _availableRuleType() {
         return [
-            {value: 1, label: <FormattedMessage id= "wizard.matchesExactly" defaultMessage= "matches exactly" />},
-            {value: -1, label: <FormattedMessage id= "wizard.notMatchesExactly" defaultMessage= "does not match exactly" />},
-            {value: 2, label: <FormattedMessage id= "wizard.matchesRegularExpression" defaultMessage= "matches regular expression" />},
-            {value: -2, label: <FormattedMessage id= "wizard.notMatchRegularExpression" defaultMessage= "does not match regular expression" />},
-            {value: 3, label: <FormattedMessage id= "wizard.greaterThan" defaultMessage= "is greater than" />},
-            {value: -3, label: <FormattedMessage id= "wizard.notGreaterThan" defaultMessage= "is not greater than" />},
-            {value: 4, label: <FormattedMessage id= "wizard.smallerThan" defaultMessage= "is smaller than" />},
-            {value: -4, label: <FormattedMessage id= "wizard.notSmallerThan" defaultMessage= "is not smaller than" />},
-            {value: 5, label: <FormattedMessage id= "wizard.present" defaultMessage= "is present" />},
-            {value: -5, label: <FormattedMessage id= "wizard.notPresent" defaultMessage= "is not present" />},
-            {value: 6, label: <FormattedMessage id= "wizard.contains" defaultMessage= "contains" />},
-            {value: -6, label: <FormattedMessage id= "wizard.notContain" defaultMessage= "does not contain" />},
-            {value: 7, label: <FormattedMessage id= "wizard.listpresent" defaultMessage= "is present in list" />},
-            {value: -7, label: <FormattedMessage id= "wizard.listnotpresent" defaultMessage= "is not present in list" />},
+            {value: "1", label: <FormattedMessage id= "wizard.matchesExactly" defaultMessage= "matches exactly" />},
+            {value: "-1", label: <FormattedMessage id= "wizard.notMatchesExactly" defaultMessage= "does not match exactly" />},
+            {value: "2", label: <FormattedMessage id= "wizard.matchesRegularExpression" defaultMessage= "matches regular expression" />},
+            {value: "-2", label: <FormattedMessage id= "wizard.notMatchRegularExpression" defaultMessage= "does not match regular expression" />},
+            {value: "3", label: <FormattedMessage id= "wizard.greaterThan" defaultMessage= "is greater than" />},
+            {value: "-3", label: <FormattedMessage id= "wizard.notGreaterThan" defaultMessage= "is not greater than" />},
+            {value: "4", label: <FormattedMessage id= "wizard.smallerThan" defaultMessage= "is smaller than" />},
+            {value: "-4", label: <FormattedMessage id= "wizard.notSmallerThan" defaultMessage= "is not smaller than" />},
+            {value: "5", label: <FormattedMessage id= "wizard.present" defaultMessage= "is present" />},
+            {value: "-5", label: <FormattedMessage id= "wizard.notPresent" defaultMessage= "is not present" />},
+            {value: "6", label: <FormattedMessage id= "wizard.contains" defaultMessage= "contains" />},
+            {value: "-6", label: <FormattedMessage id= "wizard.notContain" defaultMessage= "does not contain" />},
+            {value: "7", label: <FormattedMessage id= "wizard.listpresent" defaultMessage= "is present in list" />},
+            {value: "-7", label: <FormattedMessage id= "wizard.listnotpresent" defaultMessage= "is not present in list" />},
         ];
     },
 
@@ -112,7 +112,7 @@ const FieldRule = createReactClass({
     },
 
     _onRuleTypeSelect(value) {
-        this._updateAlertField('type', value);
+        this._updateAlertField('type', parseInt(value));
     },
 
     _onRuleFieldSelect(value) {
@@ -191,12 +191,13 @@ const FieldRule = createReactClass({
                 .sort((s1, s2) => naturalSort(s1.label.toLowerCase(), s2.label.toLowerCase()));
         }
 
-        const valueBox = (this.state.rule.type !== 5 && this.state.rule.type !== -5 && this.state.rule.type !== 7 && this.state.rule.type !== -7 ?
+        const valueBox = ((this.state.rule.type !== 5 && this.state.rule.type !== -5 && this.state.rule.type !== 7 && this.state.rule.type !== -7) ?
             <Input style={{backgroundColor: color, borderTopLeftRadius: '0px', borderBottomLeftRadius: '0px', height:'36px'}}
                    ref="value" id="value" name="value" type="text"
                    onChange={this._onValueChanged("value")} value={this.state.rule.value}/>
-            : this.state.rule.type === 7 || this.state.rule.type === -7 ?
+            : (this.state.rule.type === 7 || this.state.rule.type === -7) ?
                 <Input ref="alertLists" id="alertLists" name="alertLists">
+                    <div style={{width:'150px'}}>
                     <Select style={{backgroundColor: color, borderRadius: '0px'}}
                             autosize={false}
                             required
@@ -205,6 +206,7 @@ const FieldRule = createReactClass({
                             matchProp="value"
                             onChange={this._onListTypeSelect}
                             placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..."/>} />
+                    </div>
                 </Input>
                 : <span style={{marginRight: 199}}/>);
 
@@ -229,12 +231,8 @@ const FieldRule = createReactClass({
                 <form className="form-inline">
                     {deleteAction}
                     <Input ref="field" id="field" name="field">
-                        <Select style={{
-                            backgroundColor: color,
-                            borderTopRightRadius: '0px',
-                            borderBottomRightRadius: '0px'
-                        }}
-                                autosize={false}
+                        <div style={{width:'200px'}}>
+                        <Select style={{backgroundColor: color}}
                                 required
                                 value={this.state.rule.field}
                                 options={formattedOptions}
@@ -243,17 +241,19 @@ const FieldRule = createReactClass({
                                 allowCreate={true}
                                 placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..."/>}
                         />
+                        </div>
                     </Input>
                     <Input ref="type" id="type" name="type">
-                        <Select style={{backgroundColor: color, borderRadius: '0px'}}
-                                autosize={false}
+                        <div style={{width:'200px'}}>
+                        <Select style={{backgroundColor: color}}
                                 required
-                                value={this.state.rule.type}
+                                value={this.state.rule.type.toString()}
                                 options={this._availableRuleType()}
                                 matchProp="value"
                                 onChange={this._onRuleTypeSelect}
                                 placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..."/>}
                         />
+                        </div>
                     </Input>
                     {valueBox}
                 </form>

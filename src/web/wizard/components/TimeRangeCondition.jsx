@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
 import {Input} from 'components/bootstrap';
-import {Select, Spinner} from 'components/common';
-import {Col, Row} from 'react-bootstrap';
+import {Select} from 'components/common';
+import { Row, Col } from 'components/graylog';
 import {FormattedMessage} from 'react-intl';
 
 const TimeRangeCondition = createReactClass({
@@ -26,14 +26,14 @@ const TimeRangeCondition = createReactClass({
     },
     _availableTimeTypes() {
         return [
-            {value: 1, label: <FormattedMessage id= "wizard.minutes" defaultMessage= "minutes" />},
-            {value: 60, label: <FormattedMessage id= "wizard.hours" defaultMessage= "hours" />},
-            {value: 1440, label: <FormattedMessage id= "wizard.days" defaultMessage= "days" />},
+            {value: '1', label: <FormattedMessage id= "wizard.minutes" defaultMessage= "minutes" />},
+            {value: '60', label: <FormattedMessage id= "wizard.hours" defaultMessage= "hours" />},
+            {value: '1440', label: <FormattedMessage id= "wizard.days" defaultMessage= "days" />},
         ];
     },
     _onTimeSelect(value) {
-        this.setState({time_type: value});
-        this.props.onUpdate("time", value * this.state.time);
+        this.setState({time_type: parseInt(value)});
+        this.props.onUpdate("time", parseInt(value) * this.state.time);
     },
     _onTimeChanged() {
         return e => {
@@ -54,15 +54,16 @@ const TimeRangeCondition = createReactClass({
                     <Input ref="time" id="time" name="time" type="number" onChange={this._onTimeChanged()} value={this.state.time}
                            style={{borderTopRightRadius: '0px', borderBottomRightRadius: '0px', height:'36px' , width:'100px'}} />
                     <Input ref="time_type" id="time_type" name="time_type" required className="form-control">
-                        <Select style={{borderTopLeftRadius: '0px', borderBottomLeftRadius: '0px'}} 
-                            autosize={false}
+                        <div style={{width:'150px'}}>
+                        <Select
                             required
-                            value={this.state.time_type}
+                            value={this.state.time_type.toString()}
                             options={this._availableTimeTypes()}
                             matchProp="value"
                             onChange={this._onTimeSelect}
                             placeholder={<FormattedMessage id= "wizard.select" defaultMessage= "Select..." />}
                         />
+                        </div>
                     </Input>
                 </Col>
             </Row>

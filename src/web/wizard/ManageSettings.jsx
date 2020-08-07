@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
-import {Button, Col, Table, FormGroup, Tooltip} from 'react-bootstrap';
+import {Col, Table, FormGroup, Tooltip} from 'react-bootstrap';
+import {Button} from 'components/graylog';
 import {Select, SortableList, Spinner, OverlayElement} from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import {BootstrapModalForm, Input} from 'components/bootstrap';
@@ -131,27 +132,27 @@ const ManageSettings = createReactClass({
     },
     _availableTimeTypes() {
         return [
-            {value: 1, label: <FormattedMessage id= "wizard.minutes" defaultMessage= "minutes" />},
-            {value: 60, label: <FormattedMessage id= "wizard.hours" defaultMessage= "hours" />},
-            {value: 1440, label: <FormattedMessage id= "wizard.days" defaultMessage= "days" />},
+            {value: '1', label: <FormattedMessage id= "wizard.minutes" defaultMessage= "minutes" />},
+            {value: '60', label: <FormattedMessage id= "wizard.hours" defaultMessage= "hours" />},
+            {value: '1440', label: <FormattedMessage id= "wizard.days" defaultMessage= "days" />},
         ];
     },
     _availableRuleType() {
         return [
-            {value: 1, label: <FormattedMessage id= "wizard.matchesExactly" defaultMessage= "matches exactly" />},
-            {value: -1, label: <FormattedMessage id= "wizard.notMatchesExactly" defaultMessage= "does not match exactly" />},
-            {value: 2, label: <FormattedMessage id= "wizard.matchesRegularExpression" defaultMessage= "matches regular expression" />},
-            {value: -2, label: <FormattedMessage id= "wizard.notMatchRegularExpression" defaultMessage= "does not match regular expression" />},
-            {value: 3, label: <FormattedMessage id= "wizard.greaterThan" defaultMessage= "is greater than" />},
-            {value: -3, label: <FormattedMessage id= "wizard.notGreaterThan" defaultMessage= "is not greater than" />},
-            {value: 4, label: <FormattedMessage id= "wizard.smallerThan" defaultMessage= "is smaller than" />},
-            {value: -4, label: <FormattedMessage id= "wizard.notSmallerThan" defaultMessage= "is not smaller than" />},
-            {value: 5, label: <FormattedMessage id= "wizard.present" defaultMessage= "is present" />},
-            {value: -5, label: <FormattedMessage id= "wizard.notPresent" defaultMessage= "is not present" />},
-            {value: 6, label: <FormattedMessage id= "wizard.contains" defaultMessage= "contains" />},
-            {value: -6, label: <FormattedMessage id= "wizard.notContain" defaultMessage= "does not contain" />},
-            {value: 7, label: <FormattedMessage id= "wizard.listpresent" defaultMessage= "is present in list" />},
-            {value: -7, label: <FormattedMessage id= "wizard.listnotpresent" defaultMessage= "is not present in list" />},
+            {value: '1', label: <FormattedMessage id= "wizard.matchesExactly" defaultMessage= "matches exactly" />},
+            {value: '-1', label: <FormattedMessage id= "wizard.notMatchesExactly" defaultMessage= "does not match exactly" />},
+            {value: '2', label: <FormattedMessage id= "wizard.matchesRegularExpression" defaultMessage= "matches regular expression" />},
+            {value: '-2', label: <FormattedMessage id= "wizard.notMatchRegularExpression" defaultMessage= "does not match regular expression" />},
+            {value: '3', label: <FormattedMessage id= "wizard.greaterThan" defaultMessage= "is greater than" />},
+            {value: '-3', label: <FormattedMessage id= "wizard.notGreaterThan" defaultMessage= "is not greater than" />},
+            {value: '4', label: <FormattedMessage id= "wizard.smallerThan" defaultMessage= "is smaller than" />},
+            {value: '-4', label: <FormattedMessage id= "wizard.notSmallerThan" defaultMessage= "is not smaller than" />},
+            {value: '5', label: <FormattedMessage id= "wizard.present" defaultMessage= "is present" />},
+            {value: '-5', label: <FormattedMessage id= "wizard.notPresent" defaultMessage= "is not present" />},
+            {value: '6', label: <FormattedMessage id= "wizard.contains" defaultMessage= "contains" />},
+            {value: '-6', label: <FormattedMessage id= "wizard.notContain" defaultMessage= "does not contain" />},
+            {value: '7', label: <FormattedMessage id= "wizard.listpresent" defaultMessage= "is present in list" />},
+            {value: '-7', label: <FormattedMessage id= "wizard.listnotpresent" defaultMessage= "is not present in list" />},
         ];
     },
 
@@ -175,10 +176,10 @@ const ManageSettings = createReactClass({
         this._updateConfig('threshold_type', value)
     },
     _onTimeTypeSelect(value) {
-        this._updateConfig('time_type', value)
+        this._updateConfig('time_type', parseInt(value))
     },
     _onRuleTypeSelect(value) {
-        this._updateConfig('field_type', value);
+        this._updateConfig('field_type', parseInt(value));
     },
     _onCheckboxClick(event) {
         this._updateConfig(event.target.name, event.target.checked);
@@ -316,7 +317,7 @@ const ManageSettings = createReactClass({
                        label={<FormattedMessage id= "wizard.timeType" defaultMessage= "Time Range unit" />}>
                     <Select placeholder={<FormattedMessage id= "wizard.select" defaultMessage= "Select..." />}
                         autosize={false}
-                        value={this.state.config.default_values.time_type}
+                        value={this.state.config.default_values.time_type? this.state.config.default_values.time_type.toString() : ''}
                         options={this._availableTimeTypes()}
                         matchProp="value"
                         onChange={this._onTimeTypeSelect}
@@ -330,7 +331,7 @@ const ManageSettings = createReactClass({
                        label={<FormattedMessage id= "wizard.fieldType" defaultMessage= "Field type" />}>
                     <Select placeholder={<FormattedMessage id= "wizard.select" defaultMessage= "Select..." />}
                         autosize={true}
-                        value={this.state.config.default_values.field_type}
+                        value={this.state.config.default_values.field_type ? this.state.config.default_values.field_type.toString() : ''}
                         options={this._availableRuleType()}
                         matchProp="value"
                         onChange={this._onRuleTypeSelect}

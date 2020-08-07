@@ -27,14 +27,14 @@ const CountCondition = createReactClass({
             update.condition_parameters[field] = value;
         }
         this.setState({alert: update});
-        this.props.onUpdate('condition_parameters', update.condition_parameters)
+        this.props.onUpdate('condition_parameters', update.condition_parameters);
     },
 
     _handleChangeStream(field, value) {
         let update = ObjectUtils.clone(this.state.alert);
         update.stream[field] = value;
         this.setState({alert: update});
-        this.props.onUpdate('stream', update.stream)
+        this.props.onUpdate('stream', update.stream);
     },
     
     render() {
@@ -56,13 +56,13 @@ const CountCondition = createReactClass({
                 <TitleSeverity onUpdate={this.props.onUpdate} title={this.props.alert.title} severity={this.props.alert.severity} 
                                 isPluginLoggingAlertPresent={this.props.isPluginLoggingAlertPresent}/>
                 <br/>
-                <FieldsCondition stream={this.props.alert.stream} onSaveStream={this._handleChangeStream} message={this.props.message} 
+                <FieldsCondition stream={this.props.alert.stream} onSaveStream={this._handleChangeStream} message={this.props.message}
                                 matchData={this.props.matchData} />
                 <br/>
-                <NumberCondition onUpdate={this._handleChangeCondition} threshold={this.props.alert.condition_parameters.threshold} 
+                <NumberCondition onUpdate={this._handleChangeCondition} threshold={this.props.alert.condition_parameters.threshold}
                                 threshold_type={this.props.alert.condition_parameters.threshold_type} />
                 <br/>
-                <TimeRangeCondition onUpdate={this._handleChangeCondition} time={time} time_type={time_type} />
+                <TimeRangeCondition onUpdate={this._handleChangeCondition} time={time.toString()} time_type={time_type.toString()} />
                 <br/>
                 <Description onUpdate={this.props.onUpdate} description={this.props.alert.description}/>
                 <br/>

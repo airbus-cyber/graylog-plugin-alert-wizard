@@ -59,7 +59,7 @@ const StatisticsCondition = createReactClass({
                 <FieldsCondition stream={this.props.alert.stream} onSaveStream={this._handleChangeStream} message={this.props.message} 
                             matchData={this.props.matchData} />
                 <br/>
-                <TimeRangeCondition onUpdate={this._handleChangeCondition} time={time} time_type={time_type} />
+                <TimeRangeCondition onUpdate={this._handleChangeCondition} time={time.toString()} time_type={time_type.toString()} />
                 <br/>
                 <StatisticalCondition onUpdate={this._handleChangeCondition} type={this.props.alert.condition_parameters.type}  
                             field={this.props.alert.condition_parameters.field} threshold={this.props.alert.condition_parameters.threshold} 
