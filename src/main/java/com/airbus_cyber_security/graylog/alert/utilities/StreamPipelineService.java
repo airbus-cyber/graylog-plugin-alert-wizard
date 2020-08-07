@@ -6,9 +6,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.bson.types.ObjectId;
 import org.graylog.plugins.pipelineprocessor.db.*;
 import org.graylog.plugins.pipelineprocessor.rest.PipelineConnections;
-import org.graylog2.alarmcallbacks.AlarmCallbackConfigurationService;
-import org.graylog2.alarmcallbacks.AlarmCallbackFactory;
-import org.graylog2.alerts.AlertService;
 import org.graylog2.configuration.HttpConfiguration;
 import org.graylog2.database.NotFoundException;
 import org.graylog2.events.ClusterEventBus;
@@ -23,7 +20,6 @@ import org.graylog2.lookup.dto.CacheDto;
 import org.graylog2.lookup.dto.DataAdapterDto;
 import org.graylog2.lookup.dto.LookupTableDto;
 import org.graylog2.plugin.Tools;
-import org.graylog2.plugin.cluster.ClusterConfigService;
 import org.graylog2.plugin.database.ValidationException;
 import org.graylog2.plugin.streams.Stream;
 import org.graylog2.plugin.streams.StreamRule;
@@ -82,11 +78,6 @@ public class StreamPipelineService {
         this.dbCacheService = dbCacheService;
         this.dbTableService = dbTableService;
         this.pipelineStreamConnectionsService = pipelineStreamConnectionsService;
-    }
-
-    public void cleanAlertRule(Stream mainStream, Stream secondStream) {
-        deleteStream(mainStream);
-        deleteStream(secondStream);
     }
 
     public void createStreamRule(List<FieldRuleImpl> listfieldRule, String streamID) throws ValidationException {
@@ -219,10 +210,6 @@ public class StreamPipelineService {
             if(oldAlert.getSecondStreamID() != null) {
                 Stream stream2 = streamService.load(oldAlert.getSecondStreamID());
                 updateStream(stream2, alertRuleStream, title+"#2");
-                // If request condition is not "OR" and the old one is "OR" remove stream condition and notification //TODO don't need to do this anymore
-               /* if(!conditionType.equals("OR") && oldAlert.getConditionType().equals("OR")) {
-                    removeConditionAndNotificationFromStream(stream2);
-                }*/
                 return stream2;
             }else {
                 return createStream(alertRuleStream, title+"#2", userName);

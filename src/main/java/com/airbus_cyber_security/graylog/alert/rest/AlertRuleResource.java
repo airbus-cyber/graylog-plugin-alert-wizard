@@ -88,11 +88,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
     private final StreamService streamService;
     private final ClusterEventBus clusterEventBus;
-    private final AlarmCallbackConfigurationService alarmCallbackConfigurationService;
     private final ClusterConfigService clusterConfigService;
-    private final EventDefinitionHandler eventDefinitionHandler;
     private final EventDefinitionsResource eventDefinitionsResource;
-    private final NotificationResourceHandler notificationResourceHandler;
     private final EventNotificationsResource eventNotificationsResource;
 
     private final AlertRuleService alertRuleService;
@@ -116,8 +113,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                              ClusterEventBus clusterEventBus,
                              IndexSetRegistry indexSetRegistry,
                              AlertService alertService,
-                             AlarmCallbackConfigurationService alarmCallbackConfigurationService,
-                             AlarmCallbackFactory alarmCallbackFactory,
                              ClusterConfigService clusterConfigService,
                              PipelineStreamConnectionsService pipelineStreamConnectionsService,
                              AlertListService alertListService,
@@ -128,23 +123,22 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.alertRuleService = alertRuleService;
         this.streamService = streamService;
         this.clusterEventBus = clusterEventBus;
-        this.alarmCallbackConfigurationService = alarmCallbackConfigurationService;
         this.clusterConfigService = clusterConfigService;
-        this.eventDefinitionHandler = eventDefinitionHandler;
         this.eventDefinitionsResource = eventDefinitionsResource;
-        this.notificationResourceHandler = notificationResourceHandler;
         this.eventNotificationsResource = eventNotificationsResource;
 
         this.alertRuleUtils = new AlertRuleUtils();
-        this.alertRuleExporter = new AlertRuleExporter(alertRuleService, alarmCallbackConfigurationService, streamService, alertRuleUtils);
         this.alertListUtilsService = new AlertListUtilsService(alertListService);
+        this.alertRuleExporter = new AlertRuleExporter(
+                alertRuleService,
+                streamService,
+                alertRuleUtils,
+                eventDefinitionsResource,
+                eventNotificationsResource);
         this.alertRuleUtilsService = new AlertRuleUtilsService(
                 alertRuleService,
                 streamService,
                 alertService,
-                alarmCallbackConfigurationService,
-                alarmCallbackFactory,
-                clusterConfigService,
                 alertRuleUtils,
                 eventDefinitionsResource,
                 eventNotificationsResource,
@@ -522,7 +516,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         // Create Condition
         EventProcessorConfig eventConfig = eventDefinitionsResource.get(sourceAlert.getEventID()).config();
-        Map<String, Object> parametersCondition = alertRuleUtilsService.getConditionParameters(eventConfig);
+        Map<String, Object> parametersCondition = alertRuleUtils.getConditionParameters(eventConfig);
         EventProcessorConfig configuration =  alertRuleUtilsService.createCondition(sourceAlert.getConditionType(), parametersCondition, firstStream.getId(), secondStreamID);
 
         //Create Event
@@ -655,42 +649,37 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             streamID2 = streamPilpelineObject2.getStream().getId();
         }
 
-        //Create Condition
-        String graylogConditionType = alertRuleUtils.getGraylogConditionType(alertRule.getConditionType());
-        Map<String, Object> conditionParameters = alertRule.conditionParameters();
-        if(graylogConditionType.equals(AlertRuleUtils.TYPE_CORRELATION)){
-            conditionParameters.replace(AlertRuleUtils.ADDITIONAL_STREAM, streamID2);
-        }
-        String alertConditionID = alertRuleUtilsService.createCondition(graylogConditionType, alertTitle, conditionParameters, streamPilpelineObject.getStream(), streamPilpelineObject2.getStream(), userName);
-        //Create Notification
-        String idAlarmCallBack = null;
-        if(alertRule.notificationParameters() != null && !alertRule.notificationParameters().isEmpty()) {
-            idAlarmCallBack = alertRuleUtilsService.createNotificationFromParameters(alertTitle, streamPilpelineObject.getStream(), alertRule.notificationParameters(), userName);
-        }
+        // Create Notification
+        String notificationID = alertRuleUtilsService.createNotificationFromParameters(alertTitle, alertRule.notificationParameters());
 
-        //Or Condition for Second Stream
+        // Create Condition
+        EventProcessorConfig configuration =  alertRuleUtilsService.createCondition(alertRule.getConditionType(),alertRule.conditionParameters(), streamPilpelineObject.getStream().getId(), streamID2);
+
+        //Create Event
+        String eventID = alertRuleUtilsService.createEvent(alertTitle, notificationID, configuration);
+
+        String eventID2 = null;
+        //Or Event for Second Stream
         if( alertRule.getConditionType().equals("OR") && streamPilpelineObject2.getStream() != null) {
             //Create Condition
-            alertRuleUtilsService.createCondition(graylogConditionType, alertTitle, alertRule.conditionParameters(), streamPilpelineObject2.getStream(), streamPilpelineObject.getStream(), userName);
-            //Create Notification
-            if(alertRule.notificationParameters() != null  && !alertRule.notificationParameters().isEmpty()) {
-                alertRuleUtilsService.createNotificationFromParameters(alertTitle+"#2", streamPilpelineObject2.getStream(), alertRule.notificationParameters(), userName);
-            }
+            EventProcessorConfig configuration2 = alertRuleUtilsService.createAggregationCondition(streamID2, alertRule.conditionParameters());
+            //Create Event
+            eventID2 = alertRuleUtilsService.createEvent(alertTitle+"#2", notificationID, configuration2);
         }
 
         clusterEventBus.post(StreamsChangedEvent.create(streamPilpelineObject.getStream().getId()));
         alertRuleService.create(AlertRuleImpl.create(
                 alertTitle,
                 streamPilpelineObject.getStream().getId(),
-                alertConditionID,
-                idAlarmCallBack,
+                eventID,
+                notificationID,
                 DateTime.now(),
                 userName,
                 DateTime.now(),
                 alertRule.getDescription(),
                 alertRule.getConditionType(),
                 streamID2,
-                "",
+                eventID,
                 streamPilpelineObject.getPipelineID(),
                 streamPilpelineObject.getPipelineRuleID(),
                 streamPilpelineObject.getListPipelineFieldRule(),

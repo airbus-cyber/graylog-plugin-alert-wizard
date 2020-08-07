@@ -3,13 +3,11 @@ package com.airbus_cyber_security.graylog.alert.utilities;
 import com.airbus_cyber_security.graylog.alert.*;
 import com.airbus_cyber_security.graylog.alert.rest.models.requests.AlertRuleRequest;
 import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetDataAlertRule;
-import com.airbus_cyber_security.graylog.config.LoggingAlertConfig;
 import com.airbus_cyber_security.graylog.config.LoggingNotificationConfig;
 import com.airbus_cyber_security.graylog.config.SeverityType;
 import com.airbus_cyber_security.graylog.events.processor.aggregation.AggregationCountProcessorConfig;
 import com.airbus_cyber_security.graylog.events.processor.correlation.CorrelationCountProcessorConfig;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
 import org.graylog.events.conditions.Expr;
 import org.graylog.events.conditions.Expression;
 import org.graylog.events.notifications.EventNotificationHandler;
@@ -25,21 +23,10 @@ import org.graylog.events.processor.aggregation.AggregationFunction;
 import org.graylog.events.processor.aggregation.AggregationSeries;
 import org.graylog.events.rest.EventDefinitionsResource;
 import org.graylog.events.rest.EventNotificationsResource;
-import org.graylog2.alarmcallbacks.AlarmCallbackConfiguration;
-import org.graylog2.alarmcallbacks.AlarmCallbackConfigurationImpl;
-import org.graylog2.alarmcallbacks.AlarmCallbackConfigurationService;
-import org.graylog2.alarmcallbacks.AlarmCallbackFactory;
 import org.graylog2.alerts.Alert;
 import org.graylog2.alerts.AlertService;
 import org.graylog2.database.NotFoundException;
-import org.graylog2.plugin.alarms.AlertCondition;
-import org.graylog2.plugin.alarms.callbacks.AlarmCallbackConfigurationException;
-import org.graylog2.plugin.cluster.ClusterConfigService;
-import org.graylog2.plugin.configuration.ConfigurationException;
-import org.graylog2.plugin.database.ValidationException;
 import org.graylog2.plugin.streams.Stream;
-import org.graylog2.rest.models.alarmcallbacks.requests.CreateAlarmCallbackRequest;
-import org.graylog2.rest.models.streams.alerts.requests.CreateConditionRequest;
 import org.graylog2.streams.StreamService;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -52,16 +39,9 @@ public class AlertRuleUtilsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(AlertRuleUtilsService.class);
 
-    private static final String ERROR_ALARM_CONDITION_CONFIGURATION = "Invalid alarm Condition configuration.";
-    public static final String ERROR_ALARM_CALLBACK_CONFIGURATION = "Invalid alarm callback configuration.";
-    private static final String ERROR_ALARM_CALLBACK_TYPE = "Invalid alarm callback type.";
-
     private final AlertRuleService alertRuleService;
     private final StreamService streamService;
     private final AlertService alertService;
-    private final AlarmCallbackConfigurationService alarmCallbackConfigurationService;
-    private final AlarmCallbackFactory alarmCallbackFactory;
-    private final ClusterConfigService clusterConfigService;
     private final AlertRuleUtils alertRuleUtils;
     private final EventDefinitionsResource eventDefinitionsResource;
     private final EventNotificationsResource eventNotificationsResource;
@@ -71,9 +51,6 @@ public class AlertRuleUtilsService {
     public AlertRuleUtilsService(AlertRuleService alertRuleService,
                                  StreamService streamService,
                                  AlertService alertService,
-                                 AlarmCallbackConfigurationService alarmCallbackConfigurationService,
-                                 AlarmCallbackFactory alarmCallbackFactory,
-                                 ClusterConfigService clusterConfigService,
                                  AlertRuleUtils alertRuleUtils,
                                  EventDefinitionsResource eventDefinitionsResource,
                                  EventNotificationsResource eventNotificationsResource,
@@ -82,9 +59,6 @@ public class AlertRuleUtilsService {
         this.alertRuleService = alertRuleService;
         this.streamService = streamService;
         this.alertService = alertService;
-        this.alarmCallbackConfigurationService = alarmCallbackConfigurationService;
-        this.alarmCallbackFactory = alarmCallbackFactory;
-        this.clusterConfigService = clusterConfigService;
         this.alertRuleUtils = alertRuleUtils;
         this.eventDefinitionsResource = eventDefinitionsResource;
         this.eventNotificationsResource = eventNotificationsResource;
@@ -104,50 +78,6 @@ public class AlertRuleUtilsService {
         return alerts.size();
     }
 
-    private String mapAggregationFunctionToType(String aggregationFunction){
-        switch (aggregationFunction) {
-            case "AVG": return "MEAN";
-            default:
-                return aggregationFunction;
-        }
-    }
-
-    public Map<String, Object> getConditionParameters(EventProcessorConfig eventConfig){
-        Map<String, Object> parametersCondition = Maps.newHashMap();
-        if(eventConfig.type().equals("aggregation-count")) {
-            AggregationCountProcessorConfig aggregationCountConfig = (AggregationCountProcessorConfig) eventConfig;
-            parametersCondition.put("threshold", aggregationCountConfig.threshold());
-            parametersCondition.put("threshold_type", aggregationCountConfig.thresholdType());
-            parametersCondition.put("time", aggregationCountConfig.searchWithinMs() / 60 / 1000);
-            parametersCondition.put("grouping_fields", aggregationCountConfig.groupingFields());
-            parametersCondition.put("distinction_fields", aggregationCountConfig.distinctionFields());
-            parametersCondition.put("grace",aggregationCountConfig.executeEveryMs());
-        }else if(eventConfig.type().equals("correlation-count")) {
-            CorrelationCountProcessorConfig correlationConfig = (CorrelationCountProcessorConfig) eventConfig;
-            parametersCondition.put("threshold", correlationConfig.threshold());
-            parametersCondition.put("threshold_type", correlationConfig.thresholdType());
-            parametersCondition.put("additional_threshold", correlationConfig.threshold());
-            parametersCondition.put("additional_threshold_type", correlationConfig.thresholdType());
-            parametersCondition.put("time", correlationConfig.searchWithinMs() / 60 / 1000);
-            parametersCondition.put("grouping_fields", correlationConfig.groupingFields());
-            parametersCondition.put("grace", correlationConfig.executeEveryMs());
-        }else if(eventConfig.type().equals("aggregation-v1")){
-            AggregationEventProcessorConfig aggregationConfig = (AggregationEventProcessorConfig) eventConfig;
-            LOG.info("Expr: "+ aggregationConfig.conditions().get().expression().get().expr());
-            LOG.info("type: "+ aggregationConfig.series().get(0).function().toString());
-            LOG.info("field: "+ aggregationConfig.series().get(0).field().get());
-            LOG.info("threshold: "+ aggregationConfig.conditions().get().expression().get());
-
-            parametersCondition.put("time", aggregationConfig.searchWithinMs() / 60 / 1000);
-            parametersCondition.put("threshold", 0);
-            parametersCondition.put("threshold_type", aggregationConfig.conditions().get().expression().get().expr());
-            parametersCondition.put("type", mapAggregationFunctionToType(aggregationConfig.series().get(0).function().toString()));
-            parametersCondition.put("field", aggregationConfig.series().get(0).field().get());
-            parametersCondition.put("grace", aggregationConfig.executeEveryMs());
-        }
-        return parametersCondition;
-    }
-
     public GetDataAlertRule constructDataAlertRule(AlertRule alert) throws NotFoundException {
         final String streamID = alert.getStreamID();
         final Stream stream = streamService.load(streamID);
@@ -156,7 +86,7 @@ public class AlertRuleUtilsService {
         EventDefinitionDto event = eventDefinitionsResource.get(alert.getEventID());
         LOG.info("Event type: " + event.config().type());
 
-        Map<String, Object> parametersCondition = getConditionParameters(event.config());
+        Map<String, Object> parametersCondition = alertRuleUtils.getConditionParameters(event.config());
 
         List<FieldRuleImpl> fieldRules = new ArrayList<>();
         Optional.ofNullable(alert.getPipelineFieldRules()).ifPresent(fieldRules::addAll);
@@ -191,39 +121,6 @@ public class AlertRuleUtilsService {
                 alertRuleStream2);
     }
 
-    private String createNotification(String streamID, CreateAlarmCallbackRequest cacr, String userName){
-        try {
-            final AlarmCallbackConfiguration alarmCallbackConfiguration =
-                    alarmCallbackConfigurationService.create(streamID, cacr, userName);
-            alarmCallbackFactory.create(alarmCallbackConfiguration).checkConfiguration();
-            return alarmCallbackConfigurationService.save(alarmCallbackConfiguration);
-        } catch (ValidationException | AlarmCallbackConfigurationException | ConfigurationException e) {
-            LOG.error(ERROR_ALARM_CALLBACK_CONFIGURATION, e);
-        } catch (ClassNotFoundException e) {
-            LOG.error(ERROR_ALARM_CALLBACK_TYPE, e);
-        }
-        return null;
-    }
-
-    public String createNotificationFromParameters(String title, Stream stream, Map<String, Object> parameters, String userName){
-        CreateAlarmCallbackRequest cacr = CreateAlarmCallbackRequest.create(AlertRuleUtils.TYPE_LOGGING_ALERT, title, parameters);
-        return createNotification(stream.getId(), cacr, userName);
-    }
-
-    public String createCondition(String conditionType ,String alertTitle, Map<String, Object>  parameters, Stream conditionStream, Stream stream2, String userName){
-        CreateConditionRequest ccr = CreateConditionRequest.create(conditionType, alertTitle, parameters);
-        AlertCondition alertCondition;
-        try {
-            alertCondition = alertService.fromRequest(ccr, conditionStream, userName);
-            streamService.addAlertCondition(conditionStream, alertCondition);
-            return alertCondition.getId();
-        } catch (ConfigurationException | ValidationException e) {
-            // cleanAlertRule(conditionStream, stream2);
-            LOG.error(ERROR_ALARM_CONDITION_CONFIGURATION, e);
-            throw new BadRequestException(e.getMessage(), e);
-        }
-    }
-
     private EventProcessorConfig createCorrelationCondition(String type, String streamID, String streamID2, Map<String, Object> conditionParameter){
         String messsageOrder;
         if(type.equals("THEN")){
@@ -242,7 +139,7 @@ public class AlertRuleUtilsService {
                 .messagesOrder(messsageOrder)
                 .searchWithinMs(((int) conditionParameter.get("time")) * 60 * 1000)
                 .executeEveryMs(((int) conditionParameter.get("grace")) * 60 * 1000)
-                .groupingFields(new HashSet<String>((List<String>) conditionParameter.get("grouping_fields")))
+                .groupingFields(new HashSet<>((List<String>) conditionParameter.get("grouping_fields")))
                 .comment(AlertRuleUtils.COMMENT_ALERT_WIZARD)
                 .searchQuery("*")
                 .build();
@@ -255,8 +152,8 @@ public class AlertRuleUtilsService {
                 .threshold((int) conditionParameter.get("threshold"))
                 .searchWithinMs(((int) conditionParameter.get("time")) * 60 * 1000)
                 .executeEveryMs(((int) conditionParameter.get("grace")) * 60 * 1000)
-                .groupingFields(new HashSet<String>((List<String>) conditionParameter.get("grouping_fields")))
-                .distinctionFields(new HashSet<String>((List<String>) conditionParameter.get("distinction_fields")))
+                .groupingFields(new HashSet<>((List<String>) conditionParameter.get("grouping_fields")))
+                .distinctionFields(new HashSet<>((List<String>) conditionParameter.get("distinction_fields")))
                 .comment(AlertRuleUtils.COMMENT_ALERT_WIZARD)
                 .searchQuery("*")
                 .build();
@@ -317,7 +214,7 @@ public class AlertRuleUtilsService {
 
         return AggregationEventProcessorConfig.builder()
                 .query("")
-                .streams(new HashSet<String> (Collections.singleton(streamID)))
+                .streams(new HashSet<> (Collections.singleton(streamID)))
                 .series(ImmutableList.of(serie))
                 .groupBy(ImmutableList.of())
                 .conditions(AggregationConditions.builder()
@@ -333,6 +230,24 @@ public class AlertRuleUtilsService {
                 .singleMessage(false)
                 .severity(SeverityType.valueOf(severity.toUpperCase()))
                 .logBody("Test")
+                .build();
+        NotificationDto notification = NotificationDto.builder()
+                .config(loggingNotificationConfig)
+                .title(alertTitle)
+                .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
+                .build();
+        notification = this.notificationResourceHandler.create(notification);
+        return notification.id();
+    }
+
+    public String createNotificationFromParameters(String alertTitle, Map<String, Object> parametersNotification){
+        LoggingNotificationConfig loggingNotificationConfig = LoggingNotificationConfig.builder()
+                .singleMessage((boolean) parametersNotification.getOrDefault("single_notification",false))
+                .severity(SeverityType.valueOf(parametersNotification.get("severity").toString()))
+                .logBody(parametersNotification.get("log_body").toString())
+                .splitFields((Set<String>) parametersNotification.getOrDefault("split_fields", new HashSet<>()))
+                .aggregationTime((int)parametersNotification.getOrDefault("aggregation_time",0))
+                .alertTag(parametersNotification.getOrDefault("alert_tag", "LoggingAlert").toString())
                 .build();
         NotificationDto notification = NotificationDto.builder()
                 .config(loggingNotificationConfig)

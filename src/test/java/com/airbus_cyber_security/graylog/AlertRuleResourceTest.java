@@ -132,8 +132,8 @@ public class AlertRuleResourceTest extends MongoDBServiceTest{
     	AlarmCallbackConfiguration callbackConfiguration  = mock(AlarmCallbackConfiguration.class);
     	HashMap<String, Object> confCallback = new HashMap<>();
     	confCallback.put("severity", "Low");
-    	when(callbackConfiguration.getConfiguration()).thenReturn(confCallback);
-    	when(alarmCallbackConfigurationService.load("5bc894ded9e3770323a780a9")).thenReturn(callbackConfiguration);
+   // 	when(callbackConfiguration.getConfiguration()).thenReturn(confCallback);
+   // 	when(alarmCallbackConfigurationService.load("5bc894ded9e3770323a780a9")).thenReturn(callbackConfiguration);
 
         AlertService alertService = mock(AlertService.class);
     //    when(alertService.loadRecentOfStream(eq("5bc894ded9e3770323a780a7"), any(DateTime.class), eq(999))).thenReturn(new ArrayList<Alert>());
@@ -142,8 +142,8 @@ public class AlertRuleResourceTest extends MongoDBServiceTest{
         //eventDefinitionsResource = mock(EventDefinitionsResource.class);
         //when(eventDefinitionsResource.toString()).thenReturn("Test");
         this.alertRuleResource = new AlertRuleResource(alertRuleService, ruleService, pipelineService, dbDataAdapterService, httpConfiguration, dbCacheService,
-                dbTableService,streamService, streamRuleService, clusterEventBus, indexSetRegistry,	alertService, alarmCallbackConfigurationService,
-                alarmCallbackFactory, clusterConfigService, pipelineStreamConnectionsService, alertListService, eventDefinitionHandler, eventDefinitionsResource,
+                dbTableService,streamService, streamRuleService, clusterEventBus, indexSetRegistry,	alertService,
+                clusterConfigService, pipelineStreamConnectionsService, alertListService, eventDefinitionHandler, eventDefinitionsResource,
                 notificationResourceHandler, eventNotificationsResource);
     }
     
