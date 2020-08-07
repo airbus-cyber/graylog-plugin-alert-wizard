@@ -286,20 +286,19 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String notificationID = alertRuleUtilsService.createNotification(alertTitle, request.getSeverity());
 
         // Create Condition
-        EventProcessorConfig configuration =  alertRuleUtilsService.createCondition(request.getConditionType(),request.conditionParameters(), stream.getId(), streamID2);
+        EventProcessorConfig configuration =  alertRuleUtilsService.createCondition(request.getConditionType(),request.conditionParameters(), streamPilpelineObject.getStream().getId(), streamID2);
 
         //Create Event
         String eventID = alertRuleUtilsService.createEvent(alertTitle, notificationID, configuration);
 
         String eventID2 = null;
         //Or Event for Second Stream
-        if( request.getConditionType().equals("OR") && stream2 != null) {
+        if( request.getConditionType().equals("OR") && streamPilpelineObject2.getStream() != null) {
         	//Create Condition
-            EventProcessorConfig configuration2 = alertRuleUtilsService.createAggregationCondition(stream2.getId(), request.conditionParameters());
+            EventProcessorConfig configuration2 = alertRuleUtilsService.createAggregationCondition(streamID2, request.conditionParameters());
             //Create Event
             eventID2 = alertRuleUtilsService.createEvent(alertTitle+"#2", notificationID, configuration2);
         }
-
 
         clusterEventBus.post(StreamsChangedEvent.create(streamPilpelineObject.getStream().getId()));
     	alertRuleService.create(AlertRuleImpl.create(
@@ -674,6 +673,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 alertRule.getDescription(),
                 alertRule.getConditionType(),
                 streamID2,
+                "",
                 streamPilpelineObject.getPipelineID(),
                 streamPilpelineObject.getPipelineRuleID(),
                 streamPilpelineObject.getListPipelineFieldRule(),
