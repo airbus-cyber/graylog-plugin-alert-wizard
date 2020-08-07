@@ -245,7 +245,7 @@ public class AlertRuleUtilsService {
                 .singleMessage((boolean) parametersNotification.getOrDefault("single_notification",false))
                 .severity(SeverityType.valueOf(parametersNotification.get("severity").toString()))
                 .logBody(parametersNotification.get("log_body").toString())
-                .splitFields((Set<String>) parametersNotification.getOrDefault("split_fields", new HashSet<>()))
+                .splitFields(new HashSet<>((List<String>) parametersNotification.get("split_fields")))
                 .aggregationTime((int)parametersNotification.getOrDefault("aggregation_time",0))
                 .alertTag(parametersNotification.getOrDefault("alert_tag", "LoggingAlert").toString())
                 .build();
