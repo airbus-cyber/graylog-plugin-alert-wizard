@@ -15,6 +15,7 @@ import com.airbus_cyber_security.graylog.alert.utilities.AlertRuleUtilsService;
 import com.airbus_cyber_security.graylog.alert.utilities.StreamPipelineObject;
 import com.airbus_cyber_security.graylog.alert.utilities.StreamPipelineService;
 import com.airbus_cyber_security.graylog.audit.AlertWizardAuditEventTypes;
+import com.airbus_cyber_security.graylog.config.LoggingNotificationConfig;
 import com.airbus_cyber_security.graylog.config.rest.AlertWizardConfig;
 import com.airbus_cyber_security.graylog.config.rest.ImportPolicyType;
 import com.airbus_cyber_security.graylog.list.AlertListService;
@@ -26,7 +27,9 @@ import com.mongodb.MongoException;
 import io.swagger.annotations.*;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.graylog.events.notifications.NotificationDto;
 import org.graylog.events.notifications.NotificationResourceHandler;
+import org.graylog.events.processor.EventDefinitionDto;
 import org.graylog.events.processor.EventDefinitionHandler;
 import org.graylog.events.processor.EventProcessorConfig;
 import org.graylog.events.rest.EventDefinitionsResource;
@@ -508,52 +511,44 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             }
         }
 
-        //Create Condition
-        AlertCondition alertCondition = streamService.getAlertCondition(sourceFirstStream, sourceAlert.getEventID());
-        Map<String, Object> conditionParameters = Maps.newHashMap();
-        conditionParameters.putAll(alertCondition.getParameters());
-        if(secondStream != null && alertCondition.getType().equals(AlertRuleUtils.TYPE_CORRELATION)) {
-            conditionParameters.replace(AlertRuleUtils.ADDITIONAL_STREAM, secondStream.getId());
-        }
-        String alertConditionID = alertRuleUtilsService.createCondition(alertCondition.getType(), alertTitle, conditionParameters, firstStream, secondStream, creatorUser);
-
-        //Create notification
-        String alertNotificationID = null;
-        AlarmCallbackConfiguration alarmCallbackConfig = null;
-        if(sourceAlert.getNotificationID() != null && !sourceAlert.getNotificationID().isEmpty()) {
-	        alarmCallbackConfig = alarmCallbackConfigurationService.load(sourceAlert.getNotificationID());
-            alertNotificationID = alertRuleUtilsService.createNotificationFromConfiguration(alertTitle, firstStream, alarmCallbackConfig, creatorUser);
-        }
-
         for (Output output : sourceFirstStream.getOutputs()) {
             streamService.addOutput(firstStream, output);
         }
         clusterEventBus.post(StreamsChangedEvent.create(firstStream.getId()));
-        
-        //If OR condition
-        if(sourceAlert.getConditionType().equals("OR") && secondStream != null) {
-        	//Create Condition
-            alertRuleUtilsService.createCondition(alertCondition.getType(), alertTitle+"#2", alertCondition.getParameters(), secondStream, firstStream, creatorUser);
-        	 
-        	//Create notification
-        	if(alarmCallbackConfig != null) {
-                alertNotificationID = alertRuleUtilsService.createNotificationFromConfiguration(alertTitle+"#2", secondStream, alarmCallbackConfig, creatorUser);
-        	}
-            clusterEventBus.post(StreamsChangedEvent.create(secondStream.getId()));
+
+        // Create Notification
+        LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) eventNotificationsResource.get(sourceAlert.getNotificationID()).config();
+        String notificationID = alertRuleUtilsService.createNotification(alertTitle, loggingNotificationConfig.severity().getType());
+
+        // Create Condition
+        EventProcessorConfig eventConfig = eventDefinitionsResource.get(sourceAlert.getEventID()).config();
+        Map<String, Object> parametersCondition = alertRuleUtilsService.getConditionParameters(eventConfig);
+        EventProcessorConfig configuration =  alertRuleUtilsService.createCondition(sourceAlert.getConditionType(), parametersCondition, firstStream.getId(), secondStreamID);
+
+        //Create Event
+        String eventID = alertRuleUtilsService.createEvent(alertTitle, notificationID, configuration);
+
+        String eventID2 = null;
+        //Or Event for Second Stream
+        if( sourceAlert.getConditionType().equals("OR") && secondStream != null) {
+            //Create Condition
+            EventProcessorConfig configuration2 = alertRuleUtilsService.createAggregationCondition(secondStreamID, parametersCondition);
+            //Create Event
+            eventID2 = alertRuleUtilsService.createEvent(alertTitle+"#2", notificationID, configuration2);
         }
 
         alertRuleService.create(AlertRuleImpl.create(
         		alertTitle,
         		firstStream.getId(),
-                alertConditionID,
-        		alertNotificationID,
+                eventID,
+                notificationID,
 				DateTime.now(),
                 creatorUser,
 				DateTime.now(),
 				request.getDescription(),
 				sourceAlert.getConditionType(),
 				secondStreamID,
-                null,
+                eventID2,
                 pipelineID,
                 pipelineRuleID,
                 sourceAlert.getPipelineFieldRules(),

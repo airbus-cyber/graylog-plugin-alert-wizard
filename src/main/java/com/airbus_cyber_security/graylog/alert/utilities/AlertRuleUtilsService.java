@@ -112,25 +112,18 @@ public class AlertRuleUtilsService {
         }
     }
 
-    public GetDataAlertRule constructDataAlertRule(AlertRule alert) throws NotFoundException {
-        final String streamID = alert.getStreamID();
-        final Stream stream = streamService.load(streamID);
-
-        //Get the event
-        EventDefinitionDto event = eventDefinitionsResource.get(alert.getEventID());
-        LOG.info("Event type: " + event.config().type());
-
+    public Map<String, Object> getConditionParameters(EventProcessorConfig eventConfig){
         Map<String, Object> parametersCondition = Maps.newHashMap();
-        if(event.config().type().equals("aggregation-count")) {
-            AggregationCountProcessorConfig aggregationCountConfig = (AggregationCountProcessorConfig) event.config();
+        if(eventConfig.type().equals("aggregation-count")) {
+            AggregationCountProcessorConfig aggregationCountConfig = (AggregationCountProcessorConfig) eventConfig;
             parametersCondition.put("threshold", aggregationCountConfig.threshold());
             parametersCondition.put("threshold_type", aggregationCountConfig.thresholdType());
             parametersCondition.put("time", aggregationCountConfig.searchWithinMs() / 60 / 1000);
             parametersCondition.put("grouping_fields", aggregationCountConfig.groupingFields());
             parametersCondition.put("distinction_fields", aggregationCountConfig.distinctionFields());
             parametersCondition.put("grace",aggregationCountConfig.executeEveryMs());
-        }else if(event.config().type().equals("correlation-count")) {
-            CorrelationCountProcessorConfig correlationConfig = (CorrelationCountProcessorConfig) event.config();
+        }else if(eventConfig.type().equals("correlation-count")) {
+            CorrelationCountProcessorConfig correlationConfig = (CorrelationCountProcessorConfig) eventConfig;
             parametersCondition.put("threshold", correlationConfig.threshold());
             parametersCondition.put("threshold_type", correlationConfig.thresholdType());
             parametersCondition.put("additional_threshold", correlationConfig.threshold());
@@ -138,8 +131,8 @@ public class AlertRuleUtilsService {
             parametersCondition.put("time", correlationConfig.searchWithinMs() / 60 / 1000);
             parametersCondition.put("grouping_fields", correlationConfig.groupingFields());
             parametersCondition.put("grace", correlationConfig.executeEveryMs());
-        }else if(event.config().type().equals("aggregation-v1")){
-            AggregationEventProcessorConfig aggregationConfig = (AggregationEventProcessorConfig) event.config();
+        }else if(eventConfig.type().equals("aggregation-v1")){
+            AggregationEventProcessorConfig aggregationConfig = (AggregationEventProcessorConfig) eventConfig;
             LOG.info("Expr: "+ aggregationConfig.conditions().get().expression().get().expr());
             LOG.info("type: "+ aggregationConfig.series().get(0).function().toString());
             LOG.info("field: "+ aggregationConfig.series().get(0).field().get());
@@ -152,6 +145,18 @@ public class AlertRuleUtilsService {
             parametersCondition.put("field", aggregationConfig.series().get(0).field().get());
             parametersCondition.put("grace", aggregationConfig.executeEveryMs());
         }
+        return parametersCondition;
+    }
+
+    public GetDataAlertRule constructDataAlertRule(AlertRule alert) throws NotFoundException {
+        final String streamID = alert.getStreamID();
+        final Stream stream = streamService.load(streamID);
+
+        //Get the event
+        EventDefinitionDto event = eventDefinitionsResource.get(alert.getEventID());
+        LOG.info("Event type: " + event.config().type());
+
+        Map<String, Object> parametersCondition = getConditionParameters(event.config());
 
         List<FieldRuleImpl> fieldRules = new ArrayList<>();
         Optional.ofNullable(alert.getPipelineFieldRules()).ifPresent(fieldRules::addAll);
@@ -186,21 +191,6 @@ public class AlertRuleUtilsService {
                 alertRuleStream2);
     }
 
-    private Map<String, Object> getParametersNotification(String severity){
-        final LoggingAlertConfig configGeneral = clusterConfigService.getOrDefault(LoggingAlertConfig.class,
-                LoggingAlertConfig.createDefault());
-
-        Map<String, Object> parametersNotification = Maps.newHashMap();
-        parametersNotification.put(AlertRuleUtils.SEVERITY, severity);
-        parametersNotification.put(AlertRuleUtils.CONTENT, configGeneral.accessLogBody());
-        parametersNotification.put(AlertRuleUtils.SPLIT_FIELDS, Collections.emptyList());
-        parametersNotification.put(AlertRuleUtils.AGGREGATION_TIME, configGeneral.accessAggregationTime());
-        parametersNotification.put(AlertRuleUtils.LIMIT_OVERFLOW, configGeneral.accessLimitOverflow());
-        parametersNotification.put(AlertRuleUtils.COMMENT, AlertRuleUtils.COMMENT_ALERT_WIZARD);
-
-        return parametersNotification;
-    }
-
     private String createNotification(String streamID, CreateAlarmCallbackRequest cacr, String userName){
         try {
             final AlarmCallbackConfiguration alarmCallbackConfiguration =
@@ -217,14 +207,6 @@ public class AlertRuleUtilsService {
 
     public String createNotificationFromParameters(String title, Stream stream, Map<String, Object> parameters, String userName){
         CreateAlarmCallbackRequest cacr = CreateAlarmCallbackRequest.create(AlertRuleUtils.TYPE_LOGGING_ALERT, title, parameters);
-        return createNotification(stream.getId(), cacr, userName);
-    }
-
-    public String createNotificationFromConfiguration(String title, Stream stream, AlarmCallbackConfiguration alarmCallbackConfig, String userName){
-        final AlarmCallbackConfiguration updatedAlarmCallbackConfig = ((AlarmCallbackConfigurationImpl) alarmCallbackConfig).toBuilder()
-                .setTitle(title)
-                .build();
-        final CreateAlarmCallbackRequest cacr = CreateAlarmCallbackRequest.create(updatedAlarmCallbackConfig);
         return createNotification(stream.getId(), cacr, userName);
     }
 
