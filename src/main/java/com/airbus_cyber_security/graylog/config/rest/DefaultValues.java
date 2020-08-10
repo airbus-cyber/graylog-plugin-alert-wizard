@@ -52,9 +52,6 @@ public abstract  class DefaultValues {
     @Nullable
     public abstract String getFieldValue();
     
-    @JsonProperty("repeat_notifications")
-    public abstract boolean getRepeatNotifications();
-    
     @JsonProperty("grace")
     public abstract int getGrace();
     
@@ -72,10 +69,9 @@ public abstract  class DefaultValues {
 			@JsonProperty("field") String field,
             @JsonProperty("field_type") int fieldType,
             @JsonProperty("field_value") String fieldValue,
-            @JsonProperty("repeat_notifications") boolean repeatNotifications,
             @JsonProperty("grace") int grace,
             @JsonProperty("backlog") int backlog){
         return new AutoValue_DefaultValues(title, severity, matchingType, thresholdType, threshold, time, timeType, 
-        		field, fieldType, fieldValue, repeatNotifications, grace, backlog);
+        		field, fieldType, fieldValue, grace, backlog);
     }
 }
