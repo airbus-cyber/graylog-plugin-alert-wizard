@@ -31,7 +31,7 @@ const INIT_ALERT = {
         severity: '',
         condition_type: 'COUNT',
         condition_parameters: {
-            time: 0,
+            time: 1,
             threshold_type: '',
             threshold: 0,
             additional_threshold_type: '',
@@ -91,7 +91,7 @@ const CreateAlertInput = createReactClass({
                 matching_type: '',
                 threshold_type: '',
                 threshold: 0,
-                time: 0,
+                time: 1,
                 time_type: 1,
                 field: '',
                 field_type: '',

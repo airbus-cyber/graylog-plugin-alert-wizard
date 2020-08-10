@@ -307,10 +307,10 @@ const ManageSettings = createReactClass({
                         onChange={this._onThresholdTypeSelect}
                     />
                 </Input>
-                <Input ref="threshold" id="threshold" name="threshold" type="number" 
+                <Input ref="threshold" id="threshold" name="threshold" type="number" min="0"
                        label={<FormattedMessage id= "wizard.threshold" defaultMessage= "Threshold" />}
                        onChange={this._onValueChanged("threshold")} value={this.state.config.default_values.threshold}/> 
-                <Input ref="time" id="time" name="time" type="number" 
+                <Input ref="time" id="time" name="time" type="number" min="1"
                        label={<FormattedMessage id= "wizard.time" defaultMessage= "Time Range" />}
                        onChange={this._onValueChanged("time")} value={this.state.config.default_values.time}/>
                 <Input ref="time_type" id="time_type" name="time_type" 

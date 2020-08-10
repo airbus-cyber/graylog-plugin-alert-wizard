@@ -14,7 +14,7 @@ const TimeRangeCondition = createReactClass({
     },   
     getDefaultProps() {
         return {
-            time:0,
+            time:1,
             time_type:1,
         };
     },

@@ -72,12 +72,11 @@ const WizardPage = createReactClass({
                 matching_type: "",
                 threshold_type: "",
                 threshold: 0,
-                time: 0,
+                time: 1,
                 time_type: 0,
                 field: "",
                 field_type: 0,
                 field_value: "",
-                repeat_notifications: false,
                 grace: 1,
                 backlog: 500
             },
