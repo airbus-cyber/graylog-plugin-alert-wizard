@@ -3,8 +3,9 @@ package com.airbus_cyber_security.graylog.alert.utilities;
 import com.airbus_cyber_security.graylog.alert.*;
 import com.airbus_cyber_security.graylog.alert.rest.models.requests.AlertRuleRequest;
 import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetDataAlertRule;
-import com.airbus_cyber_security.graylog.config.LoggingNotificationConfig;
-import com.airbus_cyber_security.graylog.config.SeverityType;
+import com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig;
+import com.airbus_cyber_security.graylog.events.config.SeverityType;
+import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
 import com.airbus_cyber_security.graylog.events.processor.aggregation.AggregationCountProcessorConfig;
 import com.airbus_cyber_security.graylog.events.processor.correlation.CorrelationCountProcessorConfig;
 import com.google.common.collect.ImmutableList;
@@ -33,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.core.Response;
 import java.util.*;
 
 public class AlertRuleUtilsService {
@@ -121,12 +123,22 @@ public class AlertRuleUtilsService {
                 alertRuleStream2);
     }
 
-    private EventProcessorConfig createCorrelationCondition(String type, String streamID, String streamID2, Map<String, Object> conditionParameter){
-        String messsageOrder;
-        if(type.equals("THEN")){
-            messsageOrder = "AFTER";
+    private HashSet<String> convertToHashSet(Object object){
+        if(object instanceof HashSet){
+            return (HashSet<String>) object;
+        }else if(object instanceof List){
+            return new HashSet<>((List<String>) object);
         }else{
-            messsageOrder = "ANY";
+            return new HashSet<>();
+        }
+    }
+
+    private EventProcessorConfig createCorrelationCondition(String type, String streamID, String streamID2, Map<String, Object> conditionParameter){
+        String messageOrder;
+        if(type.equals("THEN")){
+            messageOrder = "AFTER";
+        }else{
+            messageOrder = "ANY";
         }
 
         return CorrelationCountProcessorConfig.builder()
@@ -136,10 +148,10 @@ public class AlertRuleUtilsService {
                 .additionalStream(streamID2)
                 .additionalThresholdType((String) conditionParameter.get("additional_threshold_type"))
                 .additionalThreshold((int) conditionParameter.get("additional_threshold"))
-                .messagesOrder(messsageOrder)
-                .searchWithinMs(((int) conditionParameter.get("time")) * 60 * 1000)
-                .executeEveryMs(((int) conditionParameter.get("grace")) * 60 * 1000)
-                .groupingFields(new HashSet<>((List<String>) conditionParameter.get("grouping_fields")))
+                .messagesOrder(messageOrder)
+                .searchWithinMs(Long.parseLong(conditionParameter.get("time").toString()) * 60 * 1000)
+                .executeEveryMs(Long.parseLong(conditionParameter.get("grace").toString()) * 60 * 1000)
+                .groupingFields(convertToHashSet(conditionParameter.get("grouping_fields")))
                 .comment(AlertRuleUtils.COMMENT_ALERT_WIZARD)
                 .searchQuery("*")
                 .build();
@@ -150,10 +162,10 @@ public class AlertRuleUtilsService {
                 .stream(streamID)
                 .thresholdType((String) conditionParameter.get("threshold_type"))
                 .threshold((int) conditionParameter.get("threshold"))
-                .searchWithinMs(((int) conditionParameter.get("time")) * 60 * 1000)
-                .executeEveryMs(((int) conditionParameter.get("grace")) * 60 * 1000)
-                .groupingFields(new HashSet<>((List<String>) conditionParameter.get("grouping_fields")))
-                .distinctionFields(new HashSet<>((List<String>) conditionParameter.get("distinction_fields")))
+                .searchWithinMs(Long.parseLong(conditionParameter.get("time").toString()) * 60 * 1000)
+                .executeEveryMs(Long.parseLong(conditionParameter.get("grace").toString()) * 60 * 1000)
+                .groupingFields(convertToHashSet(conditionParameter.get("grouping_fields")))
+                .distinctionFields(convertToHashSet(conditionParameter.get("distinction_fields")))
                 .comment(AlertRuleUtils.COMMENT_ALERT_WIZARD)
                 .searchQuery("*")
                 .build();
@@ -220,8 +232,8 @@ public class AlertRuleUtilsService {
                 .conditions(AggregationConditions.builder()
                         .expression(expression)
                         .build())
-                .executeEveryMs(((int) conditionParameter.get("grace")) * 60 * 1000)
-                .searchWithinMs(((int) conditionParameter.get("time")) * 60 * 1000)
+                .executeEveryMs(Long.parseLong(conditionParameter.get("grace").toString()) * 60 * 1000)
+                .searchWithinMs(Long.parseLong(conditionParameter.get("time").toString()) * 60 * 1000)
                 .build();
     }
 
@@ -229,7 +241,7 @@ public class AlertRuleUtilsService {
         LoggingNotificationConfig loggingNotificationConfig = LoggingNotificationConfig.builder()
                 .singleMessage(false)
                 .severity(SeverityType.valueOf(severity.toUpperCase()))
-                .logBody("Test")
+                .logBody(LoggingAlertConfig.BODY_TEMPLATE)
                 .build();
         NotificationDto notification = NotificationDto.builder()
                 .config(loggingNotificationConfig)
@@ -245,7 +257,7 @@ public class AlertRuleUtilsService {
                 .singleMessage((boolean) parametersNotification.getOrDefault("single_notification",false))
                 .severity(SeverityType.valueOf(parametersNotification.get("severity").toString()))
                 .logBody(parametersNotification.get("log_body").toString())
-                .splitFields(new HashSet<>((List<String>) parametersNotification.get("split_fields")))
+                .splitFields(convertToHashSet(parametersNotification.get("split_fields")))
                 .aggregationTime((int)parametersNotification.getOrDefault("aggregation_time",0))
                 .alertTag(parametersNotification.getOrDefault("alert_tag", "LoggingAlert").toString())
                 .build();
