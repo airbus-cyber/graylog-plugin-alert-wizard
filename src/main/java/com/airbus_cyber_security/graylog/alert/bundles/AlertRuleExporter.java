@@ -5,7 +5,7 @@ import com.airbus_cyber_security.graylog.alert.AlertRuleService;
 import com.airbus_cyber_security.graylog.alert.AlertRuleStreamImpl;
 import com.airbus_cyber_security.graylog.alert.FieldRuleImpl;
 import com.airbus_cyber_security.graylog.alert.utilities.AlertRuleUtils;
-import com.airbus_cyber_security.graylog.config.LoggingNotificationConfig;
+import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
 import com.google.common.collect.Lists;
 import org.graylog.events.processor.EventProcessorConfig;
 import org.graylog.events.rest.EventDefinitionsResource;

@@ -15,29 +15,23 @@ import com.airbus_cyber_security.graylog.alert.utilities.AlertRuleUtilsService;
 import com.airbus_cyber_security.graylog.alert.utilities.StreamPipelineObject;
 import com.airbus_cyber_security.graylog.alert.utilities.StreamPipelineService;
 import com.airbus_cyber_security.graylog.audit.AlertWizardAuditEventTypes;
-import com.airbus_cyber_security.graylog.config.LoggingNotificationConfig;
 import com.airbus_cyber_security.graylog.config.rest.AlertWizardConfig;
 import com.airbus_cyber_security.graylog.config.rest.ImportPolicyType;
+import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
 import com.airbus_cyber_security.graylog.list.AlertListService;
 import com.airbus_cyber_security.graylog.list.utilities.AlertListUtilsService;
 import com.airbus_cyber_security.graylog.permissions.AlertRuleRestPermissions;
 import com.codahale.metrics.annotation.Timed;
-import com.google.common.collect.Maps;
 import com.mongodb.MongoException;
 import io.swagger.annotations.*;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.graylog.events.notifications.NotificationDto;
 import org.graylog.events.notifications.NotificationResourceHandler;
-import org.graylog.events.processor.EventDefinitionDto;
 import org.graylog.events.processor.EventDefinitionHandler;
 import org.graylog.events.processor.EventProcessorConfig;
 import org.graylog.events.rest.EventDefinitionsResource;
 import org.graylog.events.rest.EventNotificationsResource;
 import org.graylog.plugins.pipelineprocessor.db.*;
-import org.graylog2.alarmcallbacks.AlarmCallbackConfiguration;
-import org.graylog2.alarmcallbacks.AlarmCallbackConfigurationService;
-import org.graylog2.alarmcallbacks.AlarmCallbackFactory;
 import org.graylog2.alerts.AlertService;
 import org.graylog2.audit.jersey.AuditEvent;
 import org.graylog2.configuration.HttpConfiguration;
@@ -49,9 +43,7 @@ import org.graylog2.lookup.db.DBDataAdapterService;
 import org.graylog2.lookup.db.DBLookupTableService;
 import org.graylog2.lookup.dto.CacheDto;
 import org.graylog2.lookup.dto.DataAdapterDto;
-import org.graylog2.plugin.alarms.AlertCondition;
 import org.graylog2.plugin.cluster.ClusterConfigService;
-import org.graylog2.plugin.configuration.ConfigurationException;
 import org.graylog2.plugin.database.ValidationException;
 import org.graylog2.plugin.rest.PluginRestResource;
 import org.graylog2.plugin.streams.Output;
@@ -301,11 +293,11 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             streamID2=streamPilpelineObject2.getStream().getId();
         }
 
-        // Create Notification
+        // Create Notificationœ
         String notificationID = alertRuleUtilsService.createNotification(alertTitle, request.getSeverity());
 
         // Create Condition
-        EventProcessorConfig configuration =  alertRuleUtilsService.createCondition(request.getConditionType(),request.conditionParameters(), streamPilpelineObject.getStream().getId(), streamID2);
+        EventProcessorConfig configuration =  alertRuleUtilsService.createCondition(request.getConditionType(), request.conditionParameters(), streamPilpelineObject.getStream().getId(), streamID2);
 
         //Create Event
         String eventID = alertRuleUtilsService.createEvent(alertTitle, notificationID, configuration);
@@ -393,7 +385,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         alertRuleUtilsService.updateNotification(alertTitle, oldAlert.getNotificationID(), request.getSeverity());
 
         //Create Condition
-        EventProcessorConfig configuration =  alertRuleUtilsService.createCondition(request.getConditionType(),request.conditionParameters(), stream.getId(), streamID2);
+        EventProcessorConfig configuration =  alertRuleUtilsService.createCondition(request.getConditionType(), request.conditionParameters(), stream.getId(), streamID2);
 
         // Update Event
         alertRuleUtilsService.updateEvent(alertTitle, oldAlert.getEventID(), configuration);

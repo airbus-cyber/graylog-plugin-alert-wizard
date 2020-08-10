@@ -1,14 +1,10 @@
 package com.airbus_cyber_security.graylog.alert.utilities;
 
 import com.airbus_cyber_security.graylog.alert.FieldRuleImpl;
-import com.airbus_cyber_security.graylog.config.LoggingNotificationConfig;
-import com.airbus_cyber_security.graylog.config.SeverityType;
+import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
 import com.airbus_cyber_security.graylog.events.processor.aggregation.AggregationCountProcessorConfig;
 import com.airbus_cyber_security.graylog.events.processor.correlation.CorrelationCountProcessorConfig;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
-import org.graylog.events.notifications.EventNotificationSettings;
-import org.graylog.events.processor.EventDefinitionDto;
 import org.graylog.events.processor.EventProcessorConfig;
 import org.graylog.events.processor.aggregation.AggregationEventProcessorConfig;
 import org.graylog2.alerts.AbstractAlertCondition;
