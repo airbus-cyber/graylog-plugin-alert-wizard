@@ -280,7 +280,7 @@ public class AlertRuleUtilsService {
         LOG.info("Create Notification "+alertTitle);
         LoggingNotificationConfig loggingNotificationConfig = LoggingNotificationConfig.builder()
                 .singleMessage((boolean) parametersNotification.getOrDefault("single_notification",false))
-                .severity(SeverityType.valueOf(parametersNotification.get("severity").toString()))
+                .severity(SeverityType.valueOf(parametersNotification.get("severity").toString().toUpperCase()))
                 .logBody(parametersNotification.getOrDefault("log_body", LoggingAlertConfig.BODY_TEMPLATE).toString())
                 .splitFields(convertToHashSet(parametersNotification.get("split_fields")))
                 .aggregationTime((int)parametersNotification.getOrDefault("aggregation_time",0))
