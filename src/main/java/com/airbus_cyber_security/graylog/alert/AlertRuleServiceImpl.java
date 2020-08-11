@@ -154,7 +154,7 @@ public class AlertRuleServiceImpl implements AlertRuleService {
 	
 	private boolean isValidStatThresholdType(String thresholdType) {
 		return  (thresholdType.equals("<") || thresholdType.equals("<=") ||
-				thresholdType.equals(">") || thresholdType.equals(">=") || thresholdType.equals("="));
+				thresholdType.equals(">") || thresholdType.equals(">=") || thresholdType.equals("=="));
 	}
 	
 	private boolean isValidCondition(String conditionType, Map<String, Object> conditionParameters, AlertRuleStreamImpl secondStream) {

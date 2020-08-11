@@ -27,8 +27,11 @@ const AlertRuleText = createReactClass({
         return [
             {value: 'MORE', label: <FormattedMessage id= "wizard.more" defaultMessage= "more than" />},
             {value: 'LESS', label: <FormattedMessage id= "wizard.less" defaultMessage= "less than" />},
-            {value: 'HIGHER', label: <FormattedMessage id= "wizard.higher" defaultMessage= "higher than" />},
-            {value: 'LOWER', label: <FormattedMessage id= "wizard.lower" defaultMessage= "lower than" />},
+            {value: '>', label: <FormattedMessage id= "wizard.higher" defaultMessage= "higher than" />},
+            {value: '>=', label: <FormattedMessage id= "wizard.higherEqual" defaultMessage= "higher or equal than" />},
+            {value: '<', label: <FormattedMessage id= "wizard.lower" defaultMessage= "lower than" />},
+            {value: '<=', label: <FormattedMessage id= "wizard.lowerEqual" defaultMessage= "lower or equal than" />},
+            {value: '==', label: <FormattedMessage id= "wizard.equal" defaultMessage= "equal" />},
         ];
     },
     _getThresholdType(type) {
@@ -37,11 +40,15 @@ const AlertRuleText = createReactClass({
     
     _availableAggregationTypes() {
         return [
-            {value: 'MEAN', label: <FormattedMessage id= "wizard.meanValue" defaultMessage= "mean value" />},
+            {value: 'AVG', label: <FormattedMessage id= "wizard.meanValue" defaultMessage= "average value" />},
             {value: 'STDDEV', label: <FormattedMessage id= "wizard.standardDeviation" defaultMessage= "standard deviation" />},
             {value: 'MIN', label: <FormattedMessage id= "wizard.minValue" defaultMessage= "min value" />},
             {value: 'MAX', label: <FormattedMessage id= "wizard.maxValue" defaultMessage= "max value" />},
             {value: 'SUM', label: <FormattedMessage id= "wizard.sum" defaultMessage= "sum" />},
+            {value: 'CARD', label: <FormattedMessage id= "wizard.card" defaultMessage= "cardinality" />},
+            {value: 'COUNT', label: <FormattedMessage id= "wizard.count" defaultMessage= "count" />},
+            {value: 'SUMOFSQUARES', label: <FormattedMessage id= "wizard.sum" defaultMessage= "sum of squares" />},
+            {value: 'VARIANCE', label: <FormattedMessage id= "wizard.variance" defaultMessage= "variance" />},
         ];
     },
     _getAggregationType(type) {

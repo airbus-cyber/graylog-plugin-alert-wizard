@@ -171,58 +171,66 @@ public class AlertRuleUtilsService {
                 .build();
     }
 
-    public EventProcessorConfig createStatisticalCondition(String streamID, Map<String, Object> conditionParameter){
-        LOG.info("Begin Stat, type: " + conditionParameter.get("type"));
-        AggregationFunction agregationFunction;
-        switch (conditionParameter.get("type").toString()) {
-            case "MEAN":
-                agregationFunction = AggregationFunction.AVG;
-                break;
+    private AggregationFunction mapTypeToAggregationFunction(String type){
+        switch (type) {
+            case "MEAN": //For Compatibility with older version
+            case "AVG":
+                return AggregationFunction.AVG;
             case "MIN":
-                agregationFunction = AggregationFunction.MIN;
-                break;
+                return AggregationFunction.MIN;
             case "MAX":
-                agregationFunction = AggregationFunction.MAX;
-                break;
+                return AggregationFunction.MAX;
             case "SUM":
-                agregationFunction = AggregationFunction.SUM;
-                break;
+                return AggregationFunction.SUM;
             case "STDDEV":
-                agregationFunction = AggregationFunction.STDDEV;
-                break;
+                return AggregationFunction.STDDEV;
+            case "CARD":
+                return AggregationFunction.CARD;
+            case "COUNT":
+                return AggregationFunction.COUNT;
+            case "SUMOFSQUARES":
+                return AggregationFunction.SUMOFSQUARES;
+            case "VARIANCE":
+                return AggregationFunction.VARIANCE;
             default:
                 throw new BadRequestException();
         }
+    }
+
+    private Expression<Boolean> createExpressionFromThreshold(String ID, String thresholdType, int threshold){
+        final Expr.NumberReference left = Expr.NumberReference.create(ID);
+        final Expr.NumberValue right = Expr.NumberValue.create(threshold);
+        switch (thresholdType) {
+            case"HIGHER": //For Compatibility with older version
+            case ">":
+                return Expr.Greater.create(left, right);
+            case ">=":
+                return Expr.GreaterEqual.create(left, right);
+            case"LOWER": //For Compatibility with older version
+            case "<":
+                return Expr.Lesser.create(left, right);
+            case "<=":
+                return Expr.LesserEqual.create(left, right);
+            case "==":
+                return Expr.Equal.create(left, right);
+            default:
+                throw new BadRequestException();
+        }
+    }
+
+    public EventProcessorConfig createStatisticalCondition(String streamID, Map<String, Object> conditionParameter){
+        LOG.info("Begin Stat, type: " + conditionParameter.get("type"));
 
         String ID = UUID.randomUUID().toString();
         final AggregationSeries serie = AggregationSeries.builder()
                 .id(ID)
-                .function(agregationFunction)
+                .function(mapTypeToAggregationFunction(conditionParameter.get("type").toString()))
                 .field(conditionParameter.get("field").toString())
                 .build();
 
-        final Expr.NumberReference left = Expr.NumberReference.create(ID);
-        final Expr.NumberValue right = Expr.NumberValue.create((int) conditionParameter.get("threshold"));
-        final Expression<Boolean> expression;
-        switch (conditionParameter.get("threshold_type").toString()) {
-            case ">":
-                expression = Expr.Greater.create(left, right);
-                break;
-            case ">=":
-                expression = Expr.GreaterEqual.create(left, right);
-                break;
-            case "<":
-                expression = Expr.Lesser.create(left, right);
-                break;
-            case "<=":
-                expression = Expr.LesserEqual.create(left, right);
-                break;
-            case "=":
-                expression = Expr.Equal.create(left, right);
-                break;
-            default:
-                throw new BadRequestException();
-        }
+        final Expression<Boolean> expression = createExpressionFromThreshold(ID,
+                conditionParameter.get("threshold_type").toString(),
+                (int) conditionParameter.get("threshold"));
 
         return AggregationEventProcessorConfig.builder()
                 .query("")
@@ -256,7 +264,7 @@ public class AlertRuleUtilsService {
         LoggingNotificationConfig loggingNotificationConfig = LoggingNotificationConfig.builder()
                 .singleMessage((boolean) parametersNotification.getOrDefault("single_notification",false))
                 .severity(SeverityType.valueOf(parametersNotification.get("severity").toString()))
-                .logBody(parametersNotification.get("log_body").toString())
+                .logBody(parametersNotification.getOrDefault("log_body", LoggingAlertConfig.BODY_TEMPLATE).toString())
                 .splitFields(convertToHashSet(parametersNotification.get("split_fields")))
                 .aggregationTime((int)parametersNotification.getOrDefault("aggregation_time",0))
                 .alertTag(parametersNotification.getOrDefault("alert_tag", "LoggingAlert").toString())
