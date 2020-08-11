@@ -9,20 +9,19 @@ import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetDataAler
 import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetListAlertRule;
 import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetListDataAlertRule;
 import com.airbus_cyber_security.graylog.database.MongoDBServiceTest;
+import com.airbus_cyber_security.graylog.events.config.SeverityType;
+import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
+import com.airbus_cyber_security.graylog.events.processor.aggregation.AggregationCountProcessorConfig;
 import com.airbus_cyber_security.graylog.list.AlertListService;
-import com.google.common.collect.Maps;
 import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
-import org.graylog.events.notifications.NotificationResourceHandler;
-import org.graylog.events.processor.EventDefinitionHandler;
+import org.graylog.events.notifications.NotificationDto;
+import org.graylog.events.processor.EventDefinitionDto;
 import org.graylog.events.rest.EventDefinitionsResource;
 import org.graylog.events.rest.EventNotificationsResource;
 import org.graylog.plugins.pipelineprocessor.db.PipelineService;
 import org.graylog.plugins.pipelineprocessor.db.PipelineStreamConnectionsService;
 import org.graylog.plugins.pipelineprocessor.db.RuleService;
-import org.graylog2.alarmcallbacks.AlarmCallbackConfiguration;
-import org.graylog2.alarmcallbacks.AlarmCallbackConfigurationService;
-import org.graylog2.alarmcallbacks.AlarmCallbackFactory;
 import org.graylog2.alerts.Alert;
 import org.graylog2.alerts.AlertService;
 import org.graylog2.configuration.HttpConfiguration;
@@ -34,9 +33,7 @@ import org.graylog2.indexer.indexset.IndexSetConfig;
 import org.graylog2.lookup.db.DBCacheService;
 import org.graylog2.lookup.db.DBDataAdapterService;
 import org.graylog2.lookup.db.DBLookupTableService;
-import org.graylog2.plugin.alarms.AlertCondition;
 import org.graylog2.plugin.cluster.ClusterConfigService;
-import org.graylog2.plugin.database.ValidationException;
 import org.graylog2.plugin.streams.Stream;
 import org.graylog2.plugin.streams.Stream.MatchingType;
 import org.graylog2.streams.StreamRuleService;
@@ -53,12 +50,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import javax.validation.Validator;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -67,8 +62,6 @@ public class AlertRuleResourceTest extends MongoDBServiceTest{
 	 
     @Mock
     private StreamRuleService streamRuleService;
-    @Mock
-    private AlarmCallbackFactory alarmCallbackFactory;
     @Mock
     private ClusterConfigService clusterConfigService;
     @Mock
@@ -93,9 +86,30 @@ public class AlertRuleResourceTest extends MongoDBServiceTest{
     private EventDefinitionsResource eventDefinitionsResource;
     @Mock
     private EventNotificationsResource eventNotificationsResource;
-
+    @Mock
+    private LoggingNotificationConfig loggingNotificationConfig;
+    @Mock
+    private NotificationDto notificationDto;
+    @Mock
     private StreamService streamService;
-	private AlertRuleResource alertRuleResource;
+    @Mock
+    private Stream stream;
+    @Mock
+    private AggregationCountProcessorConfig aggregationCountConfig;
+    @Mock
+    private AlertService alertService;
+    @Mock
+    private IndexSetRegistry indexSetRegistry;
+    @Mock
+    private IndexSet indexSet;
+    @Mock
+    private IndexSetConfig indexSetConfig;
+    @Mock
+    private ClusterEventBus clusterEventBus;
+    @Mock
+    private EventDefinitionDto event;
+
+    private AlertRuleResource alertRuleResource;
 
 
     @Rule
@@ -103,40 +117,29 @@ public class AlertRuleResourceTest extends MongoDBServiceTest{
     
     @Before
     public void setUpService() throws Exception {
-    	IndexSetRegistry indexSetRegistry = mock(IndexSetRegistry.class);
-    	IndexSet indexSet = mock(IndexSet.class);
-    	IndexSetConfig indexSetConfig = mock(IndexSetConfig.class);
-    	ClusterEventBus clusterEventBus = mock(ClusterEventBus.class);
-    	AlarmCallbackConfigurationService alarmCallbackConfigurationService  = mock(AlarmCallbackConfigurationService.class);
-    	
+
         when(indexSetRegistry.getDefault()).thenReturn(indexSet);
         when(indexSet.getConfig()).thenReturn(indexSetConfig);
         when(indexSetConfig.id()).thenReturn("001");
-        
-        streamService = mock(StreamService.class);
-    	final Stream stream = mock(Stream.class);
     	when(stream.getId()).thenReturn("5bc894ded9e3770323a780a7");
     	when(streamService.load(anyString())).thenReturn(stream);
     	when(stream.getMatchingType()).thenReturn(MatchingType.AND);
+        when(aggregationCountConfig.type()).thenReturn("aggregation-count");
+        when(aggregationCountConfig.threshold()).thenReturn(0);
+        when(aggregationCountConfig.thresholdType()).thenReturn("MORE");
+        when(aggregationCountConfig.searchWithinMs()).thenReturn(0L);
+        when(aggregationCountConfig.groupingFields()).thenReturn(null);
+        when(aggregationCountConfig.distinctionFields()).thenReturn(null);
+        when(aggregationCountConfig.executeEveryMs()).thenReturn(1L);
+        when(alertService.loadRecentOfStream(eq("5bc894ded9e3770323a780a7"), any(DateTime.class), eq(999))).thenReturn(new ArrayList<Alert>());
+        when(event.config()).thenReturn(aggregationCountConfig);
+        when(event.title()).thenReturn("Test Count");
+        when(eventDefinitionsResource.get(anyString())).thenReturn(event);
+        when(eventNotificationsResource.get(anyString())).thenReturn(notificationDto);
+        when(notificationDto.config()).thenReturn(loggingNotificationConfig);
+        when(loggingNotificationConfig.severity()).thenReturn(SeverityType.LOW);
 
-    	
-    	final AlertCondition alertCondition = mock(AlertCondition.class);
-  //  	when(streamService.getAlertCondition(stream, "657386c8-b1de-4187-82a6-28087cfbd05c")).thenReturn(alertCondition);
-   // 	when(alertCondition.getParameters()).thenReturn(Maps.newHashMap());
-  //  	when(alertCondition.getTitle()).thenReturn("Test Count");
-    	
-    	AlarmCallbackConfiguration callbackConfiguration  = mock(AlarmCallbackConfiguration.class);
-    	HashMap<String, Object> confCallback = new HashMap<>();
-    	confCallback.put("severity", "Low");
-   // 	when(callbackConfiguration.getConfiguration()).thenReturn(confCallback);
-   // 	when(alarmCallbackConfigurationService.load("5bc894ded9e3770323a780a9")).thenReturn(callbackConfiguration);
-
-        AlertService alertService = mock(AlertService.class);
-    //    when(alertService.loadRecentOfStream(eq("5bc894ded9e3770323a780a7"), any(DateTime.class), eq(999))).thenReturn(new ArrayList<Alert>());
-    	
         AlertRuleServiceImpl alertRuleService = new AlertRuleServiceImpl(mongoRule.getMongoConnection(), mapperProvider, validator);
-        //eventDefinitionsResource = mock(EventDefinitionsResource.class);
-        //when(eventDefinitionsResource.toString()).thenReturn("Test");
         this.alertRuleResource = new AlertRuleResource(alertRuleService, ruleService, pipelineService, dbDataAdapterService, httpConfiguration,
                 dbCacheService, dbTableService,streamService, streamRuleService, clusterEventBus, indexSetRegistry,	alertService,
                 clusterConfigService, pipelineStreamConnectionsService, alertListService, eventDefinitionsResource, eventNotificationsResource);
@@ -174,7 +177,7 @@ public class AlertRuleResourceTest extends MongoDBServiceTest{
     	assertEquals("There should be two alert rule in the collection", 2, listAlertRule.getAlerts().size());
     }
     
-  /*  @Test
+    @Test
     @UsingDataSet(locations = "alertWizardSingleRuleCount.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testGetDataAlertRule() throws UnsupportedEncodingException, NotFoundException {
     	GetDataAlertRule dataAlertRule = alertRuleResource.getData("Test Count");
@@ -188,8 +191,8 @@ public class AlertRuleResourceTest extends MongoDBServiceTest{
     	assertEquals("COUNT", dataAlertRule.getConditionType());
     	assertEquals("admin", dataAlertRule.getCreatorUserId());
     }
-   */
-/*    @Test
+
+    @Test
     @UsingDataSet(locations = "alertWizardSingleRuleCount.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testGetListDataAlertRule() {
     	GetListDataAlertRule listDataAlertRule = alertRuleResource.listWithData();
@@ -206,7 +209,7 @@ public class AlertRuleResourceTest extends MongoDBServiceTest{
     	assertEquals("COUNT", dataAlertRule.getConditionType());
     	assertEquals("admin", dataAlertRule.getCreatorUserId());
     }
- */
+
     @Test
     public void testGetAlertRuleNotExist() throws UnsupportedEncodingException, NotFoundException {
     	String alertTitle = "Test Rule does not exist";
@@ -237,6 +240,6 @@ public class AlertRuleResourceTest extends MongoDBServiceTest{
     	List<ExportAlertRule> listExportAlertRule = alertRuleResource.getExportAlertRule(request);
     	
     	assertNotNull("Returned list should not be null", listExportAlertRule);
-    //	assertEquals("There should be one alert rule in the collection", 1, listExportAlertRule.size());
+    	assertEquals("There should be one alert rule in the collection", 1, listExportAlertRule.size());
     }
 }
