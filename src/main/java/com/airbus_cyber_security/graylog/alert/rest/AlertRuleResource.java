@@ -26,8 +26,6 @@ import com.mongodb.MongoException;
 import io.swagger.annotations.*;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.graylog.events.notifications.NotificationResourceHandler;
-import org.graylog.events.processor.EventDefinitionHandler;
 import org.graylog.events.processor.EventProcessorConfig;
 import org.graylog.events.rest.EventDefinitionsResource;
 import org.graylog.events.rest.EventNotificationsResource;
@@ -108,9 +106,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                              ClusterConfigService clusterConfigService,
                              PipelineStreamConnectionsService pipelineStreamConnectionsService,
                              AlertListService alertListService,
-                             EventDefinitionHandler eventDefinitionHandler,
                              EventDefinitionsResource eventDefinitionsResource,
-                             NotificationResourceHandler notificationResourceHandler,
                              EventNotificationsResource eventNotificationsResource) {
         this.alertRuleService = alertRuleService;
         this.streamService = streamService;
@@ -133,9 +129,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 alertService,
                 alertRuleUtils,
                 eventDefinitionsResource,
-                eventNotificationsResource,
-                notificationResourceHandler,
-                eventDefinitionHandler);
+                eventNotificationsResource);
         this.streamPipelineService = new StreamPipelineService(
                 streamService,
                 streamRuleService,
@@ -625,6 +619,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String alertTitle = checkImportPolicyAndGetTitle(alertRule.getTitle());
         String userName = getCurrentUser().getName();
 
+        LOG.info("User: "+userName+" try to import alert rule: "+ alertTitle);
+
         // Create stream and pipeline
         StreamPipelineObject streamPilpelineObject = streamPipelineService.createStreamAndPipeline(alertRule.getStream(), alertTitle, userName, alertRule.getStream().getMatchingType());
 
@@ -671,7 +667,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 alertRule.getDescription(),
                 alertRule.getConditionType(),
                 streamID2,
-                eventID,
+                eventID2,
                 streamPilpelineObject.getPipelineID(),
                 streamPilpelineObject.getPipelineRuleID(),
                 streamPilpelineObject.getListPipelineFieldRule(),
@@ -686,6 +682,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         for (FieldRule fieldRule:alertRuleUtils.nullSafe(streamPilpelineObject2.getListPipelineFieldRule())) {
             alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
+        LOG.info("User: "+userName+" successfully import alert rule: "+ alertTitle);
     }
 
     @PUT

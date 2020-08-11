@@ -90,11 +90,7 @@ public class AlertRuleResourceTest extends MongoDBServiceTest{
     @Mock
     private AlertListService alertListService;
     @Mock
-    private EventDefinitionHandler eventDefinitionHandler;
-    @Mock
     private EventDefinitionsResource eventDefinitionsResource;
-    @Mock
-    private NotificationResourceHandler notificationResourceHandler;
     @Mock
     private EventNotificationsResource eventNotificationsResource;
 
@@ -141,10 +137,9 @@ public class AlertRuleResourceTest extends MongoDBServiceTest{
         AlertRuleServiceImpl alertRuleService = new AlertRuleServiceImpl(mongoRule.getMongoConnection(), mapperProvider, validator);
         //eventDefinitionsResource = mock(EventDefinitionsResource.class);
         //when(eventDefinitionsResource.toString()).thenReturn("Test");
-        this.alertRuleResource = new AlertRuleResource(alertRuleService, ruleService, pipelineService, dbDataAdapterService, httpConfiguration, dbCacheService,
-                dbTableService,streamService, streamRuleService, clusterEventBus, indexSetRegistry,	alertService,
-                clusterConfigService, pipelineStreamConnectionsService, alertListService, eventDefinitionHandler, eventDefinitionsResource,
-                notificationResourceHandler, eventNotificationsResource);
+        this.alertRuleResource = new AlertRuleResource(alertRuleService, ruleService, pipelineService, dbDataAdapterService, httpConfiguration,
+                dbCacheService, dbTableService,streamService, streamRuleService, clusterEventBus, indexSetRegistry,	alertService,
+                clusterConfigService, pipelineStreamConnectionsService, alertListService, eventDefinitionsResource, eventNotificationsResource);
     }
     
     @Test

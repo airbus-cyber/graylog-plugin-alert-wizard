@@ -246,6 +246,7 @@ public class StreamPipelineService {
     }
 
     public  Stream cloneStream(Stream sourceStream, String newTitle, String creatorUser) throws ValidationException {
+        LOG.info("Clone Stream: " + sourceStream.getId());
         // Create stream.
         final Map<String, Object> streamData = Maps.newHashMap();
         streamData.put(StreamImpl.FIELD_TITLE, newTitle);

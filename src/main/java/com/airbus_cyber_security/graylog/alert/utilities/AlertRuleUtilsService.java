@@ -14,9 +14,7 @@ import org.graylog.events.conditions.Expression;
 import org.graylog.events.notifications.EventNotificationHandler;
 import org.graylog.events.notifications.EventNotificationSettings;
 import org.graylog.events.notifications.NotificationDto;
-import org.graylog.events.notifications.NotificationResourceHandler;
 import org.graylog.events.processor.EventDefinitionDto;
-import org.graylog.events.processor.EventDefinitionHandler;
 import org.graylog.events.processor.EventProcessorConfig;
 import org.graylog.events.processor.aggregation.AggregationConditions;
 import org.graylog.events.processor.aggregation.AggregationEventProcessorConfig;
@@ -27,6 +25,7 @@ import org.graylog.events.rest.EventNotificationsResource;
 import org.graylog2.alerts.Alert;
 import org.graylog2.alerts.AlertService;
 import org.graylog2.database.NotFoundException;
+import org.graylog2.plugin.rest.ValidationResult;
 import org.graylog2.plugin.streams.Stream;
 import org.graylog2.streams.StreamService;
 import org.joda.time.DateTime;
@@ -47,25 +46,19 @@ public class AlertRuleUtilsService {
     private final AlertRuleUtils alertRuleUtils;
     private final EventDefinitionsResource eventDefinitionsResource;
     private final EventNotificationsResource eventNotificationsResource;
-    private final NotificationResourceHandler notificationResourceHandler;
-    private final EventDefinitionHandler eventDefinitionHandler;
 
     public AlertRuleUtilsService(AlertRuleService alertRuleService,
                                  StreamService streamService,
                                  AlertService alertService,
                                  AlertRuleUtils alertRuleUtils,
                                  EventDefinitionsResource eventDefinitionsResource,
-                                 EventNotificationsResource eventNotificationsResource,
-                                 NotificationResourceHandler notificationResourceHandler,
-                                 EventDefinitionHandler eventDefinitionHandler) {
+                                 EventNotificationsResource eventNotificationsResource) {
         this.alertRuleService = alertRuleService;
         this.streamService = streamService;
         this.alertService = alertService;
         this.alertRuleUtils = alertRuleUtils;
         this.eventDefinitionsResource = eventDefinitionsResource;
         this.eventNotificationsResource = eventNotificationsResource;
-        this.notificationResourceHandler = notificationResourceHandler;
-        this.eventDefinitionHandler = eventDefinitionHandler;
     }
 
     public void checkIsValidRequest(AlertRuleRequest request){
@@ -245,6 +238,30 @@ public class AlertRuleUtilsService {
                 .build();
     }
 
+    private String createNotificationFromDto(NotificationDto notification){
+        Response response = this.eventNotificationsResource.create(notification);
+        if(Response.Status.Family.familyOf(response.getStatus()) == Response.Status.Family.SUCCESSFUL) {
+            notification = (NotificationDto) response.getEntity();
+            return notification.id();
+        }else{
+            ValidationResult validationResult = (ValidationResult) response.getEntity();
+            LOG.error("Failed to create Notification for alert: "+ notification.title() + " Errors: " + validationResult.getErrors());
+            return null;
+        }
+    }
+
+    private String updateNotificationFromDto(String notificationID, NotificationDto notification){
+        Response response = this.eventNotificationsResource.update(notificationID, notification);
+        if(Response.Status.Family.familyOf(response.getStatus()) == Response.Status.Family.SUCCESSFUL) {
+            notification = (NotificationDto) response.getEntity();
+            return notification.id();
+        }else{
+            ValidationResult validationResult = (ValidationResult) response.getEntity();
+            LOG.error("Failed to update Notification for alert: "+ notification.title() + " Errors: " + validationResult.getErrors());
+            return null;
+        }
+    }
+
     public String createNotification(String alertTitle, String severity){
         LoggingNotificationConfig loggingNotificationConfig = LoggingNotificationConfig.builder()
                 .singleMessage(false)
@@ -256,11 +273,11 @@ public class AlertRuleUtilsService {
                 .title(alertTitle)
                 .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
                 .build();
-        notification = this.notificationResourceHandler.create(notification);
-        return notification.id();
+        return this.createNotificationFromDto(notification);
     }
 
     public String createNotificationFromParameters(String alertTitle, Map<String, Object> parametersNotification){
+        LOG.info("Create Notification "+alertTitle);
         LoggingNotificationConfig loggingNotificationConfig = LoggingNotificationConfig.builder()
                 .singleMessage((boolean) parametersNotification.getOrDefault("single_notification",false))
                 .severity(SeverityType.valueOf(parametersNotification.get("severity").toString()))
@@ -274,15 +291,14 @@ public class AlertRuleUtilsService {
                 .title(alertTitle)
                 .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
                 .build();
-        notification = this.notificationResourceHandler.create(notification);
-        return notification.id();
+        return this.createNotificationFromDto(notification);
     }
 
     public void updateNotification(String title, String notificationID, String severity){
         NotificationDto notification = eventNotificationsResource.get(notificationID);
         LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) notification.config();
         if(!loggingNotificationConfig.severity().getType().equals(severity) || !notification.title().equals(title)){
-            LOG.info("Update Notification");
+            LOG.info("Update Notification "+title);
             if(!loggingNotificationConfig.severity().getType().equals(severity)){
                 LOG.info("Update severity, old one: " + loggingNotificationConfig.severity().getType() + " New one: " + severity);
                 loggingNotificationConfig = LoggingNotificationConfig.builder()
@@ -304,7 +320,7 @@ public class AlertRuleUtilsService {
                     .title(title)
                     .description(notification.description())
                     .build();
-            notificationResourceHandler.update(notification);
+            updateNotificationFromDto(notificationID, notification);
         }
     }
 
@@ -317,6 +333,30 @@ public class AlertRuleUtilsService {
             return createStatisticalCondition(streamID, conditionParameter);
         } else {
             return createAggregationCondition(streamID, conditionParameter);
+        }
+    }
+
+    private String createEventFromDto(EventDefinitionDto eventDefinition){
+        Response response = this.eventDefinitionsResource.create(eventDefinition);
+        if(Response.Status.Family.familyOf(response.getStatus()) == Response.Status.Family.SUCCESSFUL) {
+            eventDefinition = (EventDefinitionDto) response.getEntity();
+            return eventDefinition.id();
+        }else{
+            ValidationResult validationResult = (ValidationResult) response.getEntity();
+            LOG.error("Failed to create Event for alert: "+ eventDefinition.title() + " Errors: " + validationResult.getErrors());
+            return null;
+        }
+    }
+
+    private String updateEventFromDto(String definitionID, EventDefinitionDto eventDefinition){
+        Response response = this.eventDefinitionsResource.update(definitionID, eventDefinition);
+        if(Response.Status.Family.familyOf(response.getStatus()) == Response.Status.Family.SUCCESSFUL) {
+            eventDefinition = (EventDefinitionDto) response.getEntity();
+            return eventDefinition.id();
+        }else{
+            ValidationResult validationResult = (ValidationResult) response.getEntity();
+            LOG.error("Failed to create Event for alert: "+ eventDefinition.title() + " Errors: " + validationResult.getErrors());
+            return null;
         }
     }
 
@@ -341,10 +381,7 @@ public class AlertRuleUtilsService {
                         .build())
                 .build();
 
-        //TODO do it with eventDefinitionsResource to have the validation but need to get the event ID back
-        //this.eventDefinitionsResource.create(eventDefinition);
-        eventDefinition = this.eventDefinitionHandler.create(eventDefinition);
-        return eventDefinition.id();
+        return this.createEventFromDto(eventDefinition);
     }
 
     public void updateEvent(String alertTitle, String eventID, EventProcessorConfig configuration){
@@ -363,7 +400,7 @@ public class AlertRuleUtilsService {
                 .notifications(event.notifications())
                 .storage(event.storage())
                 .build();
-        this.eventDefinitionHandler.update(event);
+        this.updateEventFromDto(eventID, event);
     }
 
 }
