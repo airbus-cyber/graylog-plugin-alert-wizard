@@ -262,7 +262,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return alertTitle;
     }
 
-    @PUT
+    @POST
     @Timed    
     @ApiOperation(value = "Create a alert")
     @RequiresAuthentication
@@ -342,7 +342,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return Response.accepted().build();
     }
 
-    @POST
+    @PUT
     @Path("/{title}")
     @Timed
     @RequiresAuthentication

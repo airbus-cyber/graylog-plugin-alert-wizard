@@ -70,7 +70,7 @@ const AlertRuleStore = Reflux.createStore({
     },
     create(newAlert) {
         const url = URLUtils.qualifyUrl(this.sourceUrl);
-        const method = 'PUT';
+        const method = 'POST';
 
         const request = {
             title: newAlert.title,
@@ -96,7 +96,7 @@ const AlertRuleStore = Reflux.createStore({
     },
     update(name, updatedAlert) {
         const url = URLUtils.qualifyUrl(this.sourceUrl + '/' + encodeURIComponent(name));
-        const method = 'POST';
+        const method = 'PUT';
 
         const request = {
             title: updatedAlert.title,

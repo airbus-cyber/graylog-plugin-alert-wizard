@@ -124,7 +124,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
         return listTitle;
     }
 
-    @PUT
+    @POST
     @Timed
     @ApiOperation(value = "Create a list")
     @RequiresAuthentication
@@ -149,7 +149,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
         return Response.accepted().build();
     }
 
-    @POST
+    @PUT
     @Path("/{title}")
     @Timed
     @RequiresAuthentication

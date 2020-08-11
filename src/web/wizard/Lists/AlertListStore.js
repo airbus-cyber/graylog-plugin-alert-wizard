@@ -45,7 +45,7 @@ const AlertListStore = Reflux.createStore({
 
     create(newList) {
         const url = URLUtils.qualifyUrl(this.sourceUrl);
-        const method = 'PUT';
+        const method = 'POST';
 
         const request = {
             title: newList.title,
@@ -68,7 +68,7 @@ const AlertListStore = Reflux.createStore({
 
     update(name, updatedList) {
         const url = URLUtils.qualifyUrl(this.sourceUrl + '/' + encodeURIComponent(name));
-        const method = 'POST';
+        const method = 'PUT';
 
         const request = {
             title: updatedList.title,
