@@ -31,39 +31,47 @@ public class AlertListUtilsService {
 
     public void incrementUsage(String title) {
         try {
-            AlertList oldAlert = alertListService.load(title);
-            alertListService.update(java.net.URLDecoder.decode(title, ENCODING),
-                    AlertListImpl.create(
-                            title,
-                            oldAlert.getCreatedAt(),
-                            oldAlert.getCreatorUserId(),
-                            oldAlert.getCreatedAt(),
-                            oldAlert.getDescription(),
-                            oldAlert.getUsage()+1,
-                            oldAlert.getLists()));
+            AlertList oldAlertList = alertListService.load(title);
+            if(oldAlertList != null) {
+                alertListService.update(java.net.URLDecoder.decode(title, ENCODING),
+                        AlertListImpl.create(
+                                title,
+                                oldAlertList.getCreatedAt(),
+                                oldAlertList.getCreatorUserId(),
+                                oldAlertList.getCreatedAt(),
+                                oldAlertList.getDescription(),
+                                oldAlertList.getUsage() + 1,
+                                oldAlertList.getLists()));
+            }else{
+                LOG.error("Failed to increment list, "+ title + " does not exist");
+            }
         } catch (UnsupportedEncodingException | NotFoundException e) {
-            LOG.error("Failed to increment list");
+            LOG.error("Failed to increment list " + title);
         }
     }
 
     public void decrementUsage(String title) {
         try {
-            AlertList oldAlert = alertListService.load(title);
-            int usage = oldAlert.getUsage()-1;
-            if(usage < 0){
-                usage = 0;
+            AlertList oldAlertList = alertListService.load(title);
+            if(oldAlertList != null) {
+                int usage = oldAlertList.getUsage() - 1;
+                if (usage < 0) {
+                    usage = 0;
+                }
+                alertListService.update(java.net.URLDecoder.decode(title, ENCODING),
+                        AlertListImpl.create(
+                                title,
+                                oldAlertList.getCreatedAt(),
+                                oldAlertList.getCreatorUserId(),
+                                oldAlertList.getCreatedAt(),
+                                oldAlertList.getDescription(),
+                                usage,
+                                oldAlertList.getLists()));
+            }else{
+                LOG.error("Failed to decrement list, "+ title + " does not exist");
             }
-            alertListService.update(java.net.URLDecoder.decode(title, ENCODING),
-                    AlertListImpl.create(
-                            title,
-                            oldAlert.getCreatedAt(),
-                            oldAlert.getCreatorUserId(),
-                            oldAlert.getCreatedAt(),
-                            oldAlert.getDescription(),
-                            usage,
-                            oldAlert.getLists()));
         } catch (UnsupportedEncodingException | NotFoundException e) {
-            LOG.error("Failed to decrement list");
+            LOG.error("Failed to decrement list " + title);
         }
     }
 }
