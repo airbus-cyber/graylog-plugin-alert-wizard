@@ -565,7 +565,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         try{
         	AlertRule alertRule = alertRuleService.load(alertTitle);
         	//Delete first Stream
-            streamPipelineService.deleteStreamFromID(alertRule.getStreamID());
+            if(alertRule.getStreamID() != null && !alertRule.getStreamID().isEmpty()) {
+                streamPipelineService.deleteStreamFromID(alertRule.getStreamID());
+            }
 
             //Delete second Stream
             if(alertRule.getSecondStreamID() != null && !alertRule.getSecondStreamID().isEmpty()) {
@@ -573,8 +575,12 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             }
 
             //Delete Event
-            eventDefinitionsResource.delete(alertRule.getEventID());
-            eventNotificationsResource.delete(alertRule.getNotificationID());
+            if(alertRule.getEventID() != null && !alertRule.getEventID().isEmpty()) {
+                eventDefinitionsResource.delete(alertRule.getEventID());
+            }
+            if(alertRule.getNotificationID() != null && !alertRule.getNotificationID().isEmpty()) {
+                eventNotificationsResource.delete(alertRule.getNotificationID());
+            }
             if(alertRule.getSecondEventID() != null && !alertRule.getSecondEventID().isEmpty()) {
                 eventDefinitionsResource.delete(alertRule.getSecondEventID());
             }

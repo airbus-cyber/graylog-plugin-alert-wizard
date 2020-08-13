@@ -9,6 +9,7 @@ import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotif
 import com.airbus_cyber_security.graylog.events.processor.aggregation.AggregationCountProcessorConfig;
 import com.airbus_cyber_security.graylog.events.processor.correlation.CorrelationCountProcessorConfig;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
 import org.graylog.events.conditions.Expr;
 import org.graylog.events.conditions.Expression;
 import org.graylog.events.notifications.EventNotificationHandler;
@@ -74,46 +75,58 @@ public class AlertRuleUtilsService {
     }
 
     public GetDataAlertRule constructDataAlertRule(AlertRule alert) throws NotFoundException {
-        final String streamID = alert.getStreamID();
-        final Stream stream = streamService.load(streamID);
+        LOG.info("Get data alert: " + alert.getTitle());
+        try {
+            final String streamID = alert.getStreamID();
+            final Stream stream = streamService.load(streamID);
 
-        //Get the event
-        EventDefinitionDto event = eventDefinitionsResource.get(alert.getEventID());
-        LOG.info("Event type: " + event.config().type());
+            //Get the event
+            Map<String, Object> parametersCondition = null;
+            String eventTitle;
+            if (alert.getEventID() != null && !alert.getEventID().isEmpty()) {
+                EventDefinitionDto event = eventDefinitionsResource.get(alert.getEventID());
+                eventTitle = event.title();
+                parametersCondition = alertRuleUtils.getConditionParameters(event.config());
+            } else {
+                eventTitle = alert.getTitle();
+                LOG.error("Alert " + alert.getTitle() + " is broken event id is null");
+            }
 
-        Map<String, Object> parametersCondition = alertRuleUtils.getConditionParameters(event.config());
+            List<FieldRuleImpl> fieldRules = new ArrayList<>();
+            Optional.ofNullable(alert.getPipelineFieldRules()).ifPresent(fieldRules::addAll);
+            Optional.ofNullable(alertRuleUtils.getListFieldRule(stream.getStreamRules())).ifPresent(fieldRules::addAll);
+            AlertRuleStream alertRuleStream = AlertRuleStreamImpl.create(streamID, stream.getMatchingType().toString(), fieldRules);
 
-        List<FieldRuleImpl> fieldRules = new ArrayList<>();
-        Optional.ofNullable(alert.getPipelineFieldRules()).ifPresent(fieldRules::addAll);
-        Optional.ofNullable(alertRuleUtils.getListFieldRule(stream.getStreamRules())).ifPresent(fieldRules::addAll);
-        AlertRuleStream alertRuleStream = AlertRuleStreamImpl.create(streamID, stream.getMatchingType().toString(), fieldRules);
+            AlertRuleStream alertRuleStream2 = null;
+            if(alert.getSecondStreamID() != null && !alert.getSecondStreamID().isEmpty()) {
+                final Stream stream2 = streamService.load(alert.getSecondStreamID());
+                List<FieldRuleImpl> fieldRules2 = new ArrayList<>();
+                Optional.ofNullable(alert.getSecondPipelineFieldRules()).ifPresent(fieldRules2::addAll);
+                Optional.ofNullable(alertRuleUtils.getListFieldRule(stream2.getStreamRules())).ifPresent(fieldRules2::addAll);
+                alertRuleStream2 = AlertRuleStreamImpl.create(alert.getSecondStreamID(), stream2.getMatchingType().toString(), fieldRules2);
+            }
 
-        AlertRuleStream alertRuleStream2 = null;
-        if(alert.getSecondStreamID() != null && !alert.getSecondStreamID().isEmpty()) {
-            final Stream stream2 = streamService.load(alert.getSecondStreamID());
-            List<FieldRuleImpl> fieldRules2 = new ArrayList<>();
-            Optional.ofNullable(alert.getSecondPipelineFieldRules()).ifPresent(fieldRules2::addAll);
-            Optional.ofNullable(alertRuleUtils.getListFieldRule(stream2.getStreamRules())).ifPresent(fieldRules2::addAll);
-            alertRuleStream2 = AlertRuleStreamImpl.create(alert.getSecondStreamID(), stream2.getMatchingType().toString(), fieldRules2);
+            LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) eventNotificationsResource.get(alert.getNotificationID()).config();
+            LOG.info("Severity: " + loggingNotificationConfig.severity().getType());
+
+            return GetDataAlertRule.create(alert.getTitle(), eventTitle,
+                    loggingNotificationConfig.severity().getType(),
+                    alert.getEventID(),
+                    alert.getNotificationID(),
+                    alert.getCreatedAt(),
+                    alert.getCreatorUserId(),
+                    alert.getLastModified(),
+                    stream.getDisabled(),
+                    alert.getDescription(),
+                    countAlerts(streamID, alert.getLastModified()),
+                    alert.getConditionType(),
+                    parametersCondition,
+                    alertRuleStream,
+                    alertRuleStream2);
+
+        }catch(Exception e){
+            throw new NotFoundException(e);
         }
-
-        LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) eventNotificationsResource.get(alert.getNotificationID()).config();
-        LOG.info("Severity: " + loggingNotificationConfig.severity().getType());
-
-        return GetDataAlertRule.create(alert.getTitle(), event.title(),
-                loggingNotificationConfig.severity().getType(),
-                alert.getEventID(),
-                alert.getNotificationID(),
-                alert.getCreatedAt(),
-                alert.getCreatorUserId(),
-                alert.getLastModified(),
-                stream.getDisabled(),
-                alert.getDescription(),
-                countAlerts(streamID, alert.getLastModified()),
-                alert.getConditionType(),
-                parametersCondition,
-                alertRuleStream,
-                alertRuleStream2);
     }
 
     private HashSet<String> convertToHashSet(Object object){
