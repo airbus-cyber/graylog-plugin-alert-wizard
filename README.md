@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/airbus-cyber/graylog-plugin-alert-wizard.svg?branch=master)](https://travis-ci.org/airbus-cyber/graylog-plugin-alert-wizard)
 [![License](https://img.shields.io/badge/license-GPL--3.0-orange.svg)](https://www.gnu.org/licenses/gpl-3.0.txt)
-[![GitHub Release](https://img.shields.io/badge/release-v3.0.1-blue.svg)](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/releases)
+[![GitHub Release](https://img.shields.io/badge/release-v3.2.0-blue.svg)](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/releases)
 
 #### Alert Wizard plugin for Graylog to manage the alert rules
 
@@ -10,7 +10,7 @@ An alert wizard for configuring alert rules on Graylog.
  
 Perfect for example to configure together and at the same time a stream, an alert condition and a logging alert notification.  
 
-**Required Graylog version:** 3.0.x  
+**Required Graylog version:** 3.2.x  
 
 **Required Graylog plugins:**
 * [graylog-plugin-logging-alert](https://github.com/airbus-cyber/graylog-plugin-logging-alert)
@@ -26,6 +26,16 @@ Perfect for example to configure together and at the same time a stream, an aler
 | 2.0.x                 | 2.5.x           | 1.1.x                        | 1.1.x                            | 1.1.x                            |
 | 3.0.x                 | 3.0.x           | 1.2.x                        | 1.2.x                            | 1.2.x                            |
 | 3.1.x                 | 3.0.x           | 1.2.x                        | 1.2.x                            | 1.2.x                            |
+| 3.2.x                 | 3.2.x           | 2.1.x                        | 2.1.x                            | 2.1.x                            |
+
+### Upgrading to 3.2.0
+
+**Possible issues to Import alert rules from version 3.0.0 or 3.1.0:**
+* The field "grace" (Now display in Graylog and the Wizard as "Execute search every") have to be strictly greater than 0
+* The Log Body of the notification will not be imported, the default one in the general configuration of the plugin 
+[Logging Alert](https://github.com/airbus-cyber/graylog-plugin-logging-alert)
+will be use, and have to follow the [Notification format](https://docs.graylog.org/en/latest/pages/alerts.html#notifications) 
+(Same as the Email Notification)
 
 ### Upgrading to 3.0.0
 
