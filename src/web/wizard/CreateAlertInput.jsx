@@ -350,13 +350,13 @@ const CreateAlertInput = createReactClass({
         let buttonSave;
         if (this.props.create) {
             buttonSave = (
-                <Button onClick={this._save} disabled={!this.state.isValid} className="btn btn-md btn-primary">
+                <Button onClick={this._save} bsStyle="primary" disabled={!this.state.isValid} className="btn btn-md btn-primary">
                     <FormattedMessage id= "wizard.save" defaultMessage= "Save" />
                 </Button>
             );
         } else {
             buttonSave = (
-                <Button onClick={this._update} disabled={!(this.state.isModified && this.state.isValid)}
+                <Button onClick={this._update} bsStyle="primary" disabled={!(this.state.isModified && this.state.isValid)}
                         className="btn btn-md btn-primary">
                     <FormattedMessage id= "wizard.save" defaultMessage= "Save" />
                 </Button>
