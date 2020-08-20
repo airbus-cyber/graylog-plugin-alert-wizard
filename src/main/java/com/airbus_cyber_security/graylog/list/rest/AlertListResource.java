@@ -243,7 +243,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_READ)
     @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_READ)
     public List<ExportAlertList> getExportAlertList(@ApiParam(name = "JSON body", required = true) @Valid @NotNull ExportAlertListRequest request) {
-        LOG.info("List titles : " + request.getTitles());
+        LOG.debug("List titles : " + request.getTitles());
         return alertListExporter.export(request.getTitles());
     }
 

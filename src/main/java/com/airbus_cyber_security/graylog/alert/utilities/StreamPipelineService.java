@@ -188,7 +188,7 @@ public class StreamPipelineService {
     }
 
     public Stream createStream(AlertRuleStream alertRuleStream, String title, String userName) throws ValidationException {
-        LOG.info("Create Stream: " + title);
+        LOG.debug("Create Stream: " + title);
         final CreateStreamRequest cr = CreateStreamRequest.create(title, AlertRuleUtils.COMMENT_ALERT_WIZARD,
                 Collections.emptyList(), "", alertRuleStream.getMatchingType(), false, indexSetID);
         final Stream stream = streamService.create(cr, userName);
@@ -222,7 +222,7 @@ public class StreamPipelineService {
     }
 
     public void updateStream(Stream stream, AlertRuleStream alertRuleStream, String title) throws ValidationException {
-        LOG.info("Update Stream: " + stream.getId());
+        LOG.debug("Update Stream: " + stream.getId());
         stream.setTitle(title);
         if (alertRuleStream.getMatchingType() != null) {
             try {
@@ -246,7 +246,7 @@ public class StreamPipelineService {
     }
 
     public  Stream cloneStream(Stream sourceStream, String newTitle, String creatorUser) throws ValidationException {
-        LOG.info("Clone Stream: " + sourceStream.getId());
+        LOG.debug("Clone Stream: " + sourceStream.getId());
         // Create stream.
         final Map<String, Object> streamData = Maps.newHashMap();
         streamData.put(StreamImpl.FIELD_TITLE, newTitle);

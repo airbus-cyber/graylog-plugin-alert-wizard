@@ -616,7 +616,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_READ)
     @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_READ)
     public List<ExportAlertRule> getExportAlertRule(@ApiParam(name = "JSON body", required = true) @Valid @NotNull ExportAlertRuleRequest request) {
-    	LOG.info("List titles : " + request.getTitles());
+    	LOG.debug("List titles : " + request.getTitles());
         return alertRuleExporter.export(request.getTitles());
     }
 
@@ -625,7 +625,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String alertTitle = checkImportPolicyAndGetTitle(alertRule.getTitle());
         String userName = getCurrentUser().getName();
 
-        LOG.info("User: "+userName+" try to import alert rule: "+ alertTitle);
+        LOG.debug("User: "+userName+" try to import alert rule: "+ alertTitle);
 
         // Create stream and pipeline
         StreamPipelineObject streamPilpelineObject = streamPipelineService.createStreamAndPipeline(alertRule.getStream(), alertTitle, userName, alertRule.getStream().getMatchingType());
@@ -688,7 +688,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         for (FieldRule fieldRule:alertRuleUtils.nullSafe(streamPilpelineObject2.getListPipelineFieldRule())) {
             alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
-        LOG.info("User: "+userName+" successfully import alert rule: "+ alertTitle);
+        LOG.debug("User: "+userName+" successfully import alert rule: "+ alertTitle);
     }
 
     @PUT
