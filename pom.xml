@@ -57,8 +57,6 @@
 		<graylog.version>3.2.5</graylog.version>
 		<graylog2.plugin-dir>/usr/share/graylog-server/plugin</graylog2.plugin-dir>
 		<auto-value.version>1.6.5</auto-value.version>
-		<graylog-plugin-logging-alert.version>1.2.0</graylog-plugin-logging-alert.version>
-
 		<!-- Test dependencies -->
 		<junit.version>4.12</junit.version>
 		<assertj-core.version>3.9.1</assertj-core.version>
@@ -78,12 +76,6 @@
 					<artifactId>log4j-slf4j-impl</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>com.airbus-cyber-security.graylog</groupId>
-			<artifactId>graylog-plugin-logging-alert</artifactId>
-			<version>${graylog-plugin-logging-alert.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.google.auto.value</groupId>
