@@ -185,7 +185,7 @@ const FieldRule = createReactClass({
         const isMatchDataPesent = (this.props.matchData && this.props.matchData.rules.hasOwnProperty(this.props.rule.id));
         const color = (isMatchDataPesent ? this._getMatchDataColor() : '#FFFFFF');
 
-        let formattedOptions = null;
+        let formattedOptions = [];
         if(this.state.fields) {
             formattedOptions = Object.keys(this.state.fields).map(key => this._formatOption(this.state.fields[key], this.state.fields[key]))
                 .sort((s1, s2) => naturalSort(s1.label.toLowerCase(), s2.label.toLowerCase()));
