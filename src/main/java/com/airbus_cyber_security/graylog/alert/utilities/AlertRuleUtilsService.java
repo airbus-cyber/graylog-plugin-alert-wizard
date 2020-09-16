@@ -26,6 +26,7 @@ import org.graylog.events.rest.EventNotificationsResource;
 import org.graylog2.alerts.Alert;
 import org.graylog2.alerts.AlertService;
 import org.graylog2.database.NotFoundException;
+import org.graylog2.plugin.cluster.ClusterConfigService;
 import org.graylog2.plugin.rest.ValidationResult;
 import org.graylog2.plugin.streams.Stream;
 import org.graylog2.streams.StreamService;
@@ -47,19 +48,22 @@ public class AlertRuleUtilsService {
     private final AlertRuleUtils alertRuleUtils;
     private final EventDefinitionsResource eventDefinitionsResource;
     private final EventNotificationsResource eventNotificationsResource;
+    private final ClusterConfigService clusterConfigService;
 
     public AlertRuleUtilsService(AlertRuleService alertRuleService,
                                  StreamService streamService,
                                  AlertService alertService,
                                  AlertRuleUtils alertRuleUtils,
                                  EventDefinitionsResource eventDefinitionsResource,
-                                 EventNotificationsResource eventNotificationsResource) {
+                                 EventNotificationsResource eventNotificationsResource,
+                                 ClusterConfigService clusterConfigService) {
         this.alertRuleService = alertRuleService;
         this.streamService = streamService;
         this.alertService = alertService;
         this.alertRuleUtils = alertRuleUtils;
         this.eventDefinitionsResource = eventDefinitionsResource;
         this.eventNotificationsResource = eventNotificationsResource;
+        this.clusterConfigService = clusterConfigService;
     }
 
     public void checkIsValidRequest(AlertRuleRequest request){
@@ -275,11 +279,17 @@ public class AlertRuleUtilsService {
         }
     }
 
+    private String getDefaultLogBody(){
+        final LoggingAlertConfig generalConfig = clusterConfigService.getOrDefault(LoggingAlertConfig.class,
+                LoggingAlertConfig.createDefault());
+        return generalConfig.accessLogBody();
+    }
+
     public String createNotification(String alertTitle, String severity){
         LoggingNotificationConfig loggingNotificationConfig = LoggingNotificationConfig.builder()
                 .singleMessage(false)
                 .severity(SeverityType.valueOf(severity.toUpperCase()))
-                .logBody(LoggingAlertConfig.BODY_TEMPLATE)
+                .logBody(this.getDefaultLogBody())
                 .build();
         NotificationDto notification = NotificationDto.builder()
                 .config(loggingNotificationConfig)
@@ -294,7 +304,7 @@ public class AlertRuleUtilsService {
         LoggingNotificationConfig loggingNotificationConfig = LoggingNotificationConfig.builder()
                 .singleMessage((boolean) parametersNotification.getOrDefault("single_notification",false))
                 .severity(SeverityType.valueOf(parametersNotification.get("severity").toString().toUpperCase()))
-                .logBody(parametersNotification.getOrDefault("log_body", LoggingAlertConfig.BODY_TEMPLATE).toString())
+                .logBody(parametersNotification.getOrDefault("log_body", this.getDefaultLogBody()).toString())
                 .splitFields(convertToHashSet(parametersNotification.get("split_fields")))
                 .aggregationTime((int)parametersNotification.getOrDefault("aggregation_time",0))
                 .alertTag(parametersNotification.getOrDefault("alert_tag", "LoggingAlert").toString())

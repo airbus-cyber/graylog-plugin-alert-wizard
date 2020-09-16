@@ -129,7 +129,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 alertService,
                 alertRuleUtils,
                 eventDefinitionsResource,
-                eventNotificationsResource);
+                eventNotificationsResource,
+                clusterConfigService);
         this.streamPipelineService = new StreamPipelineService(
                 streamService,
                 streamRuleService,
