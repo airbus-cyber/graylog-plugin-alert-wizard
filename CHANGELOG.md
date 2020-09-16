@@ -1,6 +1,11 @@
 # Change Log
 
 All notable changes to this project will be documented in this file.
+## [3.2.3](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/3.2.2...3.2.3) (2020-09-16)
+### Bug Fixes
+* Fix #28 The log body defined in the Logging Alert Configuration Configuration is not used
+* Update dependencies
+
 ## [3.2.2](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/3.2.1...3.2.2) (2020-09-07)
 * Update dependencies
 
