@@ -5,7 +5,7 @@
  	<parent>
 		<groupId>org.graylog.plugins</groupId>
 		<artifactId>graylog-plugin-web-parent</artifactId>
-		<version>3.2.5</version>
+		<version>3.3.6</version>
 	</parent>
 		
 	<groupId>com.airbus-cyber-security.graylog</groupId>
