@@ -58,7 +58,7 @@
 		<graylog2.plugin-dir>/usr/share/graylog-server/plugin</graylog2.plugin-dir>
 		<auto-value.version>1.6.5</auto-value.version>
 		<!-- Test dependencies -->
-		<junit.version>4.12</junit.version>
+		<junit.version>4.13.1</junit.version>
 		<assertj-core.version>3.9.1</assertj-core.version>
 		<mockito.version>2.8.9</mockito.version>
 		<nosqlunit.version>1.0.0</nosqlunit.version>
