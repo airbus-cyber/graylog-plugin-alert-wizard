@@ -360,7 +360,7 @@ public class AlertRuleUtilsService {
     }
 
     private String createEventFromDto(EventDefinitionDto eventDefinition){
-        Response response = this.eventDefinitionsResource.create(eventDefinition);
+        Response response = this.eventDefinitionsResource.create(true, eventDefinition);
         if(Response.Status.Family.familyOf(response.getStatus()) == Response.Status.Family.SUCCESSFUL) {
             eventDefinition = (EventDefinitionDto) response.getEntity();
             return eventDefinition.id();
@@ -372,7 +372,7 @@ public class AlertRuleUtilsService {
     }
 
     private String updateEventFromDto(String definitionID, EventDefinitionDto eventDefinition){
-        Response response = this.eventDefinitionsResource.update(definitionID, eventDefinition);
+        Response response = this.eventDefinitionsResource.update(definitionID, true, eventDefinition);
         if(Response.Status.Family.familyOf(response.getStatus()) == Response.Status.Family.SUCCESSFUL) {
             eventDefinition = (EventDefinitionDto) response.getEntity();
             return eventDefinition.id();

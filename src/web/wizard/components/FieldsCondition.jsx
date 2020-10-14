@@ -12,6 +12,8 @@ import {FormattedMessage} from 'react-intl';
 import ActionsProvider from 'injection/ActionsProvider';
 import FieldRule from '../FieldRule';
 
+import withFormattedFields from './withFormattedFields';
+
 const StreamsStore = StoreProvider.getStore('Streams');
 const IndexSetsStore = StoreProvider.getStore('IndexSets');
 const IndexSetsActions = ActionsProvider.getActions('IndexSets');

@@ -2,20 +2,19 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
 import { Row, Col } from 'components/graylog';
-import {Input} from 'components/bootstrap';
-import {Select, Spinner} from 'components/common';
+import { Input} from 'components/bootstrap';
+import { Select } from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
-import {FormattedMessage} from 'react-intl';
-import StoreProvider from 'injection/StoreProvider';
-import naturalSort from 'javascript-natural-sort';
+import { FormattedMessage } from 'react-intl';
 
-const FieldsStore = StoreProvider.getStore('Fields');
+import withFormattedFields from './withFormattedFields';
 
 const StatisticalCondition = createReactClass({
     displayName: 'StatisticalCondition',
 
     propTypes: {
         onUpdate: PropTypes.func.isRequired,
+        formattedFields: PropTypes.array.isRequired,
     },
 
     getInitialState() {
@@ -25,15 +24,6 @@ const StatisticalCondition = createReactClass({
             threshold: this.props.threshold,
             threshold_type: this.props.threshold_type,
         };
-    },
-    componentDidMount() {
-        FieldsStore.loadFields().then((fields) => {
-            //add value to list fields if not present
-            if (this.state.field && this.state.field !== '' && fields.indexOf(this.state.field) < 0) {
-                fields.push(this.state.field);
-            }
-            this.setState({fields: fields});
-        });
     },
     _availableAggregationTypes() {
         return [
@@ -90,25 +80,10 @@ const StatisticalCondition = createReactClass({
             this.setState({fields: update});
         }
     },
-    _formatOption(key, value) {
-        return {value: value, label: key};
-    },
-    _isLoading() {
-        return (!this.state.fields);
-    },
-    
+
     render() {
-        if (this._isLoading()) {
-            return (
-                <div style={{marginLeft: 10}}>
-                    <Spinner/>
-                </div>
-            );
-        }
-        
-        const formattedOptions = Object.keys(this.state.fields).map(key => this._formatOption(this.state.fields[key], this.state.fields[key]))
-        .sort((s1, s2) => naturalSort(s1.label.toLowerCase(), s2.label.toLowerCase()));
-        
+        const { formattedFields } = this.props;
+
         return (
                     <Row>
                         <Col md={2} style={{ marginTop: 5, marginBottom: 0 }}>
@@ -135,7 +110,7 @@ const StatisticalCondition = createReactClass({
                                 <Select
                                     required
                                     value={this.state.field}
-                                    options={formattedOptions}
+                                    options={formattedFields}
                                     matchProp="value"
                                     onChange={this._onParameterFieldSelect}
                                     allowCreate={true}
@@ -167,4 +142,4 @@ const StatisticalCondition = createReactClass({
     },
 });
 
-export default StatisticalCondition;
+export default withFormattedFields(StatisticalCondition);

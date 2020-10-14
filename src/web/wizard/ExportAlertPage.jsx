@@ -7,7 +7,7 @@ import { Row, Col, Button } from 'components/graylog';
 import AlertRuleActions from './AlertRuleActions';
 import {DocumentTitle, PageHeader} from 'components/common';
 import {LinkContainer} from 'react-router-bootstrap';
-import FileSaver from 'logic/files/FileSaver';
+import FileSaver from './logic/FileSaver';
 import UserNotification from 'util/UserNotification';
 import DateTime from 'logic/datetimes/DateTime';
 
