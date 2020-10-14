@@ -4,12 +4,11 @@ import Reflux from 'reflux';
 import AlertListActions from './Lists/AlertListActions';
 import createReactClass from 'create-react-class';
 import { Input } from 'components/bootstrap';
-import { Select, Spinner, OverlayElement } from 'components/common';
+import { Icon, Select, Spinner, OverlayElement } from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import StoreProvider from 'injection/StoreProvider';
 import { FormattedMessage } from 'react-intl';
 import AlertListStore from "./Lists/AlertListStore";
-import { Icon } from 'components/common';
 
 import withFormattedFields from './components/withFormattedFields';
 

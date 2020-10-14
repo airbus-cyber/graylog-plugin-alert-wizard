@@ -3,12 +3,12 @@ import React from 'react';
 import createReactClass from 'create-react-class';
 import Reflux from 'reflux';
 import { Row, Col } from 'components/graylog';
-import {Button} from 'react-bootstrap';
-import {Input} from 'components/bootstrap';
-import {Select, Spinner} from 'components/common';
+import { Button } from 'react-bootstrap';
+import { Input } from 'components/bootstrap';
+import { Icon, Select, Spinner } from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import StoreProvider from 'injection/StoreProvider';
-import {FormattedMessage} from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import ActionsProvider from 'injection/ActionsProvider';
 import FieldRule from '../FieldRule';
 
@@ -241,7 +241,9 @@ const FieldsCondition = createReactClass({
                 </Button>
                 <br/><br/>
                 {listFieldRule}
-                <Button onClick={this._addFieldRule} bsStyle="info" title={this.state.messages.add}><i className="fa fa-plus-circle" style={{ fontSize: '18px' }} /></Button>
+                <Button onClick={this._addFieldRule} bsStyle="info" title={this.state.messages.add}>
+                    <Icon name="plus-circle" />
+                </Button>
             </Col>
         </Row>
         );
