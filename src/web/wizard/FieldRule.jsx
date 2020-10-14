@@ -41,7 +41,6 @@ const FieldRule = createReactClass({
             rule: ObjectUtils.clone(this.props.rule),
             isModified: false,
             isValid: false,
-            fields: null,
             hover: false,
             lists: null,
         };
@@ -109,13 +108,6 @@ const FieldRule = createReactClass({
 
     _onRuleFieldSelect(value) {
         this._updateAlertField('field', value);
-
-        //add value to list fields if not present
-        if (value !== '' && this.state.fields.indexOf(value) < 0) {
-            const update = ObjectUtils.clone(this.state.fields);
-            update.push(value);
-            this.setState({fields: update});
-        }
     },
 
     _updateAlertField(field, value) {
@@ -168,7 +160,7 @@ const FieldRule = createReactClass({
 
     render() {
         const { formattedFields } = this.props;
-        if (this.state.rule.field && this.state.rule.field !== '' && !formattedFields.some(_isFieldRule)) {
+        if (this.state.rule.field && this.state.rule.field !== '' && !formattedFields.some(this._isFieldRule)) {
             formattedFields.push({
                 value: this.state.rule.field,
                 label: this.state.rule.field
@@ -223,7 +215,7 @@ const FieldRule = createReactClass({
                         <Select style={{backgroundColor: color}}
                                 required
                                 value={this.state.rule.field}
-                                options={[]}
+                                options={formattedFields}
                                 matchProp="value"
                                 onChange={this._onRuleFieldSelect}
                                 allowCreate={true}
@@ -251,4 +243,4 @@ const FieldRule = createReactClass({
     },
 });
 
-export default FieldRule;
+export default withFormattedFields(FieldRule);
