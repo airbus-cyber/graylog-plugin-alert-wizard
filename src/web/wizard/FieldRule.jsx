@@ -4,11 +4,12 @@ import Reflux from 'reflux';
 import AlertListActions from './Lists/AlertListActions';
 import createReactClass from 'create-react-class';
 import { Input } from 'components/bootstrap';
-import { Icon, Select, Spinner, OverlayElement } from 'components/common';
+import { Select, Spinner, OverlayElement } from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import StoreProvider from 'injection/StoreProvider';
 import { FormattedMessage } from 'react-intl';
 import AlertListStore from "./Lists/AlertListStore";
+import IconRemove from "./icons/Remove";
 
 import withFormattedFields from './components/withFormattedFields';
 
@@ -193,7 +194,7 @@ const FieldRule = createReactClass({
         const deleteAction = (
                 <button id="delete-alert" type="button" className="btn btn-md btn-primary" title={this.state.messages.delete} style={{marginRight: '0.5em'}}
                     onClick={this._delete}>
-                    <Icon name="trash" />
+                    <IconRemove/>
                 </button>
         );
 
