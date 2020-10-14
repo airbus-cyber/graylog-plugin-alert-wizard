@@ -9,6 +9,7 @@ import ObjectUtils from 'util/ObjectUtils';
 import StoreProvider from 'injection/StoreProvider';
 import { FormattedMessage } from 'react-intl';
 import AlertListStore from "./Lists/AlertListStore";
+import { Icon } from 'components/common';
 
 import withFormattedFields from './components/withFormattedFields';
 
@@ -193,7 +194,7 @@ const FieldRule = createReactClass({
         const deleteAction = (
                 <button id="delete-alert" type="button" className="btn btn-md btn-primary" title={this.state.messages.delete} style={{marginRight: '0.5em'}}
                     onClick={this._delete}>
-                    <i className="fa fa-trash-o"/>
+                    <Icon name="trash" />
                 </button>
         );
 
