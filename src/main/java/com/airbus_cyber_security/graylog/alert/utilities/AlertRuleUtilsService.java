@@ -328,12 +328,8 @@ public class AlertRuleUtilsService {
                         .severity(SeverityType.valueOf(severity.toUpperCase()))
                         .logBody(loggingNotificationConfig.logBody())
                         .splitFields(loggingNotificationConfig.splitFields())
-                        .aggregationStream(loggingNotificationConfig.aggregationStream())
                         .aggregationTime(loggingNotificationConfig.aggregationTime())
-                        .limitOverflow(loggingNotificationConfig.limitOverflow())
-                        .fieldAlertId(loggingNotificationConfig.fieldAlertId())
                         .alertTag(loggingNotificationConfig.alertTag())
-                        .overflowTag(loggingNotificationConfig.overflowTag())
                         .singleMessage(loggingNotificationConfig.singleMessage())
                         .build();
             }
