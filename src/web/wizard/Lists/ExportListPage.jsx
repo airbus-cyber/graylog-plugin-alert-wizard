@@ -7,9 +7,10 @@ import { Row, Col, Button } from 'components/graylog';
 import AlertListActions from './AlertListActions';
 import {DocumentTitle, PageHeader} from 'components/common';
 import {LinkContainer} from 'react-router-bootstrap';
-import FileSaver from 'logic/files/FileSaver';
+import FileSaver from '../logic/FileSaver';
 import UserNotification from 'util/UserNotification';
 import DateTime from 'logic/datetimes/DateTime';
+import IconDownload from '../icons/Download';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
@@ -116,7 +117,7 @@ const ExportListPage = createReactClass({
                                     <div className="form-group">
                                         <Col smOffset={2} sm={10}>
                                             <Button bsStyle="success" type="submit">
-                                                <i className="fa fa-cloud-download" />
+                                                <IconDownload/>
                                                 <FormattedMessage id ="wizard.downloadContentPack" defaultMessage="Download my content pack" />
                                             </Button>
                                         </Col>

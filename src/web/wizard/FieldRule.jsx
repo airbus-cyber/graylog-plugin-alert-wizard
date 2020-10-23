@@ -3,15 +3,16 @@ import React from 'react';
 import Reflux from 'reflux';
 import AlertListActions from './Lists/AlertListActions';
 import createReactClass from 'create-react-class';
-import {Input} from 'components/bootstrap';
-import {Select, Spinner, OverlayElement} from 'components/common';
+import { Input } from 'components/bootstrap';
+import { Select, Spinner, OverlayElement } from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import StoreProvider from 'injection/StoreProvider';
-import naturalSort from 'javascript-natural-sort';
-import {FormattedMessage} from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import AlertListStore from "./Lists/AlertListStore";
+import IconRemove from "./icons/Remove";
 
-const FieldsStore = StoreProvider.getStore('Fields');
+import withFormattedFields from './components/withFormattedFields';
+
 const CurrentUserStore = StoreProvider.getStore('CurrentUser');
 
 const FieldRule = createReactClass({
@@ -24,6 +25,7 @@ const FieldRule = createReactClass({
         onUpdate: PropTypes.func,
         onDelete: PropTypes.func,
         matchData: PropTypes.array,
+        formattedFields: PropTypes.array.isRequired,
     },
     contextTypes: {
         intl: PropTypes.object.isRequired,
@@ -40,21 +42,11 @@ const FieldRule = createReactClass({
             rule: ObjectUtils.clone(this.props.rule),
             isModified: false,
             isValid: false,
-            fields: null,
             hover: false,
             lists: null,
         };
     },
 
-    componentDidMount() {
-       FieldsStore.loadFields().then((fields) => {
-            //add value to list fields if not present
-            if (this.state.rule.field && this.state.rule.field !== '' && fields.indexOf(this.state.rule.field) < 0) {
-                fields.push(this.state.rule.field);
-            }
-            this.setState({fields: fields});
-        });
-    },
     componentDidUpdate(nextProps) {
         if (this.props.rule !== nextProps.rule) {
             this.setState({rule: this.props.rule})
@@ -117,13 +109,6 @@ const FieldRule = createReactClass({
 
     _onRuleFieldSelect(value) {
         this._updateAlertField('field', value);
-
-        //add value to list fields if not present
-        if (value !== '' && this.state.fields.indexOf(value) < 0) {
-            const update = ObjectUtils.clone(this.state.fields);
-            update.push(value);
-            this.setState({fields: update});
-        }
     },
 
     _updateAlertField(field, value) {
@@ -166,30 +151,26 @@ const FieldRule = createReactClass({
             this.setState({isValid: true});
         }
     },
-    _formatOption(key, value) {
-        return {value: value, label: key};
-    },
     _getMatchDataColor(){
         return (this.props.matchData.rules[this.props.rule.id] ? '#dff0d8' : '#f2dede');
     },
 
+    _isFieldRule(option) {
+        return option.value === this.state.rule.field;
+    },
+
     render() {
-        if (this._isLoading()) {
-            return (
-                <div style={{marginLeft: 10}}>
-                    <Spinner/>
-                </div>
-            );
+        const { formattedFields } = this.props;
+        if (this.state.rule.field && this.state.rule.field !== '' && !formattedFields.some(this._isFieldRule)) {
+            formattedFields.push({
+                value: this.state.rule.field,
+                label: this.state.rule.field
+            });
         }
+
 
         const isMatchDataPesent = (this.props.matchData && this.props.matchData.rules.hasOwnProperty(this.props.rule.id));
         const color = (isMatchDataPesent ? this._getMatchDataColor() : '#FFFFFF');
-
-        let formattedOptions = [];
-        if(this.state.fields) {
-            formattedOptions = Object.keys(this.state.fields).map(key => this._formatOption(this.state.fields[key], this.state.fields[key]))
-                .sort((s1, s2) => naturalSort(s1.label.toLowerCase(), s2.label.toLowerCase()));
-        }
 
         const valueBox = ((this.state.rule.type !== 5 && this.state.rule.type !== -5 && this.state.rule.type !== 7 && this.state.rule.type !== -7) ?
             <Input style={{backgroundColor: color, borderTopLeftRadius: '0px', borderBottomLeftRadius: '0px', height:'36px'}}
@@ -213,7 +194,7 @@ const FieldRule = createReactClass({
         const deleteAction = (
                 <button id="delete-alert" type="button" className="btn btn-md btn-primary" title={this.state.messages.delete} style={{marginRight: '0.5em'}}
                     onClick={this._delete}>
-                    <i className="fa fa-trash-o"/>
+                    <IconRemove/>
                 </button>
         );
 
@@ -235,7 +216,7 @@ const FieldRule = createReactClass({
                         <Select style={{backgroundColor: color}}
                                 required
                                 value={this.state.rule.field}
-                                options={formattedOptions}
+                                options={formattedFields}
                                 matchProp="value"
                                 onChange={this._onRuleFieldSelect}
                                 allowCreate={true}
@@ -263,4 +244,4 @@ const FieldRule = createReactClass({
     },
 });
 
-export default FieldRule;
+export default withFormattedFields(FieldRule);

@@ -1,33 +1,24 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
-import {Input} from 'components/bootstrap';
-import {Spinner, MultiSelect} from 'components/common';
-import {FormattedMessage} from 'react-intl';
-import StoreProvider from 'injection/StoreProvider';
-import naturalSort from 'javascript-natural-sort';
+import { Input } from 'components/bootstrap';
+import { MultiSelect } from 'components/common';
+import { FormattedMessage } from 'react-intl';
 import { Row, Col } from 'components/graylog';
 
-const FieldsStore = StoreProvider.getStore('Fields');
+import withFormattedFields from './withFormattedFields';
 
 const GroupByCondition = createReactClass({
     displayName: 'GroupByCondition',
 
     propTypes: {
         onUpdate: PropTypes.func,
-    },   
+        formattedFields: PropTypes.array.isRequired,
+    },
     getInitialState() {
         return {
             grouping_fields:this.props.grouping_fields,
         };
-    },
-    componentDidMount() {
-        FieldsStore.loadFields().then((fields) => {
-            this.setState({fields: fields});
-        });
-    },
-    _formatOption(key, value) {
-        return {value: value, label: key};
     },
     _onGroupingFieldsChange(nextValue) {
         const values = (nextValue === '' ? [] : nextValue.split(','));
@@ -35,22 +26,8 @@ const GroupByCondition = createReactClass({
         this.props.onUpdate('grouping_fields', values);
     },
 
-    _isLoading() {
-        return !(this.state.fields);
-    },
-
     render() {
-
-        if (this._isLoading()) {
-            return (
-                <div style={{marginLeft: 10}}>
-                    <Spinner/>
-                </div>
-            );
-        }
-
-        const formattedOptions = Object.keys(this.state.fields).map(key => this._formatOption(this.state.fields[key], this.state.fields[key]))
-        .sort((s1, s2) => naturalSort(s1.label.toLowerCase(), s2.label.toLowerCase()));
+        const { formattedFields } = this.props;
 
         return (
             <Row>
@@ -62,7 +39,7 @@ const GroupByCondition = createReactClass({
                     <Input ref="grouping_fields" id="grouping_fields" name="grouping_fields">
                         <div style={{minWidth:'300px'}}>
                         <MultiSelect autoFocus={false}
-                                 options={formattedOptions}
+                                 options={formattedFields}
                                  value={this.state.grouping_fields ? (Array.isArray(this.state.grouping_fields) ? this.state.grouping_fields.join(',') : this.state.grouping_fields) : undefined}
                                  onChange={this._onGroupingFieldsChange}
                                  allowCreate={true}/>
@@ -75,4 +52,4 @@ const GroupByCondition = createReactClass({
     },
 });
 
-export default GroupByCondition;
+export default withFormattedFields(GroupByCondition);

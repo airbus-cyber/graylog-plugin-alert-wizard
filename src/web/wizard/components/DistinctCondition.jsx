@@ -1,33 +1,24 @@
-import PropTypes from 'prop-types';
 import React from 'react';
+import PropTypes from 'prop-types';
 import createReactClass from 'create-react-class';
-import {Input} from 'components/bootstrap';
-import {Spinner, MultiSelect} from 'components/common';
+import { Input } from 'components/bootstrap';
+import { MultiSelect } from 'components/common';
 import {FormattedMessage} from 'react-intl';
-import StoreProvider from 'injection/StoreProvider';
-import naturalSort from 'javascript-natural-sort';
 import { Row, Col } from 'components/graylog';
 
-const FieldsStore = StoreProvider.getStore('Fields');
+import withFormattedFields from './withFormattedFields';
 
 const DistinctCondition = createReactClass({
     displayName: 'DistinctCondition',
 
     propTypes: {
         onUpdate: PropTypes.func,
+        formattedFields: PropTypes.array.isRequired,
     },   
     getInitialState() {
         return {
             distinction_fields:this.props.distinction_fields,
         };
-    },
-    componentDidMount() {
-        FieldsStore.loadFields().then((fields) => {
-            this.setState({fields: fields});
-        });
-    },
-    _formatOption(key, value) {
-        return {value: value, label: key};
     },
     _onDistinctionFieldsChange(nextValue) {
         const values = (nextValue === '' ? [] : nextValue.split(','));
@@ -35,22 +26,8 @@ const DistinctCondition = createReactClass({
         this.props.onUpdate('distinction_fields', values);
     },
 
-    _isLoading() {
-        return !(this.state.fields);
-    },
-
     render() {
-
-        if (this._isLoading()) {
-            return (
-                <div style={{marginLeft: 10}}>
-                    <Spinner/>
-                </div>
-            );
-        }
-        
-        const formattedOptions = Object.keys(this.state.fields).map(key => this._formatOption(this.state.fields[key], this.state.fields[key]))
-        .sort((s1, s2) => naturalSort(s1.label.toLowerCase(), s2.label.toLowerCase()));
+        const { formattedFields } = this.props;
 
         return (
             <Row>
@@ -63,7 +40,7 @@ const DistinctCondition = createReactClass({
                         name="distinction_fields">
                         <div style={{minWidth:'300px'}}>
                         <MultiSelect autoFocus={false}
-                                  options={formattedOptions}
+                                  options={formattedFields}
                                   value={this.state.distinction_fields ? (Array.isArray(this.state.distinction_fields) ? this.state.distinction_fields.join(',') : this.state.distinction_fields) : undefined}
                                   onChange={this._onDistinctionFieldsChange}
                                   allowCreate={true}/>
@@ -72,8 +49,7 @@ const DistinctCondition = createReactClass({
                 </Col>
             </Row>
         );
-        
     },
 });
 
-export default DistinctCondition;
+export default withFormattedFields(DistinctCondition);
