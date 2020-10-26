@@ -11,6 +11,7 @@ import Description from 'wizard/components/Description';
 import GroupByCondition from 'wizard/components/GroupByCondition';
 import { Row, Col } from 'components/graylog';
 import {Button} from 'react-bootstrap';
+import IconArrowsV from "../icons/ArrowsV";
 
 const STREAM = {
         matching_type: '',
@@ -99,7 +100,7 @@ const CorrelationCondition = createReactClass({
             time_type = 1;
         }
        
-        const buttonSwitchStream = <Button onClick={this._switchStreamNumberCondition} title="Switch" bsStyle="info" className="fa fa-arrows-v" style={{ fontSize: '18px' }}></Button>;
+        const buttonSwitchStream = <Button onClick={this._switchStreamNumberCondition} title="Switch" bsStyle="info" style={{ fontSize: '18px' }}><IconArrowsV/></Button>;
 
         let label;
         if(this.props.alert.condition_type === 'THEN'){
