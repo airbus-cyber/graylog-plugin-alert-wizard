@@ -1,6 +1,10 @@
 # Change Log
 
 All notable changes to this project will be documented in this file.
+## [3.3.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/3.2.5...3.3.0) (2020-10-26)
+### Features
+* Add compatibility with Graylog 3.3
+
 ## [3.2.5](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/3.2.4...3.2.5) (2020-10-20)
 * Update dependencies
 
