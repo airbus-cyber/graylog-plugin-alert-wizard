@@ -10,7 +10,7 @@ An alert wizard for configuring alert rules on Graylog.
  
 Perfect for example to configure together and at the same time a stream, an alert condition and a logging alert notification.  
 
-**Required Graylog version:** 3.2.x  
+**Required Graylog version:** see compatibility table below for required version  
 
 **Required Graylog plugins:**
 * [graylog-plugin-logging-alert](https://github.com/airbus-cyber/graylog-plugin-logging-alert)
