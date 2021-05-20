@@ -73,13 +73,19 @@ Restart `graylog-server` and you are done.
 
 ### Use of lists
 > **WARNING**: The first time your create a rule with a list, the Wizard automatically create a lookup with cache and data adapter. But you must manually set up the authorization key with your login:password in base 64 for the data adapter.
+
 ![](https://raw.githubusercontent.com/airbus-cyber/graylog-plugin-alert-wizard/master/images/Wizard_List4.png)
 
->The field "Name" should be filled by "Authorization"
+The field "Name" should be filled by "Authorization"
 
->The field "Value" should be filled by "Basic" followed by "user:password" in base64 for example "Basic TXlVc2Vy0k15UGFzc3dvcmQK" where TXlVc2Vy0k15UGFzc3dvcmQK is the result of "echo -n 'MyUser:MyPassword'|base64"
+The field "Value" should be filled by "Basic" followed by "user:password" in base64 for example "Basic TXlVc2Vy0k15UGFzc3dvcmQK" where TXlVc2Vy0k15UGFzc3dvcmQK is the result of "echo -n 'MyUser:MyPassword'|base64"
 
->MyUser must be a user with admin rights
+Instead of a user and its password you can also use a token.
+Use the token's value as username and use the word "token" as password.
+For example if the token's value is supertoken1234567890:
+"echo -n 'supertoken1234567890:token'|base64"
+
+MyUser must be a user with admin rights
 
 
 
