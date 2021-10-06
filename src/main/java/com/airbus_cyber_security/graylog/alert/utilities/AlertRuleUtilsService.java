@@ -29,7 +29,6 @@ import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotif
 import com.airbus_cyber_security.graylog.events.processor.aggregation.AggregationCountProcessorConfig;
 import com.airbus_cyber_security.graylog.events.processor.correlation.CorrelationCountProcessorConfig;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
 import org.graylog.events.conditions.Expr;
 import org.graylog.events.conditions.Expression;
 import org.graylog.events.notifications.EventNotificationHandler;
@@ -43,6 +42,7 @@ import org.graylog.events.processor.aggregation.AggregationFunction;
 import org.graylog.events.processor.aggregation.AggregationSeries;
 import org.graylog.events.rest.EventDefinitionsResource;
 import org.graylog.events.rest.EventNotificationsResource;
+import org.graylog.security.UserContext;
 import org.graylog2.alerts.Alert;
 import org.graylog2.alerts.AlertService;
 import org.graylog2.database.NotFoundException;
@@ -86,14 +86,14 @@ public class AlertRuleUtilsService {
         this.clusterConfigService = clusterConfigService;
     }
 
-    public void checkIsValidRequest(AlertRuleRequest request){
-        if(!alertRuleService.isValidRequest(request)){
+    public void checkIsValidRequest(AlertRuleRequest request) {
+        if (!alertRuleService.isValidRequest(request)) {
             LOG.error("Invalid alert rule request");
             throw new BadRequestException("Invalid alert rule request.");
         }
     }
 
-    private int countAlerts(String streamID, DateTime since){
+    private int countAlerts(String streamID, DateTime since) {
         final List<Alert> alerts = alertService.loadRecentOfStream(streamID, since, 999);
         return alerts.size();
     }
@@ -122,7 +122,7 @@ public class AlertRuleUtilsService {
             AlertRuleStream alertRuleStream = AlertRuleStreamImpl.create(streamID, stream.getMatchingType().toString(), fieldRules);
 
             AlertRuleStream alertRuleStream2 = null;
-            if(alert.getSecondStreamID() != null && !alert.getSecondStreamID().isEmpty()) {
+            if (alert.getSecondStreamID() != null && !alert.getSecondStreamID().isEmpty()) {
                 final Stream stream2 = streamService.load(alert.getSecondStreamID());
                 List<FieldRuleImpl> fieldRules2 = new ArrayList<>();
                 Optional.ofNullable(alert.getSecondPipelineFieldRules()).ifPresent(fieldRules2::addAll);
@@ -148,26 +148,26 @@ public class AlertRuleUtilsService {
                     alertRuleStream,
                     alertRuleStream2);
 
-        }catch(Exception e){
+        } catch (Exception e) {
             throw new NotFoundException(e);
         }
     }
 
-    private HashSet<String> convertToHashSet(Object object){
-        if(object instanceof HashSet){
+    private HashSet<String> convertToHashSet(Object object) {
+        if (object instanceof HashSet) {
             return (HashSet<String>) object;
-        }else if(object instanceof List){
+        } else if (object instanceof List) {
             return new HashSet<>((List<String>) object);
-        }else{
+        } else {
             return new HashSet<>();
         }
     }
 
-    private EventProcessorConfig createCorrelationCondition(String type, String streamID, String streamID2, Map<String, Object> conditionParameter){
+    private EventProcessorConfig createCorrelationCondition(String type, String streamID, String streamID2, Map<String, Object> conditionParameter) {
         String messageOrder;
-        if(type.equals("THEN")){
+        if (type.equals("THEN")) {
             messageOrder = "AFTER";
-        }else{
+        } else {
             messageOrder = "ANY";
         }
 
@@ -187,7 +187,7 @@ public class AlertRuleUtilsService {
                 .build();
     }
 
-    public EventProcessorConfig createAggregationCondition(String streamID, Map<String, Object> conditionParameter){
+    public EventProcessorConfig createAggregationCondition(String streamID, Map<String, Object> conditionParameter) {
         return AggregationCountProcessorConfig.builder()
                 .stream(streamID)
                 .thresholdType((String) conditionParameter.get("threshold_type"))
@@ -201,7 +201,7 @@ public class AlertRuleUtilsService {
                 .build();
     }
 
-    private AggregationFunction mapTypeToAggregationFunction(String type){
+    private AggregationFunction mapTypeToAggregationFunction(String type) {
         switch (type) {
             case "MEAN": //For Compatibility with older version
             case "AVG":
@@ -227,16 +227,16 @@ public class AlertRuleUtilsService {
         }
     }
 
-    private Expression<Boolean> createExpressionFromThreshold(String ID, String thresholdType, int threshold){
+    private Expression<Boolean> createExpressionFromThreshold(String ID, String thresholdType, int threshold) {
         final Expr.NumberReference left = Expr.NumberReference.create(ID);
         final Expr.NumberValue right = Expr.NumberValue.create(threshold);
         switch (thresholdType) {
-            case"HIGHER": //For Compatibility with older version
+            case "HIGHER": //For Compatibility with older version
             case ">":
                 return Expr.Greater.create(left, right);
             case ">=":
                 return Expr.GreaterEqual.create(left, right);
-            case"LOWER": //For Compatibility with older version
+            case "LOWER": //For Compatibility with older version
             case "<":
                 return Expr.Lesser.create(left, right);
             case "<=":
@@ -248,7 +248,7 @@ public class AlertRuleUtilsService {
         }
     }
 
-    public EventProcessorConfig createStatisticalCondition(String streamID, Map<String, Object> conditionParameter){
+    public EventProcessorConfig createStatisticalCondition(String streamID, Map<String, Object> conditionParameter) {
         LOG.debug("Begin Stat, type: " + conditionParameter.get("type"));
 
         String ID = UUID.randomUUID().toString();
@@ -264,7 +264,7 @@ public class AlertRuleUtilsService {
 
         return AggregationEventProcessorConfig.builder()
                 .query("")
-                .streams(new HashSet<> (Collections.singleton(streamID)))
+                .streams(new HashSet<>(Collections.singleton(streamID)))
                 .series(ImmutableList.of(serie))
                 .groupBy(ImmutableList.of())
                 .conditions(AggregationConditions.builder()
@@ -275,37 +275,37 @@ public class AlertRuleUtilsService {
                 .build();
     }
 
-    private String createNotificationFromDto(NotificationDto notification){
-        Response response = this.eventNotificationsResource.create(notification);
-        if(Response.Status.Family.familyOf(response.getStatus()) == Response.Status.Family.SUCCESSFUL) {
+    private String createNotificationFromDto(NotificationDto notification, UserContext userContext) {
+        Response response = this.eventNotificationsResource.create(notification, userContext);
+        if (Response.Status.Family.familyOf(response.getStatus()) == Response.Status.Family.SUCCESSFUL) {
             notification = (NotificationDto) response.getEntity();
             return notification.id();
-        }else{
+        } else {
             ValidationResult validationResult = (ValidationResult) response.getEntity();
-            LOG.error("Failed to create Notification for alert: "+ notification.title() + " Errors: " + validationResult.getErrors());
+            LOG.error("Failed to create Notification for alert: " + notification.title() + " Errors: " + validationResult.getErrors());
             return null;
         }
     }
 
-    private String updateNotificationFromDto(String notificationID, NotificationDto notification){
+    private String updateNotificationFromDto(String notificationID, NotificationDto notification) {
         Response response = this.eventNotificationsResource.update(notificationID, notification);
-        if(Response.Status.Family.familyOf(response.getStatus()) == Response.Status.Family.SUCCESSFUL) {
+        if (Response.Status.Family.familyOf(response.getStatus()) == Response.Status.Family.SUCCESSFUL) {
             notification = (NotificationDto) response.getEntity();
             return notification.id();
-        }else{
+        } else {
             ValidationResult validationResult = (ValidationResult) response.getEntity();
-            LOG.error("Failed to update Notification for alert: "+ notification.title() + " Errors: " + validationResult.getErrors());
+            LOG.error("Failed to update Notification for alert: " + notification.title() + " Errors: " + validationResult.getErrors());
             return null;
         }
     }
 
-    private String getDefaultLogBody(){
+    private String getDefaultLogBody() {
         final LoggingAlertConfig generalConfig = clusterConfigService.getOrDefault(LoggingAlertConfig.class,
                 LoggingAlertConfig.createDefault());
         return generalConfig.accessLogBody();
     }
 
-    public String createNotification(String alertTitle, String severity){
+    public String createNotification(String alertTitle, String severity, UserContext userContext) {
         LoggingNotificationConfig loggingNotificationConfig = LoggingNotificationConfig.builder()
                 .singleMessage(false)
                 .severity(SeverityType.valueOf(severity.toUpperCase()))
@@ -316,17 +316,17 @@ public class AlertRuleUtilsService {
                 .title(alertTitle)
                 .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
                 .build();
-        return this.createNotificationFromDto(notification);
+        return this.createNotificationFromDto(notification, userContext);
     }
 
-    public String createNotificationFromParameters(String alertTitle, Map<String, Object> parametersNotification){
-        LOG.debug("Create Notification "+alertTitle);
+    public String createNotificationFromParameters(String alertTitle, Map<String, Object> parametersNotification, UserContext userContext) {
+        LOG.debug("Create Notification " + alertTitle);
         LoggingNotificationConfig loggingNotificationConfig = LoggingNotificationConfig.builder()
-                .singleMessage((boolean) parametersNotification.getOrDefault("single_notification",false))
+                .singleMessage((boolean) parametersNotification.getOrDefault("single_notification", false))
                 .severity(SeverityType.valueOf(parametersNotification.get("severity").toString().toUpperCase()))
                 .logBody(parametersNotification.getOrDefault("log_body", this.getDefaultLogBody()).toString())
                 .splitFields(convertToHashSet(parametersNotification.get("split_fields")))
-                .aggregationTime((int)parametersNotification.getOrDefault("aggregation_time",0))
+                .aggregationTime((int) parametersNotification.getOrDefault("aggregation_time", 0))
                 .alertTag(parametersNotification.getOrDefault("alert_tag", "LoggingAlert").toString())
                 .build();
         NotificationDto notification = NotificationDto.builder()
@@ -334,15 +334,15 @@ public class AlertRuleUtilsService {
                 .title(alertTitle)
                 .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
                 .build();
-        return this.createNotificationFromDto(notification);
+        return this.createNotificationFromDto(notification, userContext);
     }
 
-    public void updateNotification(String title, String notificationID, String severity){
+    public void updateNotification(String title, String notificationID, String severity) {
         NotificationDto notification = eventNotificationsResource.get(notificationID);
         LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) notification.config();
-        if(!loggingNotificationConfig.severity().getType().equals(severity) || !notification.title().equals(title)){
-            LOG.debug("Update Notification "+title);
-            if(!loggingNotificationConfig.severity().getType().equals(severity)){
+        if (!loggingNotificationConfig.severity().getType().equals(severity) || !notification.title().equals(title)) {
+            LOG.debug("Update Notification " + title);
+            if (!loggingNotificationConfig.severity().getType().equals(severity)) {
                 LOG.debug("Update severity, old one: " + loggingNotificationConfig.severity().getType() + " New one: " + severity);
                 loggingNotificationConfig = LoggingNotificationConfig.builder()
                         .severity(SeverityType.valueOf(severity.toUpperCase()))
@@ -363,43 +363,43 @@ public class AlertRuleUtilsService {
         }
     }
 
-    public EventProcessorConfig createCondition(String conditionType, Map<String, Object> conditionParameter, String streamID, String streamID2){
+    public EventProcessorConfig createCondition(String conditionType, Map<String, Object> conditionParameter, String streamID, String streamID2) {
         LOG.debug("Create condition type:" + conditionType);
 
-        if(conditionType.equals("THEN") || conditionType.equals("AND")){
+        if (conditionType.equals("THEN") || conditionType.equals("AND")) {
             return createCorrelationCondition(conditionType, streamID, streamID2, conditionParameter);
-        } else if (conditionType.equals("STATISTICAL")){
+        } else if (conditionType.equals("STATISTICAL")) {
             return createStatisticalCondition(streamID, conditionParameter);
         } else {
             return createAggregationCondition(streamID, conditionParameter);
         }
     }
 
-    private String createEventFromDto(EventDefinitionDto eventDefinition){
-        Response response = this.eventDefinitionsResource.create(true, eventDefinition);
-        if(Response.Status.Family.familyOf(response.getStatus()) == Response.Status.Family.SUCCESSFUL) {
+    private String createEventFromDto(EventDefinitionDto eventDefinition, UserContext userContext) {
+        Response response = this.eventDefinitionsResource.create(true, eventDefinition, userContext);
+        if (Response.Status.Family.familyOf(response.getStatus()) == Response.Status.Family.SUCCESSFUL) {
             eventDefinition = (EventDefinitionDto) response.getEntity();
             return eventDefinition.id();
-        }else{
+        } else {
             ValidationResult validationResult = (ValidationResult) response.getEntity();
-            LOG.error("Failed to create Event for alert: "+ eventDefinition.title() + " Errors: " + validationResult.getErrors());
+            LOG.error("Failed to create Event for alert: " + eventDefinition.title() + " Errors: " + validationResult.getErrors());
             return null;
         }
     }
 
-    private String updateEventFromDto(String definitionID, EventDefinitionDto eventDefinition){
+    private String updateEventFromDto(String definitionID, EventDefinitionDto eventDefinition) {
         Response response = this.eventDefinitionsResource.update(definitionID, true, eventDefinition);
-        if(Response.Status.Family.familyOf(response.getStatus()) == Response.Status.Family.SUCCESSFUL) {
+        if (Response.Status.Family.familyOf(response.getStatus()) == Response.Status.Family.SUCCESSFUL) {
             eventDefinition = (EventDefinitionDto) response.getEntity();
             return eventDefinition.id();
-        }else{
+        } else {
             ValidationResult validationResult = (ValidationResult) response.getEntity();
-            LOG.error("Failed to create Event for alert: "+ eventDefinition.title() + " Errors: " + validationResult.getErrors());
+            LOG.error("Failed to create Event for alert: " + eventDefinition.title() + " Errors: " + validationResult.getErrors());
             return null;
         }
     }
 
-    public String createEvent(String alertTitle, String notificationID, EventProcessorConfig configuration){
+    public String createEvent(String alertTitle, String notificationID, EventProcessorConfig configuration, UserContext userContext) {
         LOG.debug("Create Event: " + alertTitle);
         EventNotificationHandler.Config notificationConfiguration = EventNotificationHandler.Config.builder()
                 .notificationId(notificationID)
@@ -420,10 +420,10 @@ public class AlertRuleUtilsService {
                         .build())
                 .build();
 
-        return this.createEventFromDto(eventDefinition);
+        return this.createEventFromDto(eventDefinition, userContext);
     }
 
-    public void updateEvent(String alertTitle, String eventID, EventProcessorConfig configuration){
+    public void updateEvent(String alertTitle, String eventID, EventProcessorConfig configuration) {
         LOG.debug("Update Event: " + alertTitle + " ID: " + eventID);
         EventDefinitionDto event = eventDefinitionsResource.get(eventID);
         event = EventDefinitionDto.builder()

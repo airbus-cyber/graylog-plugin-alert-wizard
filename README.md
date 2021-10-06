@@ -21,6 +21,7 @@ Perfect for example to configure together and at the same time a stream, an aler
 
 | Wizard Plugin Version | Graylog Version | Logging Alert Plugin Version | Aggregation Count Plugin Version | Correlation Count Plugin Version |
 | --------------------- | --------------- | ---------------------------- | -------------------------------- | -------------------------------- |
+| 3.4.x                 | 4.1.x           | 2.3.x                        | 2.3.x                            | 2.3.x                            |
 | 3.3.x                 | 3.3.x           | 2.2.x                        | 2.2.x                            | 2.2.x                            |
 | 3.2.x                 | 3.2.x           | 2.1.x                        | 2.1.x                            | 2.1.x                            |
 | 3.1.x                 | 3.0.x           | 1.2.x                        | 1.2.x                            | 1.2.x                            |

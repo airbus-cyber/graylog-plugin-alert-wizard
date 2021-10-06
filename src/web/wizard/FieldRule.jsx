@@ -23,11 +23,11 @@ import React from 'react';
 import Reflux from 'reflux';
 import AlertListActions from './Lists/AlertListActions';
 import createReactClass from 'create-react-class';
-import { Input } from 'components/bootstrap';
-import { Select, Spinner, OverlayElement } from 'components/common';
+import {Input} from 'components/bootstrap';
+import {Select, Spinner} from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import StoreProvider from 'injection/StoreProvider';
-import { FormattedMessage } from 'react-intl';
+import {FormattedMessage} from 'react-intl';
 import AlertListStore from "./Lists/AlertListStore";
 import IconRemove from "./icons/Remove";
 
@@ -72,11 +72,11 @@ const FieldRule = createReactClass({
             this.setState({rule: this.props.rule})
         }
     },
-    componentWillMount(){
+    componentWillMount() {
         const messages = {
-                delete: this.context.intl.formatMessage({id: "wizard.delete", defaultMessage: "Delete"}),
-            };
-        this.setState({messages:messages});
+            delete: this.context.intl.formatMessage({id: "wizard.delete", defaultMessage: "Delete"}),
+        };
+        this.setState({messages: messages});
         this.list();
     },
 
@@ -88,20 +88,34 @@ const FieldRule = createReactClass({
 
     _availableRuleType() {
         return [
-            {value: "1", label: <FormattedMessage id= "wizard.matchesExactly" defaultMessage= "matches exactly" />},
-            {value: "-1", label: <FormattedMessage id= "wizard.notMatchesExactly" defaultMessage= "does not match exactly" />},
-            {value: "2", label: <FormattedMessage id= "wizard.matchesRegularExpression" defaultMessage= "matches regular expression" />},
-            {value: "-2", label: <FormattedMessage id= "wizard.notMatchRegularExpression" defaultMessage= "does not match regular expression" />},
-            {value: "3", label: <FormattedMessage id= "wizard.greaterThan" defaultMessage= "is greater than" />},
-            {value: "-3", label: <FormattedMessage id= "wizard.notGreaterThan" defaultMessage= "is not greater than" />},
-            {value: "4", label: <FormattedMessage id= "wizard.smallerThan" defaultMessage= "is smaller than" />},
-            {value: "-4", label: <FormattedMessage id= "wizard.notSmallerThan" defaultMessage= "is not smaller than" />},
-            {value: "5", label: <FormattedMessage id= "wizard.present" defaultMessage= "is present" />},
-            {value: "-5", label: <FormattedMessage id= "wizard.notPresent" defaultMessage= "is not present" />},
-            {value: "6", label: <FormattedMessage id= "wizard.contains" defaultMessage= "contains" />},
-            {value: "-6", label: <FormattedMessage id= "wizard.notContain" defaultMessage= "does not contain" />},
-            {value: "7", label: <FormattedMessage id= "wizard.listpresent" defaultMessage= "is present in list" />},
-            {value: "-7", label: <FormattedMessage id= "wizard.listnotpresent" defaultMessage= "is not present in list" />},
+            {value: "1", label: <FormattedMessage id="wizard.matchesExactly" defaultMessage="matches exactly"/>},
+            {
+                value: "-1",
+                label: <FormattedMessage id="wizard.notMatchesExactly" defaultMessage="does not match exactly"/>
+            },
+            {
+                value: "2",
+                label: <FormattedMessage id="wizard.matchesRegularExpression"
+                                         defaultMessage="matches regular expression"/>
+            },
+            {
+                value: "-2",
+                label: <FormattedMessage id="wizard.notMatchRegularExpression"
+                                         defaultMessage="does not match regular expression"/>
+            },
+            {value: "3", label: <FormattedMessage id="wizard.greaterThan" defaultMessage="is greater than"/>},
+            {value: "-3", label: <FormattedMessage id="wizard.notGreaterThan" defaultMessage="is not greater than"/>},
+            {value: "4", label: <FormattedMessage id="wizard.smallerThan" defaultMessage="is smaller than"/>},
+            {value: "-4", label: <FormattedMessage id="wizard.notSmallerThan" defaultMessage="is not smaller than"/>},
+            {value: "5", label: <FormattedMessage id="wizard.present" defaultMessage="is present"/>},
+            {value: "-5", label: <FormattedMessage id="wizard.notPresent" defaultMessage="is not present"/>},
+            {value: "6", label: <FormattedMessage id="wizard.contains" defaultMessage="contains"/>},
+            {value: "-6", label: <FormattedMessage id="wizard.notContain" defaultMessage="does not contain"/>},
+            {value: "7", label: <FormattedMessage id="wizard.listpresent" defaultMessage="is present in list"/>},
+            {
+                value: "-7",
+                label: <FormattedMessage id="wizard.listnotpresent" defaultMessage="is not present in list"/>
+            },
         ];
     },
 
@@ -110,7 +124,8 @@ const FieldRule = createReactClass({
 
         if (list !== null) {
             for (let i = 0; i < list.length; i++) {
-                items.push({value: list[i].title,
+                items.push({
+                    value: list[i].title,
                     label: <span title={list[i].lists}><FormattedMessage id={list[i].title}
                                                                          defaultMessage={list[i].title}/></span>
                 });
@@ -171,7 +186,7 @@ const FieldRule = createReactClass({
             this.setState({isValid: true});
         }
     },
-    _getMatchDataColor(){
+    _getMatchDataColor() {
         return (this.props.matchData.rules[this.props.rule.id] ? '#dff0d8' : '#f2dede');
     },
 
@@ -180,7 +195,7 @@ const FieldRule = createReactClass({
     },
 
     render() {
-        const { formattedFields } = this.props;
+        const {formattedFields} = this.props;
         if (this.state.rule.field && this.state.rule.field !== '' && !formattedFields.some(this._isFieldRule)) {
             formattedFields.push({
                 value: this.state.rule.field,
@@ -193,29 +208,35 @@ const FieldRule = createReactClass({
         const color = (isMatchDataPesent ? this._getMatchDataColor() : '#FFFFFF');
 
         const valueBox = ((this.state.rule.type !== 5 && this.state.rule.type !== -5 && this.state.rule.type !== 7 && this.state.rule.type !== -7) ?
-            <Input style={{backgroundColor: color, borderTopLeftRadius: '0px', borderBottomLeftRadius: '0px', height:'36px'}}
+            <Input style={{
+                backgroundColor: color,
+                borderTopLeftRadius: '0px',
+                borderBottomLeftRadius: '0px',
+                height: '36px'
+            }}
                    ref="value" id="value" name="value" type="text"
                    onChange={this._onValueChanged("value")} value={this.state.rule.value}/>
-            : (this.state.rule.type === 7 || this.state.rule.type === -7) ?
+            : (this.state.rule.type === 7 || this.state.rule.type === -7) ?
                 <Input ref="alertLists" id="alertLists" name="alertLists">
-                    <div style={{width:'150px'}}>
-                    <Select style={{backgroundColor: color, borderRadius: '0px'}}
-                            autosize={false}
-                            required
-                            value={this.state.rule.value}
-                            options={this._createSelectItemsListTitle(this.state.lists)}
-                            matchProp="value"
-                            onChange={this._onListTypeSelect}
-                            placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..."/>} />
+                    <div style={{width: '150px'}}>
+                        <Select style={{backgroundColor: color, borderRadius: '0px'}}
+                                autosize={false}
+                                required
+                                value={this.state.rule.value}
+                                options={this._createSelectItemsListTitle(this.state.lists)}
+                                matchProp="value"
+                                onChange={this._onListTypeSelect}
+                                placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..."/>}/>
                     </div>
                 </Input>
                 : <span style={{marginRight: 199}}/>);
 
         const deleteAction = (
-                <button id="delete-alert" type="button" className="btn btn-md btn-primary" title={this.state.messages.delete} style={{marginRight: '0.5em'}}
+            <button id="delete-alert" type="button" className="btn btn-md btn-primary"
+                    title={this.state.messages.delete} style={{marginRight: '0.5em'}}
                     onClick={this._delete}>
-                    <IconRemove/>
-                </button>
+                <IconRemove/>
+            </button>
         );
 
         if (!this.state.isValid) {
@@ -232,28 +253,28 @@ const FieldRule = createReactClass({
                 <form className="form-inline">
                     {deleteAction}
                     <Input ref="field" id="field" name="field">
-                        <div style={{width:'200px'}}>
-                        <Select style={{backgroundColor: color}}
-                                required
-                                value={this.state.rule.field}
-                                options={formattedFields}
-                                matchProp="value"
-                                onChange={this._onRuleFieldSelect}
-                                allowCreate={true}
-                                placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..."/>}
-                        />
+                        <div style={{width: '200px'}}>
+                            <Select style={{backgroundColor: color}}
+                                    required
+                                    value={this.state.rule.field}
+                                    options={formattedFields}
+                                    matchProp="value"
+                                    onChange={this._onRuleFieldSelect}
+                                    allowCreate={true}
+                                    placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..."/>}
+                            />
                         </div>
                     </Input>
                     <Input ref="type" id="type" name="type">
-                        <div style={{width:'200px'}}>
-                        <Select style={{backgroundColor: color}}
-                                required
-                                value={this.state.rule.type.toString()}
-                                options={this._availableRuleType()}
-                                matchProp="value"
-                                onChange={this._onRuleTypeSelect}
-                                placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..."/>}
-                        />
+                        <div style={{width: '200px'}}>
+                            <Select style={{backgroundColor: color}}
+                                    required
+                                    value={this.state.rule.type.toString()}
+                                    options={this._availableRuleType()}
+                                    matchProp="value"
+                                    onChange={this._onRuleTypeSelect}
+                                    placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..."/>}
+                            />
                         </div>
                     </Input>
                     {valueBox}
