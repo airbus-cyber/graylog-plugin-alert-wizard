@@ -29,6 +29,7 @@ import AlertRuleActions from './AlertRuleActions';
 import Routes from 'routing/Routes';
 import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
 import messages_fr from '../translations/fr.json';
+import withParams from 'routing/withParams';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
@@ -40,16 +41,14 @@ const messages = {
 
 const UpdateAlertPage = createReactClass({
     displayName: 'UpdateAlertPage',
+    propTypes: {
+        params: PropTypes.object.isRequired,
+    },
 
     getInitialState() {
         return {
             alert: null,
             alertData: null,
-        };
-    },
-    propTypes() {
-        return {
-            params: PropTypes.object.isRequired,
         };
     },
     componentDidMount() {
@@ -102,4 +101,4 @@ const UpdateAlertPage = createReactClass({
     },
 });
 
-export default UpdateAlertPage;
+export default withParams(UpdateAlertPage);

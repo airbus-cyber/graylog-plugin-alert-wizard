@@ -29,8 +29,9 @@ import CreateListFormInput from './CreateListFormInput';
 import AlertListActions from './AlertListActions';
 import StoreProvider from 'injection/StoreProvider';
 import Routes from 'routing/Routes';
-import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
+import {addLocaleData, FormattedMessage, IntlProvider} from 'react-intl';
 import messages_fr from '../../translations/fr.json';
+import withParams from 'routing/withParams';
 
 const CurrentUserStore = StoreProvider.getStore('CurrentUser');
 const NodesStore = StoreProvider.getStore('Nodes');
@@ -47,10 +48,8 @@ const UpdateListPage = createReactClass({
     displayName: 'UpdateListPage',
 
     mixins: [Reflux.connect(CurrentUserStore), Reflux.connect(NodesStore, 'nodes')],
-    propTypes() {
-        return {
-            params: PropTypes.object.isRequired,
-        };
+    propTypes: {
+        params: PropTypes.object.isRequired,
     },
     componentDidMount() {
         AlertListActions.get(this.props.params.alertListTitle).then(list => {
@@ -70,19 +69,20 @@ const UpdateListPage = createReactClass({
             <IntlProvider locale={language} messages={messages[language]}>
                 <DocumentTitle title="Edit list">
                     <div>
-                        <PageHeader title={<FormattedMessage id= "wizard.updateList"
-                                                             defaultMessage= 'Wizard: Editing list "{title}"'
-                                                             values={{title: this.state.list.title }} />} >
+                        <PageHeader title={<FormattedMessage id="wizard.updateList"
+                                                             defaultMessage='Wizard: Editing list "{title}"'
+                                                             values={{title: this.state.list.title}}/>}>
                         <span>
-                            <FormattedMessage id= "wizard.definelist" defaultMessage= "You can define a list." />
+                            <FormattedMessage id="wizard.definelist" defaultMessage="You can define a list."/>
                         </span>
                             <span>
                             <FormattedMessage id="wizard.documentationlist"
-                                              defaultMessage= "Read more about Wizard lists in the documentation." />
+                                              defaultMessage="Read more about Wizard lists in the documentation."/>
                         </span>
                             <span>
                             <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
-                                <Button bsStyle="info"><FormattedMessage id= "wizard.backlist" defaultMessage= "Back to lists" /></Button>
+                                <Button bsStyle="info"><FormattedMessage id="wizard.backlist"
+                                                                         defaultMessage="Back to lists"/></Button>
                             </LinkContainer>
                                 &nbsp;
                         </span>
@@ -99,4 +99,4 @@ const UpdateListPage = createReactClass({
     },
 });
 
-export default UpdateListPage;
+export default withParams(UpdateListPage);
