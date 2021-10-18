@@ -40,7 +40,7 @@ public abstract class AlertWizardConfig {
 	
 	@JsonProperty("default_values")
 	@Nullable
-	public abstract  DefaultValues accessDefaultValues();
+	public abstract DefaultValues accessDefaultValues();
 	
 	@JsonProperty("import_policy")
 	@Nullable
