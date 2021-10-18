@@ -29,14 +29,12 @@ const WizardConfigurationStore = Reflux.createStore({
     },
 
     update(config) {
-        const method = 'PUT';
-
         const request = {field_order: config.field_order,
                         default_values: config.default_values,
                         import_policy: config.import_policy,
         };
 
-        const promise = fetch(method, URLUtils.qualifyUrl(this.sourceUrl), request)
+        const promise = fetch('PUT', URLUtils.qualifyUrl(this.sourceUrl), request)
             .then(() => {
             UserNotification.success('Wizard configurations successfully updated');
             this.list();
