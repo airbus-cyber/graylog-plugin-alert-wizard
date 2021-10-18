@@ -34,7 +34,7 @@ import javax.validation.constraints.NotNull;
 @JsonAutoDetect
 @JsonIgnoreProperties(ignoreUnknown = true)
 @CollectionName("default_values")
-public abstract  class DefaultValues {
+public abstract class DefaultValues {
 
 	@JsonProperty("title")
 	@Nullable
