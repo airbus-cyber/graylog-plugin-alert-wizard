@@ -90,7 +90,6 @@ const AlertRuleStore = Reflux.createStore({
     },
     create(newAlert) {
         const url = URLUtils.qualifyUrl(this.sourceUrl);
-        const method = 'POST';
 
         const request = {
             title: newAlert.title,
@@ -102,7 +101,7 @@ const AlertRuleStore = Reflux.createStore({
             second_stream: newAlert.second_stream,
         };
 
-        const promise = fetch(method, url, request)
+        const promise = fetch('POST', url, request)
             .then(() => {
                 UserNotification.success('Stream successfully created, Alert condition successfully created, Alert notification successfully created');
                 this.list();
