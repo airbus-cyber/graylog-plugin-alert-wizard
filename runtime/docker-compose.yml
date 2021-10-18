@@ -1,0 +1,58 @@
+version: '3'
+services:
+
+  # MongoDB: https://hub.docker.com/_/mongo/
+  mongo:
+    image: "mongo:4.2"
+    container_name: mongo4
+    networks:
+      net:
+        ipv4_address: 172.15.0.2
+
+  # Elasticsearch: https://www.elastic.co/guide/en/elasticsearch/reference/7.10/docker.html
+  elasticsearch:
+    image: "docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2"
+    container_name: elasticsearch7
+    environment:
+      - "discovery.type=single-node"
+    networks:
+      net:
+        ipv4_address: 172.15.0.3
+
+  # Graylog: https://hub.docker.com/r/graylog/graylog/ 
+  graylog:
+    image: "graylog/graylog:4.1"
+    container_name: graylog
+    links:
+      - mongo:mongo
+      - elasticsearch
+    depends_on:
+      - mongo
+      - elasticsearch
+    ports:
+      # Graylog web interface and REST API
+      - 9000:9000
+      # Raw/Plaintext TCP
+      - 5555:5555
+      # Syslog TCP
+      - 514:514
+      # Syslog UDP
+      - 514:514/udp
+      # GELF TCP
+      - 12201:12201
+      # GELF UDP
+      - 12201:12201/udp
+    networks:
+      net:
+        ipv4_address: 172.15.0.4
+    volumes:
+     - ./graylog/config:/usr/share/graylog/data/config
+     - ./graylog/plugin:/usr/share/graylog/plugin/
+
+networks:
+  net:
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.15.0.0/16
+
