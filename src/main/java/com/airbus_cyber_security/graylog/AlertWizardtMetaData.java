@@ -66,7 +66,7 @@ public class AlertWizardtMetaData implements PluginMetaData {
 
     @Override
     public Version getRequiredVersion() {
-	return Version.fromPluginProperties(getClass(), PLUGIN_PROPERTIES, "graylog.version", Version.from(3, 0, 0));
+	return Version.fromPluginProperties(getClass(), PLUGIN_PROPERTIES, "graylog.version", Version.from(4, 1, 0));
     }
 
     @Override
