@@ -101,7 +101,7 @@ public class AlertRuleExporter {
 						alertRuleStream,
 						alertRuleStream2));
 				
-			}catch(Exception e) {
+			} catch(Exception e) {
 				/* Can't find stream, condition or notification */
 				LOG.warn("Can't export alert rule "+ title + ": "+e.getMessage());
 			}
