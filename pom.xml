@@ -115,12 +115,12 @@
 		<dependency>
 			<groupId>com.airbus-cyber-security.graylog</groupId>
 			<artifactId>graylog-plugin-aggregation-count</artifactId>
-			<version>2.3.0</version>
+			<version>4.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.airbus-cyber-security.graylog</groupId>
 			<artifactId>graylog-plugin-correlation-count</artifactId>
-			<version>2.3.0</version>
+			<version>4.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.airbus-cyber-security.graylog</groupId>
