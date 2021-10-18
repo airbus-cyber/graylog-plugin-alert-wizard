@@ -313,7 +313,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             streamID2 = streamPilpelineObject2.getStream().getId();
         }
 
-        // Create Notificationœ
+        // Create Notification
         String notificationID = alertRuleUtilsService.createNotification(alertTitle, request.getSeverity(), userContext);
 
         // Create Condition
