@@ -15,8 +15,12 @@ node_modules/
 node/
 build/
 cache/
-/graylog-plugin-alert-wizard (1).iml
-/graylog-plugin-alert-wizard (2).iml
 
 # Location for built plugin
 runtime/graylog/plugin/
+
+__pycache__/
+
+#IDE
+.idea/
+
