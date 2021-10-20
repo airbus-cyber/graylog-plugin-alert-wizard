@@ -23,6 +23,8 @@ package com.airbus_cyber_security.graylog.alert.utilities;
 import com.airbus_cyber_security.graylog.alert.*;
 import com.airbus_cyber_security.graylog.alert.rest.models.requests.AlertRuleRequest;
 import com.airbus_cyber_security.graylog.alert.rest.models.responses.GetDataAlertRule;
+import com.airbus_cyber_security.graylog.config.rest.AlertWizardConfig;
+import com.airbus_cyber_security.graylog.config.rest.DefaultValues;
 import com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig;
 import com.airbus_cyber_security.graylog.events.config.SeverityType;
 import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
@@ -305,11 +307,20 @@ public class AlertRuleUtilsService {
         return generalConfig.accessLogBody();
     }
 
+    private int getDefaultTime() {
+        // TODO would it work to get the configuration once directly in the constructor? Or better even, inject the AlertWizardConfig?
+        AlertWizardConfig config = clusterConfigService.getOrDefault(AlertWizardConfig.class,
+                AlertWizardConfig.defaultConfig());
+        DefaultValues defaultValues = config.accessDefaultValues();
+        return defaultValues.getTime();
+    }
+
     public String createNotification(String alertTitle, String severity, UserContext userContext) {
         LoggingNotificationConfig loggingNotificationConfig = LoggingNotificationConfig.builder()
                 .singleMessage(false)
                 .severity(SeverityType.valueOf(severity.toUpperCase()))
                 .logBody(this.getDefaultLogBody())
+                .aggregationTime(this.getDefaultTime())
                 .build();
         NotificationDto notification = NotificationDto.builder()
                 .config(loggingNotificationConfig)
