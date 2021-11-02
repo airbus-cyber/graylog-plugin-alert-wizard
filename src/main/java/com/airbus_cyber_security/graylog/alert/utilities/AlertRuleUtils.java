@@ -85,7 +85,7 @@ public class AlertRuleUtils {
 
 	public Map<String, Object> getConditionParameters(EventProcessorConfig eventConfig){
 		Map<String, Object> parametersCondition = Maps.newHashMap();
-		if(eventConfig.type().equals("aggregation-count")) {
+		if (eventConfig.type().equals("aggregation-count")) {
 			AggregationCountProcessorConfig aggregationCountConfig = (AggregationCountProcessorConfig) eventConfig;
 			parametersCondition.put(THRESHOLD, aggregationCountConfig.threshold());
 			parametersCondition.put(THRESHOLD_TYPE, aggregationCountConfig.thresholdType());
