@@ -93,7 +93,7 @@ public class AlertRuleUtils {
 			parametersCondition.put(GROUPING_FIELDS, aggregationCountConfig.groupingFields());
 			parametersCondition.put(DISTINCTION_FIELDS, aggregationCountConfig.distinctionFields());
 			parametersCondition.put(GRACE,aggregationCountConfig.executeEveryMs()  / 60 / 1000);
-		}else if(eventConfig.type().equals("correlation-count")) {
+		} else if(eventConfig.type().equals("correlation-count")) {
 			CorrelationCountProcessorConfig correlationConfig = (CorrelationCountProcessorConfig) eventConfig;
 			parametersCondition.put(THRESHOLD, correlationConfig.threshold());
 			parametersCondition.put(THRESHOLD_TYPE, correlationConfig.thresholdType());
@@ -102,7 +102,7 @@ public class AlertRuleUtils {
 			parametersCondition.put(TIME, correlationConfig.searchWithinMs() / 60 / 1000);
 			parametersCondition.put(GROUPING_FIELDS, correlationConfig.groupingFields());
 			parametersCondition.put(GRACE, correlationConfig.executeEveryMs()  / 60 / 1000);
-		}else if(eventConfig.type().equals("aggregation-v1")){
+		} else if(eventConfig.type().equals("aggregation-v1")) {
 			AggregationEventProcessorConfig aggregationConfig = (AggregationEventProcessorConfig) eventConfig;
 			parametersCondition.put(TIME, aggregationConfig.searchWithinMs() / 60 / 1000);
 			parametersCondition.put(THRESHOLD, getThreshold(aggregationConfig.conditions().get().expression().get()));
