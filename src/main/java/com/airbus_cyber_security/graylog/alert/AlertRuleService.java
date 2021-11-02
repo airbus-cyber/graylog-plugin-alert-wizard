@@ -36,7 +36,7 @@ public interface AlertRuleService {
     
     int destroy(String alertTitle) throws MongoException, UnsupportedEncodingException;
 
-    AlertRule load(String title)  throws NotFoundException;
+    AlertRule load(String title) throws NotFoundException;
     
     boolean isPresent(String title);
 
