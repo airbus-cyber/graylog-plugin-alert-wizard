@@ -1,4 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2018 Airbus CyberSecurity (SAS)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the Server Side Public License, version 1,
+    as published by MongoDB, Inc.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    Server Side Public License for more details.
+
+    You should have received a copy of the Server Side Public License
+    along with this program. If not, see
+    <http://www.mongodb.com/licensing/server-side-public-license>.
+
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -19,8 +37,8 @@
 
 	<licenses>
 		<license>
-			<name>GNU General Public License (GPL) version 3.0</name>
-		        <url>https://www.gnu.org/licenses/gpl-3.0.html</url>
+			<name>Server Side Public License (SSPL) version 1</name>
+			<url>https://www.mongodb.com/licensing/server-side-public-license</url>
 		</license>
 	</licenses>
 
@@ -139,6 +157,44 @@
 			</resource>
 		</resources>
 		<plugins>
+			<plugin>
+				<groupId>com.mycila</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<configuration>
+					<licenseSets>
+						<licenseSet>
+							<header>com/mycila/maven/plugin/license/templates/SSPL-1.txt</header>
+							<properties>
+								<project.inceptionYear>2018</project.inceptionYear>
+								<owner>Airbus CyberSecurity (SAS)</owner>
+							</properties>
+							<includes>
+								<include>**/src/main/java/**</include>
+								<include>**/src/test/java/**</include>
+								<include>**/pom.xml</include>
+
+								<include>*.js</include>
+								<include>src/web/**/*.js</include>
+								<include>src/web/**/*.jsx</include>
+								<include>src/web/**/*.ts</include>
+								<include>src/web/**/*.tsx</include>
+								<include>src/web/**/*.css</include>
+							</includes>
+							<excludes>
+								<exclude>build.config.js</exclude>
+								<exclude>webpack.config.js</exclude>
+							</excludes>
+						</licenseSet>
+					</licenseSets>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>

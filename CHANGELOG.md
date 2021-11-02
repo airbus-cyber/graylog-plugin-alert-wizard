@@ -2,9 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-## [4.0.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/3.3.0...4.0.0) (2021-09-30)
+## [4.0.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/3.3.0...4.0.0) (2021-11-26)
 ### Features
 * Add compatibility with Graylog 4.1
+* Changed plugin license to SSPL version 1
 
 ## [3.3.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/3.2.5...3.3.0) (2020-10-27)
 ### Features
