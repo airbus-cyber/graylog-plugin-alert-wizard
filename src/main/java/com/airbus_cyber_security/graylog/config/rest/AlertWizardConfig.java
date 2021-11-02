@@ -36,7 +36,6 @@ public abstract class AlertWizardConfig {
     public abstract List<FieldWizard> accessFieldOrder();
 	
 	@JsonProperty("default_values")
-	@Nullable
 	public abstract DefaultValues accessDefaultValues();
 	
 	@JsonProperty("import_policy")
