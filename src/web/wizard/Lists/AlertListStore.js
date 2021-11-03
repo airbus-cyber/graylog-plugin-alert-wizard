@@ -20,10 +20,11 @@ import URLUtils from 'util/URLUtils';
 import UserNotification from 'util/UserNotification';
 import fetch from 'logic/rest/FetchProvider';
 import AlertListActions from './AlertListActions';
+import RestUtils from '../rest/RestUtils';
 
 const AlertListStore = Reflux.createStore({
     listenables: [AlertListActions],
-    sourceUrl: '/plugins/com.airbus_cyber_security.graylog/lists',
+    sourceUrl: RestUtils.buildSourceURL('lists'),
     lists: undefined,
 
     init() {

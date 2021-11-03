@@ -11,7 +11,7 @@ from urllib import parse
 
 _AUTH = ('admin', 'admin')
 _HEADERS = {"X-Requested-By": "test-program"}
-_URL_PREFIX = 'http://127.0.0.1:9000/api/plugins/com.airbys_security.graylog'
+
 
 class Test(TestCase):
 
@@ -25,11 +25,10 @@ class Test(TestCase):
         self._graylog.stop()
 
     def _build_url(self, path):
-        return parse.urljoin('http://127.0.0.1:9000/api/plugins/com.airbus_cyber_security.graylog/', path)
+        return parse.urljoin('http://127.0.0.1:9000/api/plugins/com.airbus_cyber_security.graylog.wizard/', path)
 
     def _get(self, path):
         url = self._build_url(path)
-        print(url)
         return requests.get(url, auth=_AUTH, headers=_HEADERS)
 
     def _put(self, path, payload):
@@ -42,12 +41,12 @@ class Test(TestCase):
 
     def test_put_config_with_time_default_value_should_modify_time_default_value(self):
         payload = {
-            "default_values": {
-                "matching_type": "",
-                "threshold_type": "",
-                "time": "1441"
+            'default_values': {
+                'matching_type': '',
+                'threshold_type': '',
+                'time': '1441'
             },
-            "field_order": []
+            'field_order': []
         }
         self._put('config', payload)
         response = self._get('config')

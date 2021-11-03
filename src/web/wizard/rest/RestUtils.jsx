@@ -15,12 +15,10 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-// TODO try to move this into wizard/configuration
-import Reflux from 'reflux';
+const RestUtils = {
+    buildSourceURL(path) {
+        return '/plugins/com.airbus_cyber_security.graylog.wizard/' + path;
+    },
+};
 
-const WizardConfigurationsActions = Reflux.createActions({
-    list: { asyncResult: true },
-    update: { asyncResult: true },
-});
-
-export default WizardConfigurationsActions;
+export default RestUtils;

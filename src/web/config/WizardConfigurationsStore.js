@@ -20,10 +20,12 @@ import URLUtils from 'util/URLUtils';
 import UserNotification from 'util/UserNotification';
 import fetch from 'logic/rest/FetchProvider';
 import WizardConfigurationsActions from './WizardConfigurationsActions';
+import RestUtils from '../wizard/rest/RestUtils';
 
+// TODO try to move this into wizard/configuration
 const WizardConfigurationStore = Reflux.createStore({
     listenables: [WizardConfigurationsActions],
-    sourceUrl: '/plugins/com.airbus_cyber_security.graylog/config',
+    sourceUrl: RestUtils.buildSourceURL('config'),
     configurations: undefined,
 
     init() {
