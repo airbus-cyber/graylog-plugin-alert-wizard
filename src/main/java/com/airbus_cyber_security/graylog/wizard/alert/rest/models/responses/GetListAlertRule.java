@@ -15,27 +15,26 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-package com.airbus_cyber_security.graylog;
+package com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses;
 
-import com.airbus_cyber_security.graylog.wizard.AlertWizardModule;
-import org.graylog2.plugin.Plugin;
-import org.graylog2.plugin.PluginMetaData;
-import org.graylog2.plugin.PluginModule;
+import com.airbus_cyber_security.graylog.wizard.alert.AlertRule;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.auto.value.AutoValue;
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 
-/**
- * Implement the Plugin interface here.
- */
-public class AlertWizardPlugin implements Plugin {
-    @Override
-    public PluginMetaData metadata() {
-        return new AlertWizardtMetaData();
-    }
+@AutoValue
+@JsonAutoDetect
+public abstract class GetListAlertRule {
 
-    @Override
-    public Collection<PluginModule> modules () {
-        return Arrays.<PluginModule>asList(new AlertWizardModule());
-    }
+	@JsonProperty
+	public abstract List<AlertRule> getAlerts();
+
+	@JsonCreator
+	public static GetListAlertRule create(@JsonProperty("alerts") List<AlertRule> alerts) {
+		return new AutoValue_GetListAlertRule(alerts);
+	}
+
 }

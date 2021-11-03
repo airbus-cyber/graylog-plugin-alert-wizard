@@ -15,27 +15,16 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-package com.airbus_cyber_security.graylog;
+package com.airbus_cyber_security.graylog.wizard.alert;
 
-import com.airbus_cyber_security.graylog.wizard.AlertWizardModule;
-import org.graylog2.plugin.Plugin;
-import org.graylog2.plugin.PluginMetaData;
-import org.graylog2.plugin.PluginModule;
+import java.util.List;
 
-import java.util.Arrays;
-import java.util.Collection;
+public interface AlertRuleStream {
 
-/**
- * Implement the Plugin interface here.
- */
-public class AlertWizardPlugin implements Plugin {
-    @Override
-    public PluginMetaData metadata() {
-        return new AlertWizardtMetaData();
-    }
+	public String getID();
+	
+    public String getMatchingType();
+    
+    public List<FieldRuleImpl> getFieldRules();
 
-    @Override
-    public Collection<PluginModule> modules () {
-        return Arrays.<PluginModule>asList(new AlertWizardModule());
-    }
 }

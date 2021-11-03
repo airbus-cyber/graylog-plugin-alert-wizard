@@ -15,27 +15,10 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-package com.airbus_cyber_security.graylog;
+package com.airbus_cyber_security.graylog.wizard.config.rest;
 
-import com.airbus_cyber_security.graylog.wizard.AlertWizardModule;
-import org.graylog2.plugin.Plugin;
-import org.graylog2.plugin.PluginMetaData;
-import org.graylog2.plugin.PluginModule;
-
-import java.util.Arrays;
-import java.util.Collection;
-
-/**
- * Implement the Plugin interface here.
- */
-public class AlertWizardPlugin implements Plugin {
-    @Override
-    public PluginMetaData metadata() {
-        return new AlertWizardtMetaData();
-    }
-
-    @Override
-    public Collection<PluginModule> modules () {
-        return Arrays.<PluginModule>asList(new AlertWizardModule());
-    }
+public enum ImportPolicyType {	
+	DONOTHING,
+	RENAME,
+	REPLACE;
 }
