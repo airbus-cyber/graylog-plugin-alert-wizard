@@ -106,8 +106,8 @@ public class AlertListResource extends RestResource implements PluginRestResourc
             throws UnsupportedEncodingException, NotFoundException {
         String listTitle = java.net.URLDecoder.decode(title, ENCODING);
 
-        final AlertList list = alertListService.load(listTitle);
-        if(list == null) {
+        AlertList list = alertListService.load(listTitle);
+        if (list == null) {
             throw new NotFoundException("List <" + listTitle + "> not found!");
         }
         return GetAlertList.create(list);
@@ -115,25 +115,25 @@ public class AlertListResource extends RestResource implements PluginRestResourc
 
     private String checkImportPolicyAndGetTitle(String title){
         String listTitle = title;
-        if(alertListService.isPresent(listTitle)) {
+        if (alertListService.isPresent(listTitle)) {
             final AlertWizardConfig configGeneral = clusterConfigService.get(AlertWizardConfig.class);
             ImportPolicyType importPolicy = configGeneral.accessImportPolicy();
-            if(importPolicy != null && importPolicy.equals(ImportPolicyType.RENAME)) {
+            if (importPolicy != null && importPolicy.equals(ImportPolicyType.RENAME)) {
                 String newListTitle;
                 int i = 1;
-                do{
+                do {
                     newListTitle = listTitle+"("+i+")";
                     i++;
-                }while (alertListService.isPresent(newListTitle));
+                } while (alertListService.isPresent(newListTitle));
                 listTitle = newListTitle;
-            }else if(importPolicy != null && importPolicy.equals(ImportPolicyType.REPLACE)) {
+            } else if (importPolicy != null && importPolicy.equals(ImportPolicyType.REPLACE)) {
                 try {
                     this.delete(listTitle);
                 } catch (MongoException | UnsupportedEncodingException e) {
                     LOG.error("Failed to replace list");
                     throw new BadRequestException("Failed to replace alert list.");
                 }
-            }else{
+            } else {
                 LOG.error("Failed to create alert list : list title already exist");
                 throw new BadRequestException("Failed to create list : list title already exist.");
             }
