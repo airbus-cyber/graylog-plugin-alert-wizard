@@ -98,7 +98,7 @@ public class AlertRuleUtils {
 			parametersCondition.put(THRESHOLD, correlationConfig.threshold());
 			parametersCondition.put(THRESHOLD_TYPE, correlationConfig.thresholdType());
 			parametersCondition.put(ADDITIONAL_THRESHOLD, correlationConfig.threshold());
-			parametersCondition.put(ADDITIONAL_THRESHOLD_TYPE, correlationConfig.thresholdType());
+			parametersCondition.put(ADDITIONAL_THRESHOLD_TYPE, correlationConfig.additionalThresholdType());
 			parametersCondition.put(TIME, correlationConfig.searchWithinMs() / 60 / 1000);
 			parametersCondition.put(GROUPING_FIELDS, correlationConfig.groupingFields());
 			parametersCondition.put(GRACE, correlationConfig.executeEveryMs()  / 60 / 1000);

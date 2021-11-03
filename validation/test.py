@@ -138,3 +138,47 @@ class Test(TestCase):
             if notification['title'] == 'a':
                 associated_notification = notification
         self.assertEqual(1441, associated_notification['config']['aggregation_time'])
+
+    def test_get_alert_rule_should_return_correct_additional_threshold_type__issue34(self):
+        alert_rule = {
+            'condition_parameters': {
+                'additional_threshold': 0,
+                'additional_threshold_type': 'LESS',
+                'backlog': 500,
+                'distinction_fields': [],
+                'field': '',
+                'grace': 1,
+                'grouping_fields': [],
+                'threshold': 0,
+                'threshold_type': 'MORE',
+                'time': 1,
+                'type': ''
+            },
+            'condition_type': 'AND',
+            'second_stream': {
+                'field_rule': [
+                    {
+                        'field': 'b',
+                        'type': 1,
+                        'value': 'titi'
+                    }
+                ],
+                'matching_type': 'AND'
+            },
+            'severity': 'info',
+            'stream': {
+                'field_rule': [
+                    {
+                        'field': 'a',
+                        'type': 1,
+                        'value': 'toto'
+                    }
+                ],
+                'matching_type': 'AND'
+            },
+            'title': 'b'
+        }
+        self._post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
+        response = self._get('plugins/com.airbus_cyber_security.graylog.wizard/alerts/b/data')
+        retrieved_alert_rule = response.json()
+        self.assertEqual('LESS', retrieved_alert_rule['condition_parameters']['additional_threshold_type'])
