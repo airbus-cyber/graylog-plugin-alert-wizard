@@ -356,7 +356,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
 
-        return Response.accepted().build();
+        return Response.ok().build();
     }
 
     @PUT
