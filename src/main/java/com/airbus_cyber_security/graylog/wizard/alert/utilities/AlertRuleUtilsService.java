@@ -100,10 +100,10 @@ public class AlertRuleUtilsService {
     public GetDataAlertRule constructDataAlertRule(AlertRule alert) throws NotFoundException {
         LOG.debug("Get data alert: " + alert.getTitle());
         try {
-            final String streamID = alert.getStreamID();
-            final Stream stream = streamService.load(streamID);
+            String streamID = alert.getStreamID();
+            Stream stream = streamService.load(streamID);
 
-            //Get the event
+            // Get the event
             Map<String, Object> parametersCondition = null;
             String eventTitle;
             if (alert.getEventID() != null && !alert.getEventID().isEmpty()) {
@@ -122,7 +122,7 @@ public class AlertRuleUtilsService {
 
             AlertRuleStream alertRuleStream2 = null;
             if (alert.getSecondStreamID() != null && !alert.getSecondStreamID().isEmpty()) {
-                final Stream stream2 = streamService.load(alert.getSecondStreamID());
+                Stream stream2 = streamService.load(alert.getSecondStreamID());
                 List<FieldRuleImpl> fieldRules2 = new ArrayList<>();
                 Optional.ofNullable(alert.getSecondPipelineFieldRules()).ifPresent(fieldRules2::addAll);
                 Optional.ofNullable(alertRuleUtils.getListFieldRule(stream2.getStreamRules())).ifPresent(fieldRules2::addAll);
