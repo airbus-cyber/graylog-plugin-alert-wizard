@@ -27,10 +27,8 @@ import ObjectUtils from 'util/ObjectUtils';
 import StoreProvider from 'injection/StoreProvider';
 import { FormattedMessage } from 'react-intl';
 import ActionsProvider from 'injection/ActionsProvider';
-import FieldRule from '../FieldRule';
+import FieldRule from './FieldRule';
 import IconAdd from "../icons/Add";
-
-import withFormattedFields from './withFormattedFields';
 
 const StreamsStore = StoreProvider.getStore('Streams');
 const IndexSetsStore = StoreProvider.getStore('IndexSets');
@@ -265,7 +263,6 @@ const FieldsCondition = createReactClass({
             </Col>
         </Row>
         );
-        
     },
 });
 

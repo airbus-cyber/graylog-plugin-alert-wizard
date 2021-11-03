@@ -18,17 +18,17 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import Reflux from 'reflux';
-import AlertListActions from './Lists/AlertListActions';
+import AlertListActions from '../Lists/AlertListActions';
 import createReactClass from 'create-react-class';
 import {Input} from 'components/bootstrap';
-import {Select, Spinner} from 'components/common';
+import {Select, Spinner, TypeAheadFieldInput} from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import StoreProvider from 'injection/StoreProvider';
 import {FormattedMessage} from 'react-intl';
-import AlertListStore from "./Lists/AlertListStore";
-import IconRemove from "./icons/Remove";
+import AlertListStore from "../Lists/AlertListStore";
+import IconRemove from "../icons/Remove";
+import FormsUtils from 'util/FormsUtils';
 
-import withFormattedFields from './components/withFormattedFields';
 
 const CurrentUserStore = StoreProvider.getStore('CurrentUser');
 
@@ -41,8 +41,7 @@ const FieldRule = createReactClass({
         rule: PropTypes.object,
         onUpdate: PropTypes.func,
         onDelete: PropTypes.func,
-        matchData: PropTypes.array,
-        formattedFields: PropTypes.array.isRequired,
+        matchData: PropTypes.array
     },
     contextTypes: {
         intl: PropTypes.object.isRequired,
@@ -139,7 +138,8 @@ const FieldRule = createReactClass({
         this._updateAlertField('type', parseInt(value));
     },
 
-    _onRuleFieldSelect(value) {
+    _onRuleFieldSelect(event) {
+        const value = FormsUtils.getValueFromInput(event.target);
         this._updateAlertField('field', value);
     },
 
@@ -187,20 +187,7 @@ const FieldRule = createReactClass({
         return (this.props.matchData.rules[this.props.rule.id] ? '#dff0d8' : '#f2dede');
     },
 
-    _isFieldRule(option) {
-        return option.value === this.state.rule.field;
-    },
-
     render() {
-        const {formattedFields} = this.props;
-        if (this.state.rule.field && this.state.rule.field !== '' && !formattedFields.some(this._isFieldRule)) {
-            formattedFields.push({
-                value: this.state.rule.field,
-                label: this.state.rule.field
-            });
-        }
-
-
         const isMatchDataPesent = (this.props.matchData && this.props.matchData.rules.hasOwnProperty(this.props.rule.id));
         const color = (isMatchDataPesent ? this._getMatchDataColor() : '#FFFFFF');
 
@@ -251,15 +238,7 @@ const FieldRule = createReactClass({
                     {deleteAction}
                     <Input ref="field" id="field" name="field">
                         <div style={{width: '200px'}}>
-                            <Select style={{backgroundColor: color}}
-                                    required
-                                    value={this.state.rule.field}
-                                    options={formattedFields}
-                                    matchProp="value"
-                                    onChange={this._onRuleFieldSelect}
-                                    allowCreate={true}
-                                    placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..."/>}
-                            />
+                            <TypeAheadFieldInput id="field-input" type="text" required name="field" defaultValue={this.state.rule.field} onChange={this._onRuleFieldSelect} autoFocus />
                         </div>
                     </Input>
                     <Input ref="type" id="type" name="type">
@@ -282,4 +261,4 @@ const FieldRule = createReactClass({
     },
 });
 
-export default withFormattedFields(FieldRule);
+export default FieldRule;
