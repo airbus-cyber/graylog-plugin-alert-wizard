@@ -1,6 +1,8 @@
 # to execute these tests:
-# activate venv
-# python
+# * activate venv
+#   source ./venv/bin/activate
+# * execute tests
+#   python -m unittest
 
 from unittest import TestCase
 from graylog_server import GraylogServer
