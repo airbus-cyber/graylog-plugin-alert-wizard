@@ -208,8 +208,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     })
     public GetDataAlertRule getData(@ApiParam(name = TITLE, required = true) @PathParam(TITLE) String title)
             throws UnsupportedEncodingException, NotFoundException {
-        final String alertTitle = java.net.URLDecoder.decode(title, ENCODING);
-        final AlertRule alert = alertRuleService.load(alertTitle);
+        String alertTitle = java.net.URLDecoder.decode(title, ENCODING);
+        AlertRule alert = alertRuleService.load(alertTitle);
         if (alert == null) {
             throw new NotFoundException("Alert <" + alertTitle + "> not found!");
         }
