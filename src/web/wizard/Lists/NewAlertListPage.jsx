@@ -88,9 +88,9 @@ const NewAlertListPage = createReactClass({
             <IntlProvider locale={language} messages={messages[language]}>
                 <DocumentTitle title="New list">
                     <div>
-                        <PageHeader title={<FormattedMessage id= "wizard.newList" defaultMessage= "Wizard: New list" />}>
+                        <PageHeader title={<FormattedMessage id="wizard.newList" defaultMessage="Wizard: New list" />}>
                         <span>
-                            <FormattedMessage id= "wizard.definelist" defaultMessage= "You can define a list." />
+                            <FormattedMessage id="wizard.definelist" defaultMessage="You can define a list." />
                         </span>
                             <span>
                             <FormattedMessage id="wizard.documentationlist"
