@@ -40,7 +40,7 @@ class Test(TestCase):
     def _post(self, path, payload):
         url = self._build_url(path)
         print('POST {} {}'.format(url, payload))
-        requests.post(url, json=payload, auth=_AUTH, headers=_HEADERS)
+        return requests.post(url, json=payload, auth=_AUTH, headers=_HEADERS)
 
     def test_get_alerts_should_be_found(self):
         response = self._get('plugins/com.airbus_cyber_security.graylog.wizard/alerts/data')
@@ -59,6 +59,38 @@ class Test(TestCase):
         response = self._get('plugins/com.airbus_cyber_security.graylog.wizard/config')
         body = response.json()
         self.assertEqual(1441, body['default_values']['time'])
+
+    def test_create_alert_rule_should_not_fail(self):
+        alert_rule = {
+            'condition_parameters': {
+                'additional_threshold': 0,
+                'additional_threshold_type': '',
+                'backlog': 500,
+                'distinction_fields': [],
+                'field': '',
+                'grace': 1,
+                'grouping_fields': [],
+                'threshold': 0,
+                'threshold_type': 'MORE',
+                'time': 1,
+                'type': ''
+            },
+            'condition_type': 'COUNT',
+            'severity': 'info',
+            'stream': {
+                'field_rule': [
+                    {
+                        'field': 'source',
+                        'type': 1,
+                        'value': 'toto'
+                    }
+                ],
+                'matching_type': 'AND'
+            },
+            'title': 'a'
+        }
+        response = self._post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
+        self.assertEqual(200, response.status_code)
 
     def test_default_time_range_in_configuration_should_propagate_into_notification_time_range__issue47(self):
         configuration = {
@@ -85,16 +117,6 @@ class Test(TestCase):
                 'type': ''
             },
             'condition_type': 'COUNT',
-            'second_stream': {
-                'field_rule': [
-                    {
-                        'field': '',
-                        'type': '',
-                        'value': ''
-                    }
-                ],
-                'matching_type': ''
-            },
             'severity': 'info',
             'stream': {
                 'field_rule': [
