@@ -66,7 +66,8 @@ const AlertRuleList = createReactClass({
                 infoUpdate: this.context.intl.formatMessage({id: "wizard.buttonInfoUpdate", defaultMessage: "Edit this alert rule"}),
                 infoEnable: this.context.intl.formatMessage({id: "wizard.buttonInfoEnable", defaultMessage: "Enable this alert rule"}),
                 infoDisable: this.context.intl.formatMessage({id: "wizard.buttonInfoDisable", defaultMessage: "Disable this alert rule"}),
-                infoAdvanced: this.context.intl.formatMessage({id: "wizard.buttonInfoAdvanced", defaultMessage: "Advanced settings for this alert rule"}),
+                eventDefinition: this.context.intl.formatMessage({id: "wizard.tooltipEventDefinition", defaultMessage: "Edit event definition for this alert rule"}),
+                notification: this.context.intl.formatMessage({id: "wizard.tooltipNotification", defaultMessage: "Edit notification for this alert rule"}),
                 infoClone: this.context.intl.formatMessage({id: "wizard.buttonInfoClone", defaultMessage: "Clone this alert rule"}),
                 createAlert: this.context.intl.formatMessage({id: "wizard.createAlert", defaultMessage: "Create alert rule"}),
                 importAlert: this.context.intl.formatMessage({id: "wizard.importAlert", defaultMessage: "Import alert rules"}),
@@ -226,10 +227,18 @@ const AlertRuleList = createReactClass({
             );
         }
 
-        const customizeLink = (
+        const eventDefinition = (
                 <LinkContainer disabled={!alertValid} to={Routes.ALERTS.DEFINITIONS.edit(alert.condition)} >
-                    <Button bsStyle="info" title={this.state.messages.infoAdvanced} >
-                        <FormattedMessage id ="wizard.advancedSettings" defaultMessage="Advanced settings" />
+                    <Button bsStyle="info" title={this.state.messages.eventDefinition} >
+                        <FormattedMessage id="wizard.eventDefinition" defaultMessage="Event definition" />
+                    </Button>
+                </LinkContainer>
+        );
+
+        const notification = (
+                <LinkContainer disabled={!alertValid} to={Routes.ALERTS.NOTIFICATIONS.edit(alert.notification)} >
+                    <Button bsStyle="info" title={this.state.messages.notification} >
+                        <FormattedMessage id="wizard.notification" defaultMessage="Notification" />
                     </Button>
                 </LinkContainer>
         );
@@ -244,7 +253,8 @@ const AlertRuleList = createReactClass({
         const actions = (
             <div className="alert-actions pull-left">
                 {updateAlert}{' '}
-                {customizeLink}{' '}
+                {eventDefinition}{' '}
+                {notification}{' '}
                 {cloneAlert}{' '}
                 {deleteAction}{' '}
                 {toggleStreamLink}{' '}

@@ -129,7 +129,6 @@
   "wizard.buttonInfoUpdate": "Modifier la règle d'alerte",
   "wizard.buttonInfoEnable": "Activer la règle d'alerte",
   "wizard.buttonInfoDisable": "Désactiver la règle d'alerte",
-  "wizard.buttonInfoAdvanced": "Paramètres avancés pour la règle d'alerte",
   "wizard.buttonInfoClone": "Cloner la règle d'alerte",
   "wizard.alertsRule": "Règles d'alerte",
   "wizard.alertsList": "Listes",
@@ -207,5 +206,9 @@
   "wizard.card": "cardinalité",
   "wizard.count": "condition de comptage",
   "wizard.sum": "somme des carrés",
-  "wizard.variance": "variance"
+  "wizard.variance": "variance",
+  "wizard.eventDefinition": "Définition de l'évènement",
+  "wizard.notification": "Notification",
+  "wizard.tooltipEventDefinition": "Modifier la défintiion de l'évènement associée à la règle d'alerte",
+  "wizard.tooltipNotification": "Modifier la notification associée à la règle d'alerte"
 }
