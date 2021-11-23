@@ -19,7 +19,7 @@ import React from 'react';
 import Reflux from "reflux";
 import createReactClass from 'create-react-class';
 import {Col, Row} from 'react-bootstrap';
-import {IfPermitted, PageHeader, Spinner, DocumentTitle} from 'components/common';
+import {IfPermitted, PageHeader, DocumentTitle} from 'components/common';
 import AlertRuleList from '../AlertRuleList';
 import ManageSettings from '../ManageSettings';
 import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
