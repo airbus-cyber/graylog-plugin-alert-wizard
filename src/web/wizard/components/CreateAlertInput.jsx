@@ -25,7 +25,6 @@ import ObjectUtils from 'util/ObjectUtils';
 import AlertRuleActions from '../actions/AlertRuleActions';
 import Routes from 'routing/Routes';
 import {LinkContainer} from 'react-router-bootstrap';
-import {confirmAlert} from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import {FormattedMessage} from 'react-intl';
 import StoreProvider from 'injection/StoreProvider';
@@ -35,7 +34,7 @@ import StatisticsCondition from './ruletype/StatisticsCondition'
 import GroupDistinctCondition from './ruletype/GroupDistinctCondition'
 import CorrelationCondition from './ruletype/CorrelationCondition'
 import OrCondition from './ruletype/OrCondition'
-import CountCondition from 'wizard/components/ruletype/CountCondition'
+import CountCondition from './ruletype/CountCondition'
 import history from 'util/History';
 import ActionsProvider from 'injection/ActionsProvider';
 
@@ -205,8 +204,7 @@ const CreateAlertInput = createReactClass({
         AlertRuleActions.create.triggerPromise(this.state.alert).then((response) => {
             if (response === true) {
                 AlertRuleActions.getData(this.state.alert.title).then(alert => {
-                    this.setState({alert: alert});
-                    this._advancedSettings();
+                    this.setState({alert: alert}, history.push('/wizard/AlertRules'));
                 });
             }
         });
@@ -216,29 +214,11 @@ const CreateAlertInput = createReactClass({
         AlertRuleActions.update.triggerPromise(this.props.alert.title, this.state.alert).then((response) => {
             if (response === true) {
                 AlertRuleActions.getData(this.state.alert.title).then(alert => {
-                    this.setState({alert: alert});
-                    this._advancedSettings();
+                    this.setState({alert: alert}, () => history.push('/wizard/AlertRules'));
                 });
             }
         });
         this.setState({isModified: false});
-    },
-    _advancedSettings() {
-        const options = {
-            title: this.state.messages.titlePopup,
-            message: this.state.messages.messagePopup,
-            buttons: [
-                {
-                    label: this.state.messages.advancedSettings,
-                    onClick: () => history.push({pathname: Routes.ALERTS.DEFINITIONS.edit(this.state.alert.condition)})
-                },
-                {
-                    label: this.state.messages.done,
-                    onClick: () => history.push({pathname: Routes.pluginRoute('WIZARD_ALERTRULES')})
-                },
-            ]
-        };
-       confirmAlert(options);
     },
     _updateAlertField(field, value) {
         const update = ObjectUtils.clone(this.state.alert);
