@@ -21,7 +21,7 @@ import messages_fr from "../../translations/fr.json";
 import {PageHeader, DocumentTitle} from 'components/common';
 import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
 import {Col, Row} from "react-bootstrap";
-import AlertListDisplay from '../lists/AlertListDisplay';
+import AlertListDisplay from '../components/lists/AlertListDisplay';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];

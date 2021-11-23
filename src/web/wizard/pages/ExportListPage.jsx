@@ -21,13 +21,13 @@ import Routes from 'routing/Routes';
 import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
 import messages_fr from '../../translations/fr.json';
 import { Row, Col, Button } from 'components/graylog';
-import AlertListActions from '../lists/AlertListActions';
+import AlertListActions from '../components/lists/AlertListActions';
 import {DocumentTitle, PageHeader} from 'components/common';
 import {LinkContainer} from 'react-router-bootstrap';
 import FileSaver from '../logic/FileSaver';
 import UserNotification from 'util/UserNotification';
 import DateTime from 'logic/datetimes/DateTime';
-import IconDownload from '../icons/Download';
+import IconDownload from '../components/icons/Download';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];

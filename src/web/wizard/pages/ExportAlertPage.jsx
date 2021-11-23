@@ -27,7 +27,7 @@ import {LinkContainer} from 'react-router-bootstrap';
 import FileSaver from '../logic/FileSaver';
 import UserNotification from 'util/UserNotification';
 import DateTime from 'logic/datetimes/DateTime';
-import IconDownload from '../icons/Download';
+import IconDownload from '../components/icons/Download';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];

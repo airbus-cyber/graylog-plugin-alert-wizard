@@ -21,7 +21,7 @@ import Routes from 'routing/Routes';
 import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
 import messages_fr from '../../translations/fr.json';
 import { Row, Col, Button } from 'components/graylog';
-import AlertListActions from '../lists/AlertListActions';
+import AlertListActions from '../components/lists/AlertListActions';
 import {DocumentTitle, PageHeader, Spinner} from 'components/common';
 import {LinkContainer} from 'react-router-bootstrap';
 

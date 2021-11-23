@@ -28,7 +28,7 @@ import StoreProvider from 'injection/StoreProvider';
 import { FormattedMessage } from 'react-intl';
 import ActionsProvider from 'injection/ActionsProvider';
 import FieldRule from './FieldRule';
-import IconAdd from "../icons/Add";
+import IconAdd from "./icons/Add";
 
 const StreamsStore = StoreProvider.getStore('Streams');
 const IndexSetsStore = StoreProvider.getStore('IndexSets');
