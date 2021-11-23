@@ -17,16 +17,16 @@
 
 import packageJson from '../../package.json';
 import {PluginManifest, PluginStore} from 'graylog-web-plugin/plugin';
-import WizardPage from 'wizard/WizardPage';
-import NewAlertPage from 'wizard/NewAlertPage';
-import UpdateAlertPage from 'wizard/UpdateAlertPage';
-import ExportAlertPage from 'wizard/ExportAlertPage';
-import ImportAlertPage from 'wizard/ImportAlertPage';
-import WizardListsPage from './wizard/Lists/WizardListsPage';
-import NewAlertListPage from './wizard/Lists/NewAlertListPage';
-import UpdateListPage from './wizard/Lists/UpdateListPage';
-import ImportListPage from './wizard/Lists/ImportListPage';
-import ExportListPage from './wizard/Lists/ExportListPage';
+import WizardPage from 'src/web/wizard/pages/WizardPage';
+import NewAlertPage from 'src/web/wizard/pages/NewAlertPage';
+import UpdateAlertPage from 'src/web/wizard/pages/UpdateAlertPage';
+import ExportAlertPage from 'src/web/wizard/pages/ExportAlertPage';
+import ImportAlertPage from 'src/web/wizard/pages/ImportAlertPage';
+import WizardListsPage from './wizard/pages/WizardListsPage';
+import NewAlertListPage from './wizard/pages/NewAlertListPage';
+import UpdateListPage from './wizard/pages/UpdateListPage';
+import ImportListPage from './wizard/pages/ImportListPage';
+import ExportListPage from './wizard/pages/ExportListPage';
 
 
 PluginStore.register(new PluginManifest(packageJson, {

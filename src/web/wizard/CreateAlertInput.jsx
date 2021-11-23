@@ -30,7 +30,7 @@ import 'react-confirm-alert/src/react-confirm-alert.css';
 import {FormattedMessage} from 'react-intl';
 import StoreProvider from 'injection/StoreProvider';
 import LoaderTabs from 'components/messageloaders/LoaderTabs';
-import WizardStyle from '!style!css!./WizardStyle.css';
+import WizardStyle from '!style!css!./pages/WizardStyle.css';
 import StatisticsCondition from 'wizard/ruletype/StatisticsCondition'
 import GroupDistinctCondition from 'wizard/ruletype/GroupDistinctCondition'
 import CorrelationCondition from 'wizard/ruletype/CorrelationCondition'

@@ -17,11 +17,11 @@
 
 import React from 'react';
 import createReactClass from 'create-react-class';
-import messages_fr from "../../translations/fr";
+import messages_fr from "../../translations/fr.json";
 import {PageHeader, DocumentTitle} from 'components/common';
 import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
 import {Col, Row} from "react-bootstrap";
-import AlertListDisplay from './AlertListDisplay';
+import AlertListDisplay from '../Lists/AlertListDisplay';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];

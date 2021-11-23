@@ -19,9 +19,9 @@ import React from 'react';
 import createReactClass from 'create-react-class';
 import Routes from 'routing/Routes';
 import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
-import messages_fr from '../translations/fr.json';
+import messages_fr from '../../translations/fr.json';
 import { Row, Col, Button } from 'components/graylog';
-import AlertRuleActions from './AlertRuleActions';
+import AlertListActions from '../Lists/AlertListActions';
 import {DocumentTitle, PageHeader, Spinner} from 'components/common';
 import {LinkContainer} from 'react-router-bootstrap';
 
@@ -30,83 +30,84 @@ const language = navigator.language.split(/[-_]/)[0];
 addLocaleData(frLocaleData);
 
 const messages = {
-        'fr': messages_fr
-    };
+    'fr': messages_fr
+};
 
-const ImportAlertPage = createReactClass({
-    displayName: 'ImportAlertPage',
+const ImportListPage = createReactClass({
+    displayName: 'ImportListPage',
 
     getInitialState() {
         return {};
     },
-    
+
     onSubmitUploadFile(submitEvent) {
         submitEvent.preventDefault();
         if (!this.refs.uploadedFile.files || !this.refs.uploadedFile.files[0]) {
-          return;
+            return;
         }
-        
+
         const reader = new FileReader();
-        reader.onload = (evt) => {     
-            this.setState({alertRules: JSON.parse(evt.target.result)});
+        reader.onload = (evt) => {
+            this.setState({alertLists: JSON.parse(evt.target.result)});
         };
-          
+
         reader.readAsText(this.refs.uploadedFile.files[0]);
     },
-    
+
     isEmpty(obj) {
         return ((obj === undefined) || (typeof obj.count === 'function' ? obj.count() === 0 : obj.length === 0));
     },
-    selectAllAlertRules(){
+    selectAllAlertLists(){
         Object.keys(this.refs).forEach((key) => {
-            if (key.indexOf('alertRules') === 0) {
-              this.refs[key].checked = true;
+            if (key.indexOf('alertLists') === 0) {
+                this.refs[key].checked = true;
             }
-          });
+        });
     },
-    formatAlertRule(alertRule) {
+    formatAlertList(alertList) {
         return (
-          <div className="checkbox" key={`alertRule_checkbox-${alertRule.title}`}>
-            <label className="checkbox"><input ref={`alertRules.${alertRule.title}`} type="checkbox" name="alertRules" id={`alertRule_${alertRule.title}`} value={JSON.stringify(alertRule)} />{alertRule.title}</label>
-            <span className="help-inline"><FormattedMessage id= "wizard.fieldDescription" defaultMessage= "Description" />: <tt>{alertRule.description}</tt></span>
-          </div>
+            <div className="checkbox" key={`alertList_checkbox-${alertList.title}`}>
+                <label className="checkbox"><input ref={`alertLists.${alertList.title}`} type="checkbox" name="alertLists" id={`alertList_${alertList.title}`} value={JSON.stringify(alertList)} />{alertList.title}</label>
+                <span className="help-inline"><FormattedMessage id= "wizard.fieldDescription" defaultMessage= "Description" />: <tt>{alertList.description}</tt></span>
+                <span className="help-inline"><FormattedMessage id= "wizard.fieldLists" defaultMessage= "Lists" />: <tt>{alertList.lists}</tt></span>
+            </div>
         );
     },
-    onSubmitApplyAlertRules(evt){
+    onSubmitApplyAlertLists(evt){
         evt.preventDefault();
         const request = [];
-        
+
         Object.keys(this.refs).forEach((key, idx) => {
-          if (key.indexOf('alertRules') === 0 && this.refs[key].checked === true) {
-            request.push(JSON.parse(this.refs[key].value));
-          } 
+            if (key.indexOf('alertLists') === 0 && this.refs[key].checked === true) {
+                request.push(JSON.parse(this.refs[key].value));
+            }
         });
-                
-        AlertRuleActions.importAlertRules(request);
+
+        AlertListActions.importAlertLists(request);
     },
-    
+
     render() {
-        
+
         return (
-            <IntlProvider locale={language} messages={messages[language]}>    
-                <DocumentTitle title="Import alert rule">
+            <IntlProvider locale={language} messages={messages[language]}>
+                <DocumentTitle title="Import list">
                     <div>
-                        <PageHeader title={<FormattedMessage id= "wizard.importWizardAlertRule" defaultMessage= "Wizard: Import alert rules" />}>
+                        <PageHeader title={<FormattedMessage id= "wizard.importWizardList" defaultMessage= "Wizard: Import lists" />}>
                             <span>
-                                <FormattedMessage id= "wizard.importAlertRule" defaultMessage= "You can import an alert rule." />
+                                <FormattedMessage id= "wizard.importLists" defaultMessage= "You can import a list." />
                             </span>
                             <span>
-                                <FormattedMessage id="wizard.documentation" 
-                                defaultMessage= "Read more about Wizard alert rules in the documentation." />
+                                <FormattedMessage id="wizard.documentationlist"
+                                                  defaultMessage= "Read more about Wizard lists in the documentation." />
                             </span>
                             <span>
-                                <LinkContainer to={Routes.pluginRoute('WIZARD_ALERTRULES')}>
-                                    <Button bsStyle="info"><FormattedMessage id= "wizard.back" defaultMessage= "Back to alert rules" /></Button>
+                                <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
+                                    <Button bsStyle="info"><FormattedMessage id= "wizard.backlist" defaultMessage= "Back to lists" /></Button>
                                 </LinkContainer>
                                 &nbsp;
                             </span>
                         </PageHeader>
-                        <Row className="content"> 
+                        <Row className="content">
                             <Col md={12}>
                                 <form onSubmit={this.onSubmitUploadFile} className="upload" encType="multipart/form-data">
                                     <div className="form-group">
@@ -120,24 +121,24 @@ const ImportAlertPage = createReactClass({
                         </Row>
                         <Row className="content">
                             <Col md={6}>
-                                <form className="form-horizontal build-content-pack" onSubmit={this.onSubmitApplyAlertRules}>
-                                    <div className="form-group">     
+                                <form className="form-horizontal build-content-pack" onSubmit={this.onSubmitApplyAlertLists}>
+                                    <div className="form-group">
                                         <Col sm={2}>
                                             <label className="control-label" htmlFor="name">
-                                                <FormattedMessage id ="wizard.alertsRule" defaultMessage="Alert rules" /> 
+                                                <FormattedMessage id ="wizard.alertsList" defaultMessage="Lists" />
                                             </label>
                                         </Col>
                                         <Col sm={10}>
-                                            {this.isEmpty(this.state.alertRules) ?
+                                            {this.isEmpty(this.state.alertLists) ?
                                                 <span className="help-block help-standalone">
-                                                    <FormattedMessage id ="wizard.noAlertRulesToExport" defaultMessage="There is no alert rule to import." />
+                                                    <FormattedMessage id ="wizard.noAlertListsToExport" defaultMessage="There is no list to import." />
                                                 </span>
                                                 :
                                                 <span>
-                                                  <Button className="btn btn-sm btn-link select-all" onClick={this.selectAllAlertRules}>
+                                                  <Button className="btn btn-sm btn-link select-all" onClick={this.selectAllAlertLists}>
                                                       <FormattedMessage id ="wizard.selectAll" defaultMessage="Select all" />
                                                   </Button>
-                                                  {this.state.alertRules.map(this.formatAlertRule)}
+                                                    {this.state.alertLists.map(this.formatAlertList)}
                                                 </span>
                                             }
                                         </Col>
@@ -145,18 +146,18 @@ const ImportAlertPage = createReactClass({
                                     <div className="form-group">
                                         <Col smOffset={2} sm={10}>
                                             <Button bsStyle="success" type="submit">
-                                                <FormattedMessage id ="wizard.applyAlertRules" defaultMessage="Apply alert rules" />
+                                                <FormattedMessage id ="wizard.applyLists" defaultMessage="Apply lists" />
                                             </Button>
                                         </Col>
                                     </div>
                                 </form>
                             </Col>
-                        </Row>        
+                        </Row>
                     </div>
-                </DocumentTitle>   
+                </DocumentTitle>
             </IntlProvider>
-        );        
+        );
     },
 });
 
-export default ImportAlertPage;
+export default ImportListPage;

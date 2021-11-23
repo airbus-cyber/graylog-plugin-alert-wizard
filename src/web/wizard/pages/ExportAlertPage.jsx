@@ -21,7 +21,7 @@ import Routes from 'routing/Routes';
 import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
 import messages_fr from '../../translations/fr.json';
 import { Row, Col, Button } from 'components/graylog';
-import AlertListActions from './AlertListActions';
+import AlertRuleActions from '../AlertRuleActions';
 import {DocumentTitle, PageHeader} from 'components/common';
 import {LinkContainer} from 'react-router-bootstrap';
 import FileSaver from '../logic/FileSaver';
@@ -34,75 +34,74 @@ const language = navigator.language.split(/[-_]/)[0];
 addLocaleData(frLocaleData);
 
 const messages = {
-    'fr': messages_fr
-};
+        'fr': messages_fr
+    };
 
-const ExportListPage = createReactClass({
-    displayName: 'ExportListPage',
+const ExportAlertPage = createReactClass({
+    displayName: 'ExportAlertPage',
 
     getInitialState() {
         return {};
     },
     componentDidMount() {
-        AlertListActions.list().then(newLists => {
-            this.setState({alertLists: newLists});
+        AlertRuleActions.list().then(newAlerts => {
+            this.setState({alertRules: newAlerts});
         });
     },
     isEmpty(obj) {
         return ((obj === undefined) || (typeof obj.count === 'function' ? obj.count() === 0 : obj.length === 0));
     },
-    selectAllAlertLists(){
+    selectAllAlertRules(){
         Object.keys(this.refs).forEach((key) => {
-            if (key.indexOf('alertLists') === 0) {
-                this.refs[key].checked = true;
+            if (key.indexOf('alertRules') === 0) {
+              this.refs[key].checked = true;
             }
-        });
+          });
     },
-    formatAlertList(alertList) {
+    formatAlertRule(alertRule) {
         return (
-            <div className="checkbox" key={`alertList_checkbox-${alertList.title}`}>
-                <label className="checkbox"><input ref={`alertLists.${alertList.title}`} type="checkbox" name="alertLists" id={`alertList_${alertList.title}`} value={alertList.title} />{alertList.title}</label>
-                <span className="help-inline"><FormattedMessage id= "wizard.fieldDescription" defaultMessage= "Description" />: <tt>{alertList.description}</tt></span>
-                <span className="help-inline"><FormattedMessage id= "wizard.fieldLists" defaultMessage= "Lists" />: <tt>{alertList.lists}</tt></span>
-            </div>
+          <div className="checkbox" key={`alertRule_checkbox-${alertRule.title}`}>
+            <label className="checkbox"><input ref={`alertRules.${alertRule.title}`} type="checkbox" name="alertRules" id={`alertRule_${alertRule.title}`} value={alertRule.title} />{alertRule.title}</label>
+            <span className="help-inline"><FormattedMessage id= "wizard.fieldDescription" defaultMessage= "Description" />: <tt>{alertRule.description}</tt></span>
+          </div>
         );
     },
     onSubmit(evt) {
         evt.preventDefault();
         const request = {
-            titles: [],
+          titles: [],
         };
         Object.keys(this.refs).forEach((key) => {
-            if (key.indexOf('alertLists') === 0 && this.refs[key].checked === true) {
-                request['titles'].push(this.refs[key].value);
-            }
+          if (key.indexOf('alertRules') === 0 && this.refs[key].checked === true) {
+            request['titles'].push(this.refs[key].value);
+          } 
         });
-
-        AlertListActions.exportAlertLists(request).then((response) => {
-            UserNotification.success('Successfully export alert lists. Starting download...', 'Success!');
+        
+        AlertRuleActions.exportAlertRules(request).then((response) => {           
+            UserNotification.success('Successfully export alert rules. Starting download...', 'Success!');  
             let date = DateTime.ignoreTZ(DateTime.now()).toString(DateTime.Formats.DATETIME).replace(/:/g, '').replace(/ /g, '_')
-            FileSaver.save(response, date+'_alert_lists.json', 'application/json', 'utf-8');
+            FileSaver.save(response, date+'_alert_rules.json', 'application/json', 'utf-8');
         });
     },
 
-
+    
     render() {
 
         return (
-            <IntlProvider locale={language} messages={messages[language]}>
-                <DocumentTitle title="Export list">
+            <IntlProvider locale={language} messages={messages[language]}> 
+                <DocumentTitle title="Export alert rule">
                     <div>
-                        <PageHeader title={<FormattedMessage id= "wizard.exportWizardList" defaultMessage= "Wizard: Export lists" />}>
+                        <PageHeader title={<FormattedMessage id= "wizard.exportWizardAlertRule" defaultMessage= "Wizard: Export alert rules" />}>
                             <span>
-                                <FormattedMessage id= "wizard.exportAlertList" defaultMessage= "You can export a list." />
+                                <FormattedMessage id= "wizard.exportAlertRule" defaultMessage= "You can export an alert rule." />
                             </span>
                             <span>
-                                <FormattedMessage id="wizard.documentationlist"
-                                                  defaultMessage= "Read more about Wizard lists in the documentation." />
+                                <FormattedMessage id="wizard.documentation" 
+                                defaultMessage= "Read more about Wizard alert rules in the documentation." />
                             </span>
                             <span>
-                                <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
-                                    <Button bsStyle="info"><FormattedMessage id= "wizard.backlist" defaultMessage= "Back to lists" /></Button>
+                                <LinkContainer to={Routes.pluginRoute('WIZARD_ALERTRULES')}>
+                                    <Button bsStyle="info"><FormattedMessage id= "wizard.back" defaultMessage= "Back to alert rules" /></Button>
                                 </LinkContainer>
                                 &nbsp;
                             </span>
@@ -110,23 +109,23 @@ const ExportListPage = createReactClass({
                         <Row className="content">
                             <Col md={6}>
                                 <form className="form-horizontal build-content-pack" onSubmit={this.onSubmit}>
-                                    <div className="form-group">
+                                    <div className="form-group">     
                                         <Col sm={2}>
                                             <label className="control-label" htmlFor="name">
-                                                <FormattedMessage id ="wizard.alertsLists" defaultMessage="Lists" />
+                                                <FormattedMessage id ="wizard.alertsRule" defaultMessage="Alert rules" /> 
                                             </label>
                                         </Col>
                                         <Col sm={10}>
-                                            {this.isEmpty(this.state.alertLists) ?
+                                            {this.isEmpty(this.state.alertRules) ?
                                                 <span className="help-block help-standalone">
-                                                    <FormattedMessage id ="wizard.noListsToExport" defaultMessage="There is no lists to export." />
+                                                    <FormattedMessage id ="wizard.noAlertRulesToExport" defaultMessage="There is no alert rule to export." />
                                                 </span>
                                                 :
                                                 <span>
-                                                  <Button className="btn btn-sm btn-link select-all" onClick={this.selectAllAlertLists}>
+                                                  <Button className="btn btn-sm btn-link select-all" onClick={this.selectAllAlertRules}>
                                                       <FormattedMessage id ="wizard.selectAll" defaultMessage="Select all" />
                                                   </Button>
-                                                    {this.state.alertLists.sort((i1, i2) => { return i1.title.localeCompare(i2.title); }).map(this.formatAlertList)}
+                                                  {this.state.alertRules.sort((i1, i2) => { return i1.title.localeCompare(i2.title); }).map(this.formatAlertRule)}
                                                 </span>
                                             }
                                         </Col>
@@ -149,4 +148,4 @@ const ExportListPage = createReactClass({
     },
 });
 
-export default ExportListPage;
+export default ExportAlertPage;

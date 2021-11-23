@@ -21,12 +21,11 @@ import createReactClass from 'create-react-class';
 import {Button, Col, Row} from 'components/graylog';
 import {LinkContainer} from 'react-router-bootstrap';
 import {DocumentTitle, PageHeader, Spinner} from 'components/common';
-import CreateAlertInput from './CreateAlertInput';
-import AlertRuleActions from './AlertRuleActions';
+import CreateAlertInput from '../CreateAlertInput';
 import Routes from 'routing/Routes';
 import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
-import messages_fr from '../translations/fr.json';
-import withParams from 'routing/withParams';
+import messages_fr from '../../translations/fr.json';
+import WizardConfigurationsActions from "../../config/WizardConfigurationsActions";
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
@@ -36,42 +35,44 @@ const messages = {
             'fr': messages_fr
         };
 
-const UpdateAlertPage = createReactClass({
-    displayName: 'UpdateAlertPage',
-    propTypes: {
-        params: PropTypes.object.isRequired,
-    },
+const NewAlertPage = createReactClass({
+    displayName: 'NewAlertPage',
 
     getInitialState() {
         return {
-            alert: null,
-            alertData: null,
+            configurations: null,
         };
     },
+    propTypes: {
+        location: PropTypes.object.isRequired,
+        params: PropTypes.object.isRequired,
+        children: PropTypes.element,
+    },
+
     componentDidMount() {
-        AlertRuleActions.get(this.props.params.alertRuleTitle).then(alert => {
-            this.setState({alert: alert});
-        });
-        AlertRuleActions.getData(this.props.params.alertRuleTitle).then(alertData => {
-            this.setState({alertData: alertData});
+        WizardConfigurationsActions.list().then(configurations => {
+            this.setState({configurations: configurations});
         });
     },
-    _isLoading() {
-        return !this.state.alert || !this.state.alertData;
+
+    _isConfigurationLoading() {
+        return !this.state.configurations;
     },
 
     render() {
-        if (this._isLoading()) {
-            return <Spinner/>;
+
+        let componentCreateAlertInput;
+        if (this._isConfigurationLoading()) {
+            componentCreateAlertInput = <Spinner/>;
+        }else{
+            componentCreateAlertInput = <CreateAlertInput create={true} default_values={this.state.configurations.default_values}/>;
         }
 
         return (
           <IntlProvider locale={language} messages={messages[language]}>
-            <DocumentTitle title="Edit alert rule">
+            <DocumentTitle title="New alert rule">
                 <div>
-                    <PageHeader title={<FormattedMessage id= "wizard.updateAlertRule" 
-                            defaultMessage= 'Wizard: Editing alert rule "{title}"' 
-                            values={{title: this.state.alert.title }} />} >
+                    <PageHeader title={<FormattedMessage id= "wizard.newAlertRule" defaultMessage= "Wizard: New alert rule" />}>
                         <span>
                             <FormattedMessage id= "wizard.define" defaultMessage= "You can define an alert rule." />
                         </span>
@@ -88,14 +89,14 @@ const UpdateAlertPage = createReactClass({
                     </PageHeader>
                     <Row className="content">
                         <Col md={12}>
-                            <CreateAlertInput create={false} alert={this.state.alertData}/>
+                            {componentCreateAlertInput}
                         </Col>
                     </Row>
                 </div>
             </DocumentTitle>
-           </IntlProvider>
+          </IntlProvider>
         );
     },
 });
 
-export default withParams(UpdateAlertPage);
+export default NewAlertPage;
