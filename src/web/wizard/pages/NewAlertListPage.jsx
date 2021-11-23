@@ -27,7 +27,7 @@ import Routes from 'routing/Routes';
 import ActionsProvider from 'injection/ActionsProvider';
 import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
 import messages_fr from '../../translations/fr.json';
-import CreateListFormInput from "../Lists/CreateListFormInput";
+import CreateListFormInput from "../lists/CreateListFormInput";
 
 const CurrentUserStore = StoreProvider.getStore('CurrentUser');
 const ConfigurationActions = ActionsProvider.getActions('Configuration');
