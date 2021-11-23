@@ -23,10 +23,10 @@ import {LinkContainer} from 'react-router-bootstrap';
 import {DocumentTitle, PageHeader, Spinner} from 'components/common';
 import CreateAlertInput from '../components/CreateAlertInput';
 import AlertRuleActions from '../actions/AlertRuleActions';
-import Routes from 'routing/Routes';
 import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
 import messages_fr from '../../translations/fr.json';
 import withParams from 'routing/withParams';
+import ROUTES from '../routing/ROUTES';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
@@ -80,7 +80,7 @@ const UpdateAlertPage = createReactClass({
                             defaultMessage= "Read more about Wizard alert rules in the documentation." />
                         </span>
                         <span>
-                            <LinkContainer to={Routes.pluginRoute('WIZARD_ALERTRULES')}>
+                            <LinkContainer to={ROUTES.WIZARD}>
                                 <Button bsStyle="info"><FormattedMessage id= "wizard.back" defaultMessage= "Back to alert rules" /></Button>
                             </LinkContainer>
                             &nbsp;

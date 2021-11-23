@@ -37,6 +37,7 @@ import OrCondition from './ruletype/OrCondition'
 import CountCondition from './ruletype/CountCondition'
 import history from 'util/History';
 import ActionsProvider from 'injection/ActionsProvider';
+import ROUTES from '../routing/ROUTES';
 
 const NodesActions = ActionsProvider.getActions('Nodes');
 const StreamsStore = StoreProvider.getStore('Streams');
@@ -204,7 +205,7 @@ const CreateAlertInput = createReactClass({
         AlertRuleActions.create.triggerPromise(this.state.alert).then((response) => {
             if (response === true) {
                 AlertRuleActions.getData(this.state.alert.title).then(alert => {
-                    this.setState({alert: alert}, history.push('/wizard/AlertRules'));
+                    this.setState({alert: alert}, history.push(ROUTES.WIZARD));
                 });
             }
         });
@@ -214,7 +215,7 @@ const CreateAlertInput = createReactClass({
         AlertRuleActions.update.triggerPromise(this.props.alert.title, this.state.alert).then((response) => {
             if (response === true) {
                 AlertRuleActions.getData(this.state.alert.title).then(alert => {
-                    this.setState({alert: alert}, () => history.push('/wizard/AlertRules'));
+                    this.setState({alert: alert}, () => history.push(ROUTES.WIZARD));
                 });
             }
         });
@@ -339,7 +340,7 @@ const CreateAlertInput = createReactClass({
     render: function () {
         let actions;
         const buttonCancel = (
-            <LinkContainer to={Routes.pluginRoute('WIZARD_ALERTRULES')}>
+            <LinkContainer to={ROUTES.WIZARD}>
                 <Button><FormattedMessage id= "wizard.cancel" defaultMessage= "Cancel" /></Button>
             </LinkContainer>
         );

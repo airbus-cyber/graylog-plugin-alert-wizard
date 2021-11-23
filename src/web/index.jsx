@@ -27,12 +27,13 @@ import NewAlertListPage from './wizard/pages/NewAlertListPage';
 import UpdateListPage from './wizard/pages/UpdateListPage';
 import ImportListPage from './wizard/pages/ImportListPage';
 import ExportListPage from './wizard/pages/ExportListPage';
+import ROUTES from './wizard/routing/ROUTES';
 
 
 PluginStore.register(new PluginManifest(packageJson, {
 
     routes: [
-        {path: '/wizard/AlertRules', component: WizardPage, permissions: 'WIZARD_ALERTS_RULES_READ'},
+        {path: ROUTES.WIZARD, component: WizardPage, permissions: 'WIZARD_ALERTS_RULES_READ'},
         {path: '/wizard/NewAlert', component: NewAlertPage, permissions: 'WIZARD_ALERTS_RULES_CREATE'},
         {path: '/wizard/UpdateAlert/:alertRuleTitle', component: UpdateAlertPage, permissions: 'WIZARD_ALERTS_RULES_UPDATE'},
         {path: '/wizard/ExportAlert', component: ExportAlertPage, permissions: 'WIZARD_ALERTS_RULES_READ'},

@@ -17,7 +17,6 @@
 
 import React from 'react';
 import createReactClass from 'create-react-class';
-import Routes from 'routing/Routes';
 import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
 import messages_fr from '../../translations/fr.json';
 import { Row, Col, Button } from 'components/graylog';
@@ -28,6 +27,7 @@ import FileSaver from '../logic/FileSaver';
 import UserNotification from 'util/UserNotification';
 import DateTime from 'logic/datetimes/DateTime';
 import IconDownload from '../components/icons/Download';
+import ROUTES from '../routing/ROUTES';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
@@ -100,7 +100,7 @@ const ExportAlertPage = createReactClass({
                                 defaultMessage= "Read more about Wizard alert rules in the documentation." />
                             </span>
                             <span>
-                                <LinkContainer to={Routes.pluginRoute('WIZARD_ALERTRULES')}>
+                                <LinkContainer to={ROUTES.WIZARD}>
                                     <Button bsStyle="info"><FormattedMessage id= "wizard.back" defaultMessage= "Back to alert rules" /></Button>
                                 </LinkContainer>
                                 &nbsp;
