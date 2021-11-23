@@ -19,8 +19,8 @@ import Reflux from 'reflux';
 import URLUtils from 'util/URLUtils';
 import UserNotification from 'util/UserNotification';
 import fetch from 'logic/rest/FetchProvider';
-import AlertRuleActions from './AlertRuleActions';
-import RestUtils from './rest/RestUtils';
+import AlertRuleActions from '../actions/AlertRuleActions';
+import RestUtils from './RestUtils';
 
 // TODO move in rest/ with all other Stores and Actions
 const AlertRuleStore = Reflux.createStore({

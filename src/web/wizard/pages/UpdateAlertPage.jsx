@@ -22,7 +22,7 @@ import {Button, Col, Row} from 'components/graylog';
 import {LinkContainer} from 'react-router-bootstrap';
 import {DocumentTitle, PageHeader, Spinner} from 'components/common';
 import CreateAlertInput from '../CreateAlertInput';
-import AlertRuleActions from '../AlertRuleActions';
+import AlertRuleActions from '../actions/AlertRuleActions';
 import Routes from 'routing/Routes';
 import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
 import messages_fr from '../../translations/fr.json';

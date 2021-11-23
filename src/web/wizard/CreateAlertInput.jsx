@@ -22,7 +22,7 @@ import {Nav, NavItem} from 'components/graylog';
 import {Button, Col, Row} from 'components/graylog';
 import {Spinner} from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
-import AlertRuleActions from './AlertRuleActions';
+import AlertRuleActions from './actions/AlertRuleActions';
 import Routes from 'routing/Routes';
 import {LinkContainer} from 'react-router-bootstrap';
 import {confirmAlert} from 'react-confirm-alert';

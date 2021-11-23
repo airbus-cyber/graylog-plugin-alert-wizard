@@ -25,7 +25,7 @@ import CreateAlertInput from '../CreateAlertInput';
 import Routes from 'routing/Routes';
 import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
 import messages_fr from '../../translations/fr.json';
-import WizardConfigurationsActions from "../../config/WizardConfigurationsActions";
+import WizardConfigurationsActions from "../actions/WizardConfigurationsActions";
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];

@@ -19,8 +19,8 @@ import Reflux from 'reflux';
 import URLUtils from 'util/URLUtils';
 import UserNotification from 'util/UserNotification';
 import fetch from 'logic/rest/FetchProvider';
-import WizardConfigurationsActions from './WizardConfigurationsActions';
-import RestUtils from '../wizard/rest/RestUtils';
+import WizardConfigurationsActions from '../actions/WizardConfigurationsActions';
+import RestUtils from './RestUtils';
 
 // TODO try to move this into wizard/configuration
 const WizardConfigurationStore = Reflux.createStore({
