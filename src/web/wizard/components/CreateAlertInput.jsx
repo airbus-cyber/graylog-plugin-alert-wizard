@@ -31,11 +31,11 @@ import {FormattedMessage} from 'react-intl';
 import StoreProvider from 'injection/StoreProvider';
 import LoaderTabs from 'components/messageloaders/LoaderTabs';
 import WizardStyle from '!style!css!./WizardStyle.css';
-import StatisticsCondition from 'wizard/ruletype/StatisticsCondition'
-import GroupDistinctCondition from 'wizard/ruletype/GroupDistinctCondition'
-import CorrelationCondition from 'wizard/ruletype/CorrelationCondition'
-import OrCondition from 'wizard/ruletype/OrCondition'
-import CountCondition from 'wizard/ruletype/CountCondition'
+import StatisticsCondition from './ruletype/StatisticsCondition'
+import GroupDistinctCondition from './ruletype/GroupDistinctCondition'
+import CorrelationCondition from './ruletype/CorrelationCondition'
+import OrCondition from './ruletype/OrCondition'
+import CountCondition from 'wizard/components/ruletype/CountCondition'
 import history from 'util/History';
 import ActionsProvider from 'injection/ActionsProvider';
 

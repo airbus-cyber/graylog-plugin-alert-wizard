@@ -31,7 +31,7 @@ import {LinkContainer} from 'react-router-bootstrap';
 import AlertForm from './AlertForm';
 import DateTime from 'logic/datetimes/DateTime';
 import {FormattedMessage} from 'react-intl';
-import AlertRuleText from 'wizard/AlertRuleText'
+import AlertRuleText from './AlertRuleText'
 
 const StreamsStore = StoreProvider.getStore('Streams');
 
