@@ -17,11 +17,11 @@
 
 import packageJson from '../../package.json';
 import {PluginManifest, PluginStore} from 'graylog-web-plugin/plugin';
-import WizardPage from 'src/web/wizard/pages/WizardPage';
-import NewAlertPage from 'src/web/wizard/pages/NewAlertPage';
-import UpdateAlertPage from 'src/web/wizard/pages/UpdateAlertPage';
-import ExportAlertPage from 'src/web/wizard/pages/ExportAlertPage';
-import ImportAlertPage from 'src/web/wizard/pages/ImportAlertPage';
+import WizardPage from './wizard/pages/WizardPage';
+import NewAlertPage from './wizard/pages/NewAlertPage';
+import UpdateAlertPage from './wizard/pages/UpdateAlertPage';
+import ExportAlertPage from './wizard/pages/ExportAlertPage';
+import ImportAlertPage from './wizard/pages/ImportAlertPage';
 import WizardListsPage from './wizard/pages/WizardListsPage';
 import NewAlertListPage from './wizard/pages/NewAlertListPage';
 import UpdateListPage from './wizard/pages/UpdateListPage';
