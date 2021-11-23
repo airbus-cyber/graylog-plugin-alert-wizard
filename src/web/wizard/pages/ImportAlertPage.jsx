@@ -23,7 +23,7 @@ import { Row, Col, Button } from 'components/graylog';
 import AlertRuleActions from '../actions/AlertRuleActions';
 import {DocumentTitle, PageHeader} from 'components/common';
 import {LinkContainer} from 'react-router-bootstrap';
-import ROUTES from '../routing/ROUTES';
+import Navigation from '../routing/Navigation';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
@@ -100,7 +100,7 @@ const ImportAlertPage = createReactClass({
                                 defaultMessage= "Read more about Wizard alert rules in the documentation." />
                             </span>
                             <span>
-                                <LinkContainer to={ROUTES.WIZARD}>
+                                <LinkContainer to={Navigation.getWizardRoute()}>
                                     <Button bsStyle="info"><FormattedMessage id= "wizard.back" defaultMessage= "Back to alert rules" /></Button>
                                 </LinkContainer>
                                 &nbsp;

@@ -23,7 +23,9 @@ import {Button, Col, Row} from 'components/graylog';
 import {Spinner} from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import AlertRuleActions from '../actions/AlertRuleActions';
+// TODO should try to remove this import => move into Navigation
 import Routes from 'routing/Routes';
+import Navigation from "../routing/Navigation";
 import {LinkContainer} from 'react-router-bootstrap';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import {FormattedMessage} from 'react-intl';
@@ -35,9 +37,7 @@ import GroupDistinctCondition from './ruletype/GroupDistinctCondition'
 import CorrelationCondition from './ruletype/CorrelationCondition'
 import OrCondition from './ruletype/OrCondition'
 import CountCondition from './ruletype/CountCondition'
-import history from 'util/History';
 import ActionsProvider from 'injection/ActionsProvider';
-import ROUTES from '../routing/ROUTES';
 
 const NodesActions = ActionsProvider.getActions('Nodes');
 const StreamsStore = StoreProvider.getStore('Streams');
@@ -205,7 +205,7 @@ const CreateAlertInput = createReactClass({
         AlertRuleActions.create.triggerPromise(this.state.alert).then((response) => {
             if (response === true) {
                 AlertRuleActions.getData(this.state.alert.title).then(alert => {
-                    this.setState({alert: alert}, history.push(ROUTES.WIZARD));
+                    this.setState({alert: alert}, Navigation.redirectToWizard);
                 });
             }
         });
@@ -215,7 +215,7 @@ const CreateAlertInput = createReactClass({
         AlertRuleActions.update.triggerPromise(this.props.alert.title, this.state.alert).then((response) => {
             if (response === true) {
                 AlertRuleActions.getData(this.state.alert.title).then(alert => {
-                    this.setState({alert: alert}, () => history.push(ROUTES.WIZARD));
+                    this.setState({alert: alert}, Navigation.redirectToWizard);
                 });
             }
         });
@@ -340,7 +340,7 @@ const CreateAlertInput = createReactClass({
     render: function () {
         let actions;
         const buttonCancel = (
-            <LinkContainer to={ROUTES.WIZARD}>
+            <LinkContainer to={Navigation.getWizardRoute()}>
                 <Button><FormattedMessage id= "wizard.cancel" defaultMessage= "Cancel" /></Button>
             </LinkContainer>
         );

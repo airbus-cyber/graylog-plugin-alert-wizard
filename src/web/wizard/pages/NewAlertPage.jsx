@@ -25,7 +25,7 @@ import CreateAlertInput from '../components/CreateAlertInput';
 import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
 import messages_fr from '../../translations/fr.json';
 import WizardConfigurationsActions from '../actions/WizardConfigurationsActions';
-import ROUTES from '../routing/ROUTES';
+import Navigation from '../routing/Navigation';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
@@ -81,7 +81,7 @@ const NewAlertPage = createReactClass({
                             defaultMessage= "Read more about Wizard alert rules in the documentation." />
                         </span>
                         <span>
-                            <LinkContainer to={ROUTES.WIZARD}>
+                            <LinkContainer to={Navigation.getWizardRoute()}>
                                 <Button bsStyle="info"><FormattedMessage id= "wizard.back" defaultMessage= "Back to alert rules" /></Button>
                             </LinkContainer>
                             &nbsp;
