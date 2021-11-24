@@ -61,6 +61,7 @@ const ExportAlertPage = createReactClass({
     formatAlertRule(alertRule) {
         return (
           <div className="checkbox" key={`alertRule_checkbox-${alertRule.title}`}>
+            // TODO Avoid ref. Should use property onChange instead.
             <label className="checkbox"><input ref={`alertRules.${alertRule.title}`} type="checkbox" name="alertRules" id={`alertRule_${alertRule.title}`} value={alertRule.title} />{alertRule.title}</label>
             <span className="help-inline"><FormattedMessage id= "wizard.fieldDescription" defaultMessage= "Description" />: <tt>{alertRule.description}</tt></span>
           </div>
