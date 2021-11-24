@@ -21,7 +21,7 @@ import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
 import messages_fr from '../../translations/fr.json';
 import { Row, Col, Button } from 'components/graylog';
 import AlertRuleActions from '../actions/AlertRuleActions';
-import { DocumentTitle, PageHeader } from 'components/common';
+import { DocumentTitle, PageHeader, SearchForm } from 'components/common';
 import { LinkContainer } from 'react-router-bootstrap';
 import FileSaver from '../logic/FileSaver';
 import UserNotification from 'util/UserNotification';
@@ -41,7 +41,9 @@ const ExportAlertPage = createReactClass({
     displayName: 'ExportAlertPage',
 
     getInitialState() {
-        return {};
+        return {
+            titleFilter: ''
+        };
     },
     componentDidMount() {
         AlertRuleActions.list().then(newAlerts => {
@@ -59,13 +61,26 @@ const ExportAlertPage = createReactClass({
           });
     },
     formatAlertRule(alertRule) {
+        // TODO Avoid ref. Should use property onChange instead.
         return (
           <div className="checkbox" key={`alertRule_checkbox-${alertRule.title}`}>
-            // TODO Avoid ref. Should use property onChange instead.
             <label className="checkbox"><input ref={`alertRules.${alertRule.title}`} type="checkbox" name="alertRules" id={`alertRule_${alertRule.title}`} value={alertRule.title} />{alertRule.title}</label>
             <span className="help-inline"><FormattedMessage id= "wizard.fieldDescription" defaultMessage= "Description" />: <tt>{alertRule.description}</tt></span>
           </div>
         );
+    },
+    formatAlertRules() {
+      return this.state.alertRules
+                 // TODO should be able to remove { return ... }, just put ...
+                 .sort((i1, i2) => { return i1.title.localeCompare(i2.title); })
+                 .filter(rule => rule.title.includes(this.state.titleFilter))
+                 .map(this.formatAlertRule);
+    },
+    onSearch(filter) {
+        this.setState({ titleFilter: filter });
+    },
+    onReset() {
+        this.setState({ titleFilter: '' });
     },
     onSubmit(evt) {
         evt.preventDefault();
@@ -108,14 +123,17 @@ const ExportAlertPage = createReactClass({
                             </span>
                         </PageHeader>
                         <Row className="content">
-                            <Col md={6}>
+                            <Col md={12}>
+                                <SearchForm onSearch={this.onSearch}
+                                            onReset={this.onReset}
+                                            searchButtonLabel="Filter"
+                                            placeholder="Filter alert rules by title..."
+                                            queryWidth={400}
+                                            resetButtonLabel="Reset"
+                                            searchBsStyle="info"
+                                            topMargin={0} />
                                 <form className="form-horizontal build-content-pack" onSubmit={this.onSubmit}>
                                     <div className="form-group">     
-                                        <Col sm={2}>
-                                            <label className="control-label" htmlFor="name">
-                                                <FormattedMessage id ="wizard.alertsRule" defaultMessage="Alert rules" /> 
-                                            </label>
-                                        </Col>
                                         <Col sm={10}>
                                             {this.isEmpty(this.state.alertRules) ?
                                                 <span className="help-block help-standalone">
@@ -126,13 +144,13 @@ const ExportAlertPage = createReactClass({
                                                   <Button className="btn btn-sm btn-link select-all" onClick={this.selectAllAlertRules}>
                                                       <FormattedMessage id ="wizard.selectAll" defaultMessage="Select all" />
                                                   </Button>
-                                                  {this.state.alertRules.sort((i1, i2) => { return i1.title.localeCompare(i2.title); }).map(this.formatAlertRule)}
+                                                  {this.formatAlertRules()}
                                                 </span>
                                             }
                                         </Col>
                                     </div>
                                     <div className="form-group">
-                                        <Col smOffset={2} sm={10}>
+                                        <Col sm={10}>
                                             <Button bsStyle="success" type="submit">
                                                 <IconDownload/>
                                                 <FormattedMessage id ="wizard.downloadContentPack" defaultMessage="Download my content pack" />
