@@ -17,12 +17,12 @@
 
 import React from 'react';
 import createReactClass from 'create-react-class';
-import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
+import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
 import messages_fr from '../../translations/fr.json';
 import { Row, Col, Button } from 'components/graylog';
 import AlertRuleActions from '../actions/AlertRuleActions';
-import {DocumentTitle, PageHeader} from 'components/common';
-import {LinkContainer} from 'react-router-bootstrap';
+import { DocumentTitle, PageHeader } from 'components/common';
+import { LinkContainer } from 'react-router-bootstrap';
 import FileSaver from '../logic/FileSaver';
 import UserNotification from 'util/UserNotification';
 import DateTime from 'logic/datetimes/DateTime';
@@ -87,7 +87,7 @@ const ExportAlertPage = createReactClass({
 
     
     render() {
-
+        // TODO should rather use ControlledTableList (see components/sidecar/administration/CollectorsAdministration)
         return (
             <IntlProvider locale={language} messages={messages[language]}> 
                 <DocumentTitle title="Export alert rule">
