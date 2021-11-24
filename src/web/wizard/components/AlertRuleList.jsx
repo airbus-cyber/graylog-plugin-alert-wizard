@@ -375,8 +375,8 @@ const AlertRuleList = createReactClass({
                                filterBy="title"
                                dataRowFormatter={this._alertInfoFormatter}
                                filterLabel={<FormattedMessage id ="wizard.filter" defaultMessage="Filter alert rules" />}
-                               filterKeys={filterKeys}/>
-                    <AlertForm ref="cloneForm" onSubmit={this._onCloneSubmit}/>
+                               filterKeys={filterKeys} />
+                    <AlertForm ref="cloneForm" onSubmit={this._onCloneSubmit} />
                 </div>
             );
         }
