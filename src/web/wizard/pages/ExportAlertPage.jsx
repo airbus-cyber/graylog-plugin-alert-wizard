@@ -18,11 +18,12 @@
 import React from 'react';
 import createReactClass from 'create-react-class';
 import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
+import { LinkContainer } from 'react-router-bootstrap';
 import messages_fr from '../../translations/fr.json';
 import { Row, Col, Button } from 'components/graylog';
-import AlertRuleActions from '../actions/AlertRuleActions';
 import { DocumentTitle, PageHeader, SearchForm } from 'components/common';
-import { LinkContainer } from 'react-router-bootstrap';
+import { Input } from 'components/bootstrap';
+import AlertRuleActions from '../actions/AlertRuleActions';
 import FileSaver from '../logic/FileSaver';
 import UserNotification from 'util/UserNotification';
 import DateTime from 'logic/datetimes/DateTime';
@@ -42,7 +43,8 @@ const ExportAlertPage = createReactClass({
 
     getInitialState() {
         return {
-            titleFilter: ''
+            alertTitlesFilter: '',
+            selectedAlertTitles: new Set()
         };
     },
     componentDidMount() {
@@ -54,17 +56,43 @@ const ExportAlertPage = createReactClass({
         return ((obj === undefined) || (typeof obj.count === 'function' ? obj.count() === 0 : obj.length === 0));
     },
     selectAllAlertRules(){
+        // TODO remove this code
         Object.keys(this.refs).forEach((key) => {
             if (key.indexOf('alertRules') === 0) {
               this.refs[key].checked = true;
             }
           });
+
+        const { selectedAlertTitles, alertRules } = this.state;
+
+        const newSelection = new Set(alertRules.map(rule => rule.title));
+
+        this.setState({ selectedAlertTitles: newSelection });
+    },
+    handleRuleSelect(event, title) {
+        console.log('I am correctly getting here');
+        const { selectedAlertTitles } = this.state;
+        if (event.target.checked) {
+            selectedAlertTitles.add(title);
+        } else {
+            selectedAlertTitles.delete(title);
+        }
+        console.log(selectedAlertTitles);
+        this.setState({ selectedAlertTitles: selectedAlertTitles });
     },
     formatAlertRule(alertRule) {
+        const { selectedAlertTitles } = this.state;
         // TODO Avoid ref. Should use property onChange instead.
         return (
           <div className="checkbox" key={`alertRule_checkbox-${alertRule.title}`}>
-            <label className="checkbox"><input ref={`alertRules.${alertRule.title}`} type="checkbox" name="alertRules" id={`alertRule_${alertRule.title}`} value={alertRule.title} />{alertRule.title}</label>
+            <label className="checkbox">
+              <Input id={`alertRule_${alertRule.title}`}
+                     type="checkbox"
+                     checked={selectedAlertTitles.has(alertRule.title)}
+                     onChange={event => this.handleRuleSelect(event, alertRule.title)}
+                     ref={`alertRules.${alertRule.title}`} name="alertRules" value={alertRule.title} />
+              {alertRule.title}
+            </label>
             <span className="help-inline"><FormattedMessage id= "wizard.fieldDescription" defaultMessage= "Description" />: <tt>{alertRule.description}</tt></span>
           </div>
         );
@@ -72,27 +100,21 @@ const ExportAlertPage = createReactClass({
     formatAlertRules() {
       return this.state.alertRules
                  // TODO should be able to remove { return ... }, just put ...
-                 .sort((i1, i2) => { return i1.title.localeCompare(i2.title); })
-                 .filter(rule => rule.title.includes(this.state.titleFilter))
+                 .sort((rule1, rule2) => { return rule1.title.localeCompare(rule2.title); })
+                 .filter(rule => rule.title.includes(this.state.alertTitlesFilter))
                  .map(this.formatAlertRule);
     },
     onSearch(filter) {
-        this.setState({ titleFilter: filter });
+        this.setState({ alertTitlesFilter: filter });
     },
     onReset() {
-        this.setState({ titleFilter: '' });
+        this.setState({ alertTitlesFilter: '' });
     },
     onSubmit(evt) {
         evt.preventDefault();
         const request = {
-          titles: [],
+          titles: Array.from(this.state.selectedAlertTitles),
         };
-        Object.keys(this.refs).forEach((key) => {
-          if (key.indexOf('alertRules') === 0 && this.refs[key].checked === true) {
-            request['titles'].push(this.refs[key].value);
-          } 
-        });
-        
         AlertRuleActions.exportAlertRules(request).then((response) => {           
             UserNotification.success('Successfully export alert rules. Starting download...', 'Success!');  
             let date = DateTime.ignoreTZ(DateTime.now()).toString(DateTime.Formats.DATETIME).replace(/:/g, '').replace(/ /g, '_')
