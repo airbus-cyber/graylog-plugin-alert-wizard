@@ -28,7 +28,7 @@ import UpdateListPage from './wizard/pages/UpdateListPage';
 import ImportListPage from './wizard/pages/ImportListPage';
 import ExportListPage from './wizard/pages/ExportListPage';
 
-
+// TODO: think about it, but it seems alerts and lists are two entirely different "realms". If so, split their code in two distinct namespace
 PluginStore.register(new PluginManifest(packageJson, {
 
     routes: [
@@ -54,3 +54,4 @@ PluginStore.register(new PluginManifest(packageJson, {
         },
     ],
 }));
+
