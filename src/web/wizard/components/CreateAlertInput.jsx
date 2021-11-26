@@ -368,7 +368,7 @@ const CreateAlertInput = createReactClass({
                 </div>);
         
         let customizeLink;
-        if(!this.props.create){
+        if (!this.props.create){
             customizeLink = (
               <div className="alert-actions pull-right">
                 <LinkContainer disabled={this.state.isModified} to={Routes.ALERTS.DEFINITIONS.edit(this.state.alert.condition)}>
