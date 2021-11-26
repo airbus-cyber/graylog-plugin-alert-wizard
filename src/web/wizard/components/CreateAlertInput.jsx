@@ -368,7 +368,8 @@ const CreateAlertInput = createReactClass({
                 </div>);
         
         let customizeLink;
-        if (!this.props.create){
+        // TODO should try to avoid this variable: should cut the components so that they can be assembled differently if we are in a create or an update
+        if (!this.props.create) {
             customizeLink = (
               <div className="alert-actions pull-right">
                 <LinkContainer disabled={this.state.isModified} to={Routes.ALERTS.DEFINITIONS.edit(this.state.alert.condition)}>
