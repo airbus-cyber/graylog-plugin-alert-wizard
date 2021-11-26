@@ -227,14 +227,6 @@ const AlertRuleList = createReactClass({
             );
         }
 
-        const notification = (
-                <LinkContainer disabled={!alertValid} to={Routes.ALERTS.NOTIFICATIONS.edit(alert.notification)} >
-                    <Button bsStyle="info" title={this.state.messages.notification} >
-                        <FormattedMessage id="wizard.notification" defaultMessage="Notification" />
-                    </Button>
-                </LinkContainer>
-        );
-
         const cloneAlert = (
             <Button id="clone-alert" type="button" bsStyle="info" onClick={this._onClone(alert.title)} disabled={!alertValid}
                     title={this.state.messages.infoClone} >
