@@ -77,17 +77,16 @@ const ExportAlertPage = createReactClass({
         const { selectedAlertTitles } = this.state;
         // TODO Avoid ref. Should use property onChange instead.
         return (
-          <div className="checkbox" key={`alertRule_checkbox-${alertRule.title}`}>
-            <label className="checkbox">
-              <Input id={`alertRule_${alertRule.title}`}
-                     type="checkbox"
-                     checked={selectedAlertTitles.has(alertRule.title)}
-                     onChange={event => this.handleRuleSelect(event, alertRule.title)}
-                     name="alertRules" value={alertRule.title} />
-              {alertRule.title}
-            </label>
-            <span className="help-inline"><FormattedMessage id= "wizard.fieldDescription" defaultMessage= "Description" />: <tt>{alertRule.description}</tt></span>
-          </div>
+            <Row>
+                <Input id={`alertRule_${alertRule.title}`}
+                       type="checkbox"
+                       checked={selectedAlertTitles.has(alertRule.title)}
+                       onChange={event => this.handleRuleSelect(event, alertRule.title)}
+                       name="alertRules"
+                       value={alertRule.title}
+                       label={alertRule.title} />
+                <span className="help-inline"><FormattedMessage id= "wizard.fieldDescription" defaultMessage= "Description" />: <tt>{alertRule.description}</tt></span>
+            </Row>
         );
     },
     formatAlertRules() {
@@ -147,32 +146,26 @@ const ExportAlertPage = createReactClass({
                                             resetButtonLabel="Reset"
                                             searchBsStyle="info"
                                             topMargin={0} />
-                                <form className="form-horizontal build-content-pack" onSubmit={this.onSubmit}>
-                                    <div className="form-group">     
-                                        <Col sm={10}>
-                                            {this.isEmpty(this.state.alertRules) ?
-                                                <span className="help-block help-standalone">
-                                                    <FormattedMessage id ="wizard.noAlertRulesToExport" defaultMessage="There is no alert rule to export." />
-                                                </span>
-                                                :
-                                                <span>
-                                                  <Button className="btn btn-sm btn-link select-all" onClick={this.selectAllAlertRules}>
-                                                      <FormattedMessage id ="wizard.selectAll" defaultMessage="Select all" />
-                                                  </Button>
-                                                  {this.formatAlertRules()}
-                                                </span>
-                                            }
-                                        </Col>
-                                    </div>
-                                    <div className="form-group">
-                                        <Col sm={10}>
-                                            <Button bsStyle="success" type="submit">
-                                                <IconDownload/>
-                                                <FormattedMessage id ="wizard.downloadContentPack" defaultMessage="Download my content pack" />
-                                            </Button>
-                                        </Col>
-                                    </div>
-                                </form>
+                                <Col sm={10}>
+                                    {this.isEmpty(this.state.alertRules) ?
+                                        <span className="help-block help-standalone">
+                                            <FormattedMessage id ="wizard.noAlertRulesToExport" defaultMessage="There is no alert rule to export." />
+                                        </span>
+                                        :
+                                        <span>
+                                          <Button className="btn btn-sm btn-link select-all" onClick={this.selectAllAlertRules}>
+                                              <FormattedMessage id ="wizard.selectAll" defaultMessage="Select all" />
+                                          </Button>
+                                          {this.formatAlertRules()}
+                                        </span>
+                                    }
+                                </Col>
+                                <Col sm={10}>
+                                    <Button bsStyle="success" onClick={this.onSubmit}>
+                                        <IconDownload/>
+                                        <FormattedMessage id ="wizard.downloadContentPack" defaultMessage="Download my content pack" />
+                                    </Button>
+                                </Col>
                             </Col>
                         </Row>
                     </div>
