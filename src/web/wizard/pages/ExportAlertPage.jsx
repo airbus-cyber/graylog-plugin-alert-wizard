@@ -56,14 +56,7 @@ const ExportAlertPage = createReactClass({
         return ((obj === undefined) || (typeof obj.count === 'function' ? obj.count() === 0 : obj.length === 0));
     },
     selectAllAlertRules(){
-        // TODO remove this code
-        Object.keys(this.refs).forEach((key) => {
-            if (key.indexOf('alertRules') === 0) {
-              this.refs[key].checked = true;
-            }
-          });
-
-        const { selectedAlertTitles, alertRules } = this.state;
+        const { alertRules } = this.state;
 
         const newSelection = new Set(alertRules.map(rule => rule.title));
 
@@ -90,7 +83,7 @@ const ExportAlertPage = createReactClass({
                      type="checkbox"
                      checked={selectedAlertTitles.has(alertRule.title)}
                      onChange={event => this.handleRuleSelect(event, alertRule.title)}
-                     ref={`alertRules.${alertRule.title}`} name="alertRules" value={alertRule.title} />
+                     name="alertRules" value={alertRule.title} />
               {alertRule.title}
             </label>
             <span className="help-inline"><FormattedMessage id= "wizard.fieldDescription" defaultMessage= "Description" />: <tt>{alertRule.description}</tt></span>
