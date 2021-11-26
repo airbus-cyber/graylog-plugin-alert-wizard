@@ -75,7 +75,6 @@ const ExportAlertPage = createReactClass({
     },
     formatAlertRule(alertRule) {
         const { selectedAlertTitles } = this.state;
-        // TODO Avoid ref. Should use property onChange instead.
         return (
             <Row>
                 <Input id={`alertRule_${alertRule.title}`}
