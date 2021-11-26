@@ -38,6 +38,8 @@ import CorrelationCondition from './ruletype/CorrelationCondition'
 import OrCondition from './ruletype/OrCondition'
 import CountCondition from './ruletype/CountCondition'
 import ActionsProvider from 'injection/ActionsProvider';
+import ButtonToEventDefinition from './buttons/ButtonToEventDefinition';
+import ButtonToNotification from './buttons/ButtonToNotification';
 
 const NodesActions = ActionsProvider.getActions('Nodes');
 const StreamsStore = StoreProvider.getStore('Streams');
@@ -372,11 +374,8 @@ const CreateAlertInput = createReactClass({
         if (!this.props.create) {
             customizeLink = (
               <div className="alert-actions pull-right">
-                <LinkContainer disabled={this.state.isModified} to={Routes.ALERTS.DEFINITIONS.edit(this.state.alert.condition)}>
-                    <Button bsStyle="info" title="Advanced settings for this alert rule">
-                        <FormattedMessage id= "wizard.advancedSettings" defaultMessage= "Advanced settings" />
-                    </Button>
-                </LinkContainer>
+                  <ButtonToEventDefinition target={this.state.alert.condition} disabled={this.state.isModified} />{' '}
+                  <ButtonToNotification target={this.state.alert.notification} disabled={this.state.isModified} />
               </div>
             );
         }

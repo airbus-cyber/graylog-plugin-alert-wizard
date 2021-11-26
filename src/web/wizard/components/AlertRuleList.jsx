@@ -32,6 +32,8 @@ import AlertForm from './AlertForm';
 import DateTime from 'logic/datetimes/DateTime';
 import {FormattedMessage} from 'react-intl';
 import AlertRuleText from './AlertRuleText'
+import ButtonToEventDefinition from './buttons/ButtonToEventDefinition';
+import ButtonToNotification from './buttons/ButtonToNotification';
 
 const StreamsStore = StoreProvider.getStore('Streams');
 
@@ -50,30 +52,28 @@ const AlertRuleList = createReactClass({
     
     componentWillMount(){
         const fieldsTitle = {
-                title: this.context.intl.formatMessage({id: "wizard.title", defaultMessage: "Title"}),
-                severity: this.context.intl.formatMessage({id: "wizard.severity", defaultMessage: "Severity"}),
-                description: this.context.intl.formatMessage({id: "wizard.fieldDescription", defaultMessage: "Description"}),
-                created: this.context.intl.formatMessage({id: "wizard.created", defaultMessage: "Created"}),
-                lastModified: this.context.intl.formatMessage({id: "wizard.lastModified", defaultMessage: "Last Modified"}),
-                user: this.context.intl.formatMessage({id: "wizard.user", defaultMessage: "User"}),
-                alerts: this.context.intl.formatMessage({id: "wizard.alerts", defaultMessage: "Alerts"}),
-                status: this.context.intl.formatMessage({id: "wizard.status", defaultMessage: "Status"}),
-                actions: this.context.intl.formatMessage({id: "wizard.actions", defaultMessage: "Actions"}),
-                rule: this.context.intl.formatMessage({id: "wizard.rule", defaultMessage: "Rule"})
+            title: this.context.intl.formatMessage({id: "wizard.title", defaultMessage: "Title"}),
+            severity: this.context.intl.formatMessage({id: "wizard.severity", defaultMessage: "Severity"}),
+            description: this.context.intl.formatMessage({id: "wizard.fieldDescription", defaultMessage: "Description"}),
+            created: this.context.intl.formatMessage({id: "wizard.created", defaultMessage: "Created"}),
+            lastModified: this.context.intl.formatMessage({id: "wizard.lastModified", defaultMessage: "Last Modified"}),
+            user: this.context.intl.formatMessage({id: "wizard.user", defaultMessage: "User"}),
+            alerts: this.context.intl.formatMessage({id: "wizard.alerts", defaultMessage: "Alerts"}),
+            status: this.context.intl.formatMessage({id: "wizard.status", defaultMessage: "Status"}),
+            actions: this.context.intl.formatMessage({id: "wizard.actions", defaultMessage: "Actions"}),
+            rule: this.context.intl.formatMessage({id: "wizard.rule", defaultMessage: "Rule"})
         };
         const messages = {
-                infoDelete: this.context.intl.formatMessage({id: "wizard.buttonInfoDelete", defaultMessage: "Delete this alert rule"}),
-                infoUpdate: this.context.intl.formatMessage({id: "wizard.buttonInfoUpdate", defaultMessage: "Edit this alert rule"}),
-                infoEnable: this.context.intl.formatMessage({id: "wizard.buttonInfoEnable", defaultMessage: "Enable this alert rule"}),
-                infoDisable: this.context.intl.formatMessage({id: "wizard.buttonInfoDisable", defaultMessage: "Disable this alert rule"}),
-                eventDefinition: this.context.intl.formatMessage({id: "wizard.tooltipEventDefinition", defaultMessage: "Edit event definition for this alert rule"}),
-                notification: this.context.intl.formatMessage({id: "wizard.tooltipNotification", defaultMessage: "Edit notification for this alert rule"}),
-                infoClone: this.context.intl.formatMessage({id: "wizard.buttonInfoClone", defaultMessage: "Clone this alert rule"}),
-                createAlert: this.context.intl.formatMessage({id: "wizard.createAlert", defaultMessage: "Create alert rule"}),
-                importAlert: this.context.intl.formatMessage({id: "wizard.importAlert", defaultMessage: "Import alert rules"}),
-                exportAlert: this.context.intl.formatMessage({id: "wizard.exportAlert",  defaultMessage :"Export alert rules"}),
-                confirmDeletion: this.context.intl.formatMessage({id: "wizard.confirmDeletion",  defaultMessage :"Do you really want to delete the alert rule"}),
-                confirmDisable: this.context.intl.formatMessage({id: "wizard.confirmDisable",  defaultMessage :"Do you really want to disable the alert rule"}),
+            infoDelete: this.context.intl.formatMessage({id: "wizard.buttonInfoDelete", defaultMessage: "Delete this alert rule"}),
+            infoUpdate: this.context.intl.formatMessage({id: "wizard.buttonInfoUpdate", defaultMessage: "Edit this alert rule"}),
+            infoEnable: this.context.intl.formatMessage({id: "wizard.buttonInfoEnable", defaultMessage: "Enable this alert rule"}),
+            infoDisable: this.context.intl.formatMessage({id: "wizard.buttonInfoDisable", defaultMessage: "Disable this alert rule"}),
+            infoClone: this.context.intl.formatMessage({id: "wizard.buttonInfoClone", defaultMessage: "Clone this alert rule"}),
+            createAlert: this.context.intl.formatMessage({id: "wizard.createAlert", defaultMessage: "Create alert rule"}),
+            importAlert: this.context.intl.formatMessage({id: "wizard.importAlert", defaultMessage: "Import alert rules"}),
+            exportAlert: this.context.intl.formatMessage({id: "wizard.exportAlert",  defaultMessage :"Export alert rules"}),
+            confirmDeletion: this.context.intl.formatMessage({id: "wizard.confirmDeletion",  defaultMessage :"Do you really want to delete the alert rule"}),
+            confirmDisable: this.context.intl.formatMessage({id: "wizard.confirmDisable",  defaultMessage :"Do you really want to disable the alert rule"}),
         };
         
         this.setState({fieldsTitle:fieldsTitle});
@@ -227,14 +227,6 @@ const AlertRuleList = createReactClass({
             );
         }
 
-        const eventDefinition = (
-                <LinkContainer disabled={!alertValid} to={Routes.ALERTS.DEFINITIONS.edit(alert.condition)} >
-                    <Button bsStyle="info" title={this.state.messages.eventDefinition} >
-                        <FormattedMessage id="wizard.eventDefinition" defaultMessage="Event definition" />
-                    </Button>
-                </LinkContainer>
-        );
-
         const notification = (
                 <LinkContainer disabled={!alertValid} to={Routes.ALERTS.NOTIFICATIONS.edit(alert.notification)} >
                     <Button bsStyle="info" title={this.state.messages.notification} >
@@ -253,8 +245,8 @@ const AlertRuleList = createReactClass({
         const actions = (
             <div className="alert-actions pull-left">
                 {updateAlert}{' '}
-                {eventDefinition}{' '}
-                {notification}{' '}
+                <ButtonToEventDefinition target={alert.condition} disabled={!alertValid} />{' '}
+                <ButtonToNotification target={alert.notification} disabled={!alertValid} />{' '}
                 {cloneAlert}{' '}
                 {deleteAction}{' '}
                 {toggleStreamLink}{' '}
