@@ -31,14 +31,14 @@ const TimeRangeCondition = createReactClass({
     },   
     getDefaultProps() {
         return {
-            time:1,
-            time_type:1,
+            time: 1,
+            time_type: 1,
         };
     },
     getInitialState() {       
         return {
-            time:this.props.time,
-            time_type:this.props.time_type,
+            time: this.props.time,
+            time_type: this.props.time_type,
         };
     },
     _availableTimeTypes() {
