@@ -23,7 +23,7 @@ import {Button, Col, Row} from 'components/graylog';
 import {Spinner} from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import AlertRuleActions from '../actions/AlertRuleActions';
-import Navigation from "../routing/Navigation";
+import Navigation from '../routing/Navigation';
 import {LinkContainer} from 'react-router-bootstrap';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import {FormattedMessage} from 'react-intl';
