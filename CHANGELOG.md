@@ -2,10 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
-## [4.0.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/3.3.0...4.0.0) (2021-11-26)
+## [4.0.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/3.3.0...4.0.0) (2021-12-01)
 ### Features
 * Add compatibility with Graylog 4.1
-* Changed plugin license to SSPL version 1
+* Change plugin license to SSPL version 1
+* Split "advanced settings" navigation button into two buttons, one to the alert definition, the other to the notification (issue #57)
+* Remove blocking dialog box at the end of rule creation (issue #57)
+* Add search input to filter rule to export by their title (issue #46)
+### Bug Fixes
+* The Aggregation Time Range in the configuration of the plugin is now taken into account when creating the notification of a rule (issue #47)
+* The input of Fields Conditions is now case sensitive (issue #48)
+* Return correct value for the additional_threshold_type when requesting a rule (issue #34)
 
 ## [3.3.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/3.2.5...3.3.0) (2020-10-27)
 ### Features
