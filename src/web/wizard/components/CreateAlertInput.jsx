@@ -157,7 +157,7 @@ const CreateAlertInput = createReactClass({
                 time_type = 1;
             }
         }
-        
+
         return {
             alert: alert,
             isModified: false,
@@ -296,7 +296,7 @@ const CreateAlertInput = createReactClass({
     },
     _handleSelect(selectedKey) {
         let alert = ObjectUtils.clone(this.state.alert);
-        if(alert.condition_type !== selectedKey){
+        if (alert.condition_type !== selectedKey) {
             this._updateAlertField("condition_type", selectedKey);
             alert.condition_type = selectedKey;
         }
