@@ -126,7 +126,6 @@ const CreateAlertInput = createReactClass({
         let time;
         let time_type;
         let alert = ObjectUtils.clone(this.props.alert);
-
         if (this.props.create) {
             alert.title = this.props.default_values.title;
             alert.severity = this.props.default_values.severity;
@@ -192,6 +191,7 @@ const CreateAlertInput = createReactClass({
                         isPluginCorrelation: isPluginCorrelationPresent,
                         isPluginLoggingAlert: isPluginLoggingAlertPresent
                     });
+                    // TODO severiry: this feels like a bug to me!!!
                     if (isPluginLoggingAlertPresent === false && this.state.alert.severiry !== '') {
                         const update = ObjectUtils.clone(this.state.alert);
                         update['severity'] = '';
@@ -316,20 +316,20 @@ const CreateAlertInput = createReactClass({
                 break;
             case 'STATISTICAL':
                 this.setState({
-                    contentComponent: <StatisticsCondition  onUpdate={this._updateAlertField} alert={alert} message={this.state.message} 
+                    contentComponent: <StatisticsCondition onUpdate={this._updateAlertField} alert={alert} message={this.state.message}
                         matchData={this.state.matchData} isPluginLoggingAlertPresent={this.state.isPluginLoggingAlert}/>
                 });
                 break;
             case 'THEN':
             case 'AND':
                 this.setState({
-                    contentComponent: <CorrelationCondition  onUpdate={this._updateAlertField} onUpdateAlert={this._updateAlert} alert={alert} 
+                    contentComponent: <CorrelationCondition onUpdate={this._updateAlertField} onUpdateAlert={this._updateAlert} alert={alert}
                         message={this.state.message} matchData={this.state.matchData} isPluginLoggingAlertPresent={this.state.isPluginLoggingAlert}/>
                 });
                 break;
             case 'OR':
                 this.setState({
-                    contentComponent: <OrCondition  onUpdate={this._updateAlertField} alert={alert} message={this.state.message} 
+                    contentComponent: <OrCondition onUpdate={this._updateAlertField} alert={alert} message={this.state.message}
                         matchData={this.state.matchData} isPluginLoggingAlertPresent={this.state.isPluginLoggingAlert}/>
                 });
                 break;
