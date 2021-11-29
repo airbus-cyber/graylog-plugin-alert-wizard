@@ -29,6 +29,7 @@ import UserNotification from 'util/UserNotification';
 import DateTime from 'logic/datetimes/DateTime';
 import IconDownload from '../components/icons/Download';
 import Navigation from '../routing/Navigation';
+import ControlledTableList from 'components/common/ControlledTableList';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
@@ -63,29 +64,25 @@ const ExportAlertPage = createReactClass({
         this.setState({ selectedAlertTitles: newSelection });
     },
     handleRuleSelect(event, title) {
-        console.log('I am correctly getting here');
         const { selectedAlertTitles } = this.state;
         if (event.target.checked) {
             selectedAlertTitles.add(title);
         } else {
             selectedAlertTitles.delete(title);
         }
-        console.log(selectedAlertTitles);
         this.setState({ selectedAlertTitles: selectedAlertTitles });
     },
     formatAlertRule(alertRule) {
         const { selectedAlertTitles } = this.state;
         return (
-            <Row>
+            <ControlledTableList.Item key={`alertRule_${alertRule.title}`} >
                 <Input id={`alertRule_${alertRule.title}`}
                        type="checkbox"
                        checked={selectedAlertTitles.has(alertRule.title)}
                        onChange={event => this.handleRuleSelect(event, alertRule.title)}
-                       name="alertRules"
-                       value={alertRule.title}
                        label={alertRule.title} />
-                <span className="help-inline"><FormattedMessage id= "wizard.fieldDescription" defaultMessage= "Description" />: <tt>{alertRule.description}</tt></span>
-            </Row>
+                <span className="description" style={{'margin-left': '20px'}}>{alertRule.description}</span>
+            </ControlledTableList.Item>
         );
     },
     formatAlertRules() {
@@ -113,8 +110,8 @@ const ExportAlertPage = createReactClass({
         });
     },
 
-    
     render() {
+
         // TODO should rather use ControlledTableList (see components/sidecar/administration/CollectorsAdministration)
         return (
             <IntlProvider locale={language} messages={messages[language]}> 
@@ -146,19 +143,23 @@ const ExportAlertPage = createReactClass({
                                             searchBsStyle="info"
                                             topMargin={0} />
                                 <Col sm={10}>
-                                    {this.isEmpty(this.state.alertRules) ?
-                                        <span className="help-block help-standalone">
+                                </Col>
+
+                                {this.isEmpty(this.state.alertRules) ?
+                                    <span className="help-block help-standalone">
                                             <FormattedMessage id ="wizard.noAlertRulesToExport" defaultMessage="There is no alert rule to export." />
                                         </span>
-                                        :
-                                        <span>
-                                          <Button className="btn btn-sm btn-link select-all" onClick={this.selectAllAlertRules}>
-                                              <FormattedMessage id ="wizard.selectAll" defaultMessage="Select all" />
-                                          </Button>
-                                          {this.formatAlertRules()}
-                                        </span>
-                                    }
-                                </Col>
+                                    :
+                                    <ControlledTableList>
+                                        <ControlledTableList.Header>
+                                            <Button className="btn btn-sm btn-link select-all" onClick={this.selectAllAlertRules}>
+                                                <FormattedMessage id ="wizard.selectAll" defaultMessage="Select all" />
+                                            </Button>
+                                        </ControlledTableList.Header>
+                                            {this.formatAlertRules()}
+                                    </ControlledTableList>
+                                }
+
                                 <Col sm={10}>
                                     <Button bsStyle="success" onClick={this.onSubmit}>
                                         <IconDownload/>
