@@ -16,8 +16,8 @@ jobs:
           cache: maven
       - name: Retrieve variables from pom
         id: requestPom
+        working-directory: plugin
         run: |
-          cd plugin
           echo ::set-output name=name::$(mvn help:evaluate -Dexpression=project.name -q -DforceStdout)
           echo ::set-output name=version::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo ::set-output name=graylogVersion::$(mvn help:evaluate -Dexpression=project.parent.version -q -DforceStdout)
@@ -36,8 +36,8 @@ jobs:
           path: graylog2-server
       - name: Build Graylog
         if: steps.cache.outputs.cache-hit != 'true'
+        working-directory: graylog2-server
         run: |
-          cd graylog2-server
           mvn compile -DskipTests=true --batch-mode
       - name: Cache node_modules
         uses: actions/cache@v2
@@ -45,18 +45,33 @@ jobs:
           path: plugin/node_modules
           key: ${{ hashFiles('plugin/yarn.lock') }}
       - name: Build plugin
+        working-directory: plugin
         run: |
-          cd plugin
           mvn package --batch-mode
-      - name: Check license headers
+      - name: Package signed .deb
+        working-directory: plugin
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
-          cd plugin
+          echo -n "$GPG_PRIVATE_KEY" | gpg2 --batch --allow-secret-key-import --import
+          gpg2 --export-secret-keys --batch --pinentry-mode loopback --passphrase "$PASSPHRASE" > $HOME/.gnupg/secring.gpg
+          mvn jdeb:jdeb --settings deployment/settings.xml
+      - name: Check license headers
+        working-directory: plugin
+        run: |
           mvn license:check
-      - name: Archive jar
+      - name: Archive .jar
         uses: actions/upload-artifact@v2
         with:
           name: jar
           path: plugin/target/${{ steps.requestPom.outputs.name }}-${{ steps.requestPom.outputs.version }}.jar
+          if-no-files-found: error
+      - name: Archive .deb
+        uses: actions/upload-artifact@v2
+        with:
+          name: deb
+          path: plugin/target/${{ steps.requestPom.outputs.name }}-${{ steps.requestPom.outputs.version }}.deb
           if-no-files-found: error
 
   backendTests:
@@ -77,18 +92,34 @@ jobs:
           source venv/bin/activate
           pip install -r requirements.txt
           python -m unittest
+
   release:
     runs-on: ubuntu-20.04
     needs: [build, backendTests]
     if: startsWith(github.ref, 'refs/tags/')
     steps:
-      - name: Download jar from build
+      - name: Download .jar from build
         uses: actions/download-artifact@v2
         with:
           name: jar
+      - name: Download .deb from build
+        uses: actions/download-artifact@v2
+        with:
+          name: deb
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
             *.jar
+            *.deb
           fail_on_unmatched_files: true
+      - name: Deploy to Maven Central
+        working-directory: plugin
+        env:
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          echo -n "$GPG_PRIVATE_KEY" | gpg2 --batch --allow-secret-key-import --import
+          mvn clean deploy -DskipTests=true --settings deployment/settings.xml
