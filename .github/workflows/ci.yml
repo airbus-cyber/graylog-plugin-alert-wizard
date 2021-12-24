@@ -48,6 +48,18 @@ jobs:
         working-directory: plugin
         run: |
           mvn package --batch-mode
+      - name: Copy jar to backend tests runtime
+        working-directory: plugin
+        run: |
+          mkdir runtime/graylog/plugin
+          cp target/${{ steps.requestPom.outputs.name }}-${{ steps.requestPom.outputs.version }}.jar runtime/graylog/plugin
+      - name: Execute backend tests
+        working-directory: plugin/validation
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+          python -m unittest
       - name: Package signed .deb
         working-directory: plugin
         env:
@@ -73,47 +85,16 @@ jobs:
           name: deb
           path: plugin/target/${{ steps.requestPom.outputs.name }}-${{ steps.requestPom.outputs.version }}.deb
           if-no-files-found: error
-
-  backendTests:
-    runs-on: ubuntu-20.04
-    needs: build
-    steps:
-      - name: Check out repository code
-        uses: actions/checkout@v2
-      - name: Download jar from build
-        uses: actions/download-artifact@v2
-        with:
-          name: jar
-          path: runtime/graylog/plugin
-      - name: Execute tests
-        working-directory: validation
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install -r requirements.txt
-          python -m unittest
-
-  release:
-    runs-on: ubuntu-20.04
-    needs: [build, backendTests]
-    if: startsWith(github.ref, 'refs/tags/')
-    steps:
-      - name: Download .jar from build
-        uses: actions/download-artifact@v2
-        with:
-          name: jar
-      - name: Download .deb from build
-        uses: actions/download-artifact@v2
-        with:
-          name: deb
       - name: Release
+        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            *.jar
-            *.deb
+            plugin/target/${{ steps.requestPom.outputs.name }}-${{ steps.requestPom.outputs.version }}.jar
+            plugin/target/${{ steps.requestPom.outputs.name }}-${{ steps.requestPom.outputs.version }}.deb
           fail_on_unmatched_files: true
       - name: Deploy to Maven Central
+        if: startsWith(github.ref, 'refs/tags/')
         working-directory: plugin
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
