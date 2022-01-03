@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.1.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/4.0.0...4.1.0) (2022-01-03)
+### Features
+
 ## [4.0.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/3.3.0...4.0.0) (2021-12-01)
 ### Features
 * Add compatibility with Graylog 4.1
