@@ -165,24 +165,23 @@ public class AlertRuleServiceImpl implements AlertRuleService {
 	}
 	
 	private boolean isValidThresholdType(String thresholdType) {
-		return  (thresholdType.equals("MORE") || thresholdType.equals("LESS"));
+		return (thresholdType.equals("MORE") || thresholdType.equals("LESS"));
 	}
 	
 	private boolean isValidStatThresholdType(String thresholdType) {
-		return  (thresholdType.equals("<") || thresholdType.equals("<=") ||
+		return (thresholdType.equals("<") || thresholdType.equals("<=") ||
 				thresholdType.equals(">") || thresholdType.equals(">=") || thresholdType.equals("=="));
 	}
 	
 	private boolean isValidCondition(String conditionType, Map<String, Object> conditionParameters, AlertRuleStreamImpl secondStream) {
-		if(		conditionParameters.containsKey(AlertRuleUtils.TIME) && 
-				conditionParameters.containsKey(AlertRuleUtils.THRESHOLD) &&	
-				conditionParameters.containsKey(AlertRuleUtils.THRESHOLD_TYPE)
-				) {
-			if(conditionType.equals("STATISTICAL")) {
+		if (conditionParameters.containsKey(AlertRuleUtils.TIME) &&
+			conditionParameters.containsKey(AlertRuleUtils.THRESHOLD) &&
+			conditionParameters.containsKey(AlertRuleUtils.THRESHOLD_TYPE)) {
+			if (conditionType.equals("STATISTICAL")) {
 				return isValidCondStatistical(conditionParameters);
-			}else if(conditionType.equals("THEN")  || conditionType.equals("AND")) {
+			} else if (conditionType.equals("THEN") || conditionType.equals("AND")) {
 				return isValidCondCorrelation(conditionParameters, secondStream);
-			}else if(conditionType.equals("OR")) {
+			} else if (conditionType.equals("OR")) {
 				return isValidCondOr(conditionParameters, secondStream);
 			}
 			return true;
