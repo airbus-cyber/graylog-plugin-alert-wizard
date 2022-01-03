@@ -103,9 +103,8 @@ public class AlertRuleServiceImpl implements AlertRuleService {
 	}
 
 	@Override
-	public int destroy(String alertTitle) {    
-
-		return coll.remove(DBQuery.is(TITLE, alertTitle)).getN();
+	public void destroy(String alertTitle) {
+		coll.remove(DBQuery.is(TITLE, alertTitle)).getN();
 	}
 	
 	@Override
