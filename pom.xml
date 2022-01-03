@@ -23,7 +23,7 @@
  	<parent>
 		<groupId>org.graylog.plugins</groupId>
 		<artifactId>graylog-plugin-web-parent</artifactId>
-		<version>4.1.2</version>
+		<version>4.2.3</version>
 	</parent>
 
 	<groupId>com.airbus-cyber-security.graylog</groupId>
@@ -133,17 +133,17 @@
 		<dependency>
 			<groupId>com.airbus-cyber-security.graylog</groupId>
 			<artifactId>graylog-plugin-aggregation-count</artifactId>
-			<version>4.0.1</version>
+			<version>4.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.airbus-cyber-security.graylog</groupId>
 			<artifactId>graylog-plugin-correlation-count</artifactId>
-			<version>4.0.1</version>
+			<version>4.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.airbus-cyber-security.graylog</groupId>
 			<artifactId>graylog-plugin-logging-alert</artifactId>
-			<version>4.0.4</version>
+			<version>4.1.0</version>
 		</dependency>
 	</dependencies>
 	<build>
