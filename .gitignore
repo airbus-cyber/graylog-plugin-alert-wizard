@@ -19,7 +19,9 @@ cache/
 # Location for built plugin
 runtime/graylog/plugin/
 
+# For backend tests
 __pycache__/
+/validation/venv/
 
 #IDE
 .idea/
