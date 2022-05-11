@@ -120,10 +120,10 @@ const CorrelationCondition = createReactClass({
         const buttonSwitchStream = <Button onClick={this._switchStreamNumberCondition} title="Switch" bsStyle="info" style={{ fontSize: '18px' }}><IconArrowsV/></Button>;
 
         let label;
-        if(this.props.alert.condition_type === 'THEN'){
-            label= <Row style={{ marginBottom: '0px' }}><Col md={2}></Col><Col md={2}><label><FormattedMessage id= "wizard.then" defaultMessage= "THEN" /></label></Col><Col md={8}>{buttonSwitchStream}</Col></Row>;
-        }else if (this.props.alert.condition_type === 'AND'){
-            label= <Row style={{ marginBottom: '0px' }}><Col md={2}></Col><Col md={10}><label><FormattedMessage id= "wizard.and" defaultMessage= "AND" /></label></Col></Row>;
+        if (this.props.alert.condition_type === 'THEN') {
+            label = <Row style={{ marginBottom: '0px' }}><Col md={2}></Col><Col md={2}><label><FormattedMessage id= "wizard.then" defaultMessage= "THEN" /></label></Col><Col md={8}>{buttonSwitchStream}</Col></Row>;
+        } else if (this.props.alert.condition_type === 'AND') {
+            label = <Row style={{ marginBottom: '0px' }}><Col md={2}></Col><Col md={10}><label><FormattedMessage id= "wizard.and" defaultMessage= "AND" /></label></Col></Row>;
         }
         
         return (
