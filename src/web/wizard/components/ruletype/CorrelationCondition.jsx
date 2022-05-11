@@ -48,7 +48,7 @@ const CorrelationCondition = createReactClass({
         };
     },
     componentWillReceiveProps(nextProps) {
-        if(nextProps.alert !== this.props.alert){
+        if (nextProps.alert !== this.props.alert) {
             this.setState({alert: nextProps.alert});
         }
     },
