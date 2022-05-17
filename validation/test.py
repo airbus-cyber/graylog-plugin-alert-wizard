@@ -12,8 +12,7 @@
 
 from unittest import TestCase
 from graylog_server import GraylogServer
-import requests
-from urllib import parse
+from graylog_rest_api import GraylogRestApi
 
 _AUTH = ('admin', 'admin')
 _HEADERS = {"X-Requested-By": "test-program"}
@@ -25,31 +24,14 @@ class Test(TestCase):
     def setUp(self) -> None:
         self._graylog = GraylogServer('../runtime')
         self._graylog.start()
-        self._graylog.wait_until_log('Graylog server up and running.', 60)
+        self._graylog_rest_api = GraylogRestApi()
+        self._graylog_rest_api.wait_until_graylog_has_started()
 
     def tearDown(self) -> None:
         self._graylog.stop()
 
-    def _build_url(self, path):
-        return parse.urljoin('http://127.0.0.1:9000/api/', path)
-
-    def _get(self, path):
-        url = self._build_url(path)
-        print('GET {}'.format(url))
-        return requests.get(url, auth=_AUTH, headers=_HEADERS)
-
-    def _put(self, path, payload):
-        url = self._build_url(path)
-        print('PUT {} {}'.format(url, payload))
-        return requests.put(url, json=payload, auth=_AUTH, headers=_HEADERS)
-
-    def _post(self, path, payload):
-        url = self._build_url(path)
-        print('POST {} {}'.format(url, payload))
-        return requests.post(url, json=payload, auth=_AUTH, headers=_HEADERS)
-
     def test_get_alerts_should_be_found(self):
-        response = self._get('plugins/com.airbus_cyber_security.graylog.wizard/alerts/data')
+        response = self._graylog_rest_api.get('plugins/com.airbus_cyber_security.graylog.wizard/alerts/data')
         self.assertEqual(200, response.status_code)
 
     def test_put_config_with_time_default_value_should_modify_time_default_value(self):
@@ -61,8 +43,8 @@ class Test(TestCase):
             },
             'field_order': []
         }
-        self._put('plugins/com.airbus_cyber_security.graylog.wizard/config', configuration)
-        response = self._get('plugins/com.airbus_cyber_security.graylog.wizard/config')
+        self._graylog_rest_api.put('plugins/com.airbus_cyber_security.graylog.wizard/config', configuration)
+        response = self._graylog_rest_api.get('plugins/com.airbus_cyber_security.graylog.wizard/config')
         body = response.json()
         self.assertEqual(1441, body['default_values']['time'])
 
@@ -95,7 +77,7 @@ class Test(TestCase):
             },
             'title': 'a'
         }
-        response = self._post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
+        response = self._graylog_rest_api.post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
         self.assertEqual(200, response.status_code)
 
     def test_set_logging_alert_configuration_should_not_fail(self):
@@ -108,7 +90,7 @@ class Test(TestCase):
             'separator': ' | ',
             'severity': 'LOW'
         }
-        response = self._put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', configuration)
+        response = self._graylog_rest_api.put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', configuration)
         # TODO should be 200 instead of 202!!
         self.assertEqual(202, response.status_code)
 
@@ -122,7 +104,7 @@ class Test(TestCase):
             'separator': ' | ',
             'severity': 'LOW'
         }
-        self._put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', configuration)
+        self._graylog_rest_api.put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', configuration)
         alert_rule = {
             'condition_parameters': {
                 'additional_threshold': 0,
@@ -151,8 +133,8 @@ class Test(TestCase):
             },
             'title': 'a'
         }
-        self._post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
-        notifications = self._get('events/notifications')
+        self._graylog_rest_api.post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
+        notifications = self._graylog_rest_api.get('events/notifications')
         associated_notification = None
         for notification in notifications.json()['notifications']:
             print(notification)
@@ -199,8 +181,8 @@ class Test(TestCase):
             },
             'title': 'b'
         }
-        self._post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
-        response = self._get('plugins/com.airbus_cyber_security.graylog.wizard/alerts/b/data')
+        self._graylog_rest_api.post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
+        response = self._graylog_rest_api.get('plugins/com.airbus_cyber_security.graylog.wizard/alerts/b/data')
         retrieved_alert_rule = response.json()
         self.assertEqual('LESS', retrieved_alert_rule['condition_parameters']['additional_threshold_type'])
 
@@ -243,10 +225,10 @@ class Test(TestCase):
             },
             'title': 'b'
         }
-        self._post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
+        self._graylog_rest_api.post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
         export_selection = {
             'titles': ['b']
         }
-        response = self._post('plugins/com.airbus_cyber_security.graylog.wizard/alerts/export', export_selection)
+        response = self._graylog_rest_api.post('plugins/com.airbus_cyber_security.graylog.wizard/alerts/export', export_selection)
         exported_alert_rule = response.json()
         self.assertEqual('LESS', exported_alert_rule[0]['condition_parameters']['additional_threshold_type'])
