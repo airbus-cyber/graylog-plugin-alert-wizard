@@ -143,6 +143,7 @@ class Test(TestCase):
         self.assertEqual(1441, associated_notification['config']['aggregation_time'])
 
     def test_get_alert_rule_should_return_correct_additional_threshold_type__issue34(self):
+        title = 'rule_title'
         alert_rule = {
             'condition_parameters': {
                 'additional_threshold': 0,
@@ -179,14 +180,14 @@ class Test(TestCase):
                 ],
                 'matching_type': 'AND'
             },
-            'title': 'b'
+            'title': title
         }
         self._graylog_rest_api.post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
-        response = self._graylog_rest_api.get('plugins/com.airbus_cyber_security.graylog.wizard/alerts/b/data')
-        retrieved_alert_rule = response.json()
+        retrieved_alert_rule = self._graylog_rest_api.get_alert_rule(title)
         self.assertEqual('LESS', retrieved_alert_rule['condition_parameters']['additional_threshold_type'])
 
     def test_export_alert_rule_should_return_correct_additional_threshold_type__issue34(self):
+        title = 'rule_title'
         alert_rule = {
             'condition_parameters': {
                 'additional_threshold': 0,
@@ -223,17 +224,18 @@ class Test(TestCase):
                 ],
                 'matching_type': 'AND'
             },
-            'title': 'b'
+            'title': title
         }
         self._graylog_rest_api.post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
         export_selection = {
-            'titles': ['b']
+            'titles': [title]
         }
         response = self._graylog_rest_api.post('plugins/com.airbus_cyber_security.graylog.wizard/alerts/export', export_selection)
         exported_alert_rule = response.json()
         self.assertEqual('LESS', exported_alert_rule[0]['condition_parameters']['additional_threshold_type'])
 
     def test_get_alert_rule_should_return_correct_additional_threshold__issue69(self):
+        title = 'rule_title'
         alert_rule = {
             'condition_parameters': {
                 'additional_threshold': 1,
@@ -270,9 +272,8 @@ class Test(TestCase):
                 ],
                 'matching_type': 'AND'
             },
-            'title': 'b'
+            'title': title
         }
         self._graylog_rest_api.post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
-        response = self._graylog_rest_api.get('plugins/com.airbus_cyber_security.graylog.wizard/alerts/b/data')
-        retrieved_alert_rule = response.json()
+        retrieved_alert_rule = self._graylog_rest_api.get_alert_rule(title)
         self.assertEqual(1, retrieved_alert_rule['condition_parameters']['additional_threshold'])

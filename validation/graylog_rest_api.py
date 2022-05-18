@@ -52,3 +52,7 @@ class GraylogRestApi:
             except ConnectionError:
                 pass
             time.sleep(1)
+
+    def get_alert_rule(self, name):
+        response = self.get('plugins/com.airbus_cyber_security.graylog.wizard/alerts/' + name)
+        return response.json()
