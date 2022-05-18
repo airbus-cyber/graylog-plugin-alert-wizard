@@ -173,7 +173,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_READ)
     public GetListAlertRule list() {
-        final List<AlertRule> alerts = alertRuleService.all();
+        final List<AlertRule> alerts = this.alertRuleService.all();
         return GetListAlertRule.create(alerts);
     }
 
@@ -190,7 +190,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             throws UnsupportedEncodingException, NotFoundException {
         String alertTitle = java.net.URLDecoder.decode(title, ENCODING);
 
-        final AlertRule alert = alertRuleService.load(alertTitle);
+        final AlertRule alert = this.alertRuleService.load(alertTitle);
         if (alert == null) {
             throw new NotFoundException("Alert <" + alertTitle + "> not found!");
         }
@@ -209,11 +209,11 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     public GetDataAlertRule getData(@ApiParam(name = TITLE, required = true) @PathParam(TITLE) String title)
             throws UnsupportedEncodingException, NotFoundException {
         String alertTitle = java.net.URLDecoder.decode(title, ENCODING);
-        AlertRule alert = alertRuleService.load(alertTitle);
+        AlertRule alert = this.alertRuleService.load(alertTitle);
         if (alert == null) {
             throw new NotFoundException("Alert <" + alertTitle + "> not found!");
         }
-        return alertRuleUtilsService.constructDataAlertRule(alert);
+        return this.alertRuleUtilsService.constructDataAlertRule(alert);
     }
 
     @GET

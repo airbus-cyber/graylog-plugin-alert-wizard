@@ -78,7 +78,7 @@ const CreateAlertInput = createReactClass({
     contextTypes: {
         intl: PropTypes.object.isRequired,
     },
-    componentWillMount(){
+    componentWillMount() {
         const messages = {
                 titlePopup: this.context.intl.formatMessage({id: "wizard.titlePopup", defaultMessage: "Alert rule is saved"}),
                 messagePopup: this.context.intl.formatMessage({id: "wizard.messagePopup", defaultMessage: "Go to Advanced settings?"}),
@@ -230,7 +230,7 @@ const CreateAlertInput = createReactClass({
         }
         if (value === '') {
             this.setState({isValid: false});
-        }else{
+        } else {
             this._checkAlert(update);
         }
     },  
