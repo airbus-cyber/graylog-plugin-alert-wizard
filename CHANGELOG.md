@@ -16,7 +16,7 @@ All notable changes to this project will be documented in this file.
 ### Features
 * Add compatibility with Graylog 4.1
 * Change plugin license to SSPL version 1
-* Split "advanced settings" navigation button into two buttons, one to the alert definition, the other to the notification (issue #57)
+* Split "advanced settings" navigation button into two buttons, one to the alert definition, the other to the notification ([issue #57](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/57))
 * Remove blocking dialog box at the end of rule creation ([issue #57](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/57))
 * Add search input to filter rule to export by their title ([issue #46](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/46))
 ### Bug Fixes
