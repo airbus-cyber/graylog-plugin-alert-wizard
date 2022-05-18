@@ -57,7 +57,6 @@ class Test(TestCase):
         notifications = self._graylog_rest_api.get('events/notifications')
         associated_notification = None
         for notification in notifications.json()['notifications']:
-            print(notification)
             if notification['title'] == title:
                 associated_notification = notification
         self.assertEqual(1441, associated_notification['config']['aggregation_time'])
