@@ -68,7 +68,7 @@ class GraylogRestApi:
                 'time': 1,
                 'type': ''
             },
-            condition_type: condition_type,
+            'condition_type': condition_type,
             'severity': 'info',
             'stream': {
                 'field_rule': [
