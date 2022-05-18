@@ -42,36 +42,8 @@ class Test(TestCase):
         self.assertEqual(default_time, body['default_values']['time'])
 
     def test_create_alert_rule_should_not_fail(self):
-        alert_rule = {
-            'condition_parameters': {
-                'additional_threshold': 0,
-                'additional_threshold_type': '',
-                'backlog': 500,
-                'distinction_fields': [],
-                'field': '',
-                'grace': 1,
-                'grouping_fields': [],
-                'threshold': 0,
-                'threshold_type': 'MORE',
-                'time': 1,
-                'type': ''
-            },
-            'condition_type': 'COUNT',
-            'severity': 'info',
-            'stream': {
-                'field_rule': [
-                    {
-                        'field': 'source',
-                        'type': 1,
-                        'value': 'toto'
-                    }
-                ],
-                'matching_type': 'AND'
-            },
-            'title': 'a'
-        }
-        response = self._graylog_rest_api.post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
-        self.assertEqual(200, response.status_code)
+        status_code = self._graylog_rest_api.create_alert_rule()
+        self.assertEqual(200, status_code)
 
     def test_set_logging_alert_configuration_should_not_fail(self):
         status_code = self._graylog_rest_api.update_logging_alert_plugin_configuration()
