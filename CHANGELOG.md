@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 * The correct value of the additional threshold is now displayed when editing an alert rule ([issue #69](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/69))
 ### Changes
 * Rest resource plugins/com.airbus_cyber_security.graylog.wizard/alerts/{alert_name} now returns the same response as plugins/com.airbus_cyber_security.graylog.wizard/alerts/{alert_name}/data
+* Removed rest resource plugins/com.airbus_cyber_security.graylog.wizard/alerts/{alert_name}/data
 
 ## [4.1.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/4.0.0...4.1.0) (2022-01-03)
 ### Features

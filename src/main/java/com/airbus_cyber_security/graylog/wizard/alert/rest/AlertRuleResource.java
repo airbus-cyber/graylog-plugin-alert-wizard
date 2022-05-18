@@ -197,20 +197,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     }
 
     @GET
-    @Path("/{title}/data")
-    @Timed
-    @ApiOperation(value = "Get a alert with additional data")
-    @RequiresAuthentication
-    @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_READ)
-    @ApiResponses(value = {
-            @ApiResponse(code = 404, message = "Alert not found."),
-    })
-    public GetDataAlertRule getData(@ApiParam(name = TITLE, required = true) @PathParam(TITLE) String title)
-            throws UnsupportedEncodingException, NotFoundException {
-        return this.get(title);
-    }
-
-    @GET
     @Path("/data")
     @Timed
     @ApiOperation(value = "Lists all existing alerts with additional data")
