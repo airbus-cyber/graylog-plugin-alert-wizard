@@ -71,11 +71,7 @@ class Test(TestCase):
     def test_export_alert_rule_should_return_correct_additional_threshold_type__issue34(self):
         title = 'rule_title'
         self._graylog_rest_api.create_alert_rule_and(title)
-        export_selection = {
-            'titles': [title]
-        }
-        response = self._graylog_rest_api.post('plugins/com.airbus_cyber_security.graylog.wizard/alerts/export', export_selection)
-        exported_alert_rule = response.json()
+        exported_alert_rule = self._graylog_rest_api.create_alert_rules_export([title])
         self.assertEqual('LESS', exported_alert_rule[0]['condition_parameters']['additional_threshold_type'])
 
     def test_get_alert_rule_should_return_correct_additional_threshold__issue69(self):
