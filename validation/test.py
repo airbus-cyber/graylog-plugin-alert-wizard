@@ -81,30 +81,12 @@ class Test(TestCase):
         self.assertEqual(200, response.status_code)
 
     def test_set_logging_alert_configuration_should_not_fail(self):
-        configuration = {
-            'aggregation_time': '1441',
-            'alert_tag': 'LoggingAlert',
-            'field_alert_id': 'id',
-            'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
-            'overflow_tag': 'LoggingOverflow',
-            'separator': ' | ',
-            'severity': 'LOW'
-        }
-        response = self._graylog_rest_api.put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', configuration)
+        status_code = self._graylog_rest_api.update_logging_alert_plugin_configuration()
         # TODO should be 200 instead of 202!!
-        self.assertEqual(202, response.status_code)
+        self.assertEqual(202, status_code)
 
     def test_default_time_range_in_configuration_should_propagate_into_notification_time_range__issue47(self):
-        configuration = {
-            'aggregation_time': '1441',
-            'alert_tag': 'LoggingAlert',
-            'field_alert_id': 'id',
-            'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
-            'overflow_tag': 'LoggingOverflow',
-            'separator': ' | ',
-            'severity': 'LOW'
-        }
-        self._graylog_rest_api.put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', configuration)
+        self._graylog_rest_api.update_logging_alert_plugin_configuration()
         alert_rule = {
             'condition_parameters': {
                 'additional_threshold': 0,

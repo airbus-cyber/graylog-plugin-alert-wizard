@@ -56,3 +56,16 @@ class GraylogRestApi:
     def get_alert_rule(self, name):
         response = self.get('plugins/com.airbus_cyber_security.graylog.wizard/alerts/' + name)
         return response.json()
+
+    def update_logging_alert_plugin_configuration(self):
+        configuration = {
+            'aggregation_time': '1441',
+            'alert_tag': 'LoggingAlert',
+            'field_alert_id': 'id',
+            'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
+            'overflow_tag': 'LoggingOverflow',
+            'separator': ' | ',
+            'severity': 'LOW'
+        }
+        response = self.put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', configuration)
+        return response.status_code
