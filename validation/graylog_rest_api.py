@@ -86,7 +86,7 @@ class GraylogRestApi:
             alert_rule.update({
                 'second_stream': second_stream
             })
-        response = self.post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
+        response = self._post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
         return response.status_code
 
     def create_alert_rule_count(self, title):
@@ -109,7 +109,7 @@ class GraylogRestApi:
         export_selection = {
             'titles': alert_rule_titles
         }
-        response = self.post('plugins/com.airbus_cyber_security.graylog.wizard/alerts/export', export_selection)
+        response = self._post('plugins/com.airbus_cyber_security.graylog.wizard/alerts/export', export_selection)
         return response.json()
 
     def get_alert_rule(self, name):
