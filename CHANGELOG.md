@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [4.2.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/4.1.0...4.2.0)
 ### Bug Fixes
-* The correct value of the additional threshold is now displayed when editing an alert rule (issue [#69](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/69))
+* The correct value of the additional threshold is now displayed when editing an alert rule ([issue #69](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/69))
 ### Changes
 * Rest resource plugins/com.airbus_cyber_security.graylog.wizard/alerts/{alert_name} now returns the same response as plugins/com.airbus_cyber_security.graylog.wizard/alerts/{alert_name}/data
 
@@ -17,12 +17,12 @@ All notable changes to this project will be documented in this file.
 * Add compatibility with Graylog 4.1
 * Change plugin license to SSPL version 1
 * Split "advanced settings" navigation button into two buttons, one to the alert definition, the other to the notification (issue #57)
-* Remove blocking dialog box at the end of rule creation (issue #57)
-* Add search input to filter rule to export by their title (issue #46)
+* Remove blocking dialog box at the end of rule creation ([issue #57](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/57))
+* Add search input to filter rule to export by their title ([issue #46](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/46))
 ### Bug Fixes
-* The Aggregation Time Range in the configuration of the plugin is now taken into account when creating the notification of a rule (issue #47)
-* The input of Fields Conditions is now case sensitive (issue #48)
-* Return correct value for the additional_threshold_type when requesting a rule (issue #34)
+* The Aggregation Time Range in the configuration of the plugin is now taken into account when creating the notification of a rule ([issue #47](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/47))
+* The input of Fields Conditions is now case sensitive ([issue #48](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/48))
+* Return correct value for the additional_threshold_type when requesting a rule ([issue #34](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/34))
 
 ## [3.3.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/3.2.5...3.3.0) (2020-10-27)
 ### Features
