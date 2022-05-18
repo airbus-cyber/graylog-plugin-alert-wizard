@@ -59,7 +59,7 @@ jobs:
           python -m venv venv
           source venv/bin/activate
           pip install -r requirements.txt
-          python -m unittest
+          python -m unittest --verbose
       - name: Package signed .deb
         working-directory: plugin
         env:
