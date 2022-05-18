@@ -90,7 +90,7 @@ class GraylogRestApi:
         return response.status_code
 
     def create_alert_rule_count(self, title):
-        self._create_alert_rule(title, 'COUNT')
+        return self._create_alert_rule(title, 'COUNT')
 
     def create_alert_rule_and(self, title):
         second_stream = {
@@ -103,7 +103,7 @@ class GraylogRestApi:
             ],
             'matching_type': 'AND'
         }
-        self._create_alert_rule(title, 'AND', additional_threshold_type='LESS', second_stream=second_stream)
+        return self._create_alert_rule(title, 'AND', additional_threshold_type='LESS', second_stream=second_stream)
 
     def get_alert_rule(self, name):
         response = self.get('plugins/com.airbus_cyber_security.graylog.wizard/alerts/' + name)
