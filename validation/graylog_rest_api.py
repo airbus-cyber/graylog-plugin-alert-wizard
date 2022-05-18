@@ -53,7 +53,7 @@ class GraylogRestApi:
                 pass
             time.sleep(1)
 
-    def create_alert_rule(self):
+    def create_alert_rule(self, title):
         alert_rule = {
             'condition_parameters': {
                 'additional_threshold': 0,
@@ -80,7 +80,7 @@ class GraylogRestApi:
                 ],
                 'matching_type': 'AND'
             },
-            'title': 'a'
+            'title': title
         }
         response = self.post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
         return response.status_code
