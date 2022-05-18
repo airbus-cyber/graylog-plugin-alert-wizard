@@ -21,7 +21,7 @@ class GraylogRestApi:
         self._print('GET {} => {}'.format(url, response.status_code))
         return response
 
-    def put(self, path, payload):
+    def _put(self, path, payload):
         url = self._build_url(path)
         response = requests.put(url, json=payload, auth=_AUTH, headers=_HEADERS)
         self._print('PUT {} {} => {}'.format(url, payload, response.status_code))
@@ -67,5 +67,16 @@ class GraylogRestApi:
             'separator': ' | ',
             'severity': 'LOW'
         }
-        response = self.put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', configuration)
+        response = self._put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', configuration)
         return response.status_code
+
+    def update_alert_rules_settings(self, default_time):
+        configuration = {
+            'default_values': {
+                'matching_type': '',
+                'threshold_type': '',
+                'time': default_time
+            },
+            'field_order': []
+        }
+        self._put('plugins/com.airbus_cyber_security.graylog.wizard/config', configuration)

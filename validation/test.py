@@ -35,18 +35,11 @@ class Test(TestCase):
         self.assertEqual(200, response.status_code)
 
     def test_put_config_with_time_default_value_should_modify_time_default_value(self):
-        configuration = {
-            'default_values': {
-                'matching_type': '',
-                'threshold_type': '',
-                'time': '1441'
-            },
-            'field_order': []
-        }
-        self._graylog_rest_api.put('plugins/com.airbus_cyber_security.graylog.wizard/config', configuration)
+        default_time = 1441
+        self._graylog_rest_api.update_alert_rules_settings(default_time)
         response = self._graylog_rest_api.get('plugins/com.airbus_cyber_security.graylog.wizard/config')
         body = response.json()
-        self.assertEqual(1441, body['default_values']['time'])
+        self.assertEqual(default_time, body['default_values']['time'])
 
     def test_create_alert_rule_should_not_fail(self):
         alert_rule = {
