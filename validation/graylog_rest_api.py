@@ -82,7 +82,7 @@ class GraylogRestApi:
             },
             'title': 'a'
         }
-        response = self._graylog_rest_api.post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
+        response = self.post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
         return response.status_code
 
     def get_alert_rule(self, name):
