@@ -42,7 +42,7 @@ class Test(TestCase):
         self.assertEqual(default_time, body['default_values']['time'])
 
     def test_create_alert_rule_should_not_fail(self):
-        status_code = self._graylog_rest_api.create_alert_rule('alert_rule_title')
+        status_code = self._graylog_rest_api.create_alert_rule_count('alert_rule_title')
         self.assertEqual(200, status_code)
 
     def test_set_logging_alert_configuration_should_not_fail(self):
@@ -53,7 +53,7 @@ class Test(TestCase):
     def test_default_time_range_in_configuration_should_propagate_into_notification_time_range__issue47(self):
         self._graylog_rest_api.update_logging_alert_plugin_configuration()
         title = 'alert_rule_title'
-        self._graylog_rest_api.create_alert_rule(title)
+        self._graylog_rest_api.create_alert_rule_count(title)
         notifications = self._graylog_rest_api.get('events/notifications')
         associated_notification = None
         for notification in notifications.json()['notifications']:
@@ -108,45 +108,7 @@ class Test(TestCase):
 
     def test_export_alert_rule_should_return_correct_additional_threshold_type__issue34(self):
         title = 'rule_title'
-        alert_rule = {
-            'condition_parameters': {
-                'additional_threshold': 0,
-                'additional_threshold_type': 'LESS',
-                'backlog': 500,
-                'distinction_fields': [],
-                'field': '',
-                'grace': 1,
-                'grouping_fields': [],
-                'threshold': 0,
-                'threshold_type': 'MORE',
-                'time': 1,
-                'type': ''
-            },
-            'condition_type': 'AND',
-            'second_stream': {
-                'field_rule': [
-                    {
-                        'field': 'b',
-                        'type': 1,
-                        'value': 'titi'
-                    }
-                ],
-                'matching_type': 'AND'
-            },
-            'severity': 'info',
-            'stream': {
-                'field_rule': [
-                    {
-                        'field': 'a',
-                        'type': 1,
-                        'value': 'toto'
-                    }
-                ],
-                'matching_type': 'AND'
-            },
-            'title': title
-        }
-        self._graylog_rest_api.post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
+        self._graylog_rest_api.create_alert_rule_and(title)
         export_selection = {
             'titles': [title]
         }

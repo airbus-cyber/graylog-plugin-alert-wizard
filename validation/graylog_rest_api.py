@@ -53,11 +53,11 @@ class GraylogRestApi:
                 pass
             time.sleep(1)
 
-    def create_alert_rule(self, title):
+    def _create_alert_rule(self, title, condition_type, additional_threshold_type='', second_stream=None):
         alert_rule = {
             'condition_parameters': {
                 'additional_threshold': 0,
-                'additional_threshold_type': '',
+                'additional_threshold_type': additional_threshold_type,
                 'backlog': 500,
                 'distinction_fields': [],
                 'field': '',
@@ -68,7 +68,7 @@ class GraylogRestApi:
                 'time': 1,
                 'type': ''
             },
-            'condition_type': 'COUNT',
+            condition_type: condition_type,
             'severity': 'info',
             'stream': {
                 'field_rule': [
@@ -82,8 +82,28 @@ class GraylogRestApi:
             },
             'title': title
         }
+        if second_stream:
+            alert_rule.update({
+                'second_stream': second_stream
+            })
         response = self.post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
         return response.status_code
+
+    def create_alert_rule_count(self, title):
+        self._create_alert_rule(title, 'COUNT')
+
+    def create_alert_rule_and(self, title):
+        second_stream = {
+            'field_rule': [
+                {
+                    'field': 'b',
+                    'type': 1,
+                    'value': 'titi'
+                }
+            ],
+            'matching_type': 'AND'
+        }
+        self._create_alert_rule(title, 'AND', additional_threshold_type='LESS', second_stream=second_stream)
 
     def get_alert_rule(self, name):
         response = self.get('plugins/com.airbus_cyber_security.graylog.wizard/alerts/' + name)
