@@ -186,15 +186,14 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     @ApiResponses(value = {
             @ApiResponse(code = 404, message = "Alert not found."),
     })
-    public GetAlertRule get(@ApiParam(name = TITLE, required = true) @PathParam(TITLE) String title)
+    public GetDataAlertRule get(@ApiParam(name = TITLE, required = true) @PathParam(TITLE) String title)
             throws UnsupportedEncodingException, NotFoundException {
         String alertTitle = java.net.URLDecoder.decode(title, ENCODING);
-
-        final AlertRule alert = this.alertRuleService.load(alertTitle);
+        AlertRule alert = this.alertRuleService.load(alertTitle);
         if (alert == null) {
             throw new NotFoundException("Alert <" + alertTitle + "> not found!");
         }
-        return GetAlertRule.create(alert);
+        return this.alertRuleUtilsService.constructDataAlertRule(alert);
     }
 
     @GET
@@ -208,12 +207,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     })
     public GetDataAlertRule getData(@ApiParam(name = TITLE, required = true) @PathParam(TITLE) String title)
             throws UnsupportedEncodingException, NotFoundException {
-        String alertTitle = java.net.URLDecoder.decode(title, ENCODING);
-        AlertRule alert = this.alertRuleService.load(alertTitle);
-        if (alert == null) {
-            throw new NotFoundException("Alert <" + alertTitle + "> not found!");
-        }
-        return this.alertRuleUtilsService.constructDataAlertRule(alert);
+        return this.get(title);
     }
 
     @GET

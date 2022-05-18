@@ -64,9 +64,8 @@ const AlertRuleStore = Reflux.createStore({
         const promise = fetch('GET', URLUtils.qualifyUrl(this.sourceUrl + '/' + encodeURIComponent(name)))
             .then(
                 response => {
-                    this.alert = response.alert;
-                    this.trigger({alert: this.alert});
-                    return this.alert;
+                    this.trigger({alert: response});
+                    return response;
                 },
                 error => {
                     UserNotification.error(`Fetching alert rule failed with status: ${error}`,
