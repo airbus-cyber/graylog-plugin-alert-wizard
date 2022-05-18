@@ -52,7 +52,7 @@ const UpdateAlertPage = createReactClass({
         AlertRuleActions.get(this.props.params.alertRuleTitle).then(alert => {
             this.setState({alert: alert});
         });
-        AlertRuleActions.getData(this.props.params.alertRuleTitle).then(alertData => {
+        AlertRuleActions.get(this.props.params.alertRuleTitle).then(alertData => {
             this.setState({alertData: alertData});
         });
     },

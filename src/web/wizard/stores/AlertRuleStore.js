@@ -73,19 +73,6 @@ const AlertRuleStore = Reflux.createStore({
                 });
         AlertRuleActions.get.promise(promise);
     },
-    getData(name) {
-        const promise = fetch('GET', URLUtils.qualifyUrl(this.sourceUrl + '/' + encodeURIComponent(name) + '/data'))
-            .then(
-                response => {
-                    this.trigger({alertData: response});
-                    return response;
-                },
-                error => {
-                    UserNotification.error(`Fetching alert rule data failed with status: ${error}`,
-                        'Could not retrieve alert rule data');
-                });
-        AlertRuleActions.getData.promise(promise);
-    },
     create(newAlert) {
         const url = URLUtils.qualifyUrl(this.sourceUrl);
 

@@ -204,7 +204,7 @@ const CreateAlertInput = createReactClass({
     _save() {
         AlertRuleActions.create.triggerPromise(this.state.alert).then((response) => {
             if (response === true) {
-                AlertRuleActions.getData(this.state.alert.title).then(alert => {
+                AlertRuleActions.get(this.state.alert.title).then(alert => {
                     this.setState({alert: alert}, Navigation.redirectToWizard);
                 });
             }
@@ -214,7 +214,7 @@ const CreateAlertInput = createReactClass({
     _update() {
         AlertRuleActions.update.triggerPromise(this.props.alert.title, this.state.alert).then((response) => {
             if (response === true) {
-                AlertRuleActions.getData(this.state.alert.title).then(alert => {
+                AlertRuleActions.get(this.state.alert.title).then(alert => {
                     this.setState({alert: alert}, Navigation.redirectToWizard);
                 });
             }
