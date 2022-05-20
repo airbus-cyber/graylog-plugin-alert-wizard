@@ -17,13 +17,13 @@
 
 import React from 'react';
 import createReactClass from 'create-react-class';
-import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
+import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
 import messages_fr from '../../translations/fr.json';
 import { Row, Col, Button } from 'components/graylog';
 import AlertRuleActions from '../actions/AlertRuleActions';
-import {DocumentTitle, PageHeader} from 'components/common';
+import { DocumentTitle, PageHeader, SearchForm } from 'components/common';
 import { Input } from 'components/bootstrap';
-import {LinkContainer} from 'react-router-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 import Navigation from '../routing/Navigation';
 import ControlledTableList from 'components/common/ControlledTableList';
 
@@ -40,6 +40,7 @@ const ImportAlertPage = createReactClass({
 
     getInitialState() {
         return {
+            alertTitlesFilter: '',
             selectedAlertTitles: new Set()
         };
     },
@@ -92,7 +93,14 @@ const ImportAlertPage = createReactClass({
     },
     formatAlertRules() {
       return this.state.alertRules
+                 .filter(rule => rule.title.includes(this.state.alertTitlesFilter))
                  .map(this.formatAlertRule);
+    },
+    onSearch(filter) {
+        this.setState({ alertTitlesFilter: filter });
+    },
+    onReset() {
+        this.setState({ alertTitlesFilter: '' });
     },
     onSubmitApplyAlertRules(evt) {
         evt.preventDefault();
@@ -138,22 +146,30 @@ const ImportAlertPage = createReactClass({
                         </Row>
                         <Row className="content">
                             <Col md={12}>
-                                    {this.isEmpty(this.state.alertRules) ?
-                                        <span className="help-block help-standalone">
-                                            <FormattedMessage id ="wizard.noAlertRulesToExport" defaultMessage="There are no alert rules to import." />
-                                        </span>
-                                        :
-                                        <ControlledTableList>
-                                            <ControlledTableList.Header>
-                                                <Button className="btn btn-sm btn-link select-all" onClick={this.selectAllAlertRules}>
-                                                    <FormattedMessage id ="wizard.selectAll" defaultMessage="Select all" />
-                                                </Button>
-                                            </ControlledTableList.Header>
-                                            {this.formatAlertRules()}
-                                        </ControlledTableList>
-                                    }
-                            </Col>
-                            <Col md={12}>
+                                <SearchForm onSearch={this.onSearch}
+                                            onReset={this.onReset}
+                                            searchButtonLabel="Filter"
+                                            placeholder="Filter alert rules by title..."
+                                            queryWidth={400}
+                                            resetButtonLabel="Reset"
+                                            searchBsStyle="info"
+                                            topMargin={0} />
+
+                                {this.isEmpty(this.state.alertRules) ?
+                                    <span className="help-block help-standalone">
+                                         <FormattedMessage id ="wizard.noAlertRulesToExport" defaultMessage="There are no alert rules to import." />
+                                    </span>
+                                    :
+                                    <ControlledTableList>
+                                        <ControlledTableList.Header>
+                                            <Button className="btn btn-sm btn-link select-all" onClick={this.selectAllAlertRules}>
+                                                <FormattedMessage id ="wizard.selectAll" defaultMessage="Select all" />
+                                            </Button>
+                                        </ControlledTableList.Header>
+                                        {this.formatAlertRules()}
+                                    </ControlledTableList>
+                                }
+
                                 <Button bsStyle="success" onClick={this.onSubmitApplyAlertRules}>
                                     <FormattedMessage id="wizard.applyAlertRules" defaultMessage="Apply alert rules" />
                                 </Button>
