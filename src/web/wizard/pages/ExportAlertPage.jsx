@@ -56,7 +56,7 @@ const ExportAlertPage = createReactClass({
     isEmpty(obj) {
         return ((obj === undefined) || (typeof obj.count === 'function' ? obj.count() === 0 : obj.length === 0));
     },
-    selectAllAlertRules(){
+    selectAllAlertRules() {
         const { alertRules } = this.state;
 
         const newSelection = new Set(alertRules.map(rule => rule.title));
@@ -75,7 +75,7 @@ const ExportAlertPage = createReactClass({
     formatAlertRule(alertRule) {
         const { selectedAlertTitles } = this.state;
         return (
-            <ControlledTableList.Item key={`alertRule_${alertRule.title}`} >
+            <ControlledTableList.Item key={`alertRule_${alertRule.title}`}>
                 <Input id={`alertRule_${alertRule.title}`}
                        type="checkbox"
                        checked={selectedAlertTitles.has(alertRule.title)}
@@ -87,8 +87,7 @@ const ExportAlertPage = createReactClass({
     },
     formatAlertRules() {
       return this.state.alertRules
-                 // TODO should be able to remove { return ... }, just put ...
-                 .sort((rule1, rule2) => { return rule1.title.localeCompare(rule2.title); })
+                 .sort((rule1, rule2) => rule1.title.localeCompare(rule2.title))
                  .filter(rule => rule.title.includes(this.state.alertTitlesFilter))
                  .map(this.formatAlertRule);
     },
@@ -154,7 +153,7 @@ const ExportAlertPage = createReactClass({
                                                 <FormattedMessage id ="wizard.selectAll" defaultMessage="Select all" />
                                             </Button>
                                         </ControlledTableList.Header>
-                                            {this.formatAlertRules()}
+                                        {this.formatAlertRules()}
                                     </ControlledTableList>
                                 }
 

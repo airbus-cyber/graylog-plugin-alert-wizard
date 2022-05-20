@@ -22,22 +22,26 @@ import messages_fr from '../../translations/fr.json';
 import { Row, Col, Button } from 'components/graylog';
 import AlertRuleActions from '../actions/AlertRuleActions';
 import {DocumentTitle, PageHeader} from 'components/common';
+import { Input } from 'components/bootstrap';
 import {LinkContainer} from 'react-router-bootstrap';
 import Navigation from '../routing/Navigation';
+import ControlledTableList from 'components/common/ControlledTableList';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
 addLocaleData(frLocaleData);
 
 const messages = {
-        'fr': messages_fr
-    };
+    'fr': messages_fr
+};
 
 const ImportAlertPage = createReactClass({
     displayName: 'ImportAlertPage',
 
     getInitialState() {
-        return {};
+        return {
+            selectedAlertTitles: new Set()
+        };
     },
     
     onSubmitUploadFile(submitEvent) {
@@ -57,31 +61,45 @@ const ImportAlertPage = createReactClass({
     isEmpty(obj) {
         return ((obj === undefined) || (typeof obj.count === 'function' ? obj.count() === 0 : obj.length === 0));
     },
-    selectAllAlertRules(){
-        Object.keys(this.refs).forEach((key) => {
-            if (key.indexOf('alertRules') === 0) {
-              this.refs[key].checked = true;
-            }
-          });
+    selectAllAlertRules() {
+        const { alertRules } = this.state;
+
+        const newSelection = new Set(alertRules.map(rule => rule.title));
+
+        this.setState({ selectedAlertTitles: newSelection });
+    },
+    handleRuleSelect(event, title) {
+        const { selectedAlertTitles } = this.state;
+        if (event.target.checked) {
+            selectedAlertTitles.add(title);
+        } else {
+            selectedAlertTitles.delete(title);
+        }
+        this.setState({ selectedAlertTitles: selectedAlertTitles });
     },
     formatAlertRule(alertRule) {
+        const { selectedAlertTitles } = this.state;
         return (
-          <div className="checkbox" key={`alertRule_checkbox-${alertRule.title}`}>
-            <label className="checkbox"><input ref={`alertRules.${alertRule.title}`} type="checkbox" name="alertRules" id={`alertRule_${alertRule.title}`} value={JSON.stringify(alertRule)} />{alertRule.title}</label>
+          <ControlledTableList.Item key={`alertRule_${alertRule.title}`}>
+                <Input id={`alertRule_${alertRule.title}`}
+                       type="checkbox"
+                       checked={selectedAlertTitles.has(alertRule.title)}
+                       onChange={event => this.handleRuleSelect(event, alertRule.title)}
+                       label={alertRule.title} />
             <span className="help-inline"><FormattedMessage id= "wizard.fieldDescription" defaultMessage= "Description" />: <tt>{alertRule.description}</tt></span>
-          </div>
+          </ControlledTableList.Item>
         );
     },
-    onSubmitApplyAlertRules(evt){
+    formatAlertRules() {
+      return this.state.alertRules
+                 .map(this.formatAlertRule);
+    },
+    onSubmitApplyAlertRules(evt) {
         evt.preventDefault();
-        const request = [];
         
-        Object.keys(this.refs).forEach((key, idx) => {
-          if (key.indexOf('alertRules') === 0 && this.refs[key].checked === true) {
-            request.push(JSON.parse(this.refs[key].value));
-          } 
-        });
-                
+        const { alertRules, selectedAlertTitles } = this.state;
+        const request = alertRules.filter(alertRule => selectedAlertTitles.has(alertRule.title))
+
         AlertRuleActions.importAlertRules(request);
     },
     
@@ -126,16 +144,18 @@ const ImportAlertPage = createReactClass({
                                             <FormattedMessage id ="wizard.noAlertRulesToExport" defaultMessage="There are no alert rules to import." />
                                         </span>
                                         :
-                                        <span>
-                                          <Button className="btn btn-sm btn-link select-all" onClick={this.selectAllAlertRules}>
-                                              <FormattedMessage id ="wizard.selectAll" defaultMessage="Select all" />
-                                          </Button>
-                                          {this.state.alertRules.map(this.formatAlertRule)}
-                                        </span>
+                                        <ControlledTableList>
+                                            <ControlledTableList.Header>
+                                                <Button className="btn btn-sm btn-link select-all" onClick={this.selectAllAlertRules}>
+                                                    <FormattedMessage id ="wizard.selectAll" defaultMessage="Select all" />
+                                                </Button>
+                                            </ControlledTableList.Header>
+                                            {this.formatAlertRules()}
+                                        </ControlledTableList>
                                     }
                                 </Col>
                                 <Col sm={10}>
-                                    <Button bsStyle="success" type="submit">
+                                    <Button bsStyle="success" onClick={this.onSubmitApplyAlertRules}>
                                         <FormattedMessage id ="wizard.applyAlertRules" defaultMessage="Apply alert rules" />
                                     </Button>
                                 </Col>
