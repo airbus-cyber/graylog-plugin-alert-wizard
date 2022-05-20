@@ -81,7 +81,7 @@ const ExportAlertPage = createReactClass({
                        checked={selectedAlertTitles.has(alertRule.title)}
                        onChange={event => this.handleRuleSelect(event, alertRule.title)}
                        label={alertRule.title} />
-                <span className="description" style={{'margin-left': '20px'}}>{alertRule.description}</span>
+                <p className="description" style={{'margin-left': '20px'}}>{alertRule.description}</p>
             </ControlledTableList.Item>
         );
     },

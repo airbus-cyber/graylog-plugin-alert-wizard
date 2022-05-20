@@ -80,6 +80,7 @@ const ImportAlertPage = createReactClass({
     },
     formatAlertRule(alertRule) {
         const { selectedAlertTitles } = this.state;
+        // TODO think about it, try to remove the inline "style". And add this to the coding rules
         return (
           <ControlledTableList.Item key={`alertRule_${alertRule.title}`}>
                 <Input id={`alertRule_${alertRule.title}`}
@@ -87,7 +88,7 @@ const ImportAlertPage = createReactClass({
                        checked={selectedAlertTitles.has(alertRule.title)}
                        onChange={event => this.handleRuleSelect(event, alertRule.title)}
                        label={alertRule.title} />
-            <span className="help-inline"><FormattedMessage id= "wizard.fieldDescription" defaultMessage= "Description" />: <tt>{alertRule.description}</tt></span>
+            <p className="description" style={{'margin-left': '20px'}}>{alertRule.description}</p>
           </ControlledTableList.Item>
         );
     },
@@ -117,9 +118,9 @@ const ImportAlertPage = createReactClass({
             <IntlProvider locale={language} messages={messages[language]}>    
                 <DocumentTitle title="Import alert rule">
                     <div>
-                        <PageHeader title={<FormattedMessage id= "wizard.importWizardAlertRule" defaultMessage= "Wizard: Import alert rules" />}>
+                        <PageHeader title={<FormattedMessage id="wizard.importWizardAlertRule" defaultMessage="Wizard: Import alert rules" />}>
                             <span>
-                                <FormattedMessage id= "wizard.importAlertRule" defaultMessage= "You can import an alert rule." />
+                                <FormattedMessage id="wizard.importAlertRule" defaultMessage="You can import an alert rule." />
                             </span>
                             <span>
                                 <FormattedMessage id="wizard.documentation" 
@@ -127,7 +128,7 @@ const ImportAlertPage = createReactClass({
                             </span>
                             <span>
                                 <LinkContainer to={Navigation.getWizardRoute()}>
-                                    <Button bsStyle="info"><FormattedMessage id= "wizard.back" defaultMessage= "Back to alert rules" /></Button>
+                                    <Button bsStyle="info"><FormattedMessage id="wizard.back" defaultMessage="Back to alert rules" /></Button>
                                 </LinkContainer>
                                 &nbsp;
                             </span>
@@ -139,7 +140,7 @@ const ImportAlertPage = createReactClass({
                                         <input ref="uploadedFile" type="file" name="bundle" />
                                     </div>
                                     <button type="submit" className="btn btn-success">
-                                        <FormattedMessage id="wizard.upload" defaultMessage= "Upload" />
+                                        <FormattedMessage id="wizard.upload" defaultMessage="Upload" />
                                     </button>
                                 </form>
                             </Col>
@@ -157,13 +158,13 @@ const ImportAlertPage = createReactClass({
 
                                 {this.isEmpty(this.state.alertRules) ?
                                     <span className="help-block help-standalone">
-                                         <FormattedMessage id ="wizard.noAlertRulesToExport" defaultMessage="There are no alert rules to import." />
+                                         <FormattedMessage id="wizard.noAlertRulesToExport" defaultMessage="There are no alert rules to import." />
                                     </span>
                                     :
                                     <ControlledTableList>
                                         <ControlledTableList.Header>
                                             <Button className="btn btn-sm btn-link select-all" onClick={this.selectAllAlertRules}>
-                                                <FormattedMessage id ="wizard.selectAll" defaultMessage="Select all" />
+                                                <FormattedMessage id="wizard.selectAll" defaultMessage="Select all" />
                                             </Button>
                                         </ControlledTableList.Header>
                                         {this.formatAlertRules()}
