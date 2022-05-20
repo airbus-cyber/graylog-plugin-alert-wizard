@@ -123,7 +123,7 @@ const ImportAlertPage = createReactClass({
                                 <Col sm={10}>
                                     {this.isEmpty(this.state.alertRules) ?
                                         <span className="help-block help-standalone">
-                                            <FormattedMessage id ="wizard.noAlertRulesToExport" defaultMessage="There are no rules to import." />
+                                            <FormattedMessage id ="wizard.noAlertRulesToExport" defaultMessage="There are no alert rules to import." />
                                         </span>
                                         :
                                         <span>
