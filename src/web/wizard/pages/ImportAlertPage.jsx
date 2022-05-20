@@ -119,37 +119,26 @@ const ImportAlertPage = createReactClass({
                             </Col>
                         </Row>
                         <Row className="content">
-                            <Col md={6}>
-                                <form className="form-horizontal build-content-pack" onSubmit={this.onSubmitApplyAlertRules}>
-                                    <div className="form-group">     
-                                        <Col sm={2}>
-                                            <label className="control-label" htmlFor="name">
-                                                <FormattedMessage id ="wizard.alertsRule" defaultMessage="Alert rules" /> 
-                                            </label>
-                                        </Col>
-                                        <Col sm={10}>
-                                            {this.isEmpty(this.state.alertRules) ?
-                                                <span className="help-block help-standalone">
-                                                    <FormattedMessage id ="wizard.noAlertRulesToExport" defaultMessage="There is no alert rule to import." />
-                                                </span>
-                                                :
-                                                <span>
-                                                  <Button className="btn btn-sm btn-link select-all" onClick={this.selectAllAlertRules}>
-                                                      <FormattedMessage id ="wizard.selectAll" defaultMessage="Select all" />
-                                                  </Button>
-                                                  {this.state.alertRules.map(this.formatAlertRule)}
-                                                </span>
-                                            }
-                                        </Col>
-                                    </div>
-                                    <div className="form-group">
-                                        <Col smOffset={2} sm={10}>
-                                            <Button bsStyle="success" type="submit">
-                                                <FormattedMessage id ="wizard.applyAlertRules" defaultMessage="Apply alert rules" />
-                                            </Button>
-                                        </Col>
-                                    </div>
-                                </form>
+                            <Col md={12}>
+                                <Col sm={10}>
+                                    {this.isEmpty(this.state.alertRules) ?
+                                        <span className="help-block help-standalone">
+                                            <FormattedMessage id ="wizard.noAlertRulesToExport" defaultMessage="There are no rules to import." />
+                                        </span>
+                                        :
+                                        <span>
+                                          <Button className="btn btn-sm btn-link select-all" onClick={this.selectAllAlertRules}>
+                                              <FormattedMessage id ="wizard.selectAll" defaultMessage="Select all" />
+                                          </Button>
+                                          {this.state.alertRules.map(this.formatAlertRule)}
+                                        </span>
+                                    }
+                                </Col>
+                                <Col sm={10}>
+                                    <Button bsStyle="success" type="submit">
+                                        <FormattedMessage id ="wizard.applyAlertRules" defaultMessage="Apply alert rules" />
+                                    </Button>
+                                </Col>
                             </Col>
                         </Row>        
                     </div>
