@@ -142,8 +142,6 @@ const ExportAlertPage = createReactClass({
                                             resetButtonLabel="Reset"
                                             searchBsStyle="info"
                                             topMargin={0} />
-                                <Col sm={10}>
-                                </Col>
 
                                 {this.isEmpty(this.state.alertRules) ?
                                     <span className="help-block help-standalone">
