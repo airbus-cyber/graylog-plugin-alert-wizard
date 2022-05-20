@@ -138,7 +138,6 @@ const ImportAlertPage = createReactClass({
                         </Row>
                         <Row className="content">
                             <Col md={12}>
-                                <Col sm={10}>
                                     {this.isEmpty(this.state.alertRules) ?
                                         <span className="help-block help-standalone">
                                             <FormattedMessage id ="wizard.noAlertRulesToExport" defaultMessage="There are no alert rules to import." />
@@ -153,12 +152,11 @@ const ImportAlertPage = createReactClass({
                                             {this.formatAlertRules()}
                                         </ControlledTableList>
                                     }
-                                </Col>
-                                <Col sm={10}>
-                                    <Button bsStyle="success" onClick={this.onSubmitApplyAlertRules}>
-                                        <FormattedMessage id ="wizard.applyAlertRules" defaultMessage="Apply alert rules" />
-                                    </Button>
-                                </Col>
+                            </Col>
+                            <Col md={12}>
+                                <Button bsStyle="success" onClick={this.onSubmitApplyAlertRules}>
+                                    <FormattedMessage id="wizard.applyAlertRules" defaultMessage="Apply alert rules" />
+                                </Button>
                             </Col>
                         </Row>        
                     </div>

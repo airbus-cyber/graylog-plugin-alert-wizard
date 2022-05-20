@@ -157,12 +157,12 @@ const ExportAlertPage = createReactClass({
                                     </ControlledTableList>
                                 }
 
-                                <Col sm={10}>
-                                    <Button bsStyle="success" onClick={this.onSubmit}>
-                                        <IconDownload/>
-                                        <FormattedMessage id ="wizard.downloadContentPack" defaultMessage="Download my content pack" />
-                                    </Button>
-                                </Col>
+                            </Col>
+                            <Col md={12}>
+                                <Button bsStyle="success" onClick={this.onSubmit}>
+                                    <IconDownload/>
+                                    <FormattedMessage id="wizard.downloadContentPack" defaultMessage="Download my content pack" />
+                                </Button>
                             </Col>
                         </Row>
                     </div>
