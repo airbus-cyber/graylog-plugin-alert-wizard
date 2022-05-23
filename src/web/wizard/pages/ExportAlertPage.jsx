@@ -144,8 +144,8 @@ const ExportAlertPage = createReactClass({
 
                                 {this.isEmpty(this.state.alertRules) ?
                                     <span className="help-block help-standalone">
-                                            <FormattedMessage id ="wizard.noAlertRulesToExport" defaultMessage="There are no alert rules to export." />
-                                        </span>
+                                        <FormattedMessage id ="wizard.noAlertRulesToExport" defaultMessage="There are no alert rules to export." />
+                                    </span>
                                     :
                                     <ControlledTableList>
                                         <ControlledTableList.Header>
