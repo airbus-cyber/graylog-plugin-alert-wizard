@@ -26,6 +26,7 @@ import { Input } from 'components/bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import Navigation from '../routing/Navigation';
 import ControlledTableList from 'components/common/ControlledTableList';
+import AlertRuleSelectionList from '../components/AlertRuleSelectionList'
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
@@ -113,7 +114,8 @@ const ImportAlertPage = createReactClass({
     },
     
     render() {
-        
+        const emptyMessage = <FormattedMessage id="wizard.noAlertRulesToImport" defaultMessage="There are no alert rules to import." />
+
         return (
             <IntlProvider locale={language} messages={messages[language]}>    
                 <DocumentTitle title="Import alert rule">
@@ -157,9 +159,7 @@ const ImportAlertPage = createReactClass({
                                             topMargin={0} />
 
                                 {this.isEmpty(this.state.alertRules) ?
-                                    <span className="help-block help-standalone">
-                                         <FormattedMessage id="wizard.noAlertRulesToExport" defaultMessage="There are no alert rules to import." />
-                                    </span>
+                                    <AlertRuleSelectionList emptyMessage={emptyMessage} />
                                     :
                                     <ControlledTableList>
                                         <ControlledTableList.Header>

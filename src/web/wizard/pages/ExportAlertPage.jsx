@@ -19,17 +19,18 @@ import React from 'react';
 import createReactClass from 'create-react-class';
 import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
 import { LinkContainer } from 'react-router-bootstrap';
-import messages_fr from '../../translations/fr.json';
 import { Row, Col, Button } from 'components/graylog';
 import { DocumentTitle, PageHeader, SearchForm } from 'components/common';
 import { Input } from 'components/bootstrap';
-import AlertRuleActions from '../actions/AlertRuleActions';
-import FileSaver from '../logic/FileSaver';
+import ControlledTableList from 'components/common/ControlledTableList';
 import UserNotification from 'util/UserNotification';
 import DateTime from 'logic/datetimes/DateTime';
+import messages_fr from '../../translations/fr.json';
+import AlertRuleActions from '../actions/AlertRuleActions';
+import FileSaver from '../logic/FileSaver';
 import IconDownload from '../components/icons/Download';
 import Navigation from '../routing/Navigation';
-import ControlledTableList from 'components/common/ControlledTableList';
+import AlertRuleSelectionList from '../components/AlertRuleSelectionList'
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
@@ -110,6 +111,7 @@ const ExportAlertPage = createReactClass({
     },
 
     render() {
+        const emptyMessage = <FormattedMessage id ="wizard.noAlertRulesToExport" defaultMessage="There are no alert rules to export." />
 
         // TODO should rather use ControlledTableList (see components/sidecar/administration/CollectorsAdministration)
         return (
@@ -143,9 +145,7 @@ const ExportAlertPage = createReactClass({
                                             topMargin={0} />
 
                                 {this.isEmpty(this.state.alertRules) ?
-                                    <span className="help-block help-standalone">
-                                        <FormattedMessage id ="wizard.noAlertRulesToExport" defaultMessage="There are no alert rules to export." />
-                                    </span>
+                                    <AlertRuleSelectionList emptyMessage={emptyMessage} />
                                     :
                                     <ControlledTableList>
                                         <ControlledTableList.Header>
