@@ -38,14 +38,14 @@ class AlertRuleSelectionList extends React.Component {
         );
     }
 
-    formatAlertRules() {
+    formatAlertRules = () => {
         return this.props.alertRules
             .sort((rule1, rule2) => rule1.title.localeCompare(rule2.title))
             .filter(rule => rule.title.includes(this.props.alertTitlesFilter))
-            .map(this.formatAlertRule, this);
+            .map(this.formatAlertRule);
     }
 
-    render() {
+    render = () => {
         const alerts = (
             (this.props.alertRules) ?
                 <ControlledTableList>
