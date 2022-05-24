@@ -28,7 +28,8 @@ const AlertRuleSelectionList = createReactClass({
 
     getInitialState() {
         return {
-            alertTitlesFilter: ''
+            alertTitlesFilter: '',
+            selectedAlertTitles: new Set()
         };
     },
 
@@ -40,14 +41,35 @@ const AlertRuleSelectionList = createReactClass({
         this.setState({ alertTitlesFilter: '' });
     },
 
+    selectAllAlertRules() {
+        const { alertRules } = this.state;
+
+        const newSelection = new Set(alertRules.map(rule => rule.title));
+
+        this.setState({ selectedAlertTitles: newSelection });
+        this.props.onRuleSelectionChanged(newSelection);
+    },
+
+    handleRuleSelect(event, title) {
+        const { selectedAlertTitles } = this.state;
+        if (event.target.checked) {
+            selectedAlertTitles.add(title);
+        } else {
+            selectedAlertTitles.delete(title);
+        }
+        this.setState({ selectedAlertTitles: selectedAlertTitles });
+        this.props.onRuleSelectionChanged(selectedAlertTitles);
+    },
+
     formatAlertRule(alertRule) {
+        const { selectedAlertTitles } = this.state;
         // TODO think about it, try to remove the inline "style". And add this to the coding rules
         return (
             <ControlledTableList.Item key={`alertRule_${alertRule.title}`}>
                 <Input id={`alertRule_${alertRule.title}`}
                        type="checkbox"
-                       checked={this.props.selectedAlertTitles.has(alertRule.title)}
-                       onChange={event => this.props.handleRuleSelect(event, alertRule.title)}
+                       checked={selectedAlertTitles.has(alertRule.title)}
+                       onChange={event => this.handleRuleSelect(event, alertRule.title)}
                        label={alertRule.title} />
                 <p className="description" style={{'margin-left': '20px'}}>{alertRule.description}</p>
             </ControlledTableList.Item>
@@ -67,7 +89,7 @@ const AlertRuleSelectionList = createReactClass({
             alerts = (
                 <ControlledTableList>
                     <ControlledTableList.Header>
-                        <Button className="btn btn-sm btn-link select-all" onClick={this.props.selectAllAlertRules}>
+                        <Button className="btn btn-sm btn-link select-all" onClick={this.selectAllAlertRules}>
                             <FormattedMessage id="wizard.selectAll" defaultMessage="Select all" />
                         </Button>
                     </ControlledTableList.Header>

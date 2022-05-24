@@ -56,26 +56,11 @@ const ImportAlertPage = createReactClass({
           
         reader.readAsText(this.refs.uploadedFile.files[0]);
     },
-    
-    isEmpty(obj) {
-        return ((obj === undefined) || (typeof obj.count === 'function' ? obj.count() === 0 : obj.length === 0));
-    },
-    selectAllAlertRules() {
-        const { alertRules } = this.state;
 
-        const newSelection = new Set(alertRules.map(rule => rule.title));
+    handleRuleSelectionChanged(selection) {
+        this.setState({ selectedAlertTitles: selection })
+    },
 
-        this.setState({ selectedAlertTitles: newSelection });
-    },
-    handleRuleSelect(event, title) {
-        const { selectedAlertTitles } = this.state;
-        if (event.target.checked) {
-            selectedAlertTitles.add(title);
-        } else {
-            selectedAlertTitles.delete(title);
-        }
-        this.setState({ selectedAlertTitles: selectedAlertTitles });
-    },
     onSubmitApplyAlertRules(evt) {
         evt.preventDefault();
         
@@ -123,9 +108,7 @@ const ImportAlertPage = createReactClass({
                             <Col md={12}>
                                 <AlertRuleSelectionList emptyMessage={emptyMessage}
                                                         alertRules={this.state.alertRules}
-                                                        selectedAlertTitles={this.state.selectedAlertTitles}
-                                                        handleRuleSelect={this.handleRuleSelect}
-                                                        selectAllAlertRules={this.selectAllAlertRules}
+                                                        onRuleSelectionChanged={this.handleRuleSelectionChanged}
                                 />
                                 <Button bsStyle="success" onClick={this.onSubmitApplyAlertRules}>
                                     <FormattedMessage id="wizard.applyAlertRules" defaultMessage="Apply alert rules" />

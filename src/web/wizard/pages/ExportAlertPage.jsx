@@ -46,30 +46,17 @@ const ExportAlertPage = createReactClass({
             selectedAlertTitles: new Set()
         };
     },
+
     componentDidMount() {
         AlertRuleActions.list().then(newAlerts => {
             this.setState({alertRules: newAlerts});
         });
     },
-    isEmpty(obj) {
-        return ((obj === undefined) || (typeof obj.count === 'function' ? obj.count() === 0 : obj.length === 0));
-    },
-    selectAllAlertRules() {
-        const { alertRules } = this.state;
 
-        const newSelection = new Set(alertRules.map(rule => rule.title));
+    handleRuleSelectionChanged(selection) {
+        this.setState({ selectedAlertTitles: selection })
+    },
 
-        this.setState({ selectedAlertTitles: newSelection });
-    },
-    handleRuleSelect(event, title) {
-        const { selectedAlertTitles } = this.state;
-        if (event.target.checked) {
-            selectedAlertTitles.add(title);
-        } else {
-            selectedAlertTitles.delete(title);
-        }
-        this.setState({ selectedAlertTitles: selectedAlertTitles });
-    },
     onSubmit(evt) {
         evt.preventDefault();
         const request = {
@@ -109,9 +96,7 @@ const ExportAlertPage = createReactClass({
                             <Col md={12}>
                                 <AlertRuleSelectionList emptyMessage={emptyMessage}
                                                         alertRules={this.state.alertRules}
-                                                        selectedAlertTitles={this.state.selectedAlertTitles}
-                                                        handleRuleSelect={this.handleRuleSelect}
-                                                        selectAllAlertRules={this.selectAllAlertRules}
+                                                        onRuleSelectionChanged={this.handleRuleSelectionChanged}
                                 />
                                 <Button bsStyle="success" onClick={this.onSubmit}>
                                     <IconDownload/>
