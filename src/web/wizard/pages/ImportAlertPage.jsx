@@ -19,9 +19,7 @@ import React from 'react';
 import createReactClass from 'create-react-class';
 import { LinkContainer } from 'react-router-bootstrap';
 import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
-import { Input } from 'components/bootstrap';
 import { DocumentTitle, PageHeader } from 'components/common';
-import ControlledTableList from 'components/common/ControlledTableList';
 import { Row, Col, Button } from 'components/graylog';
 import messages_fr from '../../translations/fr.json';
 import AlertRuleActions from '../actions/AlertRuleActions';
@@ -41,7 +39,6 @@ const ImportAlertPage = createReactClass({
 
     getInitialState() {
         return {
-            alertTitlesFilter: '',
             selectedAlertTitles: new Set()
         };
     },
@@ -78,31 +75,6 @@ const ImportAlertPage = createReactClass({
             selectedAlertTitles.delete(title);
         }
         this.setState({ selectedAlertTitles: selectedAlertTitles });
-    },
-    formatAlertRule(alertRule) {
-        const { selectedAlertTitles } = this.state;
-        // TODO think about it, try to remove the inline "style". And add this to the coding rules
-        return (
-          <ControlledTableList.Item key={`alertRule_${alertRule.title}`}>
-                <Input id={`alertRule_${alertRule.title}`}
-                       type="checkbox"
-                       checked={selectedAlertTitles.has(alertRule.title)}
-                       onChange={event => this.handleRuleSelect(event, alertRule.title)}
-                       label={alertRule.title} />
-            <p className="description" style={{'margin-left': '20px'}}>{alertRule.description}</p>
-          </ControlledTableList.Item>
-        );
-    },
-    formatAlertRules() {
-      return this.state.alertRules
-                 .filter(rule => rule.title.includes(this.state.alertTitlesFilter))
-                 .map(this.formatAlertRule);
-    },
-    onSearch(filter) {
-        this.setState({ alertTitlesFilter: filter });
-    },
-    onReset() {
-        this.setState({ alertTitlesFilter: '' });
     },
     onSubmitApplyAlertRules(evt) {
         evt.preventDefault();
@@ -151,12 +123,9 @@ const ImportAlertPage = createReactClass({
                             <Col md={12}>
                                 <AlertRuleSelectionList emptyMessage={emptyMessage}
                                                         alertRules={this.state.alertRules}
-                                                        alertTitlesFilter={this.state.alertTitlesFilter}
                                                         selectedAlertTitles={this.state.selectedAlertTitles}
                                                         handleRuleSelect={this.handleRuleSelect}
                                                         selectAllAlertRules={this.selectAllAlertRules}
-                                                        onSearch={this.onSearch}
-                                                        onReset={this.onReset}
                                 />
                                 <Button bsStyle="success" onClick={this.onSubmitApplyAlertRules}>
                                     <FormattedMessage id="wizard.applyAlertRules" defaultMessage="Apply alert rules" />

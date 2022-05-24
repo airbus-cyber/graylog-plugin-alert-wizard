@@ -21,8 +21,6 @@ import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Row, Col, Button } from 'components/graylog';
 import { DocumentTitle, PageHeader } from 'components/common';
-import { Input } from 'components/bootstrap';
-import ControlledTableList from 'components/common/ControlledTableList';
 import UserNotification from 'util/UserNotification';
 import DateTime from 'logic/datetimes/DateTime';
 import messages_fr from '../../translations/fr.json';
@@ -45,7 +43,6 @@ const ExportAlertPage = createReactClass({
 
     getInitialState() {
         return {
-            alertTitlesFilter: '',
             selectedAlertTitles: new Set()
         };
     },
@@ -72,31 +69,6 @@ const ExportAlertPage = createReactClass({
             selectedAlertTitles.delete(title);
         }
         this.setState({ selectedAlertTitles: selectedAlertTitles });
-    },
-    formatAlertRule(alertRule) {
-        const { selectedAlertTitles } = this.state;
-        return (
-            <ControlledTableList.Item key={`alertRule_${alertRule.title}`}>
-                <Input id={`alertRule_${alertRule.title}`}
-                       type="checkbox"
-                       checked={selectedAlertTitles.has(alertRule.title)}
-                       onChange={event => this.handleRuleSelect(event, alertRule.title)}
-                       label={alertRule.title} />
-                <p className="description" style={{'margin-left': '20px'}}>{alertRule.description}</p>
-            </ControlledTableList.Item>
-        );
-    },
-    formatAlertRules() {
-      return this.state.alertRules
-                 .sort((rule1, rule2) => rule1.title.localeCompare(rule2.title))
-                 .filter(rule => rule.title.includes(this.state.alertTitlesFilter))
-                 .map(this.formatAlertRule);
-    },
-    onSearch(filter) {
-        this.setState({ alertTitlesFilter: filter });
-    },
-    onReset() {
-        this.setState({ alertTitlesFilter: '' });
     },
     onSubmit(evt) {
         evt.preventDefault();
@@ -137,12 +109,9 @@ const ExportAlertPage = createReactClass({
                             <Col md={12}>
                                 <AlertRuleSelectionList emptyMessage={emptyMessage}
                                                         alertRules={this.state.alertRules}
-                                                        alertTitlesFilter={this.state.alertTitlesFilter}
                                                         selectedAlertTitles={this.state.selectedAlertTitles}
                                                         handleRuleSelect={this.handleRuleSelect}
                                                         selectAllAlertRules={this.selectAllAlertRules}
-                                                        onSearch={this.onSearch}
-                                                        onReset={this.onReset}
                                 />
                                 <Button bsStyle="success" onClick={this.onSubmit}>
                                     <IconDownload/>

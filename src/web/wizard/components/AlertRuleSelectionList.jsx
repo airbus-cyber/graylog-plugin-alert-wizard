@@ -16,6 +16,7 @@
  */
 
 import React from 'react';
+import createReactClass from 'create-react-class';
 import { FormattedMessage } from 'react-intl';
 import { SearchForm } from 'components/common';
 import { Input } from 'components/bootstrap';
@@ -23,8 +24,23 @@ import ControlledTableList from 'components/common/ControlledTableList';
 import { Button } from 'components/graylog';
 
 
-class AlertRuleSelectionList extends React.Component {
-    formatAlertRule = (alertRule) => {
+const AlertRuleSelectionList = createReactClass({
+
+    getInitialState() {
+        return {
+            alertTitlesFilter: ''
+        };
+    },
+
+    onSearch(filter) {
+        this.setState({ alertTitlesFilter: filter });
+    },
+
+    onReset() {
+        this.setState({ alertTitlesFilter: '' });
+    },
+
+    formatAlertRule(alertRule) {
         // TODO think about it, try to remove the inline "style". And add this to the coding rules
         return (
             <ControlledTableList.Item key={`alertRule_${alertRule.title}`}>
@@ -36,18 +52,19 @@ class AlertRuleSelectionList extends React.Component {
                 <p className="description" style={{'margin-left': '20px'}}>{alertRule.description}</p>
             </ControlledTableList.Item>
         );
-    }
+    },
 
-    formatAlertRules = () => {
+    formatAlertRules() {
         return this.props.alertRules
             .sort((rule1, rule2) => rule1.title.localeCompare(rule2.title))
-            .filter(rule => rule.title.includes(this.props.alertTitlesFilter))
-            .map(this.formatAlertRule);
-    }
+            .filter(rule => rule.title.includes(this.state.alertTitlesFilter))
+            .map(this.formatAlertRule, this);
+    },
 
-    render = () => {
-        const alerts = (
-            (this.props.alertRules) ?
+    render() {
+        let alerts
+        if (this.props.alertRules) {
+            alerts = (
                 <ControlledTableList>
                     <ControlledTableList.Header>
                         <Button className="btn btn-sm btn-link select-all" onClick={this.props.selectAllAlertRules}>
@@ -56,16 +73,19 @@ class AlertRuleSelectionList extends React.Component {
                     </ControlledTableList.Header>
                     {this.formatAlertRules()}
                 </ControlledTableList>
-                :
+            )
+        } else {
+            alerts = (
                 <span className="help-block help-standalone">
                     {this.props.emptyMessage}
                 </span>
-        )
+            )
+        }
 
         return (
             <>
-                <SearchForm onSearch={this.props.onSearch}
-                            onReset={this.props.onReset}
+                <SearchForm onSearch={this.onSearch}
+                            onReset={this.onReset}
                             searchButtonLabel="Filter"
                             placeholder="Filter alert rules by title..."
                             queryWidth={400}
@@ -76,6 +96,6 @@ class AlertRuleSelectionList extends React.Component {
             </>
         )
     }
-}
+})
 
 export default AlertRuleSelectionList;

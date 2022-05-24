@@ -1,5 +1,5 @@
 Coding conventions
 ------------------
 
-* to define components, prefer class rather than createReactClass
-* for method definition use => notation systematically (to avoid problems with the binding of 'this')
+* to define components, prefer createReactClass rather than class (to avoid problems with binding of this)
+* avoid ternary operator (condition?expression1:expression2)
