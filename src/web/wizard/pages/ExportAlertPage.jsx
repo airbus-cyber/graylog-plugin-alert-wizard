@@ -144,19 +144,12 @@ const ExportAlertPage = createReactClass({
                                             searchBsStyle="info"
                                             topMargin={0} />
 
-                                {this.isEmpty(this.state.alertRules) ?
-                                    <AlertRuleSelectionList emptyMessage={emptyMessage} />
-                                    :
-                                    <ControlledTableList>
-                                        <ControlledTableList.Header>
-                                            <Button className="btn btn-sm btn-link select-all" onClick={this.selectAllAlertRules}>
-                                                <FormattedMessage id ="wizard.selectAll" defaultMessage="Select all" />
-                                            </Button>
-                                        </ControlledTableList.Header>
-                                        {this.formatAlertRules()}
-                                    </ControlledTableList>
-                                }
-
+                                <AlertRuleSelectionList emptyMessage={emptyMessage}
+                                                        alertRules={this.state.alertRules}
+                                                        alertTitlesFilter={this.state.alertTitlesFilter}
+                                                        selectedAlertTitles={this.state.selectedAlertTitles}
+                                                        handleRuleSelect={this.handleRuleSelect}
+                                                        selectAllAlertRules={this.selectAllAlertRules} />
                                 <Button bsStyle="success" onClick={this.onSubmit}>
                                     <IconDownload/>
                                     <FormattedMessage id="wizard.downloadContentPack" defaultMessage="Download my content pack" />

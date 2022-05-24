@@ -17,15 +17,15 @@
 
 import React from 'react';
 import createReactClass from 'create-react-class';
-import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
-import messages_fr from '../../translations/fr.json';
-import { Row, Col, Button } from 'components/graylog';
-import AlertRuleActions from '../actions/AlertRuleActions';
-import { DocumentTitle, PageHeader, SearchForm } from 'components/common';
-import { Input } from 'components/bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import Navigation from '../routing/Navigation';
+import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
+import { Input } from 'components/bootstrap';
+import { DocumentTitle, PageHeader, SearchForm } from 'components/common';
 import ControlledTableList from 'components/common/ControlledTableList';
+import { Row, Col, Button } from 'components/graylog';
+import messages_fr from '../../translations/fr.json';
+import AlertRuleActions from '../actions/AlertRuleActions';
+import Navigation from '../routing/Navigation';
 import AlertRuleSelectionList from '../components/AlertRuleSelectionList'
 
 let frLocaleData = require('react-intl/locale-data/fr');
@@ -158,19 +158,12 @@ const ImportAlertPage = createReactClass({
                                             searchBsStyle="info"
                                             topMargin={0} />
 
-                                {this.isEmpty(this.state.alertRules) ?
-                                    <AlertRuleSelectionList emptyMessage={emptyMessage} />
-                                    :
-                                    <ControlledTableList>
-                                        <ControlledTableList.Header>
-                                            <Button className="btn btn-sm btn-link select-all" onClick={this.selectAllAlertRules}>
-                                                <FormattedMessage id="wizard.selectAll" defaultMessage="Select all" />
-                                            </Button>
-                                        </ControlledTableList.Header>
-                                        {this.formatAlertRules()}
-                                    </ControlledTableList>
-                                }
-
+                                <AlertRuleSelectionList emptyMessage={emptyMessage}
+                                                        alertRules={this.state.alertRules}
+                                                        alertTitlesFilter={this.state.alertTitlesFilter}
+                                                        selectedAlertTitles={this.state.selectedAlertTitles}
+                                                        handleRuleSelect={this.handleRuleSelect}
+                                                        selectAllAlertRules={this.selectAllAlertRules} />
                                 <Button bsStyle="success" onClick={this.onSubmitApplyAlertRules}>
                                     <FormattedMessage id="wizard.applyAlertRules" defaultMessage="Apply alert rules" />
                                 </Button>

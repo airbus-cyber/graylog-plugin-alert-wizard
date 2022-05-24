@@ -16,13 +16,51 @@
  */
 
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
+import { Input } from 'components/bootstrap';
+import ControlledTableList from 'components/common/ControlledTableList';
+import { Button } from 'components/graylog';
+
 
 class AlertRuleSelectionList extends React.Component {
-    render() {
+    formatAlertRule = (alertRule) => {
+        // TODO think about it, try to remove the inline "style". And add this to the coding rules
         return (
-            <span className="help-block help-standalone">
-                {this.props.emptyMessage}
-            </span>
+            <ControlledTableList.Item key={`alertRule_${alertRule.title}`}>
+                <Input id={`alertRule_${alertRule.title}`}
+                       type="checkbox"
+                       checked={this.props.selectedAlertTitles.has(alertRule.title)}
+                       onChange={event => this.props.handleRuleSelect(event, alertRule.title)}
+                       label={alertRule.title} />
+                <p className="description" style={{'margin-left': '20px'}}>{alertRule.description}</p>
+            </ControlledTableList.Item>
+        );
+    }
+
+    formatAlertRules() {
+        return this.props.alertRules
+            .sort((rule1, rule2) => rule1.title.localeCompare(rule2.title))
+            .filter(rule => rule.title.includes(this.props.alertTitlesFilter))
+            .map(this.formatAlertRule, this);
+    }
+
+    render() {
+        if (!this.props.alertRules) {
+            return (
+                <span className="help-block help-standalone">
+                    {this.props.emptyMessage}
+                </span>
+            )
+        }
+        return (
+            <ControlledTableList>
+                <ControlledTableList.Header>
+                    <Button className="btn btn-sm btn-link select-all" onClick={this.props.selectAllAlertRules}>
+                        <FormattedMessage id="wizard.selectAll" defaultMessage="Select all" />
+                    </Button>
+                </ControlledTableList.Header>
+                {this.formatAlertRules()}
+            </ControlledTableList>
         );
     }
 }
