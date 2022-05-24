@@ -17,6 +17,7 @@
 
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import { SearchForm } from 'components/common';
 import { Input } from 'components/bootstrap';
 import ControlledTableList from 'components/common/ControlledTableList';
 import { Button } from 'components/graylog';
@@ -45,23 +46,35 @@ class AlertRuleSelectionList extends React.Component {
     }
 
     render() {
-        if (!this.props.alertRules) {
-            return (
+        const alerts = (
+            (this.props.alertRules) ?
+                <ControlledTableList>
+                    <ControlledTableList.Header>
+                        <Button className="btn btn-sm btn-link select-all" onClick={this.props.selectAllAlertRules}>
+                            <FormattedMessage id="wizard.selectAll" defaultMessage="Select all" />
+                        </Button>
+                    </ControlledTableList.Header>
+                    {this.formatAlertRules()}
+                </ControlledTableList>
+                :
                 <span className="help-block help-standalone">
                     {this.props.emptyMessage}
                 </span>
-            )
-        }
+        )
+
         return (
-            <ControlledTableList>
-                <ControlledTableList.Header>
-                    <Button className="btn btn-sm btn-link select-all" onClick={this.props.selectAllAlertRules}>
-                        <FormattedMessage id="wizard.selectAll" defaultMessage="Select all" />
-                    </Button>
-                </ControlledTableList.Header>
-                {this.formatAlertRules()}
-            </ControlledTableList>
-        );
+            <>
+                <SearchForm onSearch={this.props.onSearch}
+                            onReset={this.props.onReset}
+                            searchButtonLabel="Filter"
+                            placeholder="Filter alert rules by title..."
+                            queryWidth={400}
+                            resetButtonLabel="Reset"
+                            searchBsStyle="info"
+                            topMargin={0} />
+                {alerts}
+            </>
+        )
     }
 }
 

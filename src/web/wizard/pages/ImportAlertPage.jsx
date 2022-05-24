@@ -20,7 +20,7 @@ import createReactClass from 'create-react-class';
 import { LinkContainer } from 'react-router-bootstrap';
 import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
 import { Input } from 'components/bootstrap';
-import { DocumentTitle, PageHeader, SearchForm } from 'components/common';
+import { DocumentTitle, PageHeader } from 'components/common';
 import ControlledTableList from 'components/common/ControlledTableList';
 import { Row, Col, Button } from 'components/graylog';
 import messages_fr from '../../translations/fr.json';
@@ -149,21 +149,15 @@ const ImportAlertPage = createReactClass({
                         </Row>
                         <Row className="content">
                             <Col md={12}>
-                                <SearchForm onSearch={this.onSearch}
-                                            onReset={this.onReset}
-                                            searchButtonLabel="Filter"
-                                            placeholder="Filter alert rules by title..."
-                                            queryWidth={400}
-                                            resetButtonLabel="Reset"
-                                            searchBsStyle="info"
-                                            topMargin={0} />
-
                                 <AlertRuleSelectionList emptyMessage={emptyMessage}
                                                         alertRules={this.state.alertRules}
                                                         alertTitlesFilter={this.state.alertTitlesFilter}
                                                         selectedAlertTitles={this.state.selectedAlertTitles}
                                                         handleRuleSelect={this.handleRuleSelect}
-                                                        selectAllAlertRules={this.selectAllAlertRules} />
+                                                        selectAllAlertRules={this.selectAllAlertRules}
+                                                        onSearch={this.onSearch}
+                                                        onReset={this.onReset}
+                                />
                                 <Button bsStyle="success" onClick={this.onSubmitApplyAlertRules}>
                                     <FormattedMessage id="wizard.applyAlertRules" defaultMessage="Apply alert rules" />
                                 </Button>

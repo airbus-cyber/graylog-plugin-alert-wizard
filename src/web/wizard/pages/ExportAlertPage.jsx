@@ -20,7 +20,7 @@ import createReactClass from 'create-react-class';
 import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Row, Col, Button } from 'components/graylog';
-import { DocumentTitle, PageHeader, SearchForm } from 'components/common';
+import { DocumentTitle, PageHeader } from 'components/common';
 import { Input } from 'components/bootstrap';
 import ControlledTableList from 'components/common/ControlledTableList';
 import UserNotification from 'util/UserNotification';
@@ -135,21 +135,15 @@ const ExportAlertPage = createReactClass({
                         </PageHeader>
                         <Row className="content">
                             <Col md={12}>
-                                <SearchForm onSearch={this.onSearch}
-                                            onReset={this.onReset}
-                                            searchButtonLabel="Filter"
-                                            placeholder="Filter alert rules by title..."
-                                            queryWidth={400}
-                                            resetButtonLabel="Reset"
-                                            searchBsStyle="info"
-                                            topMargin={0} />
-
                                 <AlertRuleSelectionList emptyMessage={emptyMessage}
                                                         alertRules={this.state.alertRules}
                                                         alertTitlesFilter={this.state.alertTitlesFilter}
                                                         selectedAlertTitles={this.state.selectedAlertTitles}
                                                         handleRuleSelect={this.handleRuleSelect}
-                                                        selectAllAlertRules={this.selectAllAlertRules} />
+                                                        selectAllAlertRules={this.selectAllAlertRules}
+                                                        onSearch={this.onSearch}
+                                                        onReset={this.onReset}
+                                />
                                 <Button bsStyle="success" onClick={this.onSubmit}>
                                     <IconDownload/>
                                     <FormattedMessage id="wizard.downloadContentPack" defaultMessage="Download my content pack" />
