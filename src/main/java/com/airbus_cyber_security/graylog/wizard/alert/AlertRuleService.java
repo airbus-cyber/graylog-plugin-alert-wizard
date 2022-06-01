@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-// TODO rename into AlertRuleService, remove interface AlertRuleService, do the same for AlertRule, AlertRuleStream and FieldRule
 public class AlertRuleService {
 
 	private final JacksonDBCollection<AlertRuleImpl, String> coll;
