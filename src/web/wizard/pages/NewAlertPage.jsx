@@ -64,7 +64,7 @@ const NewAlertPage = createReactClass({
         let componentCreateAlertInput;
         if (this._isConfigurationLoading()) {
             componentCreateAlertInput = <Spinner/>;
-        }else{
+        } else {
             componentCreateAlertInput = <CreateAlertInput create={true} default_values={this.state.configurations.default_values}/>;
         }
 
