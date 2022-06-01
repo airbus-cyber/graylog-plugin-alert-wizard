@@ -196,10 +196,10 @@ public class StreamPipelineService {
     }
 
     public void deletePipeline(String pipelineID, String ruleID){
-        if(pipelineID != null && !pipelineID.isEmpty()) {
+        if (pipelineID != null && !pipelineID.isEmpty()) {
             pipelineService.delete(pipelineID);
         }
-        if(ruleID != null && !ruleID.isEmpty()) {
+        if (ruleID != null && !ruleID.isEmpty()) {
             ruleService.delete(ruleID);
         }
     }
@@ -223,7 +223,7 @@ public class StreamPipelineService {
     }
 
     public Stream createOrUpdateSecondStream(AlertRuleStream alertRuleStream, String title, String userName, String conditionType, AlertRule oldAlert) throws ValidationException, NotFoundException {
-        if(conditionType.equals("THEN") || conditionType.equals("AND") || conditionType.equals("OR")) {
+        if (conditionType.equals("THEN") || conditionType.equals("AND") || conditionType.equals("OR")) {
             if(oldAlert.getSecondStreamID() != null) {
                 Stream stream2 = streamService.load(oldAlert.getSecondStreamID());
                 updateStream(stream2, alertRuleStream, title+"#2");
@@ -232,7 +232,7 @@ public class StreamPipelineService {
                 return createStream(alertRuleStream, title+"#2", userName);
             }
             //Delete old stream if one
-        }else if(oldAlert.getSecondStreamID() != null && !oldAlert.getSecondStreamID().isEmpty()) {
+        } else if (oldAlert.getSecondStreamID() != null && !oldAlert.getSecondStreamID().isEmpty()) {
             deleteStreamFromID(oldAlert.getSecondStreamID());
         }
         return null;
@@ -309,9 +309,9 @@ public class StreamPipelineService {
     }
 
     public void deleteStreamFromID(String streamID){
-        try{
+        try {
             deleteStream(streamService.load(streamID));
-        }catch(NotFoundException e){
+        } catch(NotFoundException e) {
             LOG.error("Cannot find the stream ", e);
         }
     }
