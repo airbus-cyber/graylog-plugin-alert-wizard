@@ -49,7 +49,7 @@ public class AlertListUtilsService {
     public void incrementUsage(String title) {
         try {
             AlertList oldAlertList = alertListService.load(title);
-            if(oldAlertList != null) {
+            if (oldAlertList != null) {
                 alertListService.update(java.net.URLDecoder.decode(title, ENCODING),
                         AlertListImpl.create(
                                 title,
