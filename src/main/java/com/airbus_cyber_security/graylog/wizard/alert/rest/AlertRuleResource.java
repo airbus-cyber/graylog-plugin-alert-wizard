@@ -275,7 +275,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String userName = getCurrentUser().getName();
 
         // Create stream and pipeline
-        StreamPipelineObject streamPilpelineObject = streamPipelineService.createStreamAndPipeline(request.getStream(), alertTitle, userName, request.getStream().getMatchingType());
+        StreamPipelineObject streamPipelineObject = streamPipelineService.createStreamAndPipeline(request.getStream(), alertTitle, userName, request.getStream().getMatchingType());
 
         //Create unique data adapter
         DataAdapterDto adapter = streamPipelineService.createUniqueDataAdapter(userName);
@@ -294,7 +294,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String notificationID = alertRuleUtilsService.createNotification(alertTitle, request.getSeverity(), userContext);
 
         // Create Condition
-        EventProcessorConfig configuration = alertRuleUtilsService.createCondition(request.getConditionType(), request.conditionParameters(), streamPilpelineObject.getStream().getId(), streamID2);
+        EventProcessorConfig configuration = alertRuleUtilsService.createCondition(request.getConditionType(), request.conditionParameters(), streamPipelineObject.getStream().getId(), streamID2);
 
         //Create Event
         String eventID = alertRuleUtilsService.createEvent(alertTitle, notificationID, configuration, userContext);
@@ -308,10 +308,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             eventID2 = alertRuleUtilsService.createEvent(alertTitle + "#2", notificationID, configuration2, userContext);
         }
 
-        clusterEventBus.post(StreamsChangedEvent.create(streamPilpelineObject.getStream().getId()));
+        clusterEventBus.post(StreamsChangedEvent.create(streamPipelineObject.getStream().getId()));
         alertRuleService.create(AlertRuleImpl.create(
                 alertTitle,
-                streamPilpelineObject.getStream().getId(),
+                streamPipelineObject.getStream().getId(),
                 eventID,
                 notificationID,
                 DateTime.now(),
@@ -321,15 +321,15 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 request.getConditionType(),
                 streamID2,
                 eventID2,
-                streamPilpelineObject.getPipelineID(),
-                streamPilpelineObject.getPipelineRuleID(),
-                streamPilpelineObject.getListPipelineFieldRule(),
+                streamPipelineObject.getPipelineID(),
+                streamPipelineObject.getPipelineRuleID(),
+                streamPipelineObject.getListPipelineFieldRule(),
                 streamPilpelineObject2.getPipelineID(),
                 streamPilpelineObject2.getPipelineRuleID(),
                 streamPilpelineObject2.getListPipelineFieldRule()));
 
         //Update list usage
-        for (FieldRule fieldRule : alertRuleUtils.nullSafe(streamPilpelineObject.getListPipelineFieldRule())) {
+        for (FieldRule fieldRule : alertRuleUtils.nullSafe(streamPipelineObject.getListPipelineFieldRule())) {
             alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
         for (FieldRule fieldRule : alertRuleUtils.nullSafe(streamPilpelineObject2.getListPipelineFieldRule())) {
