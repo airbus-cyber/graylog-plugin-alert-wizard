@@ -59,7 +59,7 @@ public class AlertListUtilsService {
                                 oldAlertList.getDescription(),
                                 oldAlertList.getUsage() + 1,
                                 oldAlertList.getLists()));
-            }else{
+            } else {
                 LOG.error("Failed to increment list, "+ title + " does not exist");
             }
         } catch (UnsupportedEncodingException | NotFoundException e) {

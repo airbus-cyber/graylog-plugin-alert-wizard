@@ -328,10 +328,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 streamPipelineObject2.getListPipelineFieldRule()));
 
         //Update list usage
-        for (FieldRule fieldRule : alertRuleUtils.nullSafe(streamPipelineObject.getListPipelineFieldRule())) {
+        for (FieldRule fieldRule: alertRuleUtils.nullSafe(streamPipelineObject.getListPipelineFieldRule())) {
             alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
-        for (FieldRule fieldRule : alertRuleUtils.nullSafe(streamPipelineObject2.getListPipelineFieldRule())) {
+        for (FieldRule fieldRule: alertRuleUtils.nullSafe(streamPipelineObject2.getListPipelineFieldRule())) {
             alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
 
