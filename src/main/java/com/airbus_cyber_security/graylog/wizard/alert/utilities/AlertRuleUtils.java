@@ -60,17 +60,17 @@ public class AlertRuleUtils {
 
     private double getThreshold(Expression<Boolean> expression){
 		Expression<Double> expressionRight;
-		if(expression instanceof Expr.Greater){
+		if (expression instanceof Expr.Greater) {
 			expressionRight= ((Expr.Greater) expression).right();
-		}else if(expression instanceof Expr.GreaterEqual){
+		} else if(expression instanceof Expr.GreaterEqual) {
 			expressionRight= ((Expr.GreaterEqual) expression).right();
-		}else if(expression instanceof Expr.Lesser){
+		} else if(expression instanceof Expr.Lesser) {
 			expressionRight= ((Expr.Lesser) expression).right();
-		}else if(expression instanceof Expr.LesserEqual){
+		} else if(expression instanceof Expr.LesserEqual) {
 			expressionRight= ((Expr.LesserEqual) expression).right();
-		}else if(expression instanceof Expr.Equal){
+		} else if(expression instanceof Expr.Equal) {
 			expressionRight= ((Expr.Equal) expression).right();
-		}else{
+		} else {
 			LOG.error("Can't get threshold, error cast Expression");
 			return 0;
 		}
