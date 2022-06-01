@@ -97,7 +97,7 @@ public class StreamPipelineService {
         this.pipelineStreamConnectionsService = pipelineStreamConnectionsService;
     }
 
-    public void createStreamRule(List<FieldRuleImpl> listfieldRule, String streamID) throws ValidationException {
+    private void createStreamRule(List<FieldRuleImpl> listfieldRule, String streamID) throws ValidationException {
         for (FieldRule fieldRule:listfieldRule) {
             if (fieldRule.getType() != -7 && fieldRule.getType() != 7) {
                 final Map<String, Object> streamRuleData = Maps.newHashMapWithExpectedSize(6);
@@ -120,12 +120,12 @@ public class StreamPipelineService {
         }
     }
 
-    public String createStringField(FieldRule fieldRule, String condition) {
+    private String createStringField(FieldRule fieldRule, String condition) {
         return "  (has_field(\"" + fieldRule.getField() + "\")" + condition + "contains(to_string(lookup_value(\"wizard_lookup\", \"" +
                 fieldRule.getValue() + "\", \"\")), to_string($message." + fieldRule.getField() + "), true))\n";
     }
 
-    public String createRuleSource(String alertTitle, List<FieldRuleImpl> listfieldRule, Stream stream){
+    private String createRuleSource(String alertTitle, List<FieldRuleImpl> listfieldRule, Stream stream){
         StringBuilder fields = new StringBuilder();
 
         int nbList = 0;
@@ -162,7 +162,7 @@ public class StreamPipelineService {
         return save;
     }
 
-    public String createPipelineStringSource(String alertTitle, String matchingType) {
+    private String createPipelineStringSource(String alertTitle, String matchingType) {
         String match;
         if (matchingType.equals("OR")){
             match="either";
@@ -204,7 +204,7 @@ public class StreamPipelineService {
         }
     }
 
-    public Stream createStream(AlertRuleStream alertRuleStream, String title, String userName) throws ValidationException {
+    private Stream createStream(AlertRuleStream alertRuleStream, String title, String userName) throws ValidationException {
         LOG.debug("Create Stream: " + title);
         final CreateStreamRequest cr = CreateStreamRequest.create(title, AlertRuleUtils.COMMENT_ALERT_WIZARD,
                 Collections.emptyList(), "", alertRuleStream.getMatchingType(), false, indexSetID);
@@ -262,7 +262,7 @@ public class StreamPipelineService {
         clusterEventBus.post(StreamsChangedEvent.create(stream.getId()));
     }
 
-    public  Stream cloneStream(Stream sourceStream, String newTitle, String creatorUser) throws ValidationException {
+    public Stream cloneStream(Stream sourceStream, String newTitle, String creatorUser) throws ValidationException {
         LOG.debug("Clone Stream: " + sourceStream.getId());
         // Create stream.
         final Map<String, Object> streamData = Maps.newHashMap();
@@ -401,7 +401,7 @@ public class StreamPipelineService {
         return dbDataAdapterService.save(dto);
     }
 
-    public List<FieldRuleImpl> extractPipelineFieldRules(List<FieldRuleImpl> listFieldRule){
+    private List<FieldRuleImpl> extractPipelineFieldRules(List<FieldRuleImpl> listFieldRule){
         List<FieldRuleImpl> listPipelineFieldRule = new ArrayList<>();
         for (FieldRuleImpl fieldRule : listFieldRule) {
             if (fieldRule.getType() == 7 || fieldRule.getType() == -7) {
@@ -411,7 +411,7 @@ public class StreamPipelineService {
         return listPipelineFieldRule;
     }
 
-    public StreamPipelineObject createPipelineAndRule(Stream stream, String alertTitle, List<FieldRuleImpl> listfieldRule, String matchingType){
+    private StreamPipelineObject createPipelineAndRule(Stream stream, String alertTitle, List<FieldRuleImpl> listfieldRule, String matchingType){
         String pipelineID = null;
         String pipelineRuleID = null;
         List<FieldRuleImpl> listPipelineFieldRule = extractPipelineFieldRules(listfieldRule);
