@@ -283,10 +283,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         // Create second stream and pipeline
         String streamID2 = null;
-        StreamPipelineObject streamPilpelineObject2 = new StreamPipelineObject(null, null, null, null);
+        StreamPipelineObject streamPipelineObject2 = new StreamPipelineObject(null, null, null, null);
         if (request.getConditionType().equals("THEN") || request.getConditionType().equals("AND") || request.getConditionType().equals("OR")) {
-            streamPilpelineObject2 = streamPipelineService.createStreamAndPipeline(request.getSecondStream(), alertTitle + "#2", userName, request.getStream().getMatchingType());
-            streamID2 = streamPilpelineObject2.getStream().getId();
+            streamPipelineObject2 = streamPipelineService.createStreamAndPipeline(request.getSecondStream(), alertTitle + "#2", userName, request.getStream().getMatchingType());
+            streamID2 = streamPipelineObject2.getStream().getId();
         }
 
         // Create Notification
@@ -300,7 +300,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         String eventID2 = null;
         //Or Event for Second Stream
-        if (request.getConditionType().equals("OR") && streamPilpelineObject2.getStream() != null) {
+        if (request.getConditionType().equals("OR") && streamPipelineObject2.getStream() != null) {
             //Create Condition
             EventProcessorConfig configuration2 = this.alertRuleUtilsService.createAggregationCondition(streamID2, request.conditionParameters());
             //Create Event
@@ -323,15 +323,15 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 streamPipelineObject.getPipelineID(),
                 streamPipelineObject.getPipelineRuleID(),
                 streamPipelineObject.getListPipelineFieldRule(),
-                streamPilpelineObject2.getPipelineID(),
-                streamPilpelineObject2.getPipelineRuleID(),
-                streamPilpelineObject2.getListPipelineFieldRule()));
+                streamPipelineObject2.getPipelineID(),
+                streamPipelineObject2.getPipelineRuleID(),
+                streamPipelineObject2.getListPipelineFieldRule()));
 
         //Update list usage
         for (FieldRule fieldRule : alertRuleUtils.nullSafe(streamPipelineObject.getListPipelineFieldRule())) {
             alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
-        for (FieldRule fieldRule : alertRuleUtils.nullSafe(streamPilpelineObject2.getListPipelineFieldRule())) {
+        for (FieldRule fieldRule : alertRuleUtils.nullSafe(streamPipelineObject2.getListPipelineFieldRule())) {
             alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
 
