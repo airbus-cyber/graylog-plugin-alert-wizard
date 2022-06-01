@@ -19,14 +19,13 @@ package com.airbus_cyber_security.graylog.wizard.alert.rest;
 
 import com.airbus_cyber_security.graylog.wizard.alert.AlertRule;
 import com.airbus_cyber_security.graylog.wizard.alert.AlertRuleImpl;
-import com.airbus_cyber_security.graylog.wizard.alert.AlertRuleService;
+import com.airbus_cyber_security.graylog.wizard.alert.AlertRuleServiceImpl;
 import com.airbus_cyber_security.graylog.wizard.alert.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.alert.bundles.AlertRuleExporter;
 import com.airbus_cyber_security.graylog.wizard.alert.bundles.ExportAlertRule;
 import com.airbus_cyber_security.graylog.wizard.alert.bundles.ExportAlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.CloneAlertRuleRequest;
-import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetAlertRule;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetDataAlertRule;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetListAlertRule;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetListDataAlertRule;
@@ -104,7 +103,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private final EventDefinitionsResource eventDefinitionsResource;
     private final EventNotificationsResource eventNotificationsResource;
 
-    private final AlertRuleService alertRuleService;
+    private final AlertRuleServiceImpl alertRuleService;
     private final AlertRuleUtils alertRuleUtils;
     private final AlertRuleUtilsService alertRuleUtilsService;
     private final StreamPipelineService streamPipelineService;
@@ -113,7 +112,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
 
     @Inject
-    public AlertRuleResource(AlertRuleService alertRuleService,
+    public AlertRuleResource(AlertRuleServiceImpl alertRuleService,
                              RuleService ruleService,
                              PipelineService pipelineService,
                              DBDataAdapterService dbDataAdapterService,

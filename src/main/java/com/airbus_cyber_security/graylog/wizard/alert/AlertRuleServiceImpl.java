@@ -26,6 +26,7 @@ import com.mongodb.DBCollection;
 import org.graylog2.bindings.providers.MongoJackObjectMapperProvider;
 import org.graylog2.database.CollectionName;
 import org.graylog2.database.MongoConnection;
+import org.graylog2.database.NotFoundException;
 import org.mongojack.DBCursor;
 import org.mongojack.DBQuery;
 import org.mongojack.JacksonDBCollection;
@@ -39,7 +40,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class AlertRuleServiceImpl implements AlertRuleService {
+// TODO rename into AlertRuleService, remove interface AlertRuleService, do the same for AlertRule, AlertRuleStream and FieldRule
+public class AlertRuleServiceImpl {
 
 	private final JacksonDBCollection<AlertRuleImpl, String> coll;
 	private final Validator validator;
@@ -56,12 +58,10 @@ public class AlertRuleServiceImpl implements AlertRuleService {
 		this.coll.createIndex(new BasicDBObject(TITLE, 1), new BasicDBObject("unique", true));
 	}
 
-	@Override
 	public long count() {
 		return coll.count();
 	}
 
-	@Override
 	public AlertRule create(AlertRule alert) {
 		if (alert instanceof AlertRuleImpl) {
 			final AlertRuleImpl alertImpl = (AlertRuleImpl) alert;
@@ -77,7 +77,6 @@ public class AlertRuleServiceImpl implements AlertRuleService {
 		}
 	}
 	
-	@Override
 	public AlertRule update(String title, AlertRule alert) {
 
 		if (alert instanceof AlertRuleImpl) {
@@ -97,22 +96,18 @@ public class AlertRuleServiceImpl implements AlertRuleService {
 		}
 	}
 
-	@Override
 	public List<AlertRule> all() {
 		return toAbstractListType(coll.find());
 	}
 
-	@Override
 	public void destroy(String alertTitle) {
 		coll.remove(DBQuery.is(TITLE, alertTitle)).getN();
 	}
 	
-	@Override
-	public AlertRule load(String alertTitle) {
+	public AlertRule load(String alertTitle) throws NotFoundException {
 		return coll.findOne(DBQuery.is(TITLE, alertTitle));
 	}
 	
-	@Override
 	public boolean isPresent(String title) {
 		return (coll.getCount(DBQuery.is(TITLE, title)) > 0);
 	}
@@ -189,14 +184,12 @@ public class AlertRuleServiceImpl implements AlertRuleService {
 		return false;
 	}
 
-	@Override
 	public boolean isValidRequest(AlertRuleRequest request){
 		return (isValidTitle(request.getTitle()) && 
 				isValidStream(request.getStream()) &&
 				isValidCondition(request.getConditionType(), request.conditionParameters(), request.getSecondStream()) );
     }
 
-	@Override
 	public boolean isValidImportRequest(ExportAlertRule request){
 		return (isValidTitle(request.getTitle()) &&
 				isValidStream(request.getStream()) );

@@ -61,7 +61,7 @@ public class AlertRuleUtilsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(AlertRuleUtilsService.class);
 
-    private final AlertRuleService alertRuleService;
+    private final AlertRuleServiceImpl alertRuleService;
     private final StreamService streamService;
     private final AlertService alertService;
     private final AlertRuleUtils alertRuleUtils;
@@ -69,7 +69,7 @@ public class AlertRuleUtilsService {
     private final EventNotificationsResource eventNotificationsResource;
     private final ClusterConfigService clusterConfigService;
 
-    public AlertRuleUtilsService(AlertRuleService alertRuleService,
+    public AlertRuleUtilsService(AlertRuleServiceImpl alertRuleService,
                                  StreamService streamService,
                                  AlertService alertService,
                                  AlertRuleUtils alertRuleUtils,

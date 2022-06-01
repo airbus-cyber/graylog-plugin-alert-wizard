@@ -18,7 +18,7 @@
 package com.airbus_cyber_security.graylog.wizard.alert.bundles;
 
 import com.airbus_cyber_security.graylog.wizard.alert.AlertRule;
-import com.airbus_cyber_security.graylog.wizard.alert.AlertRuleService;
+import com.airbus_cyber_security.graylog.wizard.alert.AlertRuleServiceImpl;
 import com.airbus_cyber_security.graylog.wizard.alert.AlertRuleStreamImpl;
 import com.airbus_cyber_security.graylog.wizard.alert.FieldRuleImpl;
 import com.airbus_cyber_security.graylog.wizard.alert.utilities.AlertRuleUtils;
@@ -38,13 +38,13 @@ public class AlertRuleExporter {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(AlertRuleExporter.class);
 	
-	private final AlertRuleService alertRuleService;
+	private final AlertRuleServiceImpl alertRuleService;
     private final StreamService streamService;
     private final AlertRuleUtils alertRuleUtils;
     private final EventDefinitionsResource eventDefinitionsResource;
     private final EventNotificationsResource eventNotificationsResource;
 	
-	public AlertRuleExporter(AlertRuleService alertRuleService,
+	public AlertRuleExporter(AlertRuleServiceImpl alertRuleService,
 							 StreamService streamService,
 							 AlertRuleUtils alertRuleUtils,
 							 EventDefinitionsResource eventDefinitionsResource,
