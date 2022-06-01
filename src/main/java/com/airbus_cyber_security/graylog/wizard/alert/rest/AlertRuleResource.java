@@ -203,7 +203,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_READ)
     public GetListDataAlertRule listWithData() {
-        final List<AlertRule> alerts = alertRuleService.all();
+        final List<AlertRule> alerts = this.alertRuleService.all();
 
         List<GetDataAlertRule> alertsData = new ArrayList<>();
         for (AlertRule alert : alerts) {
@@ -233,7 +233,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
     private String checkImportPolicyAndGetTitle(String title) {
         String alertTitle = title;
-        if (alertRuleService.isPresent(alertTitle)) {
+        if (this.alertRuleService.isPresent(alertTitle)) {
             final AlertWizardConfig configGeneral = clusterConfigService.get(AlertWizardConfig.class);
             ImportPolicyType importPolicy = configGeneral.accessImportPolicy();
             if (importPolicy != null && importPolicy.equals(ImportPolicyType.RENAME)) {
@@ -242,7 +242,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 do {
                     newAlertTitle = alertTitle + "(" + i + ")";
                     i++;
-                } while (alertRuleService.isPresent(newAlertTitle));
+                } while (this.alertRuleService.isPresent(newAlertTitle));
                 alertTitle = newAlertTitle;
             } else if (importPolicy != null && importPolicy.equals(ImportPolicyType.REPLACE)) {
                 try {
@@ -309,7 +309,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
 
         clusterEventBus.post(StreamsChangedEvent.create(streamPipelineObject.getStream().getId()));
-        alertRuleService.create(AlertRuleImpl.create(
+        this.alertRuleService.create(AlertRuleImpl.create(
                 alertTitle,
                 streamPipelineObject.getStream().getId(),
                 eventID,
@@ -355,7 +355,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         alertRuleUtilsService.checkIsValidRequest(request);
 
-        AlertRule oldAlert = alertRuleService.load(title);
+        AlertRule oldAlert = this.alertRuleService.load(title);
         String alertTitle = request.getTitle();
         String userName = getCurrentUser().getName();
 
@@ -407,7 +407,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             eventDefinitionsResource.delete(eventID2);
         }
 
-        alertRuleService.update(java.net.URLDecoder.decode(title, ENCODING),
+        this.alertRuleService.update(java.net.URLDecoder.decode(title, ENCODING),
                 AlertRuleImpl.create(
                         alertTitle,
                         oldAlert.getStreamID(),
@@ -459,7 +459,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                           @Context UserContext userContext
     ) throws NotFoundException, ValidationException {
 
-        AlertRule sourceAlert = alertRuleService.load(title);
+        AlertRule sourceAlert = this.alertRuleService.load(title);
         String alertTitle = request.getTitle();
         final String creatorUser = getCurrentUser().getName();
 
@@ -522,7 +522,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             eventID2 = alertRuleUtilsService.createEvent(alertTitle + "#2", notificationID, configuration2, userContext);
         }
 
-        alertRuleService.create(AlertRuleImpl.create(
+        this.alertRuleService.create(AlertRuleImpl.create(
                 alertTitle,
                 firstStream.getId(),
                 eventID,
@@ -568,7 +568,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String alertTitle = java.net.URLDecoder.decode(title, ENCODING);
 
         try {
-            AlertRule alertRule = alertRuleService.load(alertTitle);
+            AlertRule alertRule = this.alertRuleService.load(alertTitle);
             //Delete first Stream
             if (alertRule.getStreamID() != null && !alertRule.getStreamID().isEmpty()) {
                 streamPipelineService.deleteStreamFromID(alertRule.getStreamID());
@@ -610,7 +610,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             LOG.error("Cannot find alert " + alertTitle, e);
         }
 
-        alertRuleService.destroy(alertTitle);
+        this.alertRuleService.destroy(alertTitle);
     }
 
     @POST
@@ -667,7 +667,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
 
         clusterEventBus.post(StreamsChangedEvent.create(streamPilpelineObject.getStream().getId()));
-        alertRuleService.create(AlertRuleImpl.create(
+        this.alertRuleService.create(AlertRuleImpl.create(
                 alertTitle,
                 streamPilpelineObject.getStream().getId(),
                 eventID,
