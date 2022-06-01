@@ -239,14 +239,14 @@ public class AlertListResource extends RestResource implements PluginRestResourc
     ) throws MongoException, UnsupportedEncodingException {
         String listTitle = java.net.URLDecoder.decode(title, ENCODING);
 
-        try{
+        try {
             AlertList alertList = alertListService.load(listTitle);
-            if(alertList.getUsage() <= 0){
+            if (alertList.getUsage() <= 0) {
                 alertListService.destroy(listTitle);
-            }else{
+            } else {
                 throw new javax.ws.rs.BadRequestException("List " + listTitle + " used in alert rules");
             }
-        }catch(NotFoundException e){
+        } catch(NotFoundException e) {
             throw new javax.ws.rs.NotFoundException("Cannot find list " + listTitle );
         }
 
