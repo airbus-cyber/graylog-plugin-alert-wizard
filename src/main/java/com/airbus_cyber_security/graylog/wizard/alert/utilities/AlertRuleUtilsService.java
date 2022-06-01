@@ -20,8 +20,6 @@ package com.airbus_cyber_security.graylog.wizard.alert.utilities;
 import com.airbus_cyber_security.graylog.wizard.alert.*;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetDataAlertRule;
-import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
-import com.airbus_cyber_security.graylog.wizard.config.rest.DefaultValues;
 import com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig;
 import com.airbus_cyber_security.graylog.events.config.SeverityType;
 import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
@@ -61,7 +59,7 @@ public class AlertRuleUtilsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(AlertRuleUtilsService.class);
 
-    private final AlertRuleServiceImpl alertRuleService;
+    private final AlertRuleService alertRuleService;
     private final StreamService streamService;
     private final AlertService alertService;
     private final AlertRuleUtils alertRuleUtils;
@@ -69,7 +67,7 @@ public class AlertRuleUtilsService {
     private final EventNotificationsResource eventNotificationsResource;
     private final ClusterConfigService clusterConfigService;
 
-    public AlertRuleUtilsService(AlertRuleServiceImpl alertRuleService,
+    public AlertRuleUtilsService(AlertRuleService alertRuleService,
                                  StreamService streamService,
                                  AlertService alertService,
                                  AlertRuleUtils alertRuleUtils,

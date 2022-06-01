@@ -41,16 +41,16 @@ import java.util.Map;
 import java.util.Set;
 
 // TODO rename into AlertRuleService, remove interface AlertRuleService, do the same for AlertRule, AlertRuleStream and FieldRule
-public class AlertRuleServiceImpl {
+public class AlertRuleService {
 
 	private final JacksonDBCollection<AlertRuleImpl, String> coll;
 	private final Validator validator;
-	private static final Logger LOG = LoggerFactory.getLogger(AlertRuleServiceImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AlertRuleService.class);
 	private static final String TITLE = "title";
 
 	@Inject
-	public AlertRuleServiceImpl(MongoConnection mongoConnection, MongoJackObjectMapperProvider mapperProvider,
-								Validator validator) {
+	public AlertRuleService(MongoConnection mongoConnection, MongoJackObjectMapperProvider mapperProvider,
+							Validator validator) {
 		this.validator = validator;
 		final String collectionName = AlertRuleImpl.class.getAnnotation(CollectionName.class).value();
 		final DBCollection dbCollection = mongoConnection.getDatabase().getCollection(collectionName);

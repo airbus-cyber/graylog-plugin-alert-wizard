@@ -19,7 +19,7 @@ package com.airbus_cyber_security.graylog.wizard.alert.rest;
 
 import com.airbus_cyber_security.graylog.wizard.alert.AlertRule;
 import com.airbus_cyber_security.graylog.wizard.alert.AlertRuleImpl;
-import com.airbus_cyber_security.graylog.wizard.alert.AlertRuleServiceImpl;
+import com.airbus_cyber_security.graylog.wizard.alert.AlertRuleService;
 import com.airbus_cyber_security.graylog.wizard.alert.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.alert.bundles.AlertRuleExporter;
 import com.airbus_cyber_security.graylog.wizard.alert.bundles.ExportAlertRule;
@@ -103,7 +103,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private final EventDefinitionsResource eventDefinitionsResource;
     private final EventNotificationsResource eventNotificationsResource;
 
-    private final AlertRuleServiceImpl alertRuleService;
+    private final AlertRuleService alertRuleService;
     private final AlertRuleUtils alertRuleUtils;
     private final AlertRuleUtilsService alertRuleUtilsService;
     private final StreamPipelineService streamPipelineService;
@@ -112,7 +112,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
 
     @Inject
-    public AlertRuleResource(AlertRuleServiceImpl alertRuleService,
+    public AlertRuleResource(AlertRuleService alertRuleService,
                              RuleService ruleService,
                              PipelineService pipelineService,
                              DBDataAdapterService dbDataAdapterService,
