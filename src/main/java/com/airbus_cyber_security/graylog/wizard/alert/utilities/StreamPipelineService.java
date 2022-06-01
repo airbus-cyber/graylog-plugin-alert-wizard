@@ -415,7 +415,7 @@ public class StreamPipelineService {
         String pipelineID = null;
         String pipelineRuleID = null;
         List<FieldRuleImpl> listPipelineFieldRule = extractPipelineFieldRules(listfieldRule);
-        if(!listPipelineFieldRule.isEmpty()) {
+        if (!listPipelineFieldRule.isEmpty()) {
             RuleDao pipelineRule = createPipelineRule(alertTitle, listPipelineFieldRule, stream, null);
             PipelineDao pipeline = createPipeline(alertTitle, null, matchingType);
             pipelineID = pipeline.id();
