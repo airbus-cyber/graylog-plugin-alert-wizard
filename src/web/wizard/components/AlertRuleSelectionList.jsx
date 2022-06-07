@@ -17,11 +17,9 @@
 
 import React from 'react';
 import createReactClass from 'create-react-class';
-import { FormattedMessage } from 'react-intl';
 import { SearchForm } from 'components/common';
 import { Input } from 'components/bootstrap';
 import ControlledTableList from 'components/common/ControlledTableList';
-import { Button } from 'components/graylog';
 
 
 const AlertRuleSelectionList = createReactClass({
@@ -41,10 +39,11 @@ const AlertRuleSelectionList = createReactClass({
         this.setState({ alertTitlesFilter: '' });
     },
 
-    selectAllAlertRules() {
-        const { alertRules } = this.state;
-
-        const newSelection = new Set(alertRules.map(rule => rule.title));
+    toggleSelectAll(event) {
+        let newSelection = new Set()
+        if (event.target.checked) {
+            this.props.alertRules.forEach(rule => newSelection.add(rule.title))
+        }
 
         this.setState({ selectedAlertTitles: newSelection });
         this.props.onRuleSelectionChanged(newSelection);
@@ -85,13 +84,21 @@ const AlertRuleSelectionList = createReactClass({
 
     render() {
         let alerts
-        if (this.props.alertRules) {
+        if (this.props.alertRules && this.props.alertRules.length !== 0) {
+            const { selectedAlertTitles } = this.state;
+            const selectedItemsCount = selectedAlertTitles.size
             alerts = (
                 <ControlledTableList>
                     <ControlledTableList.Header>
-                        <Button className="btn btn-sm btn-link select-all" onClick={this.selectAllAlertRules}>
-                            <FormattedMessage id="wizard.selectAll" defaultMessage="Select all" />
-                        </Button>
+                        <Input id="select-all-checkbox"
+                               type="checkbox"
+                               // TODO is it possible to add internationalization for the label?
+                               label={selectedItemsCount === 0 ? 'Select all' : `${selectedItemsCount} selected`}
+                               checked={selectedItemsCount === this.props.alertRules.length}
+                               onChange={this.toggleSelectAll}
+                               wrapperClassName="form-group-inline"
+                        />
+
                     </ControlledTableList.Header>
                     {this.formatAlertRules()}
                 </ControlledTableList>
