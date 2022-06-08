@@ -135,6 +135,7 @@
   "wizard.noAlertRulesToExport": "Il n'y a pas de règle d'alerte à exporter.",
   "wizard.noListsToExport": "Il n'y a pas de liste à exporter.",
   "wizard.selectAll": "Tout sélectionner",
+  "wizard.selected": "{ruleCount, plural, =0 {Tout sélectionner} =1 {Une règle sélectionnée} other {# règles sélectionnées}}",
   "wizard.exportWizardAlertRule": "Wizard : Exporter des règles d'alerte",
   "wizard.exportAlertRule": "Vous pouvez exporter une règle d'alerte.",
   "wizard.export": "Exporter",

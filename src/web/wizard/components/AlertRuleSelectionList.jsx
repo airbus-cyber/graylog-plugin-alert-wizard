@@ -17,6 +17,7 @@
 
 import React from 'react';
 import createReactClass from 'create-react-class';
+import { FormattedMessage } from 'react-intl';
 import { SearchForm } from 'components/common';
 import { Input } from 'components/bootstrap';
 import ControlledTableList from 'components/common/ControlledTableList';
@@ -87,13 +88,15 @@ const AlertRuleSelectionList = createReactClass({
         if (this.props.alertRules && this.props.alertRules.length !== 0) {
             const { selectedAlertTitles } = this.state;
             const selectedItemsCount = selectedAlertTitles.size
+            const label = <FormattedMessage id="wizard.selected"
+                                            defaultMessage="{ruleCount, plural, =0 {Select all} =1 {One rule selected} other {# rules selected}}"
+                                            values={{ruleCount: selectedItemsCount}} />
             alerts = (
                 <ControlledTableList>
                     <ControlledTableList.Header>
                         <Input id="select-all-checkbox"
                                type="checkbox"
-                               // TODO is it possible to add internationalization for the label?
-                               label={selectedItemsCount === 0 ? 'Select all' : `${selectedItemsCount} selected`}
+                               label={label}
                                checked={selectedItemsCount === this.props.alertRules.length}
                                onChange={this.toggleSelectAll}
                                wrapperClassName="form-group-inline"
