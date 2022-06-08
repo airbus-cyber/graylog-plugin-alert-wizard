@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 ### Features
 * Rules import: added search input to filter rules by their title ([issue #46](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/46))
 * Rules import&export: replaced button "Select all" by checkbox to select/deselect all rules ([issue #64](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/64))
-* Updated graylog-plugin-logging-alert dependency to 4.1.1
+* Updated graylog-plugin-logging-alert dependency to [4.1.1](https://github.com/airbus-cyber/graylog-plugin-logging-alert/blob/4.1.1/CHANGELOG.md#411)
 ### Bug Fixes
 * The correct value of the additional threshold is now displayed when editing an alert rule ([issue #69](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/69))
 ### Changes
