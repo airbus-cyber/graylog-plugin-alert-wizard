@@ -17,7 +17,7 @@
 
 package com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests;
 
-import com.airbus_cyber_security.graylog.wizard.alert.AlertRuleStreamImpl;
+import com.airbus_cyber_security.graylog.wizard.alert.AlertRuleStream;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -51,11 +51,11 @@ public abstract class AlertRuleRequest {
     public abstract Map<String, Object> conditionParameters();
     
     @JsonProperty("stream")
-    public abstract AlertRuleStreamImpl getStream();
+    public abstract AlertRuleStream getStream();
     
     @JsonProperty("second_stream")
     @Nullable
-    public abstract AlertRuleStreamImpl getSecondStream();
+    public abstract AlertRuleStream getSecondStream();
 
     @JsonCreator    
     public static AlertRuleRequest create(@JsonProperty("title") String title,
@@ -63,8 +63,8 @@ public abstract class AlertRuleRequest {
                                              @JsonProperty("description") String description,
                                              @JsonProperty("condition_type") String conditionType,
                                              @JsonProperty("condition_parameters") Map<String, Object> conditionParameters,
-                                             @JsonProperty("stream") AlertRuleStreamImpl stream,
-                                             @JsonProperty("second_stream") AlertRuleStreamImpl stream2) {
+                                             @JsonProperty("stream") AlertRuleStream stream,
+                                             @JsonProperty("second_stream") AlertRuleStream stream2) {
         return new AutoValue_AlertRuleRequest(title, severity, description, conditionType, conditionParameters, stream, stream2);
     }
 }

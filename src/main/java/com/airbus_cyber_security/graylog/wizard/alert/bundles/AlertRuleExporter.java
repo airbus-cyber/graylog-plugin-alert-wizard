@@ -19,7 +19,7 @@ package com.airbus_cyber_security.graylog.wizard.alert.bundles;
 
 import com.airbus_cyber_security.graylog.wizard.alert.AlertRule;
 import com.airbus_cyber_security.graylog.wizard.alert.AlertRuleService;
-import com.airbus_cyber_security.graylog.wizard.alert.AlertRuleStreamImpl;
+import com.airbus_cyber_security.graylog.wizard.alert.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.FieldRuleImpl;
 import com.airbus_cyber_security.graylog.wizard.alert.utilities.AlertRuleUtils;
 import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
@@ -68,17 +68,17 @@ public class AlertRuleExporter {
 				List<FieldRuleImpl> fieldRules = new ArrayList<>();
 				Optional.ofNullable(alert.getPipelineFieldRules()).ifPresent(fieldRules::addAll);
 				Optional.ofNullable(alertRuleUtils.getListFieldRule(stream.getStreamRules())).ifPresent(fieldRules::addAll);
-				AlertRuleStreamImpl alertRuleStream = AlertRuleStreamImpl.create(streamID, stream.getMatchingType().toString(), fieldRules);
+				AlertRuleStream alertRuleStream = AlertRuleStream.create(streamID, stream.getMatchingType().toString(), fieldRules);
 
-				AlertRuleStreamImpl alertRuleStream2;
+				AlertRuleStream alertRuleStream2;
 		        if(alert.getSecondStreamID() != null && !alert.getSecondStreamID().isEmpty()) {
 		        	final Stream stream2 = streamService.load(alert.getSecondStreamID());
 					List<FieldRuleImpl> fieldRules2 = new ArrayList<>();
 					Optional.ofNullable(alert.getSecondPipelineFieldRules()).ifPresent(fieldRules2::addAll);
 					Optional.ofNullable(alertRuleUtils.getListFieldRule(stream2.getStreamRules())).ifPresent(fieldRules2::addAll);
-		        	alertRuleStream2 = AlertRuleStreamImpl.create(alert.getSecondStreamID(), stream2.getMatchingType().toString(), fieldRules2);
+		        	alertRuleStream2 = AlertRuleStream.create(alert.getSecondStreamID(), stream2.getMatchingType().toString(), fieldRules2);
 		        }else {
-		        	alertRuleStream2 = AlertRuleStreamImpl.create("", "", Collections.emptyList());
+		        	alertRuleStream2 = AlertRuleStream.create("", "", Collections.emptyList());
 		        }
 
 		        //Get the condition parameters

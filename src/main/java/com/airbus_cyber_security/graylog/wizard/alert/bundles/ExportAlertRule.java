@@ -17,7 +17,7 @@
 
 package com.airbus_cyber_security.graylog.wizard.alert.bundles;
 
-import com.airbus_cyber_security.graylog.wizard.alert.AlertRuleStreamImpl;
+import com.airbus_cyber_security.graylog.wizard.alert.AlertRuleStream;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -50,11 +50,11 @@ public abstract class ExportAlertRule {
     public abstract Map<String, Object> conditionParameters();
     
     @JsonProperty("stream")
-    public abstract AlertRuleStreamImpl getStream();
+    public abstract AlertRuleStream getStream();
     
     @JsonProperty("second_stream")
     @Nullable
-    public abstract AlertRuleStreamImpl getSecondStream();
+    public abstract AlertRuleStream getSecondStream();
 
     @JsonCreator    
     public static ExportAlertRule create(@JsonProperty("title") String title,
@@ -62,8 +62,8 @@ public abstract class ExportAlertRule {
                                                 @JsonProperty("description") String description,
                                                 @JsonProperty("condition_type") String conditionType,
                                                 @JsonProperty("condition_parameters") Map<String, Object> conditionParameters,
-                                                @JsonProperty("stream") AlertRuleStreamImpl stream,
-                                                @JsonProperty("second_stream") AlertRuleStreamImpl stream2) {
+                                                @JsonProperty("stream") AlertRuleStream stream,
+                                                @JsonProperty("second_stream") AlertRuleStream stream2) {
         return new AutoValue_ExportAlertRule(title, notificationParameters, description, conditionType, conditionParameters, stream, stream2);
     }
 }

@@ -113,7 +113,7 @@ public class AlertRuleService {
 		return !(title == null || title.isEmpty());
 	}
 	
-	private boolean isValidStream(AlertRuleStreamImpl stream) {
+	private boolean isValidStream(AlertRuleStream stream) {
 		if(stream.getMatchingType().equals("AND") || stream.getMatchingType().equals("OR")){
 			for (FieldRule fieldRule : stream.getFieldRules()) {
 				if(fieldRule.getField() == null || fieldRule.getField().isEmpty() ||
@@ -132,7 +132,7 @@ public class AlertRuleService {
 				isValidStatThresholdType(conditionParameters.get(AlertRuleUtils.THRESHOLD_TYPE).toString()));
 	}
 	
-	private boolean isValidCondCorrelation(Map<String, Object> conditionParameters, AlertRuleStreamImpl secondStream) {
+	private boolean isValidCondCorrelation(Map<String, Object> conditionParameters, AlertRuleStream secondStream) {
 		return (conditionParameters.containsKey(AlertRuleUtils.ADDITIONAL_THRESHOLD) &&
 				conditionParameters.containsKey(AlertRuleUtils.ADDITIONAL_THRESHOLD_TYPE) &&
 				isValidThresholdType(conditionParameters.get(AlertRuleUtils.THRESHOLD_TYPE).toString()) &&
@@ -140,7 +140,7 @@ public class AlertRuleService {
 				isValidStream(secondStream));
 	}
 	
-	private boolean isValidCondOr(Map<String, Object> conditionParameters, AlertRuleStreamImpl secondStream) {
+	private boolean isValidCondOr(Map<String, Object> conditionParameters, AlertRuleStream secondStream) {
 		return (isValidThresholdType(conditionParameters.get(AlertRuleUtils.THRESHOLD_TYPE).toString()) &&
 				isValidStream(secondStream));
 	}
@@ -154,7 +154,7 @@ public class AlertRuleService {
 				thresholdType.equals(">") || thresholdType.equals(">=") || thresholdType.equals("=="));
 	}
 	
-	private boolean isValidCondition(String conditionType, Map<String, Object> conditionParameters, AlertRuleStreamImpl secondStream) {
+	private boolean isValidCondition(String conditionType, Map<String, Object> conditionParameters, AlertRuleStream secondStream) {
 		if (conditionParameters.containsKey(AlertRuleUtils.TIME) &&
 			conditionParameters.containsKey(AlertRuleUtils.THRESHOLD) &&
 			conditionParameters.containsKey(AlertRuleUtils.THRESHOLD_TYPE)) {

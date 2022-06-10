@@ -116,7 +116,7 @@ public class AlertRuleUtilsService {
             List<FieldRuleImpl> fieldRules = new ArrayList<>();
             Optional.ofNullable(alert.getPipelineFieldRules()).ifPresent(fieldRules::addAll);
             Optional.ofNullable(alertRuleUtils.getListFieldRule(stream.getStreamRules())).ifPresent(fieldRules::addAll);
-            AlertRuleStream alertRuleStream = AlertRuleStreamImpl.create(streamID, stream.getMatchingType().toString(), fieldRules);
+            AlertRuleStream alertRuleStream = AlertRuleStream.create(streamID, stream.getMatchingType().toString(), fieldRules);
 
             AlertRuleStream alertRuleStream2 = null;
             if (alert.getSecondStreamID() != null && !alert.getSecondStreamID().isEmpty()) {
@@ -124,7 +124,7 @@ public class AlertRuleUtilsService {
                 List<FieldRuleImpl> fieldRules2 = new ArrayList<>();
                 Optional.ofNullable(alert.getSecondPipelineFieldRules()).ifPresent(fieldRules2::addAll);
                 Optional.ofNullable(alertRuleUtils.getListFieldRule(stream2.getStreamRules())).ifPresent(fieldRules2::addAll);
-                alertRuleStream2 = AlertRuleStreamImpl.create(alert.getSecondStreamID(), stream2.getMatchingType().toString(), fieldRules2);
+                alertRuleStream2 = AlertRuleStream.create(alert.getSecondStreamID(), stream2.getMatchingType().toString(), fieldRules2);
             }
 
             LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) eventNotificationsResource.get(alert.getNotificationID()).config();
