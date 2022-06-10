@@ -37,16 +37,16 @@ import javax.validation.Validator;
 import java.util.List;
 import java.util.Set;
 
-public class AlertListServiceImpl {
+public class AlertListService {
 
     private final JacksonDBCollection<AlertListImpl, String> coll;
     private final Validator validator;
-    private static final Logger LOG = LoggerFactory.getLogger(AlertListServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AlertListService.class);
     private static final String TITLE = "title";
 
     @Inject
-    public AlertListServiceImpl(MongoConnection mongoConnection, MongoJackObjectMapperProvider mapperProvider,
-                                Validator validator) {
+    public AlertListService(MongoConnection mongoConnection, MongoJackObjectMapperProvider mapperProvider,
+                            Validator validator) {
         this.validator = validator;
         final String collectionName = AlertListImpl.class.getAnnotation(CollectionName.class).value();
         final DBCollection dbCollection = mongoConnection.getDatabase().getCollection(collectionName);

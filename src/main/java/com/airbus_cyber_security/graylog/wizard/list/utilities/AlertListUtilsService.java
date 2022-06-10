@@ -19,7 +19,7 @@ package com.airbus_cyber_security.graylog.wizard.list.utilities;
 
 import com.airbus_cyber_security.graylog.wizard.list.AlertList;
 import com.airbus_cyber_security.graylog.wizard.list.AlertListImpl;
-import com.airbus_cyber_security.graylog.wizard.list.AlertListServiceImpl;
+import com.airbus_cyber_security.graylog.wizard.list.AlertListService;
 import com.airbus_cyber_security.graylog.wizard.list.rest.models.requests.AlertListRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,9 +32,9 @@ public class AlertListUtilsService {
     private static final String ENCODING = "UTF-8";
     private static final Logger LOG = LoggerFactory.getLogger(AlertListUtilsService.class);
 
-    private final AlertListServiceImpl alertListService;
+    private final AlertListService alertListService;
 
-    public AlertListUtilsService(AlertListServiceImpl alertListService) {
+    public AlertListUtilsService(AlertListService alertListService) {
         this.alertListService = alertListService;
     }
 

@@ -21,7 +21,7 @@ import com.airbus_cyber_security.graylog.wizard.alert.AlertRuleService;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.AlertRuleResource;
 import com.airbus_cyber_security.graylog.wizard.audit.AlertWizardAuditEventTypes;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfigResource;
-import com.airbus_cyber_security.graylog.wizard.list.AlertListServiceImpl;
+import com.airbus_cyber_security.graylog.wizard.list.AlertListService;
 import com.airbus_cyber_security.graylog.wizard.list.rest.AlertListResource;
 import com.airbus_cyber_security.graylog.wizard.permissions.AlertRuleRestPermissions;
 import org.graylog2.plugin.PluginConfigBean;
@@ -47,7 +47,7 @@ public class AlertWizardModule extends PluginModule {
     @Override
     protected void configure() {
     	bind(AlertRuleService.class);
-        bind(AlertListServiceImpl.class);
+        bind(AlertListService.class);
 
         addPermissions(AlertRuleRestPermissions.class);
         addRestResource(AlertRuleResource.class);

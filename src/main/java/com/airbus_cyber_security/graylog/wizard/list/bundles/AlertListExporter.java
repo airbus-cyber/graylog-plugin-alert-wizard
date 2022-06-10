@@ -18,7 +18,7 @@
 package com.airbus_cyber_security.graylog.wizard.list.bundles;
 
 import com.airbus_cyber_security.graylog.wizard.list.AlertList;
-import com.airbus_cyber_security.graylog.wizard.list.AlertListServiceImpl;
+import com.airbus_cyber_security.graylog.wizard.list.AlertListService;
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +29,9 @@ public class AlertListExporter {
 
     private static final Logger LOG = LoggerFactory.getLogger(AlertListExporter.class);
 
-    private final AlertListServiceImpl alertListService;
+    private final AlertListService alertListService;
 
-    public AlertListExporter(AlertListServiceImpl alertListService){
+    public AlertListExporter(AlertListService alertListService){
         this.alertListService = alertListService;
     }
 
