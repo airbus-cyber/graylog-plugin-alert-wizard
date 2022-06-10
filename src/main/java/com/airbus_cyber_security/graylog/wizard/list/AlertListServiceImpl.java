@@ -37,7 +37,7 @@ import javax.validation.Validator;
 import java.util.List;
 import java.util.Set;
 
-public class AlertListServiceImpl implements AlertListService {
+public class AlertListServiceImpl {
 
     private final JacksonDBCollection<AlertListImpl, String> coll;
     private final Validator validator;
@@ -54,12 +54,10 @@ public class AlertListServiceImpl implements AlertListService {
         this.coll.createIndex(new BasicDBObject(TITLE, 1), new BasicDBObject("unique", true));
     }
 
-    @Override
     public long count() {
         return coll.count();
     }
 
-    @Override
     public AlertList create(AlertList list) {
         if (list instanceof AlertListImpl) {
             final AlertListImpl listImpl = (AlertListImpl) list;
@@ -75,7 +73,6 @@ public class AlertListServiceImpl implements AlertListService {
                     "Specified object is not of correct implementation type (" + list.getClass() + ")!");
     }
 
-    @Override
     public AlertList update(String title, AlertList list) {
 
         if (list instanceof AlertListImpl) {
@@ -97,24 +94,19 @@ public class AlertListServiceImpl implements AlertListService {
                     "Specified object is not of correct implementation type (" + list.getClass() + ")!");
     }
 
-
-    @Override
     public List<AlertList> all() {
         return toAbstractListType(coll.find());
     }
 
-    @Override
     public int destroy(String listTitle) {
 
         return coll.remove(DBQuery.is(TITLE, listTitle)).getN();
     }
 
-    @Override
     public AlertList load(String listTitle) {
         return coll.findOne(DBQuery.is(TITLE, listTitle));
     }
 
-    @Override
     public boolean isPresent(String title) {
         return (coll.getCount(DBQuery.is(TITLE, title)) > 0);
     }
@@ -134,12 +126,10 @@ public class AlertListServiceImpl implements AlertListService {
         return !(title == null || title.isEmpty());
     }
 
-    @Override
     public boolean isValidRequest(AlertListRequest request){
         return (isValidTitle(request.getTitle()));
     }
 
-    @Override
     public boolean isValidImportRequest(ExportAlertList request){
         return (isValidTitle(request.getTitle()));
     }
