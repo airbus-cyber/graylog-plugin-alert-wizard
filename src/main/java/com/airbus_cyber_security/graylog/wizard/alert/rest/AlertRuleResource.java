@@ -37,7 +37,7 @@ import com.airbus_cyber_security.graylog.wizard.audit.AlertWizardAuditEventTypes
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
 import com.airbus_cyber_security.graylog.wizard.config.rest.ImportPolicyType;
 import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
-import com.airbus_cyber_security.graylog.wizard.list.AlertListService;
+import com.airbus_cyber_security.graylog.wizard.list.AlertListServiceImpl;
 import com.airbus_cyber_security.graylog.wizard.list.utilities.AlertListUtilsService;
 import com.airbus_cyber_security.graylog.wizard.permissions.AlertRuleRestPermissions;
 import com.codahale.metrics.annotation.Timed;
@@ -126,7 +126,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                              AlertService alertService,
                              ClusterConfigService clusterConfigService,
                              PipelineStreamConnectionsService pipelineStreamConnectionsService,
-                             AlertListService alertListService,
+                             AlertListServiceImpl alertListService,
                              EventDefinitionsResource eventDefinitionsResource,
                              EventNotificationsResource eventNotificationsResource) {
         this.alertRuleService = alertRuleService;

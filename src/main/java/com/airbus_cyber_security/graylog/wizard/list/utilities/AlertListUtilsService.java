@@ -19,9 +19,8 @@ package com.airbus_cyber_security.graylog.wizard.list.utilities;
 
 import com.airbus_cyber_security.graylog.wizard.list.AlertList;
 import com.airbus_cyber_security.graylog.wizard.list.AlertListImpl;
-import com.airbus_cyber_security.graylog.wizard.list.AlertListService;
+import com.airbus_cyber_security.graylog.wizard.list.AlertListServiceImpl;
 import com.airbus_cyber_security.graylog.wizard.list.rest.models.requests.AlertListRequest;
-import org.graylog2.database.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,9 +32,9 @@ public class AlertListUtilsService {
     private static final String ENCODING = "UTF-8";
     private static final Logger LOG = LoggerFactory.getLogger(AlertListUtilsService.class);
 
-    private final AlertListService alertListService;
+    private final AlertListServiceImpl alertListService;
 
-    public AlertListUtilsService(AlertListService alertListService) {
+    public AlertListUtilsService(AlertListServiceImpl alertListService) {
         this.alertListService = alertListService;
     }
 
@@ -62,7 +61,7 @@ public class AlertListUtilsService {
             } else {
                 LOG.error("Failed to increment list, " + title + " does not exist");
             }
-        } catch (UnsupportedEncodingException | NotFoundException e) {
+        } catch (UnsupportedEncodingException e) {
             LOG.error("Failed to increment list " + title);
         }
     }
@@ -87,7 +86,7 @@ public class AlertListUtilsService {
             }else{
                 LOG.error("Failed to decrement list, "+ title + " does not exist");
             }
-        } catch (UnsupportedEncodingException | NotFoundException e) {
+        } catch (UnsupportedEncodingException e) {
             LOG.error("Failed to decrement list " + title);
         }
     }

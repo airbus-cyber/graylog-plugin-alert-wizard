@@ -22,7 +22,7 @@ import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
 import com.airbus_cyber_security.graylog.wizard.config.rest.ImportPolicyType;
 import com.airbus_cyber_security.graylog.wizard.list.AlertList;
 import com.airbus_cyber_security.graylog.wizard.list.AlertListImpl;
-import com.airbus_cyber_security.graylog.wizard.list.AlertListService;
+import com.airbus_cyber_security.graylog.wizard.list.AlertListServiceImpl;
 import com.airbus_cyber_security.graylog.wizard.list.bundles.AlertListExporter;
 import com.airbus_cyber_security.graylog.wizard.list.bundles.ExportAlertList;
 import com.airbus_cyber_security.graylog.wizard.list.bundles.ExportAlertListRequest;
@@ -68,14 +68,14 @@ public class AlertListResource extends RestResource implements PluginRestResourc
     private static final String ENCODING = "UTF-8";
     private static final String TITLE = "title";
 
-    private final AlertListService alertListService;
+    private final AlertListServiceImpl alertListService;
     private final ClusterConfigService clusterConfigService;
     private final AlertListExporter alertListExporter;
     private final AlertListUtilsService alertListUtilsService;
 
 
     @Inject
-    public AlertListResource(AlertListService alertListService,
+    public AlertListResource(AlertListServiceImpl alertListService,
                              ClusterConfigService clusterConfigService) {
         this.alertListService = alertListService;
         this.clusterConfigService = clusterConfigService;
@@ -239,17 +239,12 @@ public class AlertListResource extends RestResource implements PluginRestResourc
     ) throws MongoException, UnsupportedEncodingException {
         String listTitle = java.net.URLDecoder.decode(title, ENCODING);
 
-        try {
-            AlertList alertList = this.alertListService.load(listTitle);
-            if (alertList.getUsage() <= 0) {
-                this.alertListService.destroy(listTitle);
-            } else {
-                throw new javax.ws.rs.BadRequestException("List " + listTitle + " used in alert rules");
-            }
-        } catch(NotFoundException e) {
-            throw new javax.ws.rs.NotFoundException("Cannot find list " + listTitle );
+        AlertList alertList = this.alertListService.load(listTitle);
+        if (alertList.getUsage() <= 0) {
+            this.alertListService.destroy(listTitle);
+        } else {
+            throw new javax.ws.rs.BadRequestException("List " + listTitle + " used in alert rules");
         }
-
     }
 
     @POST
