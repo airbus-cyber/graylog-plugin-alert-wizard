@@ -33,41 +33,34 @@ import javax.validation.constraints.NotNull;
 @JsonAutoDetect
 @JsonIgnoreProperties(ignoreUnknown = true)
 @CollectionName("wizard_lists")
-public abstract class AlertListImpl implements AlertList {
+public abstract class AlertListImpl {
 
 
     @JsonProperty("title")
-    @Override
     @NotNull
     public abstract String getTitle();
 
     @JsonProperty("created_at")
-    @Override
     @Nullable
     public abstract DateTime getCreatedAt();
 
     @JsonProperty("creator_user_id")
-    @Override
     @Nullable
     public abstract String getCreatorUserId();
 
     @JsonProperty("last_modified")
-    @Override
     @Nullable
     public abstract DateTime getLastModified();
 
     @JsonProperty("description")
-    @Override
     @Nullable
     public abstract String getDescription();
 
     @JsonProperty("usage")
-    @Override
     @NotNull
     public abstract int getUsage();
 
     @JsonProperty("lists")
-    @Override
     @Nullable
     public abstract String getLists();
 

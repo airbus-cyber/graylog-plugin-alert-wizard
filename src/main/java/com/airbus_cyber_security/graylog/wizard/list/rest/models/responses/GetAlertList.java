@@ -17,7 +17,7 @@
 
 package com.airbus_cyber_security.graylog.wizard.list.rest.models.responses;
 
-import com.airbus_cyber_security.graylog.wizard.list.AlertList;
+import com.airbus_cyber_security.graylog.wizard.list.AlertListImpl;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -28,10 +28,10 @@ import com.google.auto.value.AutoValue;
 public abstract class GetAlertList {
 
     @JsonProperty
-    public abstract AlertList getLists();
+    public abstract AlertListImpl getLists();
 
     @JsonCreator
-    public static GetAlertList create(@JsonProperty("list") AlertList list) {
+    public static GetAlertList create(@JsonProperty("list") AlertListImpl list) {
         return new AutoValue_GetAlertList(list);
     }
 }

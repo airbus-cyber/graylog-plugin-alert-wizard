@@ -58,43 +58,30 @@ public class AlertListService {
         return coll.count();
     }
 
-    public AlertList create(AlertList list) {
-        if (list instanceof AlertListImpl) {
-            final AlertListImpl listImpl = (AlertListImpl) list;
-
-            final Set<ConstraintViolation<AlertListImpl>> violations = validator.validate(listImpl);
-            if (violations.isEmpty()) {
-                return coll.insert(listImpl).getSavedObject();
-            } else {
-                throw new IllegalArgumentException("Specified object failed validation: " + violations);
-            }
-        } else
-            throw new IllegalArgumentException(
-                    "Specified object is not of correct implementation type (" + list.getClass() + ")!");
+    public AlertListImpl create(AlertListImpl list) {
+        final Set<ConstraintViolation<AlertListImpl>> violations = validator.validate(list);
+        if (violations.isEmpty()) {
+            return coll.insert(list).getSavedObject();
+        } else {
+            throw new IllegalArgumentException("Specified object failed validation: " + violations);
+        }
     }
 
-    public AlertList update(String title, AlertList list) {
+    public AlertListImpl update(String title, AlertListImpl list) {
+        LOG.debug("List to be updated [{}]", list);
 
-        if (list instanceof AlertListImpl) {
-            final AlertListImpl listImpl = (AlertListImpl) list;
-            LOG.debug("List to be updated [{}]", listImpl);
+        final Set<ConstraintViolation<AlertListImpl>> violations = validator.validate(list);
+        if (violations.isEmpty()) {
 
-            final Set<ConstraintViolation<AlertListImpl>> violations = validator.validate(listImpl);
-            if (violations.isEmpty()) {
+            return coll.findAndModify(DBQuery.is(TITLE, title), new BasicDBObject(), new BasicDBObject(),
+                    false, list, true, false);
 
-                return coll.findAndModify(DBQuery.is(TITLE, title), new BasicDBObject(), new BasicDBObject(),
-                        false, listImpl, true, false);
-
-            } else {
-                throw new IllegalArgumentException("Specified object failed validation: " + violations);
-            }
-
-        } else
-            throw new IllegalArgumentException(
-                    "Specified object is not of correct implementation type (" + list.getClass() + ")!");
+        } else {
+            throw new IllegalArgumentException("Specified object failed validation: " + violations);
+        }
     }
 
-    public List<AlertList> all() {
+    public List<AlertListImpl> all() {
         return toAbstractListType(coll.find());
     }
 
@@ -103,7 +90,7 @@ public class AlertListService {
         return coll.remove(DBQuery.is(TITLE, listTitle)).getN();
     }
 
-    public AlertList load(String listTitle) {
+    public AlertListImpl load(String listTitle) {
         return coll.findOne(DBQuery.is(TITLE, listTitle));
     }
 
@@ -111,12 +98,12 @@ public class AlertListService {
         return (coll.getCount(DBQuery.is(TITLE, title)) > 0);
     }
 
-    private List<AlertList> toAbstractListType(DBCursor<AlertListImpl> lists) {
+    private List<AlertListImpl> toAbstractListType(DBCursor<AlertListImpl> lists) {
         return toAbstractListType(lists.toArray());
     }
 
-    private List<AlertList> toAbstractListType(List<AlertListImpl> lists) {
-        final List<AlertList> result = Lists.newArrayListWithCapacity(lists.size());
+    private List<AlertListImpl> toAbstractListType(List<AlertListImpl> lists) {
+        final List<AlertListImpl> result = Lists.newArrayListWithCapacity(lists.size());
         result.addAll(lists);
 
         return result;

@@ -17,7 +17,6 @@
 
 package com.airbus_cyber_security.graylog.wizard.list.utilities;
 
-import com.airbus_cyber_security.graylog.wizard.list.AlertList;
 import com.airbus_cyber_security.graylog.wizard.list.AlertListImpl;
 import com.airbus_cyber_security.graylog.wizard.list.AlertListService;
 import com.airbus_cyber_security.graylog.wizard.list.rest.models.requests.AlertListRequest;
@@ -47,7 +46,7 @@ public class AlertListUtilsService {
 
     public void incrementUsage(String title) {
         try {
-            AlertList oldAlertList = alertListService.load(title);
+            AlertListImpl oldAlertList = alertListService.load(title);
             if (oldAlertList != null) {
                 alertListService.update(java.net.URLDecoder.decode(title, ENCODING),
                         AlertListImpl.create(
@@ -68,7 +67,7 @@ public class AlertListUtilsService {
 
     public void decrementUsage(String title) {
         try {
-            AlertList oldAlertList = alertListService.load(title);
+            AlertListImpl oldAlertList = alertListService.load(title);
             if(oldAlertList != null) {
                 int usage = oldAlertList.getUsage() - 1;
                 if (usage < 0) {
