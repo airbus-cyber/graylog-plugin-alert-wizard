@@ -89,7 +89,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_READ)
     public GetListAlertList list() {
-        final List<AlertList> lists = alertListService.all();
+        final List<AlertList> lists = this.alertListService.all();
         return GetListAlertList.create(lists);
     }
 
@@ -106,7 +106,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
             throws UnsupportedEncodingException, NotFoundException {
         String listTitle = java.net.URLDecoder.decode(title, ENCODING);
 
-        AlertList list = alertListService.load(listTitle);
+        AlertList list = this.alertListService.load(listTitle);
         if (list == null) {
             throw new NotFoundException("List <" + listTitle + "> not found!");
         }
@@ -115,7 +115,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
 
     private String checkImportPolicyAndGetTitle(String title){
         String listTitle = title;
-        if (alertListService.isPresent(listTitle)) {
+        if (this.alertListService.isPresent(listTitle)) {
             final AlertWizardConfig configGeneral = clusterConfigService.get(AlertWizardConfig.class);
             ImportPolicyType importPolicy = configGeneral.accessImportPolicy();
             if (importPolicy != null && importPolicy.equals(ImportPolicyType.RENAME)) {
@@ -124,7 +124,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
                 do {
                     newListTitle = listTitle+"("+i+")";
                     i++;
-                } while (alertListService.isPresent(newListTitle));
+                } while (this.alertListService.isPresent(newListTitle));
                 listTitle = newListTitle;
             } else if (importPolicy != null && importPolicy.equals(ImportPolicyType.REPLACE)) {
                 try {
@@ -151,10 +151,10 @@ public class AlertListResource extends RestResource implements PluginRestResourc
     public Response create(@ApiParam(name = "JSON body", required = true) @Valid @NotNull AlertListRequest request)
             throws ValidationException, BadRequestException{
 
-        alertListUtilsService.checkIsValidRequest(request);
+        this.alertListUtilsService.checkIsValidRequest(request);
         String listTitle = checkImportPolicyAndGetTitle(request.getTitle());
 
-        alertListService.create(AlertListImpl.create(
+        this.alertListService.create(AlertListImpl.create(
                 listTitle,
                 DateTime.now(),
                 getCurrentUser().getName(),
@@ -179,12 +179,12 @@ public class AlertListResource extends RestResource implements PluginRestResourc
                            @ApiParam(name = "JSON body", required = true) @Valid @NotNull AlertListRequest request
     ) throws UnsupportedEncodingException, NotFoundException, ValidationException, ConfigurationException {
 
-        alertListUtilsService.checkIsValidRequest(request);
+        this.alertListUtilsService.checkIsValidRequest(request);
 
-        AlertList oldAlert = alertListService.load(title);
+        AlertList oldAlert = this.alertListService.load(title);
         String listTitle = request.getTitle();
 
-        alertListService.update(java.net.URLDecoder.decode(title, ENCODING),
+        this.alertListService.update(java.net.URLDecoder.decode(title, ENCODING),
                 AlertListImpl.create(
                         listTitle,
                         oldAlert.getCreatedAt(),
@@ -210,9 +210,9 @@ public class AlertListResource extends RestResource implements PluginRestResourc
                           @ApiParam(name = "JSON body", required = true) @Valid @NotNull CloneAlertListRequest request
     ) throws NotFoundException, ValidationException {
 
-        AlertList sourcelist = alertListService.load(title);
+        AlertList sourcelist = this.alertListService.load(title);
 
-        alertListService.create(AlertListImpl.create(
+        this.alertListService.create(AlertListImpl.create(
                 request.getTitle(),
                 DateTime.now(),
                 getCurrentUser().getName(),
@@ -240,9 +240,9 @@ public class AlertListResource extends RestResource implements PluginRestResourc
         String listTitle = java.net.URLDecoder.decode(title, ENCODING);
 
         try {
-            AlertList alertList = alertListService.load(listTitle);
+            AlertList alertList = this.alertListService.load(listTitle);
             if (alertList.getUsage() <= 0) {
-                alertListService.destroy(listTitle);
+                this.alertListService.destroy(listTitle);
             } else {
                 throw new javax.ws.rs.BadRequestException("List " + listTitle + " used in alert rules");
             }
@@ -268,7 +268,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
             throws ValidationException, BadRequestException{
         String listTitle = checkImportPolicyAndGetTitle(alertList.getTitle());
 
-        alertListService.create(AlertListImpl.create(
+        this.alertListService.create(AlertListImpl.create(
                 listTitle,
                 DateTime.now(),
                 getCurrentUser().getName(),
@@ -290,7 +290,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
         Response responses = Response.accepted().build();
 
         for (ExportAlertList alertList : request) {
-            if(!alertListService.isValidImportRequest(alertList)){
+            if(!this.alertListService.isValidImportRequest(alertList)){
                 LOG.error("Invalid list:" + alertList.getTitle() );
             }else {
                 try {
