@@ -19,7 +19,7 @@ package com.airbus_cyber_security.graylog.wizard.alert.rest;
 
 import com.airbus_cyber_security.graylog.wizard.alert.AlertRule;
 import com.airbus_cyber_security.graylog.wizard.alert.AlertRuleService;
-import com.airbus_cyber_security.graylog.wizard.alert.FieldRuleI;
+import com.airbus_cyber_security.graylog.wizard.alert.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.alert.bundles.AlertRuleExporter;
 import com.airbus_cyber_security.graylog.wizard.alert.bundles.ExportAlertRule;
 import com.airbus_cyber_security.graylog.wizard.alert.bundles.ExportAlertRuleRequest;
@@ -327,10 +327,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 streamPipelineObject2.getListPipelineFieldRule()));
 
         //Update list usage
-        for (FieldRuleI fieldRule: alertRuleUtils.nullSafe(streamPipelineObject.getListPipelineFieldRule())) {
+        for (FieldRule fieldRule: alertRuleUtils.nullSafe(streamPipelineObject.getListPipelineFieldRule())) {
             alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
-        for (FieldRuleI fieldRule: alertRuleUtils.nullSafe(streamPipelineObject2.getListPipelineFieldRule())) {
+        for (FieldRule fieldRule: alertRuleUtils.nullSafe(streamPipelineObject2.getListPipelineFieldRule())) {
             alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
 
@@ -426,17 +426,17 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                         streamPipelineObject2.getListPipelineFieldRule()));
 
         //Decrement list usage
-        for (FieldRuleI fieldRule : alertRuleUtils.nullSafe(oldAlert.getPipelineFieldRules())) {
+        for (FieldRule fieldRule : alertRuleUtils.nullSafe(oldAlert.getPipelineFieldRules())) {
             alertListUtilsService.decrementUsage(fieldRule.getValue());
         }
-        for (FieldRuleI fieldRule : alertRuleUtils.nullSafe(oldAlert.getSecondPipelineFieldRules())) {
+        for (FieldRule fieldRule : alertRuleUtils.nullSafe(oldAlert.getSecondPipelineFieldRules())) {
             alertListUtilsService.decrementUsage(fieldRule.getValue());
         }
         //Increment list usage
-        for (FieldRuleI fieldRule : alertRuleUtils.nullSafe(streamPipelineObject.getListPipelineFieldRule())) {
+        for (FieldRule fieldRule : alertRuleUtils.nullSafe(streamPipelineObject.getListPipelineFieldRule())) {
             alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
-        for (FieldRuleI fieldRule : alertRuleUtils.nullSafe(streamPipelineObject2.getListPipelineFieldRule())) {
+        for (FieldRule fieldRule : alertRuleUtils.nullSafe(streamPipelineObject2.getListPipelineFieldRule())) {
             alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
 
@@ -540,10 +540,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 sourceAlert.getSecondPipelineFieldRules()));
 
         //Update list usage
-        for (FieldRuleI fieldRule : alertRuleUtils.nullSafe(sourceAlert.getPipelineFieldRules())) {
+        for (FieldRule fieldRule : alertRuleUtils.nullSafe(sourceAlert.getPipelineFieldRules())) {
             alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
-        for (FieldRuleI fieldRule : alertRuleUtils.nullSafe(sourceAlert.getSecondPipelineFieldRules())) {
+        for (FieldRule fieldRule : alertRuleUtils.nullSafe(sourceAlert.getSecondPipelineFieldRules())) {
             alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
 
@@ -598,10 +598,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             }
 
             //Update list usage
-            for (FieldRuleI fieldRule : alertRuleUtils.nullSafe(alertRule.getPipelineFieldRules())) {
+            for (FieldRule fieldRule : alertRuleUtils.nullSafe(alertRule.getPipelineFieldRules())) {
                 alertListUtilsService.decrementUsage(fieldRule.getValue());
             }
-            for (FieldRuleI fieldRule : alertRuleUtils.nullSafe(alertRule.getSecondPipelineFieldRules())) {
+            for (FieldRule fieldRule : alertRuleUtils.nullSafe(alertRule.getSecondPipelineFieldRules())) {
                 alertListUtilsService.decrementUsage(fieldRule.getValue());
             }
         } catch (NotFoundException e) {
@@ -685,10 +685,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 streamPilpelineObject2.getListPipelineFieldRule()));
 
         //Update list usage
-        for (FieldRuleI fieldRule : alertRuleUtils.nullSafe(streamPilpelineObject.getListPipelineFieldRule())) {
+        for (FieldRule fieldRule : alertRuleUtils.nullSafe(streamPilpelineObject.getListPipelineFieldRule())) {
             alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
-        for (FieldRuleI fieldRule : alertRuleUtils.nullSafe(streamPilpelineObject2.getListPipelineFieldRule())) {
+        for (FieldRule fieldRule : alertRuleUtils.nullSafe(streamPilpelineObject2.getListPipelineFieldRule())) {
             alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
         LOG.debug("User: " + userName + " successfully import alert rule: " + alertTitle);

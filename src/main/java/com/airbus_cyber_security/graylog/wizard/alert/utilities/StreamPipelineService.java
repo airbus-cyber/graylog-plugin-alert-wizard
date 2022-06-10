@@ -98,7 +98,7 @@ public class StreamPipelineService {
     }
 
     private void createStreamRule(List<FieldRule> listfieldRule, String streamID) throws ValidationException {
-        for (FieldRuleI fieldRule:listfieldRule) {
+        for (FieldRule fieldRule:listfieldRule) {
             if (fieldRule.getType() != -7 && fieldRule.getType() != 7) {
                 final Map<String, Object> streamRuleData = Maps.newHashMapWithExpectedSize(6);
 
@@ -120,7 +120,7 @@ public class StreamPipelineService {
         }
     }
 
-    private String createStringField(FieldRuleI fieldRule, String condition) {
+    private String createStringField(FieldRule fieldRule, String condition) {
         return "  (has_field(\"" + fieldRule.getField() + "\")" + condition + "contains(to_string(lookup_value(\"wizard_lookup\", \"" +
                 fieldRule.getValue() + "\", \"\")), to_string($message." + fieldRule.getField() + "), true))\n";
     }
@@ -129,7 +129,7 @@ public class StreamPipelineService {
         StringBuilder fields = new StringBuilder();
 
         int nbList = 0;
-        for (FieldRuleI fieldRule : listfieldRule) {
+        for (FieldRule fieldRule : listfieldRule) {
             if (fieldRule.getType() == 7 || fieldRule.getType() == -7){
                 if( nbList > 0) {
                     fields.append("  ");

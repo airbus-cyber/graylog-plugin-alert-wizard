@@ -31,24 +31,20 @@ import javax.validation.constraints.NotNull;
 @JsonAutoDetect
 @JsonIgnoreProperties(ignoreUnknown = true)
 @CollectionName("field_rule")
-public abstract class FieldRule implements FieldRuleI {
+public abstract class FieldRule {
 
 	@JsonProperty("id")
-    @Override
     @Nullable
     public abstract String getID();
 	
     @JsonProperty("field")
-    @Override
     @NotNull
     public abstract String getField();
 
     @JsonProperty("type")
-    @Override
     public abstract int getType();
 
     @JsonProperty("value")
-    @Override
     @Nullable
     public abstract String getValue();
 
