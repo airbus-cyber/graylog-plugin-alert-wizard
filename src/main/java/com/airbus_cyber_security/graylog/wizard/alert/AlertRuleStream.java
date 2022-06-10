@@ -44,12 +44,12 @@ public abstract class AlertRuleStream {
     
     @JsonProperty("field_rule")
     @Nullable
-    public abstract List<FieldRuleImpl> getFieldRules();
+    public abstract List<FieldRule> getFieldRules();
 
     @JsonCreator
     public static AlertRuleStream create(@JsonProperty("id") String id,
                                          @JsonProperty("matching_type") String matchingType,
-                                         @JsonProperty("field_rule") List<FieldRuleImpl> fieldRules){
+                                         @JsonProperty("field_rule") List<FieldRule> fieldRules){
         return new AutoValue_AlertRuleStream(id, matchingType, fieldRules);
     }
 

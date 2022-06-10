@@ -115,7 +115,7 @@ public class AlertRuleService {
 	
 	private boolean isValidStream(AlertRuleStream stream) {
 		if(stream.getMatchingType().equals("AND") || stream.getMatchingType().equals("OR")){
-			for (FieldRule fieldRule : stream.getFieldRules()) {
+			for (FieldRuleI fieldRule : stream.getFieldRules()) {
 				if(fieldRule.getField() == null || fieldRule.getField().isEmpty() ||
 						fieldRule.getType() < -7 || fieldRule.getType() > 7	) {
 					return false;

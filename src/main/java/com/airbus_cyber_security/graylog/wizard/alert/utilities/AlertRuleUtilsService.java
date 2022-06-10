@@ -113,7 +113,7 @@ public class AlertRuleUtilsService {
                 LOG.error("Alert " + alert.getTitle() + " is broken event id is null");
             }
 
-            List<FieldRuleImpl> fieldRules = new ArrayList<>();
+            List<FieldRule> fieldRules = new ArrayList<>();
             Optional.ofNullable(alert.getPipelineFieldRules()).ifPresent(fieldRules::addAll);
             Optional.ofNullable(alertRuleUtils.getListFieldRule(stream.getStreamRules())).ifPresent(fieldRules::addAll);
             AlertRuleStream alertRuleStream = AlertRuleStream.create(streamID, stream.getMatchingType().toString(), fieldRules);
@@ -121,7 +121,7 @@ public class AlertRuleUtilsService {
             AlertRuleStream alertRuleStream2 = null;
             if (alert.getSecondStreamID() != null && !alert.getSecondStreamID().isEmpty()) {
                 Stream stream2 = streamService.load(alert.getSecondStreamID());
-                List<FieldRuleImpl> fieldRules2 = new ArrayList<>();
+                List<FieldRule> fieldRules2 = new ArrayList<>();
                 Optional.ofNullable(alert.getSecondPipelineFieldRules()).ifPresent(fieldRules2::addAll);
                 Optional.ofNullable(alertRuleUtils.getListFieldRule(stream2.getStreamRules())).ifPresent(fieldRules2::addAll);
                 alertRuleStream2 = AlertRuleStream.create(alert.getSecondStreamID(), stream2.getMatchingType().toString(), fieldRules2);

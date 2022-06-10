@@ -20,7 +20,7 @@ package com.airbus_cyber_security.graylog.wizard.alert.bundles;
 import com.airbus_cyber_security.graylog.wizard.alert.AlertRule;
 import com.airbus_cyber_security.graylog.wizard.alert.AlertRuleService;
 import com.airbus_cyber_security.graylog.wizard.alert.AlertRuleStream;
-import com.airbus_cyber_security.graylog.wizard.alert.FieldRuleImpl;
+import com.airbus_cyber_security.graylog.wizard.alert.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.alert.utilities.AlertRuleUtils;
 import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
 import com.google.common.collect.Lists;
@@ -65,7 +65,7 @@ public class AlertRuleExporter {
 				
 				String streamID = alert.getStreamID();
 		        Stream stream = streamService.load(streamID);
-				List<FieldRuleImpl> fieldRules = new ArrayList<>();
+				List<FieldRule> fieldRules = new ArrayList<>();
 				Optional.ofNullable(alert.getPipelineFieldRules()).ifPresent(fieldRules::addAll);
 				Optional.ofNullable(alertRuleUtils.getListFieldRule(stream.getStreamRules())).ifPresent(fieldRules::addAll);
 				AlertRuleStream alertRuleStream = AlertRuleStream.create(streamID, stream.getMatchingType().toString(), fieldRules);
@@ -73,7 +73,7 @@ public class AlertRuleExporter {
 				AlertRuleStream alertRuleStream2;
 		        if(alert.getSecondStreamID() != null && !alert.getSecondStreamID().isEmpty()) {
 		        	final Stream stream2 = streamService.load(alert.getSecondStreamID());
-					List<FieldRuleImpl> fieldRules2 = new ArrayList<>();
+					List<FieldRule> fieldRules2 = new ArrayList<>();
 					Optional.ofNullable(alert.getSecondPipelineFieldRules()).ifPresent(fieldRules2::addAll);
 					Optional.ofNullable(alertRuleUtils.getListFieldRule(stream2.getStreamRules())).ifPresent(fieldRules2::addAll);
 		        	alertRuleStream2 = AlertRuleStream.create(alert.getSecondStreamID(), stream2.getMatchingType().toString(), fieldRules2);

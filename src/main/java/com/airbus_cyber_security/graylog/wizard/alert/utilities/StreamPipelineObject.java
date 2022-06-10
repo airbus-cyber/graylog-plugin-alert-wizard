@@ -17,7 +17,7 @@
 
 package com.airbus_cyber_security.graylog.wizard.alert.utilities;
 
-import com.airbus_cyber_security.graylog.wizard.alert.FieldRuleImpl;
+import com.airbus_cyber_security.graylog.wizard.alert.FieldRule;
 import org.graylog2.plugin.streams.Stream;
 
 import java.util.List;
@@ -35,15 +35,15 @@ public class StreamPipelineObject {
         return pipelineRuleID;
     }
 
-    public List<FieldRuleImpl> getListPipelineFieldRule() {
+    public List<FieldRule> getListPipelineFieldRule() {
         return listPipelineFieldRule;
     }
 
     Stream stream;
     String pipelineID;
     String pipelineRuleID;
-    List<FieldRuleImpl> listPipelineFieldRule;
-    public StreamPipelineObject(Stream stream, String pipelineID, String pipelineRuleID, List<FieldRuleImpl> listPipelineFieldRule)
+    List<FieldRule> listPipelineFieldRule;
+    public StreamPipelineObject(Stream stream, String pipelineID, String pipelineRuleID, List<FieldRule> listPipelineFieldRule)
     {
         this.stream = stream;
         this.pipelineID = pipelineID;

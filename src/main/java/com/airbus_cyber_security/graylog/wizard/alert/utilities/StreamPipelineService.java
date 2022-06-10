@@ -97,8 +97,8 @@ public class StreamPipelineService {
         this.pipelineStreamConnectionsService = pipelineStreamConnectionsService;
     }
 
-    private void createStreamRule(List<FieldRuleImpl> listfieldRule, String streamID) throws ValidationException {
-        for (FieldRule fieldRule:listfieldRule) {
+    private void createStreamRule(List<FieldRule> listfieldRule, String streamID) throws ValidationException {
+        for (FieldRuleI fieldRule:listfieldRule) {
             if (fieldRule.getType() != -7 && fieldRule.getType() != 7) {
                 final Map<String, Object> streamRuleData = Maps.newHashMapWithExpectedSize(6);
 
@@ -120,16 +120,16 @@ public class StreamPipelineService {
         }
     }
 
-    private String createStringField(FieldRule fieldRule, String condition) {
+    private String createStringField(FieldRuleI fieldRule, String condition) {
         return "  (has_field(\"" + fieldRule.getField() + "\")" + condition + "contains(to_string(lookup_value(\"wizard_lookup\", \"" +
                 fieldRule.getValue() + "\", \"\")), to_string($message." + fieldRule.getField() + "), true))\n";
     }
 
-    private String createRuleSource(String alertTitle, List<FieldRuleImpl> listfieldRule, Stream stream){
+    private String createRuleSource(String alertTitle, List<FieldRule> listfieldRule, Stream stream){
         StringBuilder fields = new StringBuilder();
 
         int nbList = 0;
-        for (FieldRule fieldRule : listfieldRule) {
+        for (FieldRuleI fieldRule : listfieldRule) {
             if (fieldRule.getType() == 7 || fieldRule.getType() == -7){
                 if( nbList > 0) {
                     fields.append("  ");
@@ -147,7 +147,7 @@ public class StreamPipelineService {
         return "rule \"function " + alertTitle + "\"\nwhen\n" + fields + "then\n  route_to_stream(\"" + alertTitle + "\", \"" + stream.getId() + "\");\nend";
     }
 
-    public RuleDao createPipelineRule(String alertTitle, List<FieldRuleImpl> listfieldRule, Stream stream, String ruleID) {
+    public RuleDao createPipelineRule(String alertTitle, List<FieldRule> listfieldRule, Stream stream, String ruleID) {
 
         final DateTime now = DateTime.now(DateTimeZone.UTC);
 
@@ -401,9 +401,9 @@ public class StreamPipelineService {
         return dbDataAdapterService.save(dto);
     }
 
-    private List<FieldRuleImpl> extractPipelineFieldRules(List<FieldRuleImpl> listFieldRule){
-        List<FieldRuleImpl> listPipelineFieldRule = new ArrayList<>();
-        for (FieldRuleImpl fieldRule : listFieldRule) {
+    private List<FieldRule> extractPipelineFieldRules(List<FieldRule> listFieldRule){
+        List<FieldRule> listPipelineFieldRule = new ArrayList<>();
+        for (FieldRule fieldRule : listFieldRule) {
             if (fieldRule.getType() == 7 || fieldRule.getType() == -7) {
                 listPipelineFieldRule.add(fieldRule);
             }
@@ -411,10 +411,10 @@ public class StreamPipelineService {
         return listPipelineFieldRule;
     }
 
-    private StreamPipelineObject createPipelineAndRule(Stream stream, String alertTitle, List<FieldRuleImpl> listfieldRule, String matchingType){
+    private StreamPipelineObject createPipelineAndRule(Stream stream, String alertTitle, List<FieldRule> listfieldRule, String matchingType){
         String pipelineID = null;
         String pipelineRuleID = null;
-        List<FieldRuleImpl> listPipelineFieldRule = extractPipelineFieldRules(listfieldRule);
+        List<FieldRule> listPipelineFieldRule = extractPipelineFieldRules(listfieldRule);
         if (!listPipelineFieldRule.isEmpty()) {
             RuleDao pipelineRule = createPipelineRule(alertTitle, listPipelineFieldRule, stream, null);
             PipelineDao pipeline = createPipeline(alertTitle, null, matchingType);
@@ -430,7 +430,7 @@ public class StreamPipelineService {
         return createPipelineAndRule(stream, alertTitle, alertRuleStream.getFieldRules(), matchingType);
     }
 
-    public StreamPipelineObject updatePipeline(String alertTitle, String pipelineID, String pipelineRuleID, List<FieldRuleImpl> listfieldRule, Stream stream, String matchingType) {
+    public StreamPipelineObject updatePipeline(String alertTitle, String pipelineID, String pipelineRuleID, List<FieldRule> listfieldRule, Stream stream, String matchingType) {
         deletePipeline(pipelineID, pipelineRuleID);
         return createPipelineAndRule(stream, alertTitle, listfieldRule, matchingType);
     }

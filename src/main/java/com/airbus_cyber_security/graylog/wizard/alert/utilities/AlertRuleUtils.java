@@ -17,7 +17,7 @@
 
 package com.airbus_cyber_security.graylog.wizard.alert.utilities;
 
-import com.airbus_cyber_security.graylog.wizard.alert.FieldRuleImpl;
+import com.airbus_cyber_security.graylog.wizard.alert.FieldRule;
 import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
 import com.airbus_cyber_security.graylog.events.processor.aggregation.AggregationCountProcessorConfig;
 import com.airbus_cyber_security.graylog.events.processor.correlation.CorrelationCountProcessorConfig;
@@ -133,13 +133,13 @@ public class AlertRuleUtils {
         return conditionType;
     }
     
-    public List<FieldRuleImpl> getListFieldRule(List<StreamRule> listStreamRule) {
-         List<FieldRuleImpl> listFieldRule = new ArrayList<>();
+    public List<FieldRule> getListFieldRule(List<StreamRule> listStreamRule) {
+         List<FieldRule> listFieldRule = new ArrayList<>();
          for (StreamRule streamRule: listStreamRule) {
              if(streamRule.getInverted()){
-                 listFieldRule.add(FieldRuleImpl.create(streamRule.getId(), streamRule.getField(), -streamRule.getType().toInteger(), streamRule.getValue()));
+                 listFieldRule.add(FieldRule.create(streamRule.getId(), streamRule.getField(), -streamRule.getType().toInteger(), streamRule.getValue()));
              }else{
-                 listFieldRule.add(FieldRuleImpl.create(streamRule.getId(), streamRule.getField(), streamRule.getType().toInteger(), streamRule.getValue()));
+                 listFieldRule.add(FieldRule.create(streamRule.getId(), streamRule.getField(), streamRule.getType().toInteger(), streamRule.getValue()));
              }
          }
          return listFieldRule;
