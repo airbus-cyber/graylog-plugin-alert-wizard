@@ -42,7 +42,7 @@ import java.util.Set;
 
 public class AlertRuleService {
 
-	private final JacksonDBCollection<AlertRuleImpl, String> coll;
+	private final JacksonDBCollection<AlertRule, String> coll;
 	private final Validator validator;
 	private static final Logger LOG = LoggerFactory.getLogger(AlertRuleService.class);
 	private static final String TITLE = "title";
@@ -51,9 +51,9 @@ public class AlertRuleService {
 	public AlertRuleService(MongoConnection mongoConnection, MongoJackObjectMapperProvider mapperProvider,
 							Validator validator) {
 		this.validator = validator;
-		final String collectionName = AlertRuleImpl.class.getAnnotation(CollectionName.class).value();
+		final String collectionName = AlertRule.class.getAnnotation(CollectionName.class).value();
 		final DBCollection dbCollection = mongoConnection.getDatabase().getCollection(collectionName);
-		this.coll = JacksonDBCollection.wrap(dbCollection, AlertRuleImpl.class, String.class, mapperProvider.get());
+		this.coll = JacksonDBCollection.wrap(dbCollection, AlertRule.class, String.class, mapperProvider.get());
 		this.coll.createIndex(new BasicDBObject(TITLE, 1), new BasicDBObject("unique", true));
 	}
 
@@ -62,36 +62,23 @@ public class AlertRuleService {
 	}
 
 	public AlertRule create(AlertRule alert) {
-		if (alert instanceof AlertRuleImpl) {
-			final AlertRuleImpl alertImpl = (AlertRuleImpl) alert;
-
-			final Set<ConstraintViolation<AlertRuleImpl>> violations = validator.validate(alertImpl);
-			if (violations.isEmpty()) {
-				return coll.insert(alertImpl).getSavedObject();
-			} else {
-				throw new IllegalArgumentException("Specified object failed validation: " + violations);
-			}
+		final Set<ConstraintViolation<AlertRule>> violations = validator.validate(alert);
+		if (violations.isEmpty()) {
+			return coll.insert(alert).getSavedObject();
 		} else {
-			throw new IllegalArgumentException("Specified object is not of correct implementation type (" + alert.getClass() + ")!");
+			throw new IllegalArgumentException("Specified object failed validation: " + violations);
 		}
 	}
 	
 	public AlertRule update(String title, AlertRule alert) {
+		LOG.debug("Alert to be updated [{}]", alert);
 
-		if (alert instanceof AlertRuleImpl) {
-			final AlertRuleImpl alertImpl = (AlertRuleImpl) alert;
-			LOG.debug("Alert to be updated [{}]", alertImpl);
-
-			final Set<ConstraintViolation<AlertRuleImpl>> violations = validator.validate(alertImpl);
-			if (violations.isEmpty()) {
-				return coll.findAndModify(DBQuery.is(TITLE, title), new BasicDBObject(), new BasicDBObject(),
-						false, alertImpl, true, false);
-			} else {
-				throw new IllegalArgumentException("Specified object failed validation: " + violations);
-			}
-
+		final Set<ConstraintViolation<AlertRule>> violations = validator.validate(alert);
+		if (violations.isEmpty()) {
+			return coll.findAndModify(DBQuery.is(TITLE, title), new BasicDBObject(), new BasicDBObject(),
+					false, alert, true, false);
 		} else {
-			throw new IllegalArgumentException("Specified object is not of correct implementation type (" + alert.getClass() + ")!");
+			throw new IllegalArgumentException("Specified object failed validation: " + violations);
 		}
 	}
 
@@ -111,11 +98,11 @@ public class AlertRuleService {
 		return (coll.getCount(DBQuery.is(TITLE, title)) > 0);
 	}
 
-	private List<AlertRule> toAbstractListType(DBCursor<AlertRuleImpl> alerts) {
+	private List<AlertRule> toAbstractListType(DBCursor<AlertRule> alerts) {
 		return toAbstractListType(alerts.toArray());
 	}
 
-	private List<AlertRule> toAbstractListType(List<AlertRuleImpl> alerts) {
+	private List<AlertRule> toAbstractListType(List<AlertRule> alerts) {
 		final List<AlertRule> result = Lists.newArrayListWithCapacity(alerts.size());
 		result.addAll(alerts);
 

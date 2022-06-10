@@ -18,7 +18,6 @@
 package com.airbus_cyber_security.graylog.wizard.alert.rest;
 
 import com.airbus_cyber_security.graylog.wizard.alert.AlertRule;
-import com.airbus_cyber_security.graylog.wizard.alert.AlertRuleImpl;
 import com.airbus_cyber_security.graylog.wizard.alert.AlertRuleService;
 import com.airbus_cyber_security.graylog.wizard.alert.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.alert.bundles.AlertRuleExporter;
@@ -308,7 +307,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
 
         clusterEventBus.post(StreamsChangedEvent.create(streamPipelineObject.getStream().getId()));
-        this.alertRuleService.create(AlertRuleImpl.create(
+        this.alertRuleService.create(AlertRule.create(
                 alertTitle,
                 streamPipelineObject.getStream().getId(),
                 eventID,
@@ -407,7 +406,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
 
         this.alertRuleService.update(java.net.URLDecoder.decode(title, ENCODING),
-                AlertRuleImpl.create(
+                AlertRule.create(
                         alertTitle,
                         oldAlert.getStreamID(),
                         oldAlert.getEventID(),
@@ -521,7 +520,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             eventID2 = this.alertRuleUtilsService.createEvent(alertTitle + "#2", notificationID, configuration2, userContext);
         }
 
-        this.alertRuleService.create(AlertRuleImpl.create(
+        this.alertRuleService.create(AlertRule.create(
                 alertTitle,
                 firstStream.getId(),
                 eventID,
@@ -666,7 +665,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
 
         clusterEventBus.post(StreamsChangedEvent.create(streamPilpelineObject.getStream().getId()));
-        this.alertRuleService.create(AlertRuleImpl.create(
+        this.alertRuleService.create(AlertRule.create(
                 alertTitle,
                 streamPilpelineObject.getStream().getId(),
                 eventID,
