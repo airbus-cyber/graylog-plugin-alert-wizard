@@ -57,7 +57,7 @@ public abstract class FieldRule implements FieldRuleI {
                                    @JsonProperty("field") String field,
                                    @JsonProperty("type") int type,
                                    @JsonProperty("value") String value){
-        return new AutoValue_FieldRuleImpl(id, field, type, value);
+        return new AutoValue_FieldRule(id, field, type, value);
     }
 
 }
