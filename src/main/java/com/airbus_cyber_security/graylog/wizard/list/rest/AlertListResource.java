@@ -20,7 +20,7 @@ package com.airbus_cyber_security.graylog.wizard.list.rest;
 import com.airbus_cyber_security.graylog.wizard.audit.AlertWizardAuditEventTypes;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
 import com.airbus_cyber_security.graylog.wizard.config.rest.ImportPolicyType;
-import com.airbus_cyber_security.graylog.wizard.list.AlertListImpl;
+import com.airbus_cyber_security.graylog.wizard.list.AlertList;
 import com.airbus_cyber_security.graylog.wizard.list.AlertListService;
 import com.airbus_cyber_security.graylog.wizard.list.bundles.AlertListExporter;
 import com.airbus_cyber_security.graylog.wizard.list.bundles.ExportAlertList;
@@ -88,7 +88,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_READ)
     public GetListAlertList list() {
-        final List<AlertListImpl> lists = this.alertListService.all();
+        final List<AlertList> lists = this.alertListService.all();
         return GetListAlertList.create(lists);
     }
 
@@ -105,7 +105,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
             throws UnsupportedEncodingException, NotFoundException {
         String listTitle = java.net.URLDecoder.decode(title, ENCODING);
 
-        AlertListImpl list = this.alertListService.load(listTitle);
+        AlertList list = this.alertListService.load(listTitle);
         if (list == null) {
             throw new NotFoundException("List <" + listTitle + "> not found!");
         }
@@ -153,7 +153,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
         this.alertListUtilsService.checkIsValidRequest(request);
         String listTitle = checkImportPolicyAndGetTitle(request.getTitle());
 
-        this.alertListService.create(AlertListImpl.create(
+        this.alertListService.create(AlertList.create(
                 listTitle,
                 DateTime.now(),
                 getCurrentUser().getName(),
@@ -180,11 +180,11 @@ public class AlertListResource extends RestResource implements PluginRestResourc
 
         this.alertListUtilsService.checkIsValidRequest(request);
 
-        AlertListImpl oldAlert = this.alertListService.load(title);
+        AlertList oldAlert = this.alertListService.load(title);
         String listTitle = request.getTitle();
 
         this.alertListService.update(java.net.URLDecoder.decode(title, ENCODING),
-                AlertListImpl.create(
+                AlertList.create(
                         listTitle,
                         oldAlert.getCreatedAt(),
                         getCurrentUser().getName(),
@@ -209,9 +209,9 @@ public class AlertListResource extends RestResource implements PluginRestResourc
                           @ApiParam(name = "JSON body", required = true) @Valid @NotNull CloneAlertListRequest request
     ) throws NotFoundException, ValidationException {
 
-        AlertListImpl sourcelist = this.alertListService.load(title);
+        AlertList sourcelist = this.alertListService.load(title);
 
-        this.alertListService.create(AlertListImpl.create(
+        this.alertListService.create(AlertList.create(
                 request.getTitle(),
                 DateTime.now(),
                 getCurrentUser().getName(),
@@ -238,7 +238,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
     ) throws MongoException, UnsupportedEncodingException {
         String listTitle = java.net.URLDecoder.decode(title, ENCODING);
 
-        AlertListImpl alertList = this.alertListService.load(listTitle);
+        AlertList alertList = this.alertListService.load(listTitle);
         if (alertList.getUsage() <= 0) {
             this.alertListService.destroy(listTitle);
         } else {
@@ -262,7 +262,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
             throws ValidationException, BadRequestException{
         String listTitle = checkImportPolicyAndGetTitle(alertList.getTitle());
 
-        this.alertListService.create(AlertListImpl.create(
+        this.alertListService.create(AlertList.create(
                 listTitle,
                 DateTime.now(),
                 getCurrentUser().getName(),

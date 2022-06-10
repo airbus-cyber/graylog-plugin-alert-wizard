@@ -17,7 +17,7 @@
 
 package com.airbus_cyber_security.graylog.wizard.list.utilities;
 
-import com.airbus_cyber_security.graylog.wizard.list.AlertListImpl;
+import com.airbus_cyber_security.graylog.wizard.list.AlertList;
 import com.airbus_cyber_security.graylog.wizard.list.AlertListService;
 import com.airbus_cyber_security.graylog.wizard.list.rest.models.requests.AlertListRequest;
 import org.slf4j.Logger;
@@ -46,10 +46,10 @@ public class AlertListUtilsService {
 
     public void incrementUsage(String title) {
         try {
-            AlertListImpl oldAlertList = alertListService.load(title);
+            AlertList oldAlertList = alertListService.load(title);
             if (oldAlertList != null) {
                 alertListService.update(java.net.URLDecoder.decode(title, ENCODING),
-                        AlertListImpl.create(
+                        AlertList.create(
                                 title,
                                 oldAlertList.getCreatedAt(),
                                 oldAlertList.getCreatorUserId(),
@@ -67,14 +67,14 @@ public class AlertListUtilsService {
 
     public void decrementUsage(String title) {
         try {
-            AlertListImpl oldAlertList = alertListService.load(title);
+            AlertList oldAlertList = alertListService.load(title);
             if(oldAlertList != null) {
                 int usage = oldAlertList.getUsage() - 1;
                 if (usage < 0) {
                     usage = 0;
                 }
                 alertListService.update(java.net.URLDecoder.decode(title, ENCODING),
-                        AlertListImpl.create(
+                        AlertList.create(
                                 title,
                                 oldAlertList.getCreatedAt(),
                                 oldAlertList.getCreatorUserId(),

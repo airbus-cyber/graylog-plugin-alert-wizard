@@ -17,7 +17,7 @@
 
 package com.airbus_cyber_security.graylog.wizard.list.bundles;
 
-import com.airbus_cyber_security.graylog.wizard.list.AlertListImpl;
+import com.airbus_cyber_security.graylog.wizard.list.AlertList;
 import com.airbus_cyber_security.graylog.wizard.list.AlertListService;
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
@@ -40,7 +40,7 @@ public class AlertListExporter {
 
         for (String title : titles) {
             try {
-                final AlertListImpl list = alertListService.load(title);
+                final AlertList list = alertListService.load(title);
 
                 listAlertLists.add(ExportAlertList.create(
                         title,

@@ -33,7 +33,7 @@ import javax.validation.constraints.NotNull;
 @JsonAutoDetect
 @JsonIgnoreProperties(ignoreUnknown = true)
 @CollectionName("wizard_lists")
-public abstract class AlertListImpl {
+public abstract class AlertList {
 
 
     @JsonProperty("title")
@@ -65,7 +65,7 @@ public abstract class AlertListImpl {
     public abstract String getLists();
 
     @JsonCreator
-    public static AlertListImpl create(@JsonProperty("_id") String objectId,
+    public static AlertList create(@JsonProperty("_id") String objectId,
                                        @JsonProperty("title") String title,
                                        @JsonProperty("created_at") DateTime createdAt,
                                        @JsonProperty("creator_user_id") String creatorUserId,
@@ -73,11 +73,11 @@ public abstract class AlertListImpl {
                                        @JsonProperty("description") String description,
                                        @JsonProperty("usage") int usage,
                                        @JsonProperty("lists") String lists){
-        return new AutoValue_AlertListImpl(title, createdAt, creatorUserId,
+        return new AutoValue_AlertList(title, createdAt, creatorUserId,
                 lastModified, description, usage, lists);
     }
 
-    public static AlertListImpl create(
+    public static AlertList create(
             String title,
             DateTime createdAt,
             String creatorUserId,
@@ -85,7 +85,7 @@ public abstract class AlertListImpl {
             String description,
             int usage,
             String lists) {
-        return new AutoValue_AlertListImpl(title, createdAt, creatorUserId,
+        return new AutoValue_AlertList(title, createdAt, creatorUserId,
                 lastModified, description, usage, lists);
     }
 }

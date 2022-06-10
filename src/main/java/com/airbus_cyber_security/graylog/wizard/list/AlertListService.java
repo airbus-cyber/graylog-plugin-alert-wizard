@@ -39,7 +39,7 @@ import java.util.Set;
 
 public class AlertListService {
 
-    private final JacksonDBCollection<AlertListImpl, String> coll;
+    private final JacksonDBCollection<AlertList, String> coll;
     private final Validator validator;
     private static final Logger LOG = LoggerFactory.getLogger(AlertListService.class);
     private static final String TITLE = "title";
@@ -48,9 +48,9 @@ public class AlertListService {
     public AlertListService(MongoConnection mongoConnection, MongoJackObjectMapperProvider mapperProvider,
                             Validator validator) {
         this.validator = validator;
-        final String collectionName = AlertListImpl.class.getAnnotation(CollectionName.class).value();
+        final String collectionName = AlertList.class.getAnnotation(CollectionName.class).value();
         final DBCollection dbCollection = mongoConnection.getDatabase().getCollection(collectionName);
-        this.coll = JacksonDBCollection.wrap(dbCollection, AlertListImpl.class, String.class, mapperProvider.get());
+        this.coll = JacksonDBCollection.wrap(dbCollection, AlertList.class, String.class, mapperProvider.get());
         this.coll.createIndex(new BasicDBObject(TITLE, 1), new BasicDBObject("unique", true));
     }
 
@@ -58,8 +58,8 @@ public class AlertListService {
         return coll.count();
     }
 
-    public AlertListImpl create(AlertListImpl list) {
-        final Set<ConstraintViolation<AlertListImpl>> violations = validator.validate(list);
+    public AlertList create(AlertList list) {
+        final Set<ConstraintViolation<AlertList>> violations = validator.validate(list);
         if (violations.isEmpty()) {
             return coll.insert(list).getSavedObject();
         } else {
@@ -67,10 +67,10 @@ public class AlertListService {
         }
     }
 
-    public AlertListImpl update(String title, AlertListImpl list) {
+    public AlertList update(String title, AlertList list) {
         LOG.debug("List to be updated [{}]", list);
 
-        final Set<ConstraintViolation<AlertListImpl>> violations = validator.validate(list);
+        final Set<ConstraintViolation<AlertList>> violations = validator.validate(list);
         if (violations.isEmpty()) {
 
             return coll.findAndModify(DBQuery.is(TITLE, title), new BasicDBObject(), new BasicDBObject(),
@@ -81,7 +81,7 @@ public class AlertListService {
         }
     }
 
-    public List<AlertListImpl> all() {
+    public List<AlertList> all() {
         return toAbstractListType(coll.find());
     }
 
@@ -90,7 +90,7 @@ public class AlertListService {
         return coll.remove(DBQuery.is(TITLE, listTitle)).getN();
     }
 
-    public AlertListImpl load(String listTitle) {
+    public AlertList load(String listTitle) {
         return coll.findOne(DBQuery.is(TITLE, listTitle));
     }
 
@@ -98,12 +98,12 @@ public class AlertListService {
         return (coll.getCount(DBQuery.is(TITLE, title)) > 0);
     }
 
-    private List<AlertListImpl> toAbstractListType(DBCursor<AlertListImpl> lists) {
+    private List<AlertList> toAbstractListType(DBCursor<AlertList> lists) {
         return toAbstractListType(lists.toArray());
     }
 
-    private List<AlertListImpl> toAbstractListType(List<AlertListImpl> lists) {
-        final List<AlertListImpl> result = Lists.newArrayListWithCapacity(lists.size());
+    private List<AlertList> toAbstractListType(List<AlertList> lists) {
+        final List<AlertList> result = Lists.newArrayListWithCapacity(lists.size());
         result.addAll(lists);
 
         return result;
