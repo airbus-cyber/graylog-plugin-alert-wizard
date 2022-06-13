@@ -53,6 +53,7 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
@@ -148,7 +149,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
     @ApiResponses(value = {@ApiResponse(code = 400, message = "The supplied request is not valid.")})
     @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_CREATE)
     public Response create(@ApiParam(name = "JSON body", required = true) @Valid @NotNull AlertListRequest request)
-            throws ValidationException, BadRequestException{
+            throws ValidationException, BadRequestException, IOException {
 
         this.alertListUtilsService.checkIsValidRequest(request);
         String listTitle = checkImportPolicyAndGetTitle(request.getTitle());
@@ -207,7 +208,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
     public Response clone(@ApiParam(name = TITLE, required = true)
                           @PathParam(TITLE) String title,
                           @ApiParam(name = "JSON body", required = true) @Valid @NotNull CloneAlertListRequest request
-    ) throws NotFoundException, ValidationException {
+    ) throws NotFoundException, ValidationException, IOException {
 
         AlertList sourcelist = this.alertListService.load(title);
 
@@ -259,7 +260,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
     }
 
     public void importAlertList(ExportAlertList alertList)
-            throws ValidationException, BadRequestException{
+            throws ValidationException, BadRequestException, IOException {
         String listTitle = checkImportPolicyAndGetTitle(alertList.getTitle());
 
         this.alertListService.create(AlertList.create(

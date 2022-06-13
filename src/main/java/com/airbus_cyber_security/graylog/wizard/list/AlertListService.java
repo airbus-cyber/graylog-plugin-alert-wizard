@@ -34,11 +34,20 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.List;
 import java.util.Set;
+import au.com.bytecode.opencsv.CSVWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.Path;
 
 public class AlertListService {
 
+    private static final Path LISTS_PATH = Paths.get("/usr/share/graylog/data/alert-lists");
     private final JacksonDBCollection<AlertList, String> coll;
     private final Validator validator;
     private static final Logger LOG = LoggerFactory.getLogger(AlertListService.class);
@@ -58,10 +67,29 @@ public class AlertListService {
         return coll.count();
     }
 
-    public AlertList create(AlertList list) {
+    // TODO should not need this code: the AlertList object should directly return an array of Strings
+    private String[] getListValues(AlertList list) {
+        // TODO getLists should never return null
+        String[] results = list.getLists().split(";");
+        for (int i = 0; i < results.length; i++) {
+            results[i] = results[i].trim();
+        }
+        return results;
+    }
+
+    public AlertList create(AlertList list) throws IOException {
         Set<ConstraintViolation<AlertList>> violations = this.validator.validate(list);
         if (!violations.isEmpty()) {
             throw new IllegalArgumentException("Specified object failed validation: " + violations);
+        }
+        Files.createDirectories(LISTS_PATH);
+        Writer writer = Files.newBufferedWriter(LISTS_PATH.resolve("TODO.csv"));
+        try (CSVWriter csvWriter = new CSVWriter(writer)) {
+            csvWriter.writeNext(new String[] {"key", "value"});
+
+            for (String value: this.getListValues(list)) {
+                csvWriter.writeNext(new String[]{value, value});
+            }
         }
         return coll.insert(list).getSavedObject();
     }

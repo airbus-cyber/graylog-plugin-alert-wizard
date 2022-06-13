@@ -35,7 +35,6 @@ import javax.validation.constraints.NotNull;
 @CollectionName("wizard_lists")
 public abstract class AlertList {
 
-
     @JsonProperty("title")
     @NotNull
     public abstract String getTitle();
@@ -60,7 +59,10 @@ public abstract class AlertList {
     @NotNull
     public abstract int getUsage();
 
+    // TODO not really named adequately should be getValues
+    //      also would be better to be a List<String>, or a String[]
     @JsonProperty("lists")
+    // TODO why is this Nullable, should be @NotNull!!!!!
     @Nullable
     public abstract String getLists();
 
