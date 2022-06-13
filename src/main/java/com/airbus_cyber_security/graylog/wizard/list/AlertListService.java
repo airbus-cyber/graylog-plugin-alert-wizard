@@ -34,9 +34,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.List;
 import java.util.Set;
@@ -58,6 +56,9 @@ public class AlertListService {
                             Validator validator) {
         this.validator = validator;
         String collectionName = AlertList.class.getAnnotation(CollectionName.class).value();
+        // TODO: MongoCollection<Document> collection = mongoConnection.getMongoDatabase().getCollection(collectionName);
+        //       with import com.mongodb.client.MongoCollection;
+        //            import org.bson.Document;
         DBCollection dbCollection = mongoConnection.getDatabase().getCollection(collectionName);
         this.coll = JacksonDBCollection.wrap(dbCollection, AlertList.class, String.class, mapperProvider.get());
         this.coll.createIndex(new BasicDBObject(TITLE, 1), new BasicDBObject("unique", true));
