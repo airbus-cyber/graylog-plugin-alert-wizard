@@ -48,8 +48,8 @@ public class AlertListService {
     public AlertListService(MongoConnection mongoConnection, MongoJackObjectMapperProvider mapperProvider,
                             Validator validator) {
         this.validator = validator;
-        final String collectionName = AlertList.class.getAnnotation(CollectionName.class).value();
-        final DBCollection dbCollection = mongoConnection.getDatabase().getCollection(collectionName);
+        String collectionName = AlertList.class.getAnnotation(CollectionName.class).value();
+        DBCollection dbCollection = mongoConnection.getDatabase().getCollection(collectionName);
         this.coll = JacksonDBCollection.wrap(dbCollection, AlertList.class, String.class, mapperProvider.get());
         this.coll.createIndex(new BasicDBObject(TITLE, 1), new BasicDBObject("unique", true));
     }
@@ -59,18 +59,17 @@ public class AlertListService {
     }
 
     public AlertList create(AlertList list) {
-        final Set<ConstraintViolation<AlertList>> violations = validator.validate(list);
-        if (violations.isEmpty()) {
-            return coll.insert(list).getSavedObject();
-        } else {
+        Set<ConstraintViolation<AlertList>> violations = this.validator.validate(list);
+        if (!violations.isEmpty()) {
             throw new IllegalArgumentException("Specified object failed validation: " + violations);
         }
+        return coll.insert(list).getSavedObject();
     }
 
     public AlertList update(String title, AlertList list) {
         LOG.debug("List to be updated [{}]", list);
 
-        final Set<ConstraintViolation<AlertList>> violations = validator.validate(list);
+        final Set<ConstraintViolation<AlertList>> violations = this.validator.validate(list);
         if (violations.isEmpty()) {
 
             return coll.findAndModify(DBQuery.is(TITLE, title), new BasicDBObject(), new BasicDBObject(),
