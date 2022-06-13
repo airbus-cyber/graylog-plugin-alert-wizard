@@ -208,13 +208,13 @@ public class StreamPipelineService {
         LOG.debug("Create Stream: " + title);
         final CreateStreamRequest cr = CreateStreamRequest.create(title, AlertRuleUtils.COMMENT_ALERT_WIZARD,
                 Collections.emptyList(), "", alertRuleStream.getMatchingType(), false, indexSetID);
-        final Stream stream = streamService.create(cr, userName);
+        final Stream stream = this.streamService.create(cr, userName);
         stream.setDisabled(false);
 
         if (!stream.getIndexSet().getConfig().isWritable()) {
             throw new BadRequestException("Assigned index set must be writable!");
         }
-        final String streamID = streamService.save(stream);
+        final String streamID = this.streamService.save(stream);
 
         // Create stream rules.
         createStreamRule(alertRuleStream.getFieldRules(), streamID);
@@ -225,7 +225,7 @@ public class StreamPipelineService {
     public Stream createOrUpdateSecondStream(AlertRuleStream alertRuleStream, String title, String userName, String conditionType, AlertRule oldAlert) throws ValidationException, NotFoundException {
         if (conditionType.equals("THEN") || conditionType.equals("AND") || conditionType.equals("OR")) {
             if(oldAlert.getSecondStreamID() != null) {
-                Stream stream2 = streamService.load(oldAlert.getSecondStreamID());
+                Stream stream2 = this.streamService.load(oldAlert.getSecondStreamID());
                 updateStream(stream2, alertRuleStream, title+"#2");
                 return stream2;
             }else {
@@ -249,7 +249,7 @@ public class StreamPipelineService {
                         + "' specified. Should be one of: " + Arrays.toString(Stream.MatchingType.values()));
             }
         }
-        streamService.save(stream);
+        this.streamService.save(stream);
 
         //TODO do it better (don't destroy if update)
         // Destroy existing stream rules
@@ -274,10 +274,10 @@ public class StreamPipelineService {
         streamData.put(StreamImpl.FIELD_REMOVE_MATCHES_FROM_DEFAULT_STREAM, sourceStream.getRemoveMatchesFromDefaultStream());
         streamData.put(StreamImpl.FIELD_INDEX_SET_ID, indexSetID);
 
-        final Stream stream = streamService.create(streamData);
+        final Stream stream = this.streamService.create(streamData);
         stream.setDisabled(false);
 
-        final String streamID = streamService.save(stream);
+        final String streamID = this.streamService.save(stream);
 
         final List<StreamRule> sourceStreamRules = streamRuleService.loadForStream(sourceStream);
         for (StreamRule streamRule : sourceStreamRules) {
@@ -299,7 +299,7 @@ public class StreamPipelineService {
     private void deleteStream(Stream stream){
         try {
             if(stream != null) {
-                streamService.destroy(stream);
+                this.streamService.destroy(stream);
                 clusterEventBus.post(StreamsChangedEvent.create(stream.getId()));
                 clusterEventBus.post(StreamDeletedEvent.create(stream.getId()));
             }
@@ -310,7 +310,7 @@ public class StreamPipelineService {
 
     public void deleteStreamFromID(String streamID){
         try {
-            deleteStream(streamService.load(streamID));
+            deleteStream(this.streamService.load(streamID));
         } catch(NotFoundException e) {
             LOG.error("Cannot find the stream ", e);
         }
