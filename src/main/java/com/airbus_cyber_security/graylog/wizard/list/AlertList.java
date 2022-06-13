@@ -73,8 +73,7 @@ public abstract class AlertList {
                                        @JsonProperty("description") String description,
                                        @JsonProperty("usage") int usage,
                                        @JsonProperty("lists") String lists){
-        return new AutoValue_AlertList(title, createdAt, creatorUserId,
-                lastModified, description, usage, lists);
+        return new AutoValue_AlertList(title, createdAt, creatorUserId, lastModified, description, usage, lists);
     }
 
     public static AlertList create(
@@ -85,7 +84,6 @@ public abstract class AlertList {
             String description,
             int usage,
             String lists) {
-        return new AutoValue_AlertList(title, createdAt, creatorUserId,
-                lastModified, description, usage, lists);
+        return new AutoValue_AlertList(title, createdAt, creatorUserId, lastModified, description, usage, lists);
     }
 }
