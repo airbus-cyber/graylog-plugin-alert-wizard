@@ -84,7 +84,7 @@ public class AlertListService {
             throw new IllegalArgumentException("Specified object failed validation: " + violations);
         }
         Files.createDirectories(LISTS_PATH);
-        Writer writer = Files.newBufferedWriter(LISTS_PATH.resolve("TODO.csv"));
+        Writer writer = Files.newBufferedWriter(LISTS_PATH.resolve(list.getTitle() + ".csv"));
         try (CSVWriter csvWriter = new CSVWriter(writer)) {
             csvWriter.writeNext(new String[] {"key", "value"});
 
