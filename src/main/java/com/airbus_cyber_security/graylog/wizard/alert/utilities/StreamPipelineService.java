@@ -318,8 +318,8 @@ public class StreamPipelineService {
 
     public void createUniqueLookup(CacheDto cache, DataAdapterDto adapter) {
 
-        final Collection<LookupTableDto> tables = dbTableService.findAll();
-        for (LookupTableDto lookupTableDto:tables) {
+        Collection<LookupTableDto> tables = this.dbTableService.findAll();
+        for (LookupTableDto lookupTableDto: tables) {
             if (lookupTableDto.title().equals("wizard lookup")) {
                 return;
             }
@@ -337,7 +337,7 @@ public class StreamPipelineService {
                 .defaultMultiValueType(LookupDefaultMultiValue.Type.NULL)
                 .build();
 
-        dbTableService.save(dto);
+        this.dbTableService.save(dto);
     }
 
     public CacheDto createUniqueCache() {
