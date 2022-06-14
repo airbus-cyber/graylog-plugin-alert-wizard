@@ -272,7 +272,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     }
 
     private void createAlertRule(String streamIdentifier, String alertTitle, String notificationID, String userName,
-                                 String description, String conditionType, String streamID2, String eventID2,
+                                 String description, String conditionType, String streamID2,
                                  StreamPipelineObject streamPipelineObject, StreamPipelineObject streamPipelineObject2,
                                  Map<String, Object> conditionParameters, UserContext userContext) {
         // Create Condition
@@ -280,7 +280,14 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         //Create Event
         String eventID = this.alertRuleUtilsService.createEvent(alertTitle, notificationID, configuration, userContext);
 
-
+        String eventID2 = null;
+        //Or Event for Second Stream
+        if (conditionType.equals("OR") && streamPipelineObject2.getStream() != null) {
+            //Create Condition
+            EventProcessorConfig configuration2 = this.alertRuleUtilsService.createAggregationCondition(streamID2, conditionParameters);
+            //Create Event
+            eventID2 = this.alertRuleUtilsService.createEvent(alertTitle + "#2", notificationID, configuration2, userContext);
+        }
 
         this.clusterEventBus.post(StreamsChangedEvent.create(streamIdentifier));
         this.alertRuleService.create(AlertRule.create(
@@ -337,17 +344,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             streamID2 = streamPipelineObject2.getStream().getId();
         }
 
-        String eventID2 = null;
-        //Or Event for Second Stream
-        if (conditionType.equals("OR") && streamPipelineObject2.getStream() != null) {
-            //Create Condition
-            EventProcessorConfig configuration2 = this.alertRuleUtilsService.createAggregationCondition(streamID2, alertRule.conditionParameters());
-            //Create Event
-            eventID2 = this.alertRuleUtilsService.createEvent(alertTitle + "#2", notificationID, configuration2, userContext);
-        }
-
         createAlertRule(streamIdentifier, alertTitle, notificationID, userName, description, conditionType,
-                streamID2, eventID2, streamPipelineObject, streamPipelineObject2, conditionParameters, userContext);
+                streamID2, streamPipelineObject, streamPipelineObject2, conditionParameters, userContext);
         LOG.debug("User: " + userName + " successfully import alert rule: " + alertTitle);
     }
 
@@ -387,17 +385,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             streamID2 = streamPipelineObject2.getStream().getId();
         }
 
-        String eventID2 = null;
-        //Or Event for Second Stream
-        if (conditionType.equals("OR") && streamPipelineObject2.getStream() != null) {
-            //Create Condition
-            EventProcessorConfig configuration2 = this.alertRuleUtilsService.createAggregationCondition(streamID2, request.conditionParameters());
-            //Create Event
-            eventID2 = this.alertRuleUtilsService.createEvent(alertTitle + "#2", notificationID, configuration2, userContext);
-        }
-
         createAlertRule(streamIdentifier, alertTitle, notificationID, userName, description, conditionType,
-                streamID2, eventID2, streamPipelineObject, streamPipelineObject2, conditionParameters, userContext);
+                streamID2, streamPipelineObject, streamPipelineObject2, conditionParameters, userContext);
 
         return Response.ok().build();
     }
