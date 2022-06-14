@@ -18,6 +18,7 @@
 package com.airbus_cyber_security.graylog.wizard.alert.utilities;
 
 import com.airbus_cyber_security.graylog.wizard.alert.*;
+import com.airbus_cyber_security.graylog.wizard.alert.database.LookupService;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.bson.types.ObjectId;
@@ -67,8 +68,10 @@ public class StreamPipelineService {
     private final String indexSetID;
     private final RuleService ruleService;
     private final PipelineService pipelineService;
-    private final DBDataAdapterService dbDataAdapterService;
     private final HttpConfiguration httpConfiguration;
+    // TODO try to remove this field => move into LookupService
+    private final DBDataAdapterService dbDataAdapterService;
+    private final LookupService lookupService;
     private final DBCacheService dbCacheService;
     private final DBLookupTableService dbTableService;
     private final PipelineStreamConnectionsService pipelineStreamConnectionsService;
@@ -95,6 +98,7 @@ public class StreamPipelineService {
         this.dbCacheService = dbCacheService;
         this.dbTableService = dbTableService;
         this.pipelineStreamConnectionsService = pipelineStreamConnectionsService;
+        this.lookupService = new LookupService(dbDataAdapterService);
     }
 
     private void createStreamRule(List<FieldRule> listfieldRule, String streamID) throws ValidationException {
@@ -152,6 +156,7 @@ public class StreamPipelineService {
         final DateTime now = DateTime.now(DateTimeZone.UTC);
 
         if (ruleID == null) {
+            // TODO factor the random utility (with LookupService)!!!
             ruleID = RandomStringUtils.random(RANDOM_COUNT, RANDOM_CHARS);
         }
         final RuleDao cr = RuleDao.create(ruleID, "function "+alertTitle, AlertRuleUtils.COMMENT_ALERT_WIZARD, createRuleSource(alertTitle, listfieldRule, stream), now, now);
@@ -317,7 +322,7 @@ public class StreamPipelineService {
     }
 
     public void createUniqueLookup(String userName) {
-        DataAdapterDto adapter = this.createUniqueDataAdapter(userName);
+        String adapterIdentifier = this.createUniqueDataAdapter(userName);
         CacheDto cache = this.createUniqueCache();
 
         Collection<LookupTableDto> tables = this.dbTableService.findAll();
@@ -332,7 +337,7 @@ public class StreamPipelineService {
                 .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
                 .name("wizard_lookup")
                 .cacheId(cache.id())
-                .dataAdapterId(adapter.id())
+                .dataAdapterId(adapterIdentifier)
                 .defaultSingleValue("")
                 .defaultSingleValueType(LookupDefaultSingleValue.Type.NULL)
                 .defaultMultiValue("")
@@ -367,20 +372,19 @@ public class StreamPipelineService {
         return dbCacheService.save(dto);
     }
 
-    private DataAdapterDto createUniqueDataAdapter(String userName) {
+    private String createUniqueDataAdapter(String userName) {
 
-        final Collection<DataAdapterDto> adapters = dbDataAdapterService.findAll();
-        for (DataAdapterDto dataAdapters:adapters) {
-            if (dataAdapters.title().equals("Wizard data adapter")){
-                return dataAdapters;
+        Collection<DataAdapterDto> adapters = this.dbDataAdapterService.findAll();
+        for (DataAdapterDto dataAdapter: adapters) {
+            if (dataAdapter.title().equals("Wizard data adapter")){
+                return dataAdapter.id();
             }
         }
 
         Map<String, String> headers = new HashMap<>();
         headers.put("Authorization", "Basic user:password(base64)");
 
-        final String adapterID = RandomStringUtils.random(RANDOM_COUNT, RANDOM_CHARS);
-        final String url = httpConfiguration.getHttpPublishUri().resolve(HttpConfiguration.PATH_API).toString() + "plugins/com.airbus_cyber_security.graylog/lists/${key}";
+        String url = httpConfiguration.getHttpPublishUri().resolve(HttpConfiguration.PATH_API).toString() + "plugins/com.airbus_cyber_security.graylog/lists/${key}";
 
         HTTPJSONPathDataAdapter.Config config = HTTPJSONPathDataAdapter.Config.builder()
                 .type("")
@@ -391,16 +395,7 @@ public class StreamPipelineService {
                 .headers(headers)
                 .build();
 
-        DataAdapterDto dto = DataAdapterDto.builder()
-                .id(adapterID)
-                .title("Wizard data adapter")
-                .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
-                .name("wizard-data-adapter")
-                .contentPack(null)
-                .config(config)
-                .build();
-
-        return dbDataAdapterService.save(dto);
+        return this.lookupService.createDataAdapter("Wizard data adapter", "wizard-data-adapter", config);
     }
 
     private List<FieldRule> extractPipelineFieldRules(List<FieldRule> listFieldRule){
