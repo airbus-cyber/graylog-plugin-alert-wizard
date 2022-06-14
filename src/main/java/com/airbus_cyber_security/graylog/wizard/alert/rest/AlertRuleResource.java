@@ -19,6 +19,7 @@ package com.airbus_cyber_security.graylog.wizard.alert.rest;
 
 import com.airbus_cyber_security.graylog.wizard.alert.AlertRule;
 import com.airbus_cyber_security.graylog.wizard.alert.AlertRuleService;
+import com.airbus_cyber_security.graylog.wizard.alert.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.alert.bundles.AlertRuleExporter;
 import com.airbus_cyber_security.graylog.wizard.alert.bundles.ExportAlertRule;
@@ -257,50 +258,59 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return alertTitle;
     }
 
-    private void importAlertRule(ExportAlertRule alertRule, UserContext userContext) throws ValidationException {
-        String alertTitle = checkImportPolicyAndGetTitle(alertRule.getTitle());
+    private StreamPipelineObject createStreamAndPipeline(AlertRuleStream stream, String title) throws ValidationException {
+        String alertTitle = checkImportPolicyAndGetTitle(title);
         String userName = getCurrentUser().getName();
-
-        LOG.debug("User: " + userName + " try to import alert rule: " + alertTitle);
-
-        // Create stream and pipeline
-        StreamPipelineObject streamPilpelineObject = this.streamPipelineService.createStreamAndPipeline(alertRule.getStream(), alertTitle, userName, alertRule.getStream().getMatchingType());
+        StreamPipelineObject streamPipelineObject = this.streamPipelineService.createStreamAndPipeline(stream, alertTitle, userName, stream.getMatchingType());
 
         //Create unique data adapter
         DataAdapterDto adapter = this.streamPipelineService.createUniqueDataAdapter(userName);
         CacheDto cache = this.streamPipelineService.createUniqueCache();
         this.streamPipelineService.createUniqueLookup(cache, adapter);
 
+        return streamPipelineObject;
+    }
+
+    private void importAlertRule(ExportAlertRule alertRule, UserContext userContext) throws ValidationException {
+        String title = alertRule.getTitle();
+        AlertRuleStream stream = alertRule.getStream();
+
+        // Create stream and pipeline
+        StreamPipelineObject streamPipelineObject = this.createStreamAndPipeline(stream, title);
+
+        String userName = getCurrentUser().getName();
+        String alertTitle = checkImportPolicyAndGetTitle(title);
+
         // Create second stream and pipeline
         String streamID2 = null;
-        StreamPipelineObject streamPilpelineObject2 = new StreamPipelineObject(null, null, null, null);
+        StreamPipelineObject streamPipelineObject2 = new StreamPipelineObject(null, null, null, null);
         if (alertRule.getConditionType().equals("THEN") || alertRule.getConditionType().equals("AND") || alertRule.getConditionType().equals("OR")) {
-            streamPilpelineObject2 = this.streamPipelineService.createStreamAndPipeline(alertRule.getSecondStream(), alertTitle + "#2", userName, alertRule.getStream().getMatchingType());
-            streamID2 = streamPilpelineObject2.getStream().getId();
+            streamPipelineObject2 = this.streamPipelineService.createStreamAndPipeline(alertRule.getSecondStream(), alertTitle + "#2", userName, alertRule.getStream().getMatchingType());
+            streamID2 = streamPipelineObject2.getStream().getId();
         }
 
         // Create Notification
         String notificationID = this.alertRuleUtilsService.createNotificationFromParameters(alertTitle, alertRule.notificationParameters(), userContext);
 
         // Create Condition
-        EventProcessorConfig configuration = this.alertRuleUtilsService.createCondition(alertRule.getConditionType(), alertRule.conditionParameters(), streamPilpelineObject.getStream().getId(), streamID2);
+        EventProcessorConfig configuration = this.alertRuleUtilsService.createCondition(alertRule.getConditionType(), alertRule.conditionParameters(), streamPipelineObject.getStream().getId(), streamID2);
 
         //Create Event
         String eventID = this.alertRuleUtilsService.createEvent(alertTitle, notificationID, configuration, userContext);
 
         String eventID2 = null;
         //Or Event for Second Stream
-        if (alertRule.getConditionType().equals("OR") && streamPilpelineObject2.getStream() != null) {
+        if (alertRule.getConditionType().equals("OR") && streamPipelineObject2.getStream() != null) {
             //Create Condition
             EventProcessorConfig configuration2 = this.alertRuleUtilsService.createAggregationCondition(streamID2, alertRule.conditionParameters());
             //Create Event
             eventID2 = this.alertRuleUtilsService.createEvent(alertTitle + "#2", notificationID, configuration2, userContext);
         }
 
-        clusterEventBus.post(StreamsChangedEvent.create(streamPilpelineObject.getStream().getId()));
+        clusterEventBus.post(StreamsChangedEvent.create(streamPipelineObject.getStream().getId()));
         this.alertRuleService.create(AlertRule.create(
                 alertTitle,
-                streamPilpelineObject.getStream().getId(),
+                streamPipelineObject.getStream().getId(),
                 eventID,
                 notificationID,
                 DateTime.now(),
@@ -310,18 +320,18 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 alertRule.getConditionType(),
                 streamID2,
                 eventID2,
-                streamPilpelineObject.getPipelineID(),
-                streamPilpelineObject.getPipelineRuleID(),
-                streamPilpelineObject.getListPipelineFieldRule(),
-                streamPilpelineObject2.getPipelineID(),
-                streamPilpelineObject2.getPipelineRuleID(),
-                streamPilpelineObject2.getListPipelineFieldRule()));
+                streamPipelineObject.getPipelineID(),
+                streamPipelineObject.getPipelineRuleID(),
+                streamPipelineObject.getListPipelineFieldRule(),
+                streamPipelineObject2.getPipelineID(),
+                streamPipelineObject2.getPipelineRuleID(),
+                streamPipelineObject2.getListPipelineFieldRule()));
 
         //Update list usage
-        for (FieldRule fieldRule : alertRuleUtils.nullSafe(streamPilpelineObject.getListPipelineFieldRule())) {
+        for (FieldRule fieldRule : alertRuleUtils.nullSafe(streamPipelineObject.getListPipelineFieldRule())) {
             alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
-        for (FieldRule fieldRule : alertRuleUtils.nullSafe(streamPilpelineObject2.getListPipelineFieldRule())) {
+        for (FieldRule fieldRule : alertRuleUtils.nullSafe(streamPipelineObject2.getListPipelineFieldRule())) {
             alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
         LOG.debug("User: " + userName + " successfully import alert rule: " + alertTitle);
@@ -338,17 +348,14 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             throws ValidationException, BadRequestException {
 
         this.alertRuleUtilsService.checkIsValidRequest(request);
-
-        String alertTitle = checkImportPolicyAndGetTitle(request.getTitle());
-        String userName = getCurrentUser().getName();
+        AlertRuleStream stream = request.getStream();
+        String title = request.getTitle();
 
         // Create stream and pipeline
-        StreamPipelineObject streamPipelineObject = this.streamPipelineService.createStreamAndPipeline(request.getStream(), alertTitle, userName, request.getStream().getMatchingType());
+        StreamPipelineObject streamPipelineObject = this.createStreamAndPipeline(stream, title);
 
-        //Create unique data adapter
-        DataAdapterDto adapter = this.streamPipelineService.createUniqueDataAdapter(userName);
-        CacheDto cache = this.streamPipelineService.createUniqueCache();
-        this.streamPipelineService.createUniqueLookup(cache, adapter);
+        String alertTitle = checkImportPolicyAndGetTitle(title);
+        String userName = getCurrentUser().getName();
 
         // Create second stream and pipeline
         String streamID2 = null;
