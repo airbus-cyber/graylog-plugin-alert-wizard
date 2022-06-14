@@ -208,7 +208,7 @@ public class StreamPipelineService {
         LOG.debug("Create Stream: " + title);
         final CreateStreamRequest cr = CreateStreamRequest.create(title, AlertRuleUtils.COMMENT_ALERT_WIZARD,
                 Collections.emptyList(), "", alertRuleStream.getMatchingType(), false, indexSetID);
-        final Stream stream = this.streamService.create(cr, userName);
+        Stream stream = this.streamService.create(cr, userName);
         stream.setDisabled(false);
 
         if (!stream.getIndexSet().getConfig().isWritable()) {
