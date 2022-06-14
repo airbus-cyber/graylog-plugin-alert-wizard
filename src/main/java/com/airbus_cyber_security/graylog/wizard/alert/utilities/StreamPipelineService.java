@@ -131,7 +131,7 @@ public class StreamPipelineService {
         int nbList = 0;
         for (FieldRule fieldRule : listfieldRule) {
             if (fieldRule.getType() == 7 || fieldRule.getType() == -7){
-                if( nbList > 0) {
+                if(nbList > 0) {
                     fields.append("  ");
                     fields.append(stream.getMatchingType());
                 }
@@ -164,9 +164,9 @@ public class StreamPipelineService {
 
     private String createPipelineStringSource(String alertTitle, String matchingType) {
         String match;
-        if (matchingType.equals("OR")){
+        if (matchingType.equals("OR")) {
             match="either";
-        }else{
+        } else {
             match="all";
         }
         return "pipeline \""+alertTitle+"\"\nstage 0 match "+match+"\nrule \"function "+alertTitle+"\"\nend";
