@@ -624,7 +624,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     }
 
 
-    public void importAlertRule(ExportAlertRule alertRule, UserContext userContext) throws ValidationException {
+    private void importAlertRule(ExportAlertRule alertRule, UserContext userContext) throws ValidationException {
         String alertTitle = checkImportPolicyAndGetTitle(alertRule.getTitle());
         String userName = getCurrentUser().getName();
 
