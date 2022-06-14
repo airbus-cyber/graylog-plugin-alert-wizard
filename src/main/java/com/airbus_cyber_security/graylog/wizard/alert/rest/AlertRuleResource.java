@@ -258,25 +258,18 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return alertTitle;
     }
 
-    private StreamPipelineObject createStreamAndPipeline(AlertRuleStream stream, String alertTitle) throws ValidationException {
+    private void createAlertRule(AlertRuleStream stream, AlertRuleStream secondStream, String alertTitle, String notificationID,                                 String description, String conditionType,
+                                 Map<String, Object> conditionParameters, UserContext userContext) throws ValidationException {
         String userName = getCurrentUser().getName();
+
+        // Create stream and pipeline
         StreamPipelineObject streamPipelineObject = this.streamPipelineService.createStreamAndPipeline(stream, alertTitle, userName, stream.getMatchingType());
+        String streamIdentifier = streamPipelineObject.getStream().getId();
 
         //Create unique data adapter
         DataAdapterDto adapter = this.streamPipelineService.createUniqueDataAdapter(userName);
         CacheDto cache = this.streamPipelineService.createUniqueCache();
         this.streamPipelineService.createUniqueLookup(cache, adapter);
-
-        return streamPipelineObject;
-    }
-
-    private void createAlertRule(AlertRuleStream stream, AlertRuleStream secondStream, String alertTitle, String notificationID,                                 String description, String conditionType,
-                                 Map<String, Object> conditionParameters, UserContext userContext) throws ValidationException {
-        // Create stream and pipeline
-        StreamPipelineObject streamPipelineObject = this.createStreamAndPipeline(stream, alertTitle);
-        String streamIdentifier = streamPipelineObject.getStream().getId();
-
-        String userName = getCurrentUser().getName();
 
         // Create second stream and pipeline
         String streamID2 = null;
