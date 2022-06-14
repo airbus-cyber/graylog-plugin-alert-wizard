@@ -150,6 +150,7 @@ public class AlertRuleUtilsService {
         }
     }
 
+    // TODO try to remove this method: not nice at all
     private HashSet<String> convertToHashSet(Object object) {
         if (object instanceof HashSet) {
             return (HashSet<String>) object;

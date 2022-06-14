@@ -339,6 +339,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         Map<String, Object> conditionParameters = alertRule.conditionParameters();
 
         Map<String, Object> parametersNotification = alertRule.notificationParameters();
+
+        // TODO could factorize this down into createAlertRule, but need to remove convertToHashSet first...
         // Create Notification
         String notificationID = this.alertRuleUtilsService.createNotificationFromParameters(alertTitle, parametersNotification, userContext);
 
