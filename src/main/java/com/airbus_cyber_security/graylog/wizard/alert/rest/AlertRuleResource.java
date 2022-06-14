@@ -311,7 +311,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             eventID2 = this.alertRuleUtilsService.createEvent(alertTitle + "#2", notificationID, configuration2, userContext);
         }
 
-        clusterEventBus.post(StreamsChangedEvent.create(streamPipelineObject.getStream().getId()));
+        this.clusterEventBus.post(StreamsChangedEvent.create(streamPipelineObject.getStream().getId()));
         this.alertRuleService.create(AlertRule.create(
                 alertTitle,
                 streamIdentifier,
@@ -391,7 +391,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             eventID2 = this.alertRuleUtilsService.createEvent(alertTitle + "#2", notificationID, configuration2, userContext);
         }
 
-        clusterEventBus.post(StreamsChangedEvent.create(streamIdentifier));
+        this.clusterEventBus.post(StreamsChangedEvent.create(streamIdentifier));
         this.alertRuleService.create(AlertRule.create(
                 alertTitle,
                 streamIdentifier,
@@ -582,7 +582,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         for (Output output : sourceFirstStream.getOutputs()) {
             streamService.addOutput(firstStream, output);
         }
-        clusterEventBus.post(StreamsChangedEvent.create(firstStream.getId()));
+        this.clusterEventBus.post(StreamsChangedEvent.create(firstStream.getId()));
 
         // Create Notification
         LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) eventNotificationsResource.get(sourceAlert.getNotificationID()).config();
