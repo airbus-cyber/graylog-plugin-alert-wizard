@@ -266,10 +266,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         StreamPipelineObject streamPipelineObject = this.streamPipelineService.createStreamAndPipeline(stream, alertTitle, userName, stream.getMatchingType());
         String streamIdentifier = streamPipelineObject.getStream().getId();
 
-        //Create unique data adapter
-        DataAdapterDto adapter = this.streamPipelineService.createUniqueDataAdapter(userName);
-        CacheDto cache = this.streamPipelineService.createUniqueCache();
-        this.streamPipelineService.createUniqueLookup(cache, adapter);
+        this.streamPipelineService.createUniqueLookup(userName);
 
         // Create second stream and pipeline
         String streamID2 = null;

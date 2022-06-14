@@ -316,7 +316,9 @@ public class StreamPipelineService {
         }
     }
 
-    public void createUniqueLookup(CacheDto cache, DataAdapterDto adapter) {
+    public void createUniqueLookup(String userName) {
+        DataAdapterDto adapter = this.createUniqueDataAdapter(userName);
+        CacheDto cache = this.createUniqueCache();
 
         Collection<LookupTableDto> tables = this.dbTableService.findAll();
         for (LookupTableDto lookupTableDto: tables) {
@@ -340,7 +342,7 @@ public class StreamPipelineService {
         this.dbTableService.save(dto);
     }
 
-    public CacheDto createUniqueCache() {
+    private CacheDto createUniqueCache() {
         final Collection<CacheDto> caches = dbCacheService.findAll();
         for (CacheDto cacheDto:caches) {
             if(cacheDto.title().equals("wizard cache")){
@@ -365,7 +367,7 @@ public class StreamPipelineService {
         return dbCacheService.save(dto);
     }
 
-    public DataAdapterDto createUniqueDataAdapter(String userName) {
+    private DataAdapterDto createUniqueDataAdapter(String userName) {
 
         final Collection<DataAdapterDto> adapters = dbDataAdapterService.findAll();
         for (DataAdapterDto dataAdapters:adapters) {
