@@ -258,8 +258,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return alertTitle;
     }
 
-    private StreamPipelineObject createStreamAndPipeline(AlertRuleStream stream, String title) throws ValidationException {
-        String alertTitle = checkImportPolicyAndGetTitle(title);
+    private StreamPipelineObject createStreamAndPipeline(AlertRuleStream stream, String alertTitle) throws ValidationException {
         String userName = getCurrentUser().getName();
         StreamPipelineObject streamPipelineObject = this.streamPipelineService.createStreamAndPipeline(stream, alertTitle, userName, stream.getMatchingType());
 
@@ -328,21 +327,21 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
     private void importAlertRule(ExportAlertRule alertRule, UserContext userContext) throws ValidationException {
         String title = alertRule.getTitle();
+        String alertTitle = checkImportPolicyAndGetTitle(title);
         AlertRuleStream stream = alertRule.getStream();
         AlertRuleStream secondStream = alertRule.getSecondStream();
         String conditionType = alertRule.getConditionType();
         String description = alertRule.getDescription();
         Map<String, Object> conditionParameters = alertRule.conditionParameters();
 
+        // Create Notification
+        String notificationID = this.alertRuleUtilsService.createNotificationFromParameters(alertTitle, alertRule.notificationParameters(), userContext);
+
         // Create stream and pipeline
-        StreamPipelineObject streamPipelineObject = this.createStreamAndPipeline(stream, title);
+        StreamPipelineObject streamPipelineObject = this.createStreamAndPipeline(stream, alertTitle);
         String streamIdentifier = streamPipelineObject.getStream().getId();
 
         String userName = getCurrentUser().getName();
-        String alertTitle = checkImportPolicyAndGetTitle(title);
-
-        // Create Notification
-        String notificationID = this.alertRuleUtilsService.createNotificationFromParameters(alertTitle, alertRule.notificationParameters(), userContext);
 
         createAlertRule(stream, secondStream, streamIdentifier, alertTitle, notificationID, userName, description, conditionType,
                 streamPipelineObject, conditionParameters, userContext);
@@ -363,19 +362,19 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         AlertRuleStream stream = request.getStream();
         AlertRuleStream secondStream = request.getSecondStream();
         String title = request.getTitle();
+        String alertTitle = checkImportPolicyAndGetTitle(title);
         String conditionType = request.getConditionType();
         String description = request.getDescription();
         Map<String, Object> conditionParameters = request.conditionParameters();
 
-        // Create stream and pipeline
-        StreamPipelineObject streamPipelineObject = this.createStreamAndPipeline(stream, title);
-        String streamIdentifier = streamPipelineObject.getStream().getId();
-
-        String alertTitle = checkImportPolicyAndGetTitle(title);
-        String userName = getCurrentUser().getName();
-
         // Create Notification
         String notificationID = this.alertRuleUtilsService.createNotification(alertTitle, request.getSeverity(), userContext);
+
+        // Create stream and pipeline
+        StreamPipelineObject streamPipelineObject = this.createStreamAndPipeline(stream, alertTitle);
+        String streamIdentifier = streamPipelineObject.getStream().getId();
+
+        String userName = getCurrentUser().getName();
 
         createAlertRule(stream, secondStream, streamIdentifier, alertTitle, notificationID, userName, description, conditionType,
                 streamPipelineObject, conditionParameters, userContext);

@@ -325,7 +325,6 @@ public class AlertRuleUtilsService {
     }
 
     public String createNotificationFromParameters(String alertTitle, Map<String, Object> parametersNotification, UserContext userContext) {
-        LOG.debug("Create Notification " + alertTitle);
         LoggingNotificationConfig loggingNotificationConfig = LoggingNotificationConfig.builder()
                 .singleMessage((boolean) parametersNotification.getOrDefault("single_notification", false))
                 .severity(SeverityType.valueOf(parametersNotification.get("severity").toString().toUpperCase()))
