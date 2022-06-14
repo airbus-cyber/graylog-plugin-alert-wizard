@@ -271,10 +271,18 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return streamPipelineObject;
     }
 
-    private void createAlertRule(String streamIdentifier, String alertTitle, String notificationID, String userName,
-                                 String description, String conditionType, String streamID2,
-                                 StreamPipelineObject streamPipelineObject, StreamPipelineObject streamPipelineObject2,
-                                 Map<String, Object> conditionParameters, UserContext userContext) {
+    private void createAlertRule(AlertRuleStream stream, AlertRuleStream secondStream, String streamIdentifier, String alertTitle, String notificationID, String userName,
+                                 String description, String conditionType,
+                                 StreamPipelineObject streamPipelineObject,
+                                 Map<String, Object> conditionParameters, UserContext userContext) throws ValidationException {
+        // Create second stream and pipeline
+        String streamID2 = null;
+        StreamPipelineObject streamPipelineObject2 = new StreamPipelineObject(null, null, null, null);
+        if (conditionType.equals("THEN") || conditionType.equals("AND") || conditionType.equals("OR")) {
+            streamPipelineObject2 = this.streamPipelineService.createStreamAndPipeline(secondStream, alertTitle + "#2", userName, stream.getMatchingType());
+            streamID2 = streamPipelineObject2.getStream().getId();
+        }
+
         // Create Condition
         EventProcessorConfig configuration = this.alertRuleUtilsService.createCondition(conditionType, conditionParameters, streamIdentifier, streamID2);
         //Create Event
@@ -336,16 +344,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         // Create Notification
         String notificationID = this.alertRuleUtilsService.createNotificationFromParameters(alertTitle, alertRule.notificationParameters(), userContext);
 
-        // Create second stream and pipeline
-        String streamID2 = null;
-        StreamPipelineObject streamPipelineObject2 = new StreamPipelineObject(null, null, null, null);
-        if (conditionType.equals("THEN") || conditionType.equals("AND") || conditionType.equals("OR")) {
-            streamPipelineObject2 = this.streamPipelineService.createStreamAndPipeline(secondStream, alertTitle + "#2", userName, stream.getMatchingType());
-            streamID2 = streamPipelineObject2.getStream().getId();
-        }
-
-        createAlertRule(streamIdentifier, alertTitle, notificationID, userName, description, conditionType,
-                streamID2, streamPipelineObject, streamPipelineObject2, conditionParameters, userContext);
+        createAlertRule(stream, secondStream, streamIdentifier, alertTitle, notificationID, userName, description, conditionType,
+                streamPipelineObject, conditionParameters, userContext);
         LOG.debug("User: " + userName + " successfully import alert rule: " + alertTitle);
     }
 
@@ -377,16 +377,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         // Create Notification
         String notificationID = this.alertRuleUtilsService.createNotification(alertTitle, request.getSeverity(), userContext);
 
-        // Create second stream and pipeline
-        String streamID2 = null;
-        StreamPipelineObject streamPipelineObject2 = new StreamPipelineObject(null, null, null, null);
-        if (conditionType.equals("THEN") || conditionType.equals("AND") || conditionType.equals("OR")) {
-            streamPipelineObject2 = this.streamPipelineService.createStreamAndPipeline(secondStream, alertTitle + "#2", userName, stream.getMatchingType());
-            streamID2 = streamPipelineObject2.getStream().getId();
-        }
-
-        createAlertRule(streamIdentifier, alertTitle, notificationID, userName, description, conditionType,
-                streamID2, streamPipelineObject, streamPipelineObject2, conditionParameters, userContext);
+        createAlertRule(stream, secondStream, streamIdentifier, alertTitle, notificationID, userName, description, conditionType,
+                streamPipelineObject, conditionParameters, userContext);
 
         return Response.ok().build();
     }
