@@ -271,6 +271,38 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return streamPipelineObject;
     }
 
+    private void createAlertRule(String streamIdentifier, String alertTitle, String eventID, String notificationID, String userName,
+                                 String description, String conditionType, String streamID2, String eventID2,
+                                 StreamPipelineObject streamPipelineObject, StreamPipelineObject streamPipelineObject2) {
+        this.clusterEventBus.post(StreamsChangedEvent.create(streamIdentifier));
+        this.alertRuleService.create(AlertRule.create(
+                alertTitle,
+                streamIdentifier,
+                eventID,
+                notificationID,
+                DateTime.now(),
+                userName,
+                DateTime.now(),
+                description,
+                conditionType,
+                streamID2,
+                eventID2,
+                streamPipelineObject.getPipelineID(),
+                streamPipelineObject.getPipelineRuleID(),
+                streamPipelineObject.getListPipelineFieldRule(),
+                streamPipelineObject2.getPipelineID(),
+                streamPipelineObject2.getPipelineRuleID(),
+                streamPipelineObject2.getListPipelineFieldRule()));
+
+        //Update list usage
+        for (FieldRule fieldRule: alertRuleUtils.nullSafe(streamPipelineObject.getListPipelineFieldRule())) {
+            alertListUtilsService.incrementUsage(fieldRule.getValue());
+        }
+        for (FieldRule fieldRule: alertRuleUtils.nullSafe(streamPipelineObject2.getListPipelineFieldRule())) {
+            alertListUtilsService.incrementUsage(fieldRule.getValue());
+        }
+    }
+
     private void importAlertRule(ExportAlertRule alertRule, UserContext userContext) throws ValidationException {
         String title = alertRule.getTitle();
         AlertRuleStream stream = alertRule.getStream();
@@ -311,33 +343,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         //Create Event
         String eventID = this.alertRuleUtilsService.createEvent(alertTitle, notificationID, configuration, userContext);
 
-        this.clusterEventBus.post(StreamsChangedEvent.create(streamIdentifier));
-        this.alertRuleService.create(AlertRule.create(
-                alertTitle,
-                streamIdentifier,
-                eventID,
-                notificationID,
-                DateTime.now(),
-                userName,
-                DateTime.now(),
-                alertRule.getDescription(),
-                conditionType,
-                streamID2,
-                eventID2,
-                streamPipelineObject.getPipelineID(),
-                streamPipelineObject.getPipelineRuleID(),
-                streamPipelineObject.getListPipelineFieldRule(),
-                streamPipelineObject2.getPipelineID(),
-                streamPipelineObject2.getPipelineRuleID(),
-                streamPipelineObject2.getListPipelineFieldRule()));
-
-        //Update list usage
-        for (FieldRule fieldRule : alertRuleUtils.nullSafe(streamPipelineObject.getListPipelineFieldRule())) {
-            alertListUtilsService.incrementUsage(fieldRule.getValue());
-        }
-        for (FieldRule fieldRule : alertRuleUtils.nullSafe(streamPipelineObject2.getListPipelineFieldRule())) {
-            alertListUtilsService.incrementUsage(fieldRule.getValue());
-        }
+        String description = alertRule.getDescription();
+        createAlertRule(streamIdentifier, alertTitle, eventID, notificationID, userName, description, conditionType,
+                streamID2, eventID2, streamPipelineObject, streamPipelineObject2);
         LOG.debug("User: " + userName + " successfully import alert rule: " + alertTitle);
     }
 
@@ -391,33 +399,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         //Create Event
         String eventID = this.alertRuleUtilsService.createEvent(alertTitle, notificationID, configuration, userContext);
 
-        this.clusterEventBus.post(StreamsChangedEvent.create(streamIdentifier));
-        this.alertRuleService.create(AlertRule.create(
-                alertTitle,
-                streamIdentifier,
-                eventID,
-                notificationID,
-                DateTime.now(),
-                userName,
-                DateTime.now(),
-                request.getDescription(),
-                conditionType,
-                streamID2,
-                eventID2,
-                streamPipelineObject.getPipelineID(),
-                streamPipelineObject.getPipelineRuleID(),
-                streamPipelineObject.getListPipelineFieldRule(),
-                streamPipelineObject2.getPipelineID(),
-                streamPipelineObject2.getPipelineRuleID(),
-                streamPipelineObject2.getListPipelineFieldRule()));
+        String description = request.getDescription();
 
-        //Update list usage
-        for (FieldRule fieldRule: alertRuleUtils.nullSafe(streamPipelineObject.getListPipelineFieldRule())) {
-            alertListUtilsService.incrementUsage(fieldRule.getValue());
-        }
-        for (FieldRule fieldRule: alertRuleUtils.nullSafe(streamPipelineObject2.getListPipelineFieldRule())) {
-            alertListUtilsService.incrementUsage(fieldRule.getValue());
-        }
+        createAlertRule(streamIdentifier, alertTitle, eventID, notificationID, userName, description, conditionType,
+                streamID2, eventID2, streamPipelineObject, streamPipelineObject2);
 
         return Response.ok().build();
     }
