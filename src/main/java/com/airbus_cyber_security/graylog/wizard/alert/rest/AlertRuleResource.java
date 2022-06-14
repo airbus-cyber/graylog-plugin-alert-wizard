@@ -278,6 +278,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         // Create stream and pipeline
         StreamPipelineObject streamPipelineObject = this.createStreamAndPipeline(stream, title);
+        String streamIdentifier = streamPipelineObject.getStream().getId();
 
         String userName = getCurrentUser().getName();
         String alertTitle = checkImportPolicyAndGetTitle(title);
@@ -294,9 +295,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         // Create Notification
         String notificationID = this.alertRuleUtilsService.createNotificationFromParameters(alertTitle, alertRule.notificationParameters(), userContext);
 
-        // Create Condition
-        EventProcessorConfig configuration = this.alertRuleUtilsService.createCondition(conditionType, alertRule.conditionParameters(), streamPipelineObject.getStream().getId(), streamID2);
+        Map<String, Object> conditionParameters = alertRule.conditionParameters();
 
+        // Create Condition
+        EventProcessorConfig configuration = this.alertRuleUtilsService.createCondition(conditionType, conditionParameters, streamIdentifier, streamID2);
         //Create Event
         String eventID = this.alertRuleUtilsService.createEvent(alertTitle, notificationID, configuration, userContext);
 
@@ -312,7 +314,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         clusterEventBus.post(StreamsChangedEvent.create(streamPipelineObject.getStream().getId()));
         this.alertRuleService.create(AlertRule.create(
                 alertTitle,
-                streamPipelineObject.getStream().getId(),
+                streamIdentifier,
                 eventID,
                 notificationID,
                 DateTime.now(),
@@ -356,6 +358,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         // Create stream and pipeline
         StreamPipelineObject streamPipelineObject = this.createStreamAndPipeline(stream, title);
+        String streamIdentifier = streamPipelineObject.getStream().getId();
 
         String alertTitle = checkImportPolicyAndGetTitle(title);
         String userName = getCurrentUser().getName();
@@ -372,9 +375,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         // Create Notification
         String notificationID = this.alertRuleUtilsService.createNotification(alertTitle, request.getSeverity(), userContext);
 
-        // Create Condition
-        EventProcessorConfig configuration = this.alertRuleUtilsService.createCondition(conditionType, request.conditionParameters(), streamPipelineObject.getStream().getId(), streamID2);
+        Map<String, Object> conditionParameters = request.conditionParameters();
 
+        // Create Condition
+        EventProcessorConfig configuration = this.alertRuleUtilsService.createCondition(conditionType, conditionParameters, streamIdentifier, streamID2);
         //Create Event
         String eventID = this.alertRuleUtilsService.createEvent(alertTitle, notificationID, configuration, userContext);
 
@@ -387,10 +391,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             eventID2 = this.alertRuleUtilsService.createEvent(alertTitle + "#2", notificationID, configuration2, userContext);
         }
 
-        clusterEventBus.post(StreamsChangedEvent.create(streamPipelineObject.getStream().getId()));
+        clusterEventBus.post(StreamsChangedEvent.create(streamIdentifier));
         this.alertRuleService.create(AlertRule.create(
                 alertTitle,
-                streamPipelineObject.getStream().getId(),
+                streamIdentifier,
                 eventID,
                 notificationID,
                 DateTime.now(),
