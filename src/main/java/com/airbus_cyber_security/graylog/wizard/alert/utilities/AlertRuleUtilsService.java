@@ -309,6 +309,15 @@ public class AlertRuleUtilsService {
         return configuration.accessAggregationTime();
     }
 
+    public String createNotification(String alertTitle, LoggingNotificationConfig loggingNotificationConfig, UserContext userContext) {
+        NotificationDto notification = NotificationDto.builder()
+                .config(loggingNotificationConfig)
+                .title(alertTitle)
+                .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
+                .build();
+        return this.createNotificationFromDto(notification, userContext);
+    }
+
     public String createNotification(String alertTitle, String severity, UserContext userContext) {
         LoggingNotificationConfig loggingNotificationConfig = LoggingNotificationConfig.builder()
                 .singleMessage(false)
@@ -316,12 +325,7 @@ public class AlertRuleUtilsService {
                 .logBody(this.getDefaultLogBody())
                 .aggregationTime(this.getDefaultTime())
                 .build();
-        NotificationDto notification = NotificationDto.builder()
-                .config(loggingNotificationConfig)
-                .title(alertTitle)
-                .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
-                .build();
-        return this.createNotificationFromDto(notification, userContext);
+        return this.createNotification(alertTitle, loggingNotificationConfig, userContext);
     }
 
     public String createNotificationFromParameters(String alertTitle, Map<String, Object> parametersNotification, UserContext userContext) {
@@ -333,12 +337,7 @@ public class AlertRuleUtilsService {
                 .aggregationTime((int) parametersNotification.getOrDefault("aggregation_time", 0))
                 .alertTag(parametersNotification.getOrDefault("alert_tag", "LoggingAlert").toString())
                 .build();
-        NotificationDto notification = NotificationDto.builder()
-                .config(loggingNotificationConfig)
-                .title(alertTitle)
-                .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
-                .build();
-        return this.createNotificationFromDto(notification, userContext);
+        return this.createNotification(alertTitle, loggingNotificationConfig, userContext);
     }
 
     public void updateNotification(String title, String notificationID, String severity) {

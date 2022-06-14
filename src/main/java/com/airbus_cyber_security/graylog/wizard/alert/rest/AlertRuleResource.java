@@ -338,8 +338,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String description = alertRule.getDescription();
         Map<String, Object> conditionParameters = alertRule.conditionParameters();
 
+        Map<String, Object> parametersNotification = alertRule.notificationParameters();
         // Create Notification
-        String notificationID = this.alertRuleUtilsService.createNotificationFromParameters(alertTitle, alertRule.notificationParameters(), userContext);
+        String notificationID = this.alertRuleUtilsService.createNotificationFromParameters(alertTitle, parametersNotification, userContext);
 
         createAlertRule(stream, secondStream, alertTitle, notificationID, description, conditionType, conditionParameters, userContext);
     }
