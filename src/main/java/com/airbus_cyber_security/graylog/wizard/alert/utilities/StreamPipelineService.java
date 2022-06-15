@@ -119,9 +119,14 @@ public class StreamPipelineService {
         }
     }
 
-    private String createStringField(FieldRule fieldRule, String condition) {
-        return "  (has_field(\"" + fieldRule.getField() + "\")" + condition + "contains(to_string(lookup_value(\"wizard_lookup\", \"" +
+    private String createStringField(FieldRule fieldRule, boolean negate) {
+        String rule = "  (has_field(\"" + fieldRule.getField() + "\") AND";
+        if (negate) {
+            rule += " NOT";
+        }
+        rule += " contains(to_string(lookup_value(\"wizard_lookup\", \"" +
                 fieldRule.getValue() + "\", \"\")), to_string($message." + fieldRule.getField() + "), true))\n";
+        return rule;
     }
 
     private String createRuleSource(String alertTitle, List<FieldRule> listfieldRule, Stream stream){
@@ -135,11 +140,11 @@ public class StreamPipelineService {
                     fields.append(stream.getMatchingType());
                 }
                 nbList++;
-                if (fieldRule.getType() == 7) {
-                    fields.append(createStringField(fieldRule, " AND "));
-                } else {
-                    fields.append(createStringField(fieldRule, " AND NOT "));
+                boolean negate = false;
+                if (fieldRule.getType() == -7) {
+                    negate = true;
                 }
+                fields.append(createStringField(fieldRule, negate));
             }
         }
 
