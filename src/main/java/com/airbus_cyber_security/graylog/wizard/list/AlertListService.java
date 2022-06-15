@@ -27,10 +27,6 @@ import org.graylog2.bindings.providers.MongoJackObjectMapperProvider;
 import org.graylog2.database.CollectionName;
 import org.graylog2.database.MongoConnection;
 import org.graylog2.lookup.adapters.CSVFileDataAdapter;
-import org.graylog2.lookup.adapters.HTTPJSONPathDataAdapter;
-import org.graylog2.lookup.adapters.CSVFileDataAdapter;
-import org.graylog2.lookup.dto.CacheDto;
-import org.graylog2.plugin.lookup.LookupDataAdapterConfiguration;
 import org.mongojack.DBCursor;
 import org.mongojack.DBQuery;
 import org.mongojack.JacksonDBCollection;
@@ -119,8 +115,8 @@ public class AlertListService {
                 .build();
 
         // TODO shouldn't use the title here, rather an identifier
-        String adapterIdentifier = this.lookupService.createDataAdapter(title, title, dataAdapterConfiguration);
-        String cacheIdentifier = this.lookupService.createUniqueCache();
+        String adapterIdentifier = this.lookupService.createDataAdapter("Alert wizard data adapter for list " + title, "alert-wizard-list-data-adapter-" + title, dataAdapterConfiguration);
+        this.lookupService.createLookupTable(adapterIdentifier, "Alert wizard lookup table for list " + title, "alert-wizard-list-lookup-table-" + title);
 
         return coll.insert(list).getSavedObject();
     }

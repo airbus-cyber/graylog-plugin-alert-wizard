@@ -32,7 +32,6 @@ import org.graylog2.lookup.LookupDefaultSingleValue;
 import org.graylog2.lookup.adapters.HTTPJSONPathDataAdapter;
 import org.graylog2.lookup.db.DBDataAdapterService;
 import org.graylog2.lookup.db.DBLookupTableService;
-import org.graylog2.lookup.dto.CacheDto;
 import org.graylog2.lookup.dto.DataAdapterDto;
 import org.graylog2.lookup.dto.LookupTableDto;
 import org.graylog2.plugin.Tools;
@@ -319,7 +318,6 @@ public class StreamPipelineService {
 
     public void createUniqueLookup(String userName) {
         String adapterIdentifier = this.createUniqueDataAdapter(userName);
-        String cacheIdentifier = this.lookupService.createUniqueCache();
 
         Collection<LookupTableDto> tables = this.dbTableService.findAll();
         for (LookupTableDto lookupTableDto: tables) {
@@ -328,19 +326,7 @@ public class StreamPipelineService {
             }
         }
 
-        LookupTableDto dto = LookupTableDto.builder()
-                .title("wizard lookup")
-                .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
-                .name("wizard_lookup")
-                .cacheId(cacheIdentifier)
-                .dataAdapterId(adapterIdentifier)
-                .defaultSingleValue("")
-                .defaultSingleValueType(LookupDefaultSingleValue.Type.NULL)
-                .defaultMultiValue("")
-                .defaultMultiValueType(LookupDefaultMultiValue.Type.NULL)
-                .build();
-
-        this.dbTableService.save(dto);
+        this.lookupService.createLookupTable(adapterIdentifier, "wizard lookup", "wizard_lookup");
     }
 
     private String createUniqueDataAdapter(String userName) {
