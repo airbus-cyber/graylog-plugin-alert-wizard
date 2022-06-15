@@ -82,6 +82,7 @@ public class StreamPipelineService {
                                  String indexSetID,
                                  RuleService ruleService,
                                  PipelineService pipelineService,
+                                 LookupService lookupService,
                                  DBDataAdapterService dbDataAdapterService,
                                  HttpConfiguration httpConfiguration,
                                  DBCacheService dbCacheService,
@@ -98,7 +99,7 @@ public class StreamPipelineService {
         this.dbCacheService = dbCacheService;
         this.dbTableService = dbTableService;
         this.pipelineStreamConnectionsService = pipelineStreamConnectionsService;
-        this.lookupService = new LookupService(dbDataAdapterService);
+        this.lookupService = lookupService;
     }
 
     private void createStreamRule(List<FieldRule> listfieldRule, String streamID) throws ValidationException {

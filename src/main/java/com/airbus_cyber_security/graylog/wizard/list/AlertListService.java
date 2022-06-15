@@ -17,6 +17,7 @@
 
 package com.airbus_cyber_security.graylog.wizard.list;
 
+import com.airbus_cyber_security.graylog.wizard.database.LookupService;
 import com.airbus_cyber_security.graylog.wizard.list.bundles.ExportAlertList;
 import com.airbus_cyber_security.graylog.wizard.list.rest.models.requests.AlertListRequest;
 import com.google.common.collect.Lists;
@@ -25,6 +26,10 @@ import com.mongodb.DBCollection;
 import org.graylog2.bindings.providers.MongoJackObjectMapperProvider;
 import org.graylog2.database.CollectionName;
 import org.graylog2.database.MongoConnection;
+import org.graylog2.lookup.adapters.CSVFileDataAdapter;
+import org.graylog2.lookup.adapters.HTTPJSONPathDataAdapter;
+import org.graylog2.lookup.adapters.CSVFileDataAdapter;
+import org.graylog2.plugin.lookup.LookupDataAdapterConfiguration;
 import org.mongojack.DBCursor;
 import org.mongojack.DBQuery;
 import org.mongojack.JacksonDBCollection;
@@ -46,15 +51,20 @@ import java.nio.file.Path;
 public class AlertListService {
 
     private static final Path LISTS_PATH = Paths.get("/usr/share/graylog/data/alert-lists");
+    private static final String KEY_COLUMN = "key";
+    private static final String VALUE_COLUMN = "value";
     private final JacksonDBCollection<AlertList, String> coll;
     private final Validator validator;
+
+    private final LookupService lookupService;
     private static final Logger LOG = LoggerFactory.getLogger(AlertListService.class);
     private static final String TITLE = "title";
 
     @Inject
     public AlertListService(MongoConnection mongoConnection, MongoJackObjectMapperProvider mapperProvider,
-                            Validator validator) {
+                            Validator validator, LookupService lookupService) {
         this.validator = validator;
+        this.lookupService = lookupService;
         String collectionName = AlertList.class.getAnnotation(CollectionName.class).value();
         // TODO: MongoCollection<Document> collection = mongoConnection.getMongoDatabase().getCollection(collectionName);
         //       with import com.mongodb.client.MongoCollection;
@@ -83,15 +93,32 @@ public class AlertListService {
         if (!violations.isEmpty()) {
             throw new IllegalArgumentException("Specified object failed validation: " + violations);
         }
+        String title = list.getTitle();
         Files.createDirectories(LISTS_PATH);
-        Writer writer = Files.newBufferedWriter(LISTS_PATH.resolve(list.getTitle() + ".csv"));
+        Path path = LISTS_PATH.resolve(list.getTitle() + ".csv");
+        // TODO shouldn't use the title here, rather an identifier
+        Writer writer = Files.newBufferedWriter(path);
         try (CSVWriter csvWriter = new CSVWriter(writer)) {
-            csvWriter.writeNext(new String[] {"key", "value"});
+            csvWriter.writeNext(new String[] {KEY_COLUMN, VALUE_COLUMN});
 
             for (String value: this.getListValues(list)) {
                 csvWriter.writeNext(new String[]{value, value});
             }
         }
+
+        CSVFileDataAdapter.Config dataAdapterConfiguration = CSVFileDataAdapter.Config.builder()
+                .type(CSVFileDataAdapter.NAME)
+                .path(path.toString())
+                .separator(",")
+                .quotechar("\"")
+                .keyColumn(KEY_COLUMN)
+                .valueColumn(VALUE_COLUMN)
+                .checkInterval(60)
+                .caseInsensitiveLookup(false)
+                .build();
+
+        // TODO shouldn't use the title here, rather an identifier
+        this.lookupService.createDataAdapter(title, title, dataAdapterConfiguration);
         return coll.insert(list).getSavedObject();
     }
 

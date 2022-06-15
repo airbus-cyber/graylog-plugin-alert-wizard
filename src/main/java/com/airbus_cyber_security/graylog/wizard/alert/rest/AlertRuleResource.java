@@ -37,6 +37,7 @@ import com.airbus_cyber_security.graylog.wizard.audit.AlertWizardAuditEventTypes
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
 import com.airbus_cyber_security.graylog.wizard.config.rest.ImportPolicyType;
 import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
+import com.airbus_cyber_security.graylog.wizard.database.LookupService;
 import com.airbus_cyber_security.graylog.wizard.list.AlertListService;
 import com.airbus_cyber_security.graylog.wizard.list.utilities.AlertListUtilsService;
 import com.airbus_cyber_security.graylog.wizard.permissions.AlertRuleRestPermissions;
@@ -113,6 +114,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
     @Inject
     public AlertRuleResource(AlertRuleService alertRuleService,
+                             LookupService lookupService,
                              RuleService ruleService,
                              PipelineService pipelineService,
                              DBDataAdapterService dbDataAdapterService,
@@ -159,6 +161,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 indexSetRegistry.getDefault().getConfig().id(),
                 ruleService,
                 pipelineService,
+                lookupService,
                 dbDataAdapterService,
                 httpConfiguration,
                 dbCacheService,

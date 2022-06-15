@@ -23,12 +23,15 @@ import org.graylog2.lookup.db.DBDataAdapterService;
 import org.graylog2.lookup.dto.DataAdapterDto;
 import org.graylog2.plugin.lookup.LookupDataAdapterConfiguration;
 
+import javax.inject.Inject;
+
 public class LookupService {
 
     private static final String RANDOM_CHARS = "0123456789abcdef";
     private static final int RANDOM_COUNT = 24;
     private final DBDataAdapterService dataAdapterService;
 
+    @Inject
     public LookupService(DBDataAdapterService dataAdapterService) {
         this.dataAdapterService = dataAdapterService;
     }
