@@ -116,7 +116,8 @@ public class AlertListService {
 
         // TODO shouldn't use the title here, rather an identifier
         String adapterIdentifier = this.lookupService.createDataAdapter("Alert wizard data adapter for list " + title, "alert-wizard-list-data-adapter-" + title, dataAdapterConfiguration);
-        this.lookupService.createLookupTable(adapterIdentifier, "Alert wizard lookup table for list " + title, "alert-wizard-list-lookup-table-" + title);
+        String lookupTableName = this.lookupService.getLookupTableName(title);
+        this.lookupService.createLookupTable(adapterIdentifier, "Alert wizard lookup table for list " + title, lookupTableName);
 
         return coll.insert(list).getSavedObject();
     }

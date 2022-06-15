@@ -120,13 +120,15 @@ public class StreamPipelineService {
     }
 
     private String createStringField(FieldRule fieldRule, boolean negate) {
-        String rule = "  (has_field(\"" + fieldRule.getField() + "\") AND";
+        String rule = "  (";
+        rule += "has_field(\"" + fieldRule.getField() + "\")";
+        rule += " AND ";
         if (negate) {
-            rule += " NOT";
+            rule += "NOT ";
         }
-        rule += " contains(to_string(lookup_value(\"wizard_lookup\", \"" +
-                fieldRule.getValue() + "\", \"\")), to_string($message." + fieldRule.getField() + "), true))\n";
-        return rule;
+        String lookupTableName = this.lookupService.getLookupTableName(fieldRule.getValue());
+        rule += "is_not_null(lookup_value(\"" + lookupTableName + "\",$message." + fieldRule.getField() + "))";
+        return rule + ")\n";
     }
 
     private String createRuleSource(String alertTitle, List<FieldRule> listfieldRule, Stream stream){

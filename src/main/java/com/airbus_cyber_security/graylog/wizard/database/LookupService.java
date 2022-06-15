@@ -90,6 +90,10 @@ public class LookupService {
         return cache.id();
     }
 
+    public String getLookupTableName(String listTitle) {
+        return "alert-wizard-list-lookup-table-" + listTitle;
+    }
+
     public void createLookupTable(String adapterIdentifier, String title, String name) {
         String cacheIdentifier = this.createUniqueCache();
 
