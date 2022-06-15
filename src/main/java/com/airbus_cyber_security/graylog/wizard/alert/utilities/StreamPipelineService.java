@@ -18,7 +18,7 @@
 package com.airbus_cyber_security.graylog.wizard.alert.utilities;
 
 import com.airbus_cyber_security.graylog.wizard.alert.*;
-import com.airbus_cyber_security.graylog.wizard.alert.database.LookupService;
+import com.airbus_cyber_security.graylog.wizard.database.LookupService;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.bson.types.ObjectId;
