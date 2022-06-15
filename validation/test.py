@@ -25,8 +25,8 @@ class Test(TestCase):
         self._graylog.stop()
 
     def test_get_alerts_should_be_found(self):
-        response = self._graylog.get_alert_rules()
-        self.assertEqual(200, response.status_code)
+        status_code = self._graylog.get_alert_rules()
+        self.assertEqual(200, status_code)
 
     def test_put_config_with_time_default_value_should_modify_time_default_value(self):
         default_time = 1441
@@ -47,8 +47,8 @@ class Test(TestCase):
         self._graylog.update_logging_alert_plugin_configuration()
         title = 'alert_rule_title'
         self._graylog.create_alert_rule_count(title)
-        notifications = self._graylog.get_notification_with_title(title)
-        self.assertEqual(1441, associated_notification['config']['aggregation_time'])
+        notification = self._graylog.get_notification_with_title(title)
+        self.assertEqual(1441, notification['config']['aggregation_time'])
 
     def test_get_alert_rule_should_return_correct_additional_threshold_type__issue34(self):
         title = 'rule_title'
