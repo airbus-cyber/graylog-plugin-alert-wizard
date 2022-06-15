@@ -139,3 +139,12 @@ class GraylogRestApi:
             'field_order': []
         }
         self._put('plugins/com.airbus_cyber_security.graylog.wizard/config', configuration)
+
+    def create_list(self):
+        payload = {
+            'description': '',
+            'lists': 'a;b',
+	    'title': 'a'
+        }
+        self._post('plugins/com.airbus_cyber_security.graylog.wizard/lists', payload)
+

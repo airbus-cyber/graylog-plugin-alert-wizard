@@ -78,3 +78,7 @@ class Test(TestCase):
         self._graylog_rest_api.create_alert_rule_and(title, additional_threshold=1)
         retrieved_alert_rule = self._graylog_rest_api.get_alert_rule(title)
         self.assertEqual(1, retrieved_alert_rule['condition_parameters']['additional_threshold'])
+
+    def test_create_list_should_not_fail(self):
+        self._graylog_rest_api.create_list()
+
