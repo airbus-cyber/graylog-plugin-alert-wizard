@@ -128,7 +128,7 @@ public class StreamPipelineService {
         StringBuilder fields = new StringBuilder();
 
         int nbList = 0;
-        for (FieldRule fieldRule : listfieldRule) {
+        for (FieldRule fieldRule: listfieldRule) {
             if (fieldRule.getType() == 7 || fieldRule.getType() == -7){
                 if(nbList > 0) {
                     fields.append("  ");
@@ -147,19 +147,16 @@ public class StreamPipelineService {
     }
 
     public RuleDao createPipelineRule(String alertTitle, List<FieldRule> listfieldRule, Stream stream, String ruleID) {
-
-        final DateTime now = DateTime.now(DateTimeZone.UTC);
+        DateTime now = DateTime.now(DateTimeZone.UTC);
 
         if (ruleID == null) {
             // TODO factor the random utility (with LookupService)!!!
             ruleID = RandomStringUtils.random(RANDOM_COUNT, RANDOM_CHARS);
         }
-        final RuleDao cr = RuleDao.create(ruleID, "function "+alertTitle, AlertRuleUtils.COMMENT_ALERT_WIZARD, createRuleSource(alertTitle, listfieldRule, stream), now, now);
+        String ruleSource = createRuleSource(alertTitle, listfieldRule, stream);
+        RuleDao cr = RuleDao.create(ruleID, "function " + alertTitle, AlertRuleUtils.COMMENT_ALERT_WIZARD, ruleSource, now, now);
 
-        final RuleDao save = ruleService.save(cr);
-
-        LOG.debug("Created new rule {}", save);
-        return save;
+        return ruleService.save(cr);
     }
 
     private String createPipelineStringSource(String alertTitle, String matchingType) {
@@ -378,6 +375,7 @@ public class StreamPipelineService {
         return new StreamPipelineObject(stream, pipelineID, pipelineRuleID, listPipelineFieldRule);
     }
 
+    // TODO remove this method and remove stream from the StreamPipelineObject (which I am not very fond of)
     public StreamPipelineObject createStreamAndPipeline(AlertRuleStream alertRuleStream, String alertTitle, String userName, String matchingType)
             throws ValidationException {
         Stream stream = createStream(alertRuleStream, alertTitle, userName);
