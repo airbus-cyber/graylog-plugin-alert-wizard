@@ -468,6 +468,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return Response.accepted().build();
     }
 
+    // TODO shouldn't clone be pure javascript?
+    //      rather use POST (after retrieving the values of the cloned resource with a GET)
+    //      and then remove this end-point
     @POST
     @Path("/{title}/Clone")
     @Timed
