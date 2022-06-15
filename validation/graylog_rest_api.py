@@ -15,7 +15,7 @@ class GraylogRestApi:
     def _build_url(self, path):
         return parse.urljoin('http://127.0.0.1:9000/api/', path)
 
-    def get(self, path):
+    def _get(self, path):
         url = self._build_url(path)
         response = requests.get(url, auth=_AUTH, headers=_HEADERS)
         self._print('GET {} => {}'.format(url, response.status_code))
@@ -33,25 +33,15 @@ class GraylogRestApi:
         self._print('POST {} {} => {}'.format(url, payload, response.status_code))
         return response
 
-    def wait_until_graylog_has_started(self):
-        """
-        We wait until the default deflector is up, as it seems to be the last operation done on startup
-        This might have to change in the future, if graylog changes its ways...
-        :return:
-        """
-        self._print('Waiting for graylog to start...')
-
-        # TODO move as a method in _graylog_rest_api
-        #only for 60s maximum
-        while True:
-            try:
-                response = self.get('system/deflector')
-                body = response.json()
-                if body['is_up']:
-                    break
-            except ConnectionError:
-                pass
-            time.sleep(1)
+    def default_deflector_is_up(self):
+        try:
+            response = self._get('system/deflector')
+            body = response.json()
+            if body['is_up']:
+                return True
+            return False
+        except ConnectionError:
+            return False
 
     def _create_alert_rule(self, title, condition_type, additional_threshold_type='', additional_threshold=0, second_stream=None):
         alert_rule = {
@@ -113,8 +103,12 @@ class GraylogRestApi:
         return response.json()
 
     def get_alert_rule(self, name):
-        response = self.get('plugins/com.airbus_cyber_security.graylog.wizard/alerts/' + name)
+        response = self._get('plugins/com.airbus_cyber_security.graylog.wizard/alerts/' + name)
         return response.json()
+
+    def get_alert_rules(self):
+        response = self._get('plugins/com.airbus_cyber_security.graylog.wizard/alerts/data')
+        return response.status_code
 
     def update_logging_alert_plugin_configuration(self):
         configuration = {
@@ -128,6 +122,10 @@ class GraylogRestApi:
         }
         response = self._put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', configuration)
         return response.status_code
+
+    def get_alert_wizard_plugin_configuration(self):
+        response = self._graylog._api.get('plugins/com.airbus_cyber_security.graylog.wizard/config')
+        return response.json()
 
     def update_alert_rules_settings(self, default_time):
         configuration = {
@@ -147,4 +145,12 @@ class GraylogRestApi:
 	    'title': 'a'
         }
         self._post('plugins/com.airbus_cyber_security.graylog.wizard/lists', payload)
+
+    def get_notification_with_title(self, title):
+        notifications = self._get('events/notifications')
+        associated_notification = None
+        for notification in notifications.json()['notifications']:
+            if notification['title'] == title:
+                return notification
+        raise ValueError('Notification not found')
 
