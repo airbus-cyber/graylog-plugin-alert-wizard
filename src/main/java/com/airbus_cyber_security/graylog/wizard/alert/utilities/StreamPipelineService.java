@@ -140,10 +140,7 @@ public class StreamPipelineService {
                     fields.append(stream.getMatchingType());
                 }
                 nbList++;
-                boolean negate = false;
-                if (fieldRule.getType() == -7) {
-                    negate = true;
-                }
+                boolean negate = (fieldRule.getType() == -7);
                 fields.append(createStringField(fieldRule, negate));
             }
         }
