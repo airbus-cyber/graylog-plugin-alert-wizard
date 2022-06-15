@@ -57,11 +57,8 @@ import org.graylog2.configuration.HttpConfiguration;
 import org.graylog2.database.NotFoundException;
 import org.graylog2.events.ClusterEventBus;
 import org.graylog2.indexer.IndexSetRegistry;
-import org.graylog2.lookup.db.DBCacheService;
 import org.graylog2.lookup.db.DBDataAdapterService;
 import org.graylog2.lookup.db.DBLookupTableService;
-import org.graylog2.lookup.dto.CacheDto;
-import org.graylog2.lookup.dto.DataAdapterDto;
 import org.graylog2.plugin.cluster.ClusterConfigService;
 import org.graylog2.plugin.database.ValidationException;
 import org.graylog2.plugin.rest.PluginRestResource;
@@ -119,7 +116,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                              PipelineService pipelineService,
                              DBDataAdapterService dbDataAdapterService,
                              HttpConfiguration httpConfiguration,
-                             DBCacheService dbCacheService,
                              DBLookupTableService dbTableService,
                              StreamService streamService,
                              StreamRuleService streamRuleService,
@@ -164,7 +160,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 lookupService,
                 dbDataAdapterService,
                 httpConfiguration,
-                dbCacheService,
                 dbTableService,
                 pipelineStreamConnectionsService);
     }

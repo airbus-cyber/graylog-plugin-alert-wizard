@@ -19,21 +19,27 @@ package com.airbus_cyber_security.graylog.wizard.database;
 
 import com.airbus_cyber_security.graylog.wizard.alert.utilities.AlertRuleUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.graylog2.lookup.caches.NullCache;
+import org.graylog2.lookup.db.DBCacheService;
 import org.graylog2.lookup.db.DBDataAdapterService;
+import org.graylog2.lookup.dto.CacheDto;
 import org.graylog2.lookup.dto.DataAdapterDto;
 import org.graylog2.plugin.lookup.LookupDataAdapterConfiguration;
 
 import javax.inject.Inject;
+import java.util.Collection;
 
 public class LookupService {
 
     private static final String RANDOM_CHARS = "0123456789abcdef";
     private static final int RANDOM_COUNT = 24;
     private final DBDataAdapterService dataAdapterService;
+    private final DBCacheService cacheService;
 
     @Inject
-    public LookupService(DBDataAdapterService dataAdapterService) {
+    public LookupService(DBDataAdapterService dataAdapterService, DBCacheService cacheService) {
         this.dataAdapterService = dataAdapterService;
+        this.cacheService = cacheService;
     }
 
     public String createDataAdapter(String title, String name, LookupDataAdapterConfiguration configuration) {
@@ -50,5 +56,31 @@ public class LookupService {
 
         DataAdapterDto dataAdapter = this.dataAdapterService.save(dto);
         return dataAdapter.id();
+    }
+
+    public String createUniqueCache() {
+        Collection<CacheDto> caches = this.cacheService.findAll();
+        for (CacheDto cacheDto: caches) {
+            if(cacheDto.title().equals("wizard cache")){
+                return cacheDto.id();
+            }
+        }
+
+        final String cacheID = RandomStringUtils.random(RANDOM_COUNT, RANDOM_CHARS);
+
+        NullCache.Config config = NullCache.Config.builder()
+                .type("none")
+                .build();
+
+        CacheDto dto = CacheDto.builder()
+                .id(cacheID)
+                .name("wizard-cache")
+                .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
+                .title("wizard cache")
+                .config(config)
+                .build();
+
+        CacheDto cache = this.cacheService.save(dto);
+        return cache.id();
     }
 }

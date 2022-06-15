@@ -30,8 +30,6 @@ import org.graylog2.events.ClusterEventBus;
 import org.graylog2.lookup.LookupDefaultMultiValue;
 import org.graylog2.lookup.LookupDefaultSingleValue;
 import org.graylog2.lookup.adapters.HTTPJSONPathDataAdapter;
-import org.graylog2.lookup.caches.NullCache;
-import org.graylog2.lookup.db.DBCacheService;
 import org.graylog2.lookup.db.DBDataAdapterService;
 import org.graylog2.lookup.db.DBLookupTableService;
 import org.graylog2.lookup.dto.CacheDto;
@@ -72,7 +70,6 @@ public class StreamPipelineService {
     // TODO try to remove this field => move into LookupService
     private final DBDataAdapterService dbDataAdapterService;
     private final LookupService lookupService;
-    private final DBCacheService dbCacheService;
     private final DBLookupTableService dbTableService;
     private final PipelineStreamConnectionsService pipelineStreamConnectionsService;
 
@@ -85,7 +82,6 @@ public class StreamPipelineService {
                                  LookupService lookupService,
                                  DBDataAdapterService dbDataAdapterService,
                                  HttpConfiguration httpConfiguration,
-                                 DBCacheService dbCacheService,
                                  DBLookupTableService dbTableService,
                                  PipelineStreamConnectionsService pipelineStreamConnectionsService){
         this.streamService = streamService;
@@ -96,7 +92,6 @@ public class StreamPipelineService {
         this.pipelineService = pipelineService;
         this.dbDataAdapterService = dbDataAdapterService;
         this.httpConfiguration = httpConfiguration;
-        this.dbCacheService = dbCacheService;
         this.dbTableService = dbTableService;
         this.pipelineStreamConnectionsService = pipelineStreamConnectionsService;
         this.lookupService = lookupService;
@@ -324,7 +319,7 @@ public class StreamPipelineService {
 
     public void createUniqueLookup(String userName) {
         String adapterIdentifier = this.createUniqueDataAdapter(userName);
-        CacheDto cache = this.createUniqueCache();
+        String cacheIdentifier = this.lookupService.createUniqueCache();
 
         Collection<LookupTableDto> tables = this.dbTableService.findAll();
         for (LookupTableDto lookupTableDto: tables) {
@@ -337,7 +332,7 @@ public class StreamPipelineService {
                 .title("wizard lookup")
                 .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
                 .name("wizard_lookup")
-                .cacheId(cache.id())
+                .cacheId(cacheIdentifier)
                 .dataAdapterId(adapterIdentifier)
                 .defaultSingleValue("")
                 .defaultSingleValueType(LookupDefaultSingleValue.Type.NULL)
@@ -346,31 +341,6 @@ public class StreamPipelineService {
                 .build();
 
         this.dbTableService.save(dto);
-    }
-
-    private CacheDto createUniqueCache() {
-        final Collection<CacheDto> caches = dbCacheService.findAll();
-        for (CacheDto cacheDto:caches) {
-            if(cacheDto.title().equals("wizard cache")){
-                return cacheDto;
-            }
-        }
-
-        final String cacheID = RandomStringUtils.random(RANDOM_COUNT, RANDOM_CHARS);
-
-        NullCache.Config config = NullCache.Config.builder()
-                .type("none")
-                .build();
-
-        CacheDto dto = CacheDto.builder()
-                .id(cacheID)
-                .name("wizard-cache")
-                .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
-                .title("wizard cache")
-                .config(config)
-                .build();
-
-        return dbCacheService.save(dto);
     }
 
     private String createUniqueDataAdapter(String userName) {

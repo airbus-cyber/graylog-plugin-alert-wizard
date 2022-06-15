@@ -29,6 +29,7 @@ import org.graylog2.database.MongoConnection;
 import org.graylog2.lookup.adapters.CSVFileDataAdapter;
 import org.graylog2.lookup.adapters.HTTPJSONPathDataAdapter;
 import org.graylog2.lookup.adapters.CSVFileDataAdapter;
+import org.graylog2.lookup.dto.CacheDto;
 import org.graylog2.plugin.lookup.LookupDataAdapterConfiguration;
 import org.mongojack.DBCursor;
 import org.mongojack.DBQuery;
@@ -118,7 +119,9 @@ public class AlertListService {
                 .build();
 
         // TODO shouldn't use the title here, rather an identifier
-        this.lookupService.createDataAdapter(title, title, dataAdapterConfiguration);
+        String adapterIdentifier = this.lookupService.createDataAdapter(title, title, dataAdapterConfiguration);
+        String cacheIdentifier = this.lookupService.createUniqueCache();
+
         return coll.insert(list).getSavedObject();
     }
 
