@@ -90,8 +90,14 @@ public class LookupService {
         return cache.id();
     }
 
-    public String getLookupTableName(String listTitle) {
-        return "alert-wizard-list-lookup-table-" + listTitle;
+    // TODO make private
+    public String getDataAdapterName(String title) {
+        return "alert-wizard-list-data-adapter-" + title;
+    }
+
+    // TODO make private
+    public String getLookupTableName(String title) {
+        return "alert-wizard-list-lookup-table-" + title;
     }
 
     public void createLookupTable(String adapterIdentifier, String title, String name) {
@@ -110,5 +116,15 @@ public class LookupService {
                 .build();
 
         this.lookupTableService.save(dto);
+    }
+
+    public void deleteDataAdapter(String title) {
+        String adapterName = this.getDataAdapterName(title);
+        this.dataAdapterService.delete(adapterName);
+    }
+
+    public void deleteLookupTable(String title) {
+        String lookupTableName = this.getLookupTableName(title);
+        this.lookupTableService.delete(lookupTableName);
     }
 }

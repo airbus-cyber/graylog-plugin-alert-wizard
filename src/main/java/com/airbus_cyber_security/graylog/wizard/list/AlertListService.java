@@ -85,6 +85,10 @@ public class AlertListService {
         return results;
     }
 
+    private Path getCSVFilePath(String title) {
+        return LISTS_PATH.resolve(title + ".csv");
+    }
+
     public AlertList create(AlertList list) throws IOException {
         Set<ConstraintViolation<AlertList>> violations = this.validator.validate(list);
         if (!violations.isEmpty()) {
@@ -92,7 +96,7 @@ public class AlertListService {
         }
         String title = list.getTitle();
         Files.createDirectories(LISTS_PATH);
-        Path path = LISTS_PATH.resolve(list.getTitle() + ".csv");
+        Path path = getCSVFilePath(title);
         // TODO shouldn't use the title here, rather an identifier
         Writer writer = Files.newBufferedWriter(path);
         try (CSVWriter csvWriter = new CSVWriter(writer)) {
@@ -115,7 +119,8 @@ public class AlertListService {
                 .build();
 
         // TODO shouldn't use the title here, rather an identifier
-        String adapterIdentifier = this.lookupService.createDataAdapter("Alert wizard data adapter for list " + title, "alert-wizard-list-data-adapter-" + title, dataAdapterConfiguration);
+        String adapterName = this.lookupService.getDataAdapterName(title);
+        String adapterIdentifier = this.lookupService.createDataAdapter("Alert wizard data adapter for list " + title, adapterName, dataAdapterConfiguration);
         String lookupTableName = this.lookupService.getLookupTableName(title);
         this.lookupService.createLookupTable(adapterIdentifier, "Alert wizard lookup table for list " + title, lookupTableName);
 
@@ -140,9 +145,11 @@ public class AlertListService {
         return toAbstractListType(coll.find());
     }
 
-    public int destroy(String listTitle) {
-
-        return coll.remove(DBQuery.is(TITLE, listTitle)).getN();
+    public int destroy(String title) throws IOException {
+        this.lookupService.deleteLookupTable(title);
+        this.lookupService.deleteDataAdapter(title);
+        Files.delete(getCSVFilePath(title));
+        return coll.remove(DBQuery.is(TITLE, title)).getN();
     }
 
     public AlertList load(String listTitle) {

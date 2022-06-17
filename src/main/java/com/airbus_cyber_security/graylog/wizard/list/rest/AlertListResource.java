@@ -129,7 +129,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
             } else if (importPolicy != null && importPolicy.equals(ImportPolicyType.REPLACE)) {
                 try {
                     this.delete(listTitle);
-                } catch (MongoException | UnsupportedEncodingException e) {
+                } catch (MongoException | IOException e) {
                     LOG.error("Failed to replace list");
                     throw new BadRequestException("Failed to replace alert list.");
                 }
@@ -236,7 +236,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
     @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_DELETE)
     public void delete(@ApiParam(name = TITLE, required = true)
                        @PathParam(TITLE) String title
-    ) throws MongoException, UnsupportedEncodingException {
+    ) throws MongoException, IOException {
         String listTitle = java.net.URLDecoder.decode(title, ENCODING);
 
         AlertList alertList = this.alertListService.load(listTitle);
