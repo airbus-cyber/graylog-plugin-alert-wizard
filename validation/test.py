@@ -8,7 +8,7 @@
 # * execute tests
 #   python -m unittest --verbose
 # To execute only one test, suffix with the fully qualified test name. Example:
-#   python -m unittest test.Test.test_default_time_range_in_configuration_should_propagate_into_notification_time_range__issue47
+#   python -m unittest test.Test.test_create_alert_rule_with_list_should_generate_event_when_message_field_is_in_list
 
 from unittest import TestCase
 import time
@@ -99,6 +99,13 @@ class Test(TestCase):
             # TODO: should improve the API for better testability
             time.sleep(60*_PERIOD)
             inputs.send({'short_message': 'pop'})
-            events_count = self._graylog.get_events_count()
-            self.assertEqual(1, events_count)
+            
+            # wait until the event has propagated through graylog
+            # TODO: try to make this code more readable
+            for i in range(60):
+                events_count = self._graylog.get_events_count()
+                if events_count == 1:
+                    return
+                time.sleep(1)
+            self.fail('Event not generated within 60 seconds')
 
