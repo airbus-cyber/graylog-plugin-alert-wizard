@@ -317,6 +317,7 @@ public class StreamPipelineService {
         }
     }
 
+    // TODO remove
     public void createUniqueLookup(String userName) {
         String adapterIdentifier = this.createUniqueDataAdapter(userName);
 
@@ -330,6 +331,7 @@ public class StreamPipelineService {
         this.lookupService.createLookupTable(adapterIdentifier, "wizard lookup", "wizard_lookup");
     }
 
+    // TODO remove
     private String createUniqueDataAdapter(String userName) {
 
         Collection<DataAdapterDto> adapters = this.dbDataAdapterService.findAll();
