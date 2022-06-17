@@ -17,6 +17,8 @@ from graylog import Graylog
 class Test(TestCase):
 
     #TODO should probably start graylog in a setupClass
+    #     would require each test to remove everything it created in graylog
+    #     but would be much faster
     def setUp(self) -> None:
         self._graylog = Graylog()
         self._graylog.start()
@@ -35,7 +37,12 @@ class Test(TestCase):
         self.assertEqual(default_time, configuration['default_values']['time'])
 
     def test_create_alert_rule_should_not_fail(self):
-        status_code = self._graylog.create_alert_rule_count('alert_rule_title')
+        rule = {
+            'field': 'source',
+            'type': 1,
+            'value': 'toto'
+        }
+        status_code = self._graylog.create_alert_rule_count('alert_rule_title', rule)
         self.assertEqual(200, status_code)
 
     def test_set_logging_alert_configuration_should_not_fail(self):
@@ -46,7 +53,12 @@ class Test(TestCase):
     def test_default_time_range_in_configuration_should_propagate_into_notification_time_range__issue47(self):
         self._graylog.update_logging_alert_plugin_configuration()
         title = 'alert_rule_title'
-        self._graylog.create_alert_rule_count(title)
+        rule = {
+            'field': 'source',
+            'type': 1,
+            'value': 'toto'
+        }
+        self._graylog.create_alert_rule_count(title, rule)
         notification = self._graylog.get_notification_with_title(title)
         self.assertEqual(1441, notification['config']['aggregation_time'])
 
@@ -68,6 +80,13 @@ class Test(TestCase):
         retrieved_alert_rule = self._graylog.get_alert_rule(title)
         self.assertEqual(1, retrieved_alert_rule['condition_parameters']['additional_threshold'])
 
-    def test_create_list_should_not_fail(self):
-        self._graylog.create_list()
+    def test_create_alert_rule_with_list_should_not_fail(self):
+        title = 'list'
+        self._graylog.create_list(title)
+        rule = {
+            'field': 'x',
+            'type': 7,
+            'value': title
+        }
+        self._graylog.create_alert_rule_count(title, rule)
 

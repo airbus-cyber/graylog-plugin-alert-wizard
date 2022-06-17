@@ -44,8 +44,8 @@ class Graylog:
     def get_alert_rules(self):
         return self._api.get_alert_rules()
 
-    def create_alert_rule_count(self, title):
-        return self._api.create_alert_rule_count(title)
+    def create_alert_rule_count(self, title, rule):
+        return self._api.create_alert_rule_count(title, rule)
 
     def create_alert_rule_and(self, *args, **kwargs):
         return self._api.create_alert_rule_and(*args, **kwargs)
@@ -54,8 +54,8 @@ class Graylog:
     def create_alert_rules_export(self, alert_rule_titles):
         return self._api.create_alert_rules_export(alert_rule_titles)
     
-    def create_list(self):
-        self._api.create_list()
+    def create_list(self, title):
+        self._api.create_list(title)
 
     def get_notification_with_title(self, title):
         return self._api.get_notification_with_title(title)

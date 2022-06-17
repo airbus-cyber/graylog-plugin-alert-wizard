@@ -43,7 +43,7 @@ class GraylogRestApi:
         except ConnectionError:
             return False
 
-    def _create_alert_rule(self, title, condition_type, additional_threshold_type='', additional_threshold=0, second_stream=None):
+    def _create_alert_rule(self, title, rule, condition_type, additional_threshold_type='', additional_threshold=0, second_stream=None):
         alert_rule = {
             'condition_parameters': {
                 'additional_threshold': additional_threshold,
@@ -62,11 +62,7 @@ class GraylogRestApi:
             'severity': 'info',
             'stream': {
                 'field_rule': [
-                    {
-                        'field': 'source',
-                        'type': 1,
-                        'value': 'toto'
-                    }
+                    rule
                 ],
                 'matching_type': 'AND'
             },
@@ -79,10 +75,15 @@ class GraylogRestApi:
         response = self._post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
         return response.status_code
 
-    def create_alert_rule_count(self, title):
-        return self._create_alert_rule(title, 'COUNT')
+    def create_alert_rule_count(self, title, rule):
+        return self._create_alert_rule(title, rule, 'COUNT')
 
     def create_alert_rule_and(self, title, additional_threshold=0):
+        rule = {
+            'field': 'source',
+            'type': 1,
+            'value': 'toto'
+        }
         second_stream = {
             'field_rule': [
                 {
@@ -93,7 +94,7 @@ class GraylogRestApi:
             ],
             'matching_type': 'AND'
         }
-        return self._create_alert_rule(title, 'AND', additional_threshold_type='LESS', additional_threshold=additional_threshold, second_stream=second_stream)
+        return self._create_alert_rule(title, rule, 'AND', additional_threshold_type='LESS', additional_threshold=additional_threshold, second_stream=second_stream)
 
     def create_alert_rules_export(self, alert_rule_titles):
         export_selection = {
@@ -138,11 +139,11 @@ class GraylogRestApi:
         }
         self._put('plugins/com.airbus_cyber_security.graylog.wizard/config', configuration)
 
-    def create_list(self):
+    def create_list(self, title):
         payload = {
             'description': '',
             'lists': 'a;b',
-	    'title': 'a'
+	    'title': title
         }
         self._post('plugins/com.airbus_cyber_security.graylog.wizard/lists', payload)
 
