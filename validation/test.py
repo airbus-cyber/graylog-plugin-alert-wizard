@@ -24,10 +24,10 @@ class Test(TestCase):
     #     but would be much faster
     def setUp(self) -> None:
         self._graylog = Graylog()
-#        self._graylog.start()
+        self._graylog.start()
 
-#    def tearDown(self) -> None:
-#        self._graylog.stop()
+    def tearDown(self) -> None:
+        self._graylog.stop()
 
     def test_get_alerts_should_be_found(self):
         status_code = self._graylog.get_alert_rules()
