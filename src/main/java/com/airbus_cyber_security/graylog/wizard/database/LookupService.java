@@ -64,7 +64,7 @@ public class LookupService {
         return dataAdapter.id();
     }
 
-    public String createUniqueCache() {
+    private String createUniqueCache() {
         Collection<CacheDto> caches = this.cacheService.findAll();
         for (CacheDto cacheDto: caches) {
             if(cacheDto.title().equals("wizard cache")){
