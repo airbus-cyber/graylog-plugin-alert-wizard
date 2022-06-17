@@ -1,6 +1,7 @@
 import time
 from graylog_server import GraylogServer
 from graylog_rest_api import GraylogRestApi
+from graylog_inputs import GraylogInputs
 
 
 class Graylog:
@@ -29,6 +30,12 @@ class Graylog:
     def stop(self):
         self._server.stop()
 
+    def create_gelf_input(self):
+        identifier = self._api.create_gelf_input()
+        while not self._api.gelf_input_is_running(identifier):
+            time.sleep(.1)
+        return GraylogInputs()
+
     def update_logging_alert_plugin_configuration(self):
         return self._api.update_logging_alert_plugin_configuration()
     
@@ -44,8 +51,8 @@ class Graylog:
     def get_alert_rules(self):
         return self._api.get_alert_rules()
 
-    def create_alert_rule_count(self, title, rule):
-        return self._api.create_alert_rule_count(title, rule)
+    def create_alert_rule_count(self, *args):
+        return self._api.create_alert_rule_count(*args)
 
     def create_alert_rule_and(self, *args, **kwargs):
         return self._api.create_alert_rule_and(*args, **kwargs)
@@ -54,9 +61,12 @@ class Graylog:
     def create_alert_rules_export(self, alert_rule_titles):
         return self._api.create_alert_rules_export(alert_rule_titles)
     
-    def create_list(self, title):
-        self._api.create_list(title)
+    def create_list(self, *args):
+        self._api.create_list(*args)
 
     def get_notification_with_title(self, title):
         return self._api.get_notification_with_title(title)
+
+    def get_events_count(self):
+        return self._api.get_events_count()
 

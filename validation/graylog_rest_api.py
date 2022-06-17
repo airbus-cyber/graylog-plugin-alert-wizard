@@ -43,7 +43,42 @@ class GraylogRestApi:
         except ConnectionError:
             return False
 
-    def _create_alert_rule(self, title, rule, condition_type, additional_threshold_type='', additional_threshold=0, second_stream=None):
+    def gelf_input_is_running(self, identifier):
+        response = self._get('system/inputstates/')
+        body = response.json()
+        for state in body['states']:
+            if state['id'] != identifier:
+                continue
+            return state['state'] == 'RUNNING'
+        return False
+
+    def create_gelf_input(self):
+        payload = {
+            'configuration': {
+                'bind_address': '0.0.0.0',
+                'decompress_size_limit': 8388608,
+                'max_message_size': 2097152,
+                'number_worker_threads': 8,
+                'override_source': None,
+                'port': 12201,
+                'recv_buffer_size': 1048576,
+                'tcp_keepalive': False,
+                'tls_cert_file': '',
+                'tls_client_auth': 'disabled',
+                'tls_client_auth_cert_file': '',
+                'tls_enable': False,
+                'tls_key_file': 'admin',
+                'tls_key_password': 'admin',
+                'use_null_delimiter': True
+            },
+            'global': True,
+            'title': 'Inputs',
+            'type': 'org.graylog2.inputs.gelf.tcp.GELFTCPInput'
+        }
+        response = self._post('system/inputs', payload)
+        return response.json()['id']
+
+    def _create_alert_rule(self, title, rule, condition_type, additional_threshold_type='', additional_threshold=0, second_stream=None, time=1):
         alert_rule = {
             'condition_parameters': {
                 'additional_threshold': additional_threshold,
@@ -55,7 +90,7 @@ class GraylogRestApi:
                 'grouping_fields': [],
                 'threshold': 0,
                 'threshold_type': 'MORE',
-                'time': 1,
+                'time': time,
                 'type': ''
             },
             'condition_type': condition_type,
@@ -75,10 +110,10 @@ class GraylogRestApi:
         response = self._post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
         return response.status_code
 
-    def create_alert_rule_count(self, title, rule):
-        return self._create_alert_rule(title, rule, 'COUNT')
+    def create_alert_rule_count(self, title, rule, time):
+        return self._create_alert_rule(title, rule, 'COUNT', time)
 
-    def create_alert_rule_and(self, title, additional_threshold=0):
+    def create_alert_rule_and(self, title, time, additional_threshold=0):
         rule = {
             'field': 'source',
             'type': 1,
@@ -94,7 +129,7 @@ class GraylogRestApi:
             ],
             'matching_type': 'AND'
         }
-        return self._create_alert_rule(title, rule, 'AND', additional_threshold_type='LESS', additional_threshold=additional_threshold, second_stream=second_stream)
+        return self._create_alert_rule(title, rule, 'AND', additional_threshold_type='LESS', additional_threshold=additional_threshold, second_stream=second_stream, time=time)
 
     def create_alert_rules_export(self, alert_rule_titles):
         export_selection = {
@@ -139,10 +174,11 @@ class GraylogRestApi:
         }
         self._put('plugins/com.airbus_cyber_security.graylog.wizard/config', configuration)
 
-    def create_list(self, title):
+    def create_list(self, title, values):
         payload = {
             'description': '',
-            'lists': 'a;b',
+            # TODO: improve API => it should accept a list directly here...
+            'lists': ';'.join(values),
 	    'title': title
         }
         self._post('plugins/com.airbus_cyber_security.graylog.wizard/lists', payload)
@@ -154,4 +190,10 @@ class GraylogRestApi:
             if notification['title'] == title:
                 return notification
         raise ValueError('Notification not found')
+
+    def get_events_count(self):
+        response = self._post('events/search', {})
+        body = response.json()
+
+        return body['total_events']
 
