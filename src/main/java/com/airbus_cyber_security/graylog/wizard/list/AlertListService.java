@@ -50,7 +50,7 @@ public class AlertListService {
     private static final Path LISTS_PATH = Paths.get("/usr/share/graylog/data/alert-lists");
     private static final String KEY_COLUMN = "key";
     private static final String VALUE_COLUMN = "value";
-    private final JacksonDBCollection<AlertList, String> coll;
+    private final JacksonDBCollection<AlertList, String> collection;
     private final Validator validator;
 
     private final LookupService lookupService;
@@ -67,12 +67,12 @@ public class AlertListService {
         //       with import com.mongodb.client.MongoCollection;
         //            import org.bson.Document;
         DBCollection dbCollection = mongoConnection.getDatabase().getCollection(collectionName);
-        this.coll = JacksonDBCollection.wrap(dbCollection, AlertList.class, String.class, mapperProvider.get());
-        this.coll.createIndex(new BasicDBObject(TITLE, 1), new BasicDBObject("unique", true));
+        this.collection = JacksonDBCollection.wrap(dbCollection, AlertList.class, String.class, mapperProvider.get());
+        this.collection.createIndex(new BasicDBObject(TITLE, 1), new BasicDBObject("unique", true));
     }
 
     public long count() {
-        return coll.count();
+        return collection.count();
     }
 
     // TODO should not need this code: the AlertList object should directly return an array of Strings
@@ -124,7 +124,7 @@ public class AlertListService {
         String lookupTableName = this.lookupService.getLookupTableName(title);
         this.lookupService.createLookupTable(adapterIdentifier, "Alert wizard lookup table for list " + title, lookupTableName);
 
-        return coll.insert(list).getSavedObject();
+        return collection.insert(list).getSavedObject();
     }
 
     public AlertList update(String title, AlertList list) {
@@ -134,27 +134,27 @@ public class AlertListService {
         if (!violations.isEmpty()) {
             throw new IllegalArgumentException("Specified object failed validation: " + violations);
         }
-        return coll.findAndModify(DBQuery.is(TITLE, title), new BasicDBObject(), new BasicDBObject(),
+        return collection.findAndModify(DBQuery.is(TITLE, title), new BasicDBObject(), new BasicDBObject(),
                 false, list, true, false);
     }
 
     public List<AlertList> all() {
-        return toAbstractListType(coll.find());
+        return toAbstractListType(collection.find());
     }
 
     public int destroy(String title) throws IOException {
         this.lookupService.deleteLookupTable(title);
         this.lookupService.deleteDataAdapter(title);
         Files.delete(getCSVFilePath(title));
-        return coll.remove(DBQuery.is(TITLE, title)).getN();
+        return collection.remove(DBQuery.is(TITLE, title)).getN();
     }
 
     public AlertList load(String listTitle) {
-        return coll.findOne(DBQuery.is(TITLE, listTitle));
+        return collection.findOne(DBQuery.is(TITLE, listTitle));
     }
 
     public boolean isPresent(String title) {
-        return (coll.getCount(DBQuery.is(TITLE, title)) > 0);
+        return (collection.getCount(DBQuery.is(TITLE, title)) > 0);
     }
 
     private List<AlertList> toAbstractListType(DBCursor<AlertList> lists) {
