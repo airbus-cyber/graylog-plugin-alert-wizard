@@ -130,15 +130,12 @@ public class AlertListService {
     public AlertList update(String title, AlertList list) {
         LOG.debug("List to be updated [{}]", list);
 
-        final Set<ConstraintViolation<AlertList>> violations = this.validator.validate(list);
-        if (violations.isEmpty()) {
-
-            return coll.findAndModify(DBQuery.is(TITLE, title), new BasicDBObject(), new BasicDBObject(),
-                    false, list, true, false);
-
-        } else {
+        Set<ConstraintViolation<AlertList>> violations = this.validator.validate(list);
+        if (!violations.isEmpty()) {
             throw new IllegalArgumentException("Specified object failed validation: " + violations);
         }
+        return coll.findAndModify(DBQuery.is(TITLE, title), new BasicDBObject(), new BasicDBObject(),
+                false, list, true, false);
     }
 
     public List<AlertList> all() {
