@@ -259,7 +259,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
         return alertListExporter.export(request.getTitles());
     }
 
-    public void importAlertList(ExportAlertList alertList)
+    private void importAlertList(ExportAlertList alertList)
             throws ValidationException, BadRequestException, IOException {
         String listTitle = checkImportPolicyAndGetTitle(alertList.getTitle());
 
