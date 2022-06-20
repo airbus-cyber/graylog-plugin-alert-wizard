@@ -132,13 +132,14 @@ public class AlertListService {
         return path;
     }
 
-    public AlertList update(String title, AlertList list) {
+    public AlertList update(String title, AlertList list) throws IOException {
         LOG.debug("List to be updated [{}]", list);
 
         Set<ConstraintViolation<AlertList>> violations = this.validator.validate(list);
         if (!violations.isEmpty()) {
             throw new IllegalArgumentException("Specified object failed validation: " + violations);
         }
+        this.writeCSV(list);
         return this.collection.findAndModify(DBQuery.is(TITLE, title), new BasicDBObject(), new BasicDBObject(),
                 false, list, true, false);
     }

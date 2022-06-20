@@ -177,7 +177,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
     public Response update(@ApiParam(name = TITLE, required = true)
                            @PathParam(TITLE) String title,
                            @ApiParam(name = "JSON body", required = true) @Valid @NotNull AlertListRequest request
-    ) throws UnsupportedEncodingException, NotFoundException, ValidationException, ConfigurationException {
+    ) throws IOException, NotFoundException, ValidationException, ConfigurationException {
 
         this.alertListUtilsService.checkIsValidRequest(request);
 

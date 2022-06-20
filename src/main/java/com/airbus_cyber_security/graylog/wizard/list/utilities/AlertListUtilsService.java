@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.BadRequestException;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 public class AlertListUtilsService {
@@ -60,7 +61,7 @@ public class AlertListUtilsService {
             } else {
                 LOG.error("Failed to increment list, " + title + " does not exist");
             }
-        } catch (UnsupportedEncodingException e) {
+        } catch (IOException e) {
             LOG.error("Failed to increment list " + title);
         }
     }
@@ -83,9 +84,9 @@ public class AlertListUtilsService {
                                 usage,
                                 oldAlertList.getLists()));
             }else{
-                LOG.error("Failed to decrement list, "+ title + " does not exist");
+                LOG.error("Failed to decrement list, " + title + " does not exist");
             }
-        } catch (UnsupportedEncodingException e) {
+        } catch (IOException e) {
             LOG.error("Failed to decrement list " + title);
         }
     }
