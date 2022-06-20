@@ -94,18 +94,7 @@ public class AlertListService {
         if (!violations.isEmpty()) {
             throw new IllegalArgumentException("Specified object failed validation: " + violations);
         }
-        String title = list.getTitle();
-        Files.createDirectories(LISTS_PATH);
-        Path path = getCSVFilePath(title);
-        // TODO shouldn't use the title here, rather an identifier
-        Writer writer = Files.newBufferedWriter(path);
-        try (CSVWriter csvWriter = new CSVWriter(writer)) {
-            csvWriter.writeNext(new String[] {KEY_COLUMN, VALUE_COLUMN});
-
-            for (String value: this.getListValues(list)) {
-                csvWriter.writeNext(new String[]{value, value});
-            }
-        }
+        Path path = writeCSV(list);
 
         CSVFileDataAdapter.Config dataAdapterConfiguration = CSVFileDataAdapter.Config.builder()
                 .type(CSVFileDataAdapter.NAME)
@@ -118,6 +107,7 @@ public class AlertListService {
                 .caseInsensitiveLookup(false)
                 .build();
 
+        String title = list.getTitle();
         // TODO shouldn't use the title here, rather an identifier
         String adapterName = this.lookupService.getDataAdapterName(title);
         String adapterIdentifier = this.lookupService.createDataAdapter("Alert wizard data adapter for list " + title, adapterName, dataAdapterConfiguration);
@@ -125,6 +115,21 @@ public class AlertListService {
         this.lookupService.createLookupTable(adapterIdentifier, "Alert wizard lookup table for list " + title, lookupTableName);
 
         return this.collection.insert(list).getSavedObject();
+    }
+
+    private Path writeCSV(AlertList list) throws IOException {
+        Files.createDirectories(LISTS_PATH);
+        Path path = getCSVFilePath(list.getTitle());
+        // TODO shouldn't use the title here, rather an identifier
+        Writer writer = Files.newBufferedWriter(path);
+        try (CSVWriter csvWriter = new CSVWriter(writer)) {
+            csvWriter.writeNext(new String[] {KEY_COLUMN, VALUE_COLUMN});
+
+            for (String value: this.getListValues(list)) {
+                csvWriter.writeNext(new String[]{value, value});
+            }
+        }
+        return path;
     }
 
     public AlertList update(String title, AlertList list) {
