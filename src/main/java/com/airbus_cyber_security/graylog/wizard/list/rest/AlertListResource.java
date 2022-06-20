@@ -281,13 +281,13 @@ public class AlertListResource extends RestResource implements PluginRestResourc
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_CREATE)
     @ApiResponses(value = {@ApiResponse(code = 400, message = "The supplied request is not valid.")})
     @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_CREATE)
-    public Response importAlertLists (@ApiParam(name = "JSON body", required = true) @Valid @NotNull List<ExportAlertList> request) {
+    public Response importAlertLists(@ApiParam(name = "JSON body", required = true) @Valid @NotNull List<ExportAlertList> request) {
         Response responses = Response.accepted().build();
 
-        for (ExportAlertList alertList : request) {
-            if(!this.alertListService.isValidImportRequest(alertList)){
-                LOG.error("Invalid list:" + alertList.getTitle() );
-            }else {
+        for (ExportAlertList alertList: request) {
+            if (!this.alertListService.isValidImportRequest(alertList)) {
+                LOG.error("Invalid list:" + alertList.getTitle());
+            } else {
                 try {
                     importAlertList(alertList);
                 } catch (Exception e) {
