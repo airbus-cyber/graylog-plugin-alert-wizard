@@ -72,7 +72,7 @@ public class AlertListService {
     }
 
     public long count() {
-        return collection.count();
+        return this.collection.count();
     }
 
     // TODO should not need this code: the AlertList object should directly return an array of Strings
@@ -124,7 +124,7 @@ public class AlertListService {
         String lookupTableName = this.lookupService.getLookupTableName(title);
         this.lookupService.createLookupTable(adapterIdentifier, "Alert wizard lookup table for list " + title, lookupTableName);
 
-        return collection.insert(list).getSavedObject();
+        return this.collection.insert(list).getSavedObject();
     }
 
     public AlertList update(String title, AlertList list) {
@@ -134,27 +134,27 @@ public class AlertListService {
         if (!violations.isEmpty()) {
             throw new IllegalArgumentException("Specified object failed validation: " + violations);
         }
-        return collection.findAndModify(DBQuery.is(TITLE, title), new BasicDBObject(), new BasicDBObject(),
+        return this.collection.findAndModify(DBQuery.is(TITLE, title), new BasicDBObject(), new BasicDBObject(),
                 false, list, true, false);
     }
 
     public List<AlertList> all() {
-        return toAbstractListType(collection.find());
+        return toAbstractListType(this.collection.find());
     }
 
     public int destroy(String title) throws IOException {
         this.lookupService.deleteLookupTable(title);
         this.lookupService.deleteDataAdapter(title);
         Files.delete(getCSVFilePath(title));
-        return collection.remove(DBQuery.is(TITLE, title)).getN();
+        return this.collection.remove(DBQuery.is(TITLE, title)).getN();
     }
 
     public AlertList load(String listTitle) {
-        return collection.findOne(DBQuery.is(TITLE, listTitle));
+        return this.collection.findOne(DBQuery.is(TITLE, listTitle));
     }
 
     public boolean isPresent(String title) {
-        return (collection.getCount(DBQuery.is(TITLE, title)) > 0);
+        return (this.collection.getCount(DBQuery.is(TITLE, title)) > 0);
     }
 
     private List<AlertList> toAbstractListType(DBCursor<AlertList> lists) {
