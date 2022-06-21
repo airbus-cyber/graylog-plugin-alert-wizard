@@ -166,6 +166,33 @@ public class AlertListResource extends RestResource implements PluginRestResourc
         return Response.accepted().build();
     }
 
+    @POST
+    @Path("/{title}/Clone")
+    @Timed
+    @RequiresAuthentication
+    @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_CREATE)
+    @ApiOperation(value = "Clone a list")
+    @ApiResponses(value = {@ApiResponse(code = 400, message = "The supplied request is not valid.")})
+    @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_CREATE)
+    public Response clone(@ApiParam(name = TITLE, required = true)
+                          @PathParam(TITLE) String title,
+                          @ApiParam(name = "JSON body", required = true) @Valid @NotNull CloneAlertListRequest request
+    ) throws NotFoundException, ValidationException, IOException {
+
+        AlertList sourcelist = this.alertListService.load(title);
+
+        this.alertListService.create(AlertList.create(
+                request.getTitle(),
+                DateTime.now(),
+                getCurrentUser().getName(),
+                DateTime.now(),
+                request.getDescription(),
+                0,
+                sourcelist.getLists()));
+
+        return Response.accepted().build();
+    }
+
     @PUT
     @Path("/{title}")
     @Timed
@@ -193,33 +220,6 @@ public class AlertListResource extends RestResource implements PluginRestResourc
                         request.getDescription(),
                         request.getUsage(),
                         request.getLists()));
-
-        return Response.accepted().build();
-    }
-
-    @POST
-    @Path("/{title}/Clone")
-    @Timed
-    @RequiresAuthentication
-    @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_CREATE)
-    @ApiOperation(value = "Clone a list")
-    @ApiResponses(value = {@ApiResponse(code = 400, message = "The supplied request is not valid.")})
-    @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_CREATE)
-    public Response clone(@ApiParam(name = TITLE, required = true)
-                          @PathParam(TITLE) String title,
-                          @ApiParam(name = "JSON body", required = true) @Valid @NotNull CloneAlertListRequest request
-    ) throws NotFoundException, ValidationException, IOException {
-
-        AlertList sourcelist = this.alertListService.load(title);
-
-        this.alertListService.create(AlertList.create(
-                request.getTitle(),
-                DateTime.now(),
-                getCurrentUser().getName(),
-                DateTime.now(),
-                request.getDescription(),
-                0,
-                sourcelist.getLists()));
 
         return Response.accepted().build();
     }

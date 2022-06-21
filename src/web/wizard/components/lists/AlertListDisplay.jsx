@@ -115,7 +115,14 @@ const AlertListDisplay = createReactClass({
     },
 
     _onCloneSubmit(name, title, description) {
-        AlertListActions.clone(name, title, description).finally(() => this.list());
+        AlertListActions.get(name).then(list => {
+            const newList = {
+                title: title,
+                description: description,
+                lists: list.lists
+            }
+            AlertListActions.create(newList).finally(() => this.list());
+        });
     },
 
     _availableFieldName() {

@@ -37,7 +37,7 @@ const INIT_LIST = {
     };
 
 const CreateListFormInput = createReactClass({
-        displayName: 'CreateListFormInput',
+    displayName: 'CreateListFormInput',
 
     mixins: [Reflux.connect(AlertListStore)],
 
@@ -80,7 +80,7 @@ const CreateListFormInput = createReactClass({
     _save() {
         AlertListActions.create.triggerPromise(this.state.list).then((response) => {
             if (response === true) {
-                    this.setState({list: list});
+                this.setState({list: list});
             }
         });
         this.setState({isModified: false});
@@ -89,7 +89,7 @@ const CreateListFormInput = createReactClass({
     _update() {
         AlertListActions.update.triggerPromise(this.props.list.title, this.state.list).then((response) => {
             if (response === true) {
-                    this.setState({list: list});
+                this.setState({list: list});
             }
         });
         this.setState({isModified: false});

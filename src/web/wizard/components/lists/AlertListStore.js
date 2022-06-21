@@ -25,6 +25,7 @@ import RestUtils from '../../stores/RestUtils';
 const AlertListStore = Reflux.createStore({
     listenables: [AlertListActions],
     sourceUrl: RestUtils.buildSourceURL('lists'),
+    // TODO is this field needed?
     lists: undefined,
 
     init() {
@@ -36,6 +37,7 @@ const AlertListStore = Reflux.createStore({
             .then(
                 response => {
                     this.lists = response.lists;
+                    // TODO remove the trigger? And in other methods too
                     this.trigger({lists: this.lists});
                     return this.lists;
                 },
@@ -51,7 +53,6 @@ const AlertListStore = Reflux.createStore({
             .then(
                 response => {
                     this.lists = response.lists;
-                    this.trigger({lists: this.lists});
                     return this.lists;
                 },
                 error => {
@@ -74,6 +75,7 @@ const AlertListStore = Reflux.createStore({
         const promise = fetch(method, url, request)
             .then(() => {
                 UserNotification.success('Alert list successfully created');
+                // TODO why is this called after? Remove?
                 this.list();
                 return true;
             }, (error) => {
@@ -122,28 +124,6 @@ const AlertListStore = Reflux.createStore({
                     'Could not delete alert list');
             });
         AlertListActions.deleteByName.promise(promise);
-    },
-
-    clone(name, title, description) {
-        const url = URLUtils.qualifyUrl(this.sourceUrl + '/' + encodeURIComponent(name) + '/Clone');
-        const method = 'POST';
-
-        const request = {
-            title: title,
-            description: description,
-        };
-
-        const promise = fetch(method, url, request)
-            .then(() => {
-                UserNotification.success('Alert list successfully clone');
-                this.list();
-                return true;
-            }, (error) => {
-                UserNotification.error(`Cloning alert list failed with status: ${error.message}`,
-                    'Could not clone alert list');
-            });
-
-        AlertListActions.clone.promise(promise);
     },
 
     exportAlertLists(titles){
