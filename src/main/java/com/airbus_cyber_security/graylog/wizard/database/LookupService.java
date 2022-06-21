@@ -48,12 +48,14 @@ public class LookupService {
         this.lookupTableService = lookupTableService;
     }
 
-    public String createDataAdapter(String title, String name, LookupDataAdapterConfiguration configuration) {
+    public String createDataAdapter(String title, LookupDataAdapterConfiguration configuration) {
         String identifier = RandomStringUtils.random(RANDOM_COUNT, RANDOM_CHARS);
 
+        // TODO shouldn't use the title here, rather an identifier
+        String name = this.getDataAdapterName(title);
         DataAdapterDto dto = DataAdapterDto.builder()
                 .id(identifier)
-                .title(title)
+                .title("Alert wizard data adapter for list " + title)
                 .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
                 .name(name)
                 .contentPack(null)
@@ -90,8 +92,7 @@ public class LookupService {
         return cache.id();
     }
 
-    // TODO make private
-    public String getDataAdapterName(String title) {
+    private String getDataAdapterName(String title) {
         return "alert-wizard-list-data-adapter-" + title;
     }
 

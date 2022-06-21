@@ -108,9 +108,7 @@ public class AlertListService {
                 .build();
 
         String title = list.getTitle();
-        // TODO shouldn't use the title here, rather an identifier
-        String adapterName = this.lookupService.getDataAdapterName(title);
-        String adapterIdentifier = this.lookupService.createDataAdapter("Alert wizard data adapter for list " + title, adapterName, dataAdapterConfiguration);
+        String adapterIdentifier = this.lookupService.createDataAdapter(title, dataAdapterConfiguration);
         String lookupTableName = this.lookupService.getLookupTableName(title);
         this.lookupService.createLookupTable(adapterIdentifier, "Alert wizard lookup table for list " + title, lookupTableName);
 
