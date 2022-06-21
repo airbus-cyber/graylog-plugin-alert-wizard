@@ -114,9 +114,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                              LookupService lookupService,
                              RuleService ruleService,
                              PipelineService pipelineService,
-                             DBDataAdapterService dbDataAdapterService,
-                             HttpConfiguration httpConfiguration,
-                             DBLookupTableService dbTableService,
                              StreamService streamService,
                              StreamRuleService streamRuleService,
                              ClusterEventBus clusterEventBus,
@@ -158,9 +155,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 ruleService,
                 pipelineService,
                 lookupService,
-                dbDataAdapterService,
-                httpConfiguration,
-                dbTableService,
                 pipelineStreamConnectionsService);
     }
 
@@ -263,8 +257,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         // Create stream and pipeline
         StreamPipelineObject streamPipelineObject = this.streamPipelineService.createStreamAndPipeline(stream, alertTitle, userName, stream.getMatchingType());
         String streamIdentifier = streamPipelineObject.getStream().getId();
-
-        this.streamPipelineService.createUniqueLookup(userName);
 
         // Create second stream and pipeline
         String streamID2 = null;

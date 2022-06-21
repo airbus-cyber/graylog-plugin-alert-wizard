@@ -65,11 +65,7 @@ public class StreamPipelineService {
     private final String indexSetID;
     private final RuleService ruleService;
     private final PipelineService pipelineService;
-    private final HttpConfiguration httpConfiguration;
-    // TODO try to remove this field => move into LookupService
-    private final DBDataAdapterService dbDataAdapterService;
     private final LookupService lookupService;
-    private final DBLookupTableService dbTableService;
     private final PipelineStreamConnectionsService pipelineStreamConnectionsService;
 
     public StreamPipelineService(StreamService streamService,
@@ -79,9 +75,6 @@ public class StreamPipelineService {
                                  RuleService ruleService,
                                  PipelineService pipelineService,
                                  LookupService lookupService,
-                                 DBDataAdapterService dbDataAdapterService,
-                                 HttpConfiguration httpConfiguration,
-                                 DBLookupTableService dbTableService,
                                  PipelineStreamConnectionsService pipelineStreamConnectionsService){
         this.streamService = streamService;
         this.streamRuleService = streamRuleService;
@@ -89,9 +82,6 @@ public class StreamPipelineService {
         this.indexSetID = indexSetID;
         this.ruleService = ruleService;
         this.pipelineService = pipelineService;
-        this.dbDataAdapterService = dbDataAdapterService;
-        this.httpConfiguration = httpConfiguration;
-        this.dbTableService = dbTableService;
         this.pipelineStreamConnectionsService = pipelineStreamConnectionsService;
         this.lookupService = lookupService;
     }
@@ -136,8 +126,8 @@ public class StreamPipelineService {
 
         int nbList = 0;
         for (FieldRule fieldRule: listfieldRule) {
-            if (fieldRule.getType() == 7 || fieldRule.getType() == -7){
-                if(nbList > 0) {
+            if (fieldRule.getType() == 7 || fieldRule.getType() == -7) {
+                if (nbList > 0) {
                     fields.append("  ");
                     fields.append(stream.getMatchingType());
                 }
@@ -225,11 +215,11 @@ public class StreamPipelineService {
 
     public Stream createOrUpdateSecondStream(AlertRuleStream alertRuleStream, String title, String userName, String conditionType, AlertRule oldAlert) throws ValidationException, NotFoundException {
         if (conditionType.equals("THEN") || conditionType.equals("AND") || conditionType.equals("OR")) {
-            if(oldAlert.getSecondStreamID() != null) {
+            if (oldAlert.getSecondStreamID() != null) {
                 Stream stream2 = this.streamService.load(oldAlert.getSecondStreamID());
                 updateStream(stream2, alertRuleStream, title+"#2");
                 return stream2;
-            }else {
+            } else {
                 return createStream(alertRuleStream, title+"#2", userName);
             }
             //Delete old stream if one
@@ -315,47 +305,6 @@ public class StreamPipelineService {
         } catch(NotFoundException e) {
             LOG.error("Cannot find the stream ", e);
         }
-    }
-
-    // TODO remove
-    public void createUniqueLookup(String userName) {
-        String adapterIdentifier = this.createUniqueDataAdapter(userName);
-
-        Collection<LookupTableDto> tables = this.dbTableService.findAll();
-        for (LookupTableDto lookupTableDto: tables) {
-            if (lookupTableDto.title().equals("wizard lookup")) {
-                return;
-            }
-        }
-
-        this.lookupService.createLookupTable(adapterIdentifier, "wizard lookup", "wizard_lookup");
-    }
-
-    // TODO remove
-    private String createUniqueDataAdapter(String userName) {
-
-        Collection<DataAdapterDto> adapters = this.dbDataAdapterService.findAll();
-        for (DataAdapterDto dataAdapter: adapters) {
-            if (dataAdapter.title().equals("Wizard data adapter")){
-                return dataAdapter.id();
-            }
-        }
-
-        Map<String, String> headers = new HashMap<>();
-        headers.put("Authorization", "Basic user:password(base64)");
-
-        String url = httpConfiguration.getHttpPublishUri().resolve(HttpConfiguration.PATH_API).toString() + "plugins/com.airbus_cyber_security.graylog/lists/${key}";
-
-        HTTPJSONPathDataAdapter.Config config = HTTPJSONPathDataAdapter.Config.builder()
-                .type("")
-                .url(url)
-                .singleValueJSONPath("$.lists.lists")
-                .multiValueJSONPath("$.lists.lists")
-                .userAgent(userName)
-                .headers(headers)
-                .build();
-
-        return this.lookupService.createDataAdapter("Wizard data adapter", "wizard-data-adapter", config);
     }
 
     private List<FieldRule> extractPipelineFieldRules(List<FieldRule> listFieldRule){

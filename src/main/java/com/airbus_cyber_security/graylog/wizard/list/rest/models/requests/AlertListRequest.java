@@ -41,6 +41,7 @@ public abstract class AlertListRequest {
     @NotNull
     public abstract int getUsage();
 
+    // TODO should be "values", and if possible a list/array of strings instead of just a String that needs to be split on ;
     @JsonProperty("lists")
     @Nullable
     public abstract String getLists();
