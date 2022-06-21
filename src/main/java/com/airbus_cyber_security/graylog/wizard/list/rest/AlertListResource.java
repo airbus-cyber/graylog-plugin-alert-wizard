@@ -166,6 +166,48 @@ public class AlertListResource extends RestResource implements PluginRestResourc
         return Response.accepted().build();
     }
 
+
+    private void importAlertList(ExportAlertList alertList)
+            throws BadRequestException, IOException {
+        String listTitle = checkImportPolicyAndGetTitle(alertList.getTitle());
+
+        this.alertListService.create(AlertList.create(
+                listTitle,
+                DateTime.now(),
+                getCurrentUser().getName(),
+                DateTime.now(),
+                alertList.getDescription(),
+                0,
+                alertList.getLists()));
+    }
+
+    @PUT
+    @Path("/import")
+    @Timed
+    @ApiOperation(value = "Import a list")
+    @RequiresAuthentication
+    @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_CREATE)
+    @ApiResponses(value = {@ApiResponse(code = 400, message = "The supplied request is not valid.")})
+    @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_CREATE)
+    public Response importAlertLists(@ApiParam(name = "JSON body", required = true) @Valid @NotNull List<ExportAlertList> request) {
+        Response responses = Response.accepted().build();
+
+        for (ExportAlertList alertList: request) {
+            if (!this.alertListService.isValidImportRequest(alertList)) {
+                LOG.error("Invalid list:" + alertList.getTitle());
+            } else {
+                try {
+                    importAlertList(alertList);
+                } catch (Exception e) {
+                    LOG.error("Cannot create list " + alertList.getTitle() + ": ", e.getMessage());
+                    responses = Response.serverError().build();
+                }
+            }
+        }
+
+        return responses;
+    }
+
     @PUT
     @Path("/{title}")
     @Timed
@@ -230,46 +272,5 @@ public class AlertListResource extends RestResource implements PluginRestResourc
     public List<ExportAlertList> getExportAlertList(@ApiParam(name = "JSON body", required = true) @Valid @NotNull ExportAlertListRequest request) {
         LOG.debug("List titles : " + request.getTitles());
         return alertListExporter.export(request.getTitles());
-    }
-
-    private void importAlertList(ExportAlertList alertList)
-            throws ValidationException, BadRequestException, IOException {
-        String listTitle = checkImportPolicyAndGetTitle(alertList.getTitle());
-
-        this.alertListService.create(AlertList.create(
-                listTitle,
-                DateTime.now(),
-                getCurrentUser().getName(),
-                DateTime.now(),
-                alertList.getDescription(),
-                0,
-                alertList.getLists()));
-    }
-
-    @PUT
-    @Path("/import")
-    @Timed
-    @ApiOperation(value = "Import a list")
-    @RequiresAuthentication
-    @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_CREATE)
-    @ApiResponses(value = {@ApiResponse(code = 400, message = "The supplied request is not valid.")})
-    @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_CREATE)
-    public Response importAlertLists(@ApiParam(name = "JSON body", required = true) @Valid @NotNull List<ExportAlertList> request) {
-        Response responses = Response.accepted().build();
-
-        for (ExportAlertList alertList: request) {
-            if (!this.alertListService.isValidImportRequest(alertList)) {
-                LOG.error("Invalid list:" + alertList.getTitle());
-            } else {
-                try {
-                    importAlertList(alertList);
-                } catch (Exception e) {
-                    LOG.error("Cannot create list "+ alertList.getTitle() + ": ", e.getMessage());
-                    responses = Response.serverError().build();
-                }
-            }
-        }
-
-        return responses;
     }
 }
