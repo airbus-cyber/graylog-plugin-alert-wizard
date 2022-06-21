@@ -96,16 +96,16 @@ public class LookupService {
         return "alert-wizard-list-data-adapter-" + title;
     }
 
-    // TODO make private
     public String getLookupTableName(String title) {
         return "alert-wizard-list-lookup-table-" + title;
     }
 
-    public void createLookupTable(String adapterIdentifier, String title, String name) {
+    public void createLookupTable(String adapterIdentifier, String title) {
         String cacheIdentifier = this.createUniqueCache();
+        String name = this.getLookupTableName(title);
 
         LookupTableDto dto = LookupTableDto.builder()
-                .title(title)
+                .title("Alert wizard lookup table for list " + title)
                 .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
                 .name(name)
                 .cacheId(cacheIdentifier)

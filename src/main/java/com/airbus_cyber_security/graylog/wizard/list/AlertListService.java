@@ -109,8 +109,7 @@ public class AlertListService {
 
         String title = list.getTitle();
         String adapterIdentifier = this.lookupService.createDataAdapter(title, dataAdapterConfiguration);
-        String lookupTableName = this.lookupService.getLookupTableName(title);
-        this.lookupService.createLookupTable(adapterIdentifier, "Alert wizard lookup table for list " + title, lookupTableName);
+        this.lookupService.createLookupTable(adapterIdentifier, title);
 
         return this.collection.insert(list).getSavedObject();
     }
