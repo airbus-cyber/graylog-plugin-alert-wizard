@@ -99,7 +99,7 @@ class Test(TestCase):
             # TODO: should improve the API for better testability
             time.sleep(60*_PERIOD)
             inputs.send({'short_message': 'pop'})
-            
+
             # wait until the event has propagated through graylog
             # TODO: try to make this code more readable
             for i in range(60):
@@ -108,4 +108,24 @@ class Test(TestCase):
                     return
                 time.sleep(1)
             self.fail('Event not generated within 60 seconds')
+
+    def test_create_alert_rule_with_list_should_not_generate_event_on_substrings_of_elements_in_list__issue49(self):
+        title = 'list'
+        self._graylog.create_list(title, ['administrator', 'toto', 'root', 'foobar'])
+        rule = {
+            'field': 'x',
+            'type': 7,
+            'value': title
+        }
+        self._graylog.create_alert_rule_count(title, rule, _PERIOD)
+
+        with self._graylog.create_gelf_input() as inputs:
+            inputs.send({'_x': 'admin'})
+            # wait for the period (which is, unfortunately expressed in minutes, so it's quite long a wait)
+            # TODO: should improve the API for better testability
+            time.sleep(60*_PERIOD)
+            inputs.send({'short_message': 'pop'})
+
+            time.sleep(60)
+            self.assertEqual(0, self._graylog.get_events_count())
 
