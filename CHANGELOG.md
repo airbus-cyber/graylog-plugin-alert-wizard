@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.2.1](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/4.2.0...4.2.1)
+### Bug Fixes
+
 ## [4.2.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/4.1.0...4.2.0)
 ### Features
 * Rules import: added search input to filter rules by their title ([issue #46](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/46))
