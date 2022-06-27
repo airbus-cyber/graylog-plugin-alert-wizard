@@ -85,16 +85,13 @@ const OrCondition = createReactClass({
         }
         
         return (
-            <div>
-                <TitleSeverity onUpdate={this.props.onUpdate} title={this.props.alert.title} severity={this.props.alert.severity} 
-                                isPluginLoggingAlertPresent={this.props.isPluginLoggingAlertPresent}/>
-                <br/>
+            <>
                 <div style={{ backgroundColor: '#f6f6f6', padding: '10px' }}>
                     <FieldsCondition stream={this.props.alert.stream} onSaveStream={this._handleChangeStream} message={this.props.message} 
                                     matchData={this.props.matchData} />
                 </div>
                 <br/>
-                <Row style={{ marginBottom: '0px' }}><Col md={2}></Col><Col md={10}><label><FormattedMessage id= "wizard.or" defaultMessage= "OR" /></label></Col></Row>
+                <Row style={{ marginBottom: '0px' }}><Col md={2} /><Col md={10}><label><FormattedMessage id= "wizard.or" defaultMessage= "OR" /></label></Col></Row>
                 <br/>
                 <div style={{ backgroundColor: '#f6f6f6', padding: '10px' }}>
                     <FieldsCondition stream={this.props.alert.second_stream} onSaveStream={this._handleChangeSecondStream} message={this.props.message} />
@@ -107,7 +104,7 @@ const OrCondition = createReactClass({
                 <br/>
                 <Description onUpdate={this.props.onUpdate} description={this.props.alert.description}/>
                 <br/>
-            </div>
+            </>
         );
         
     },

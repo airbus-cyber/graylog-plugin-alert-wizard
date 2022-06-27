@@ -69,10 +69,7 @@ const CountCondition = createReactClass({
         }
         
         return (
-            <div>
-                <TitleSeverity onUpdate={this.props.onUpdate} title={this.props.alert.title} severity={this.props.alert.severity} 
-                                isPluginLoggingAlertPresent={this.props.isPluginLoggingAlertPresent}/>
-                <br/>
+            <>
                 <FieldsCondition stream={this.props.alert.stream} onSaveStream={this._handleChangeStream} message={this.props.message}
                                 matchData={this.props.matchData} />
                 <br/>
@@ -83,7 +80,7 @@ const CountCondition = createReactClass({
                 <br/>
                 <Description onUpdate={this.props.onUpdate} description={this.props.alert.description}/>
                 <br/>
-            </div>
+            </>
         );
         
     },

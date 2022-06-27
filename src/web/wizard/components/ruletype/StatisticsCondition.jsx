@@ -69,11 +69,8 @@ const StatisticsCondition = createReactClass({
         }
         
         return (
-            <div>
-                <TitleSeverity onUpdate={this.props.onUpdate} title={this.props.alert.title} severity={this.props.alert.severity} 
-                            isPluginLoggingAlertPresent={this.props.isPluginLoggingAlertPresent}/>
-                <br/>
-                <FieldsCondition stream={this.props.alert.stream} onSaveStream={this._handleChangeStream} message={this.props.message} 
+            <>
+                <FieldsCondition stream={this.props.alert.stream} onSaveStream={this._handleChangeStream} message={this.props.message}
                             matchData={this.props.matchData} />
                 <br/>
                 <TimeRangeCondition onUpdate={this._handleChangeCondition} time={time.toString()} time_type={time_type.toString()} />
@@ -84,7 +81,7 @@ const StatisticsCondition = createReactClass({
                 <br/>
                 <Description onUpdate={this.props.onUpdate} description={this.props.alert.description}/>
                 <br/>
-            </div>
+            </>
         );
         
     },

@@ -18,8 +18,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
-import {Input} from 'components/bootstrap';
-import {Select} from 'components/common';
+import { Input } from 'components/bootstrap';
+import { Select } from 'components/common';
 import { Row, Col } from 'components/graylog';
 import {FormattedMessage} from 'react-intl';
 
@@ -31,9 +31,9 @@ const TitleSeverity = createReactClass({
     },   
     getDefaultProps() {
         return {
-            title:'',
-            severity:'',
-            isPluginLoggingAlertPresent:true,
+            title: '',
+            severity: '',
+            isPluginLoggingAlertPresent: true,
         };
     },
     getInitialState() {
@@ -43,7 +43,7 @@ const TitleSeverity = createReactClass({
         };
     },
     componentWillReceiveProps(nextProps) {
-        if(nextProps.isPluginLoggingAlertPresent !== this.props.isPluginLoggingAlertPresent){
+        if (nextProps.isPluginLoggingAlertPresent !== this.props.isPluginLoggingAlertPresent) {
             this._onSeverityTypeSelect(nextProps.isPluginLoggingAlertPresent? nextProps.severity: '');
         }
     },
@@ -56,10 +56,10 @@ const TitleSeverity = createReactClass({
    
     _availableSeverityTypes() {
         return [
-            {value: 'info', label: <FormattedMessage id= "wizard.info" defaultMessage= "Info" />},
-            {value: 'low', label: <FormattedMessage id= "wizard.low" defaultMessage= "Low" />},
-            {value: 'medium', label: <FormattedMessage id= "wizard.medium" defaultMessage= "Medium" />},
-            {value: 'high', label: <FormattedMessage id= "wizard.high" defaultMessage= "High" />},
+            {value: 'info', label: <FormattedMessage id="wizard.info" defaultMessage="Info" />},
+            {value: 'low', label: <FormattedMessage id="wizard.low" defaultMessage="Low" />},
+            {value: 'medium', label: <FormattedMessage id="wizard.medium" defaultMessage="Medium" />},
+            {value: 'high', label: <FormattedMessage id="wizard.high" defaultMessage="High" />},
         ];
     },
     _onSeverityTypeSelect(id) {
@@ -72,7 +72,7 @@ const TitleSeverity = createReactClass({
         return (
             <Row>
                 <Col md={2} style={{ marginTop: 10, marginBottom: 0 }}>
-                    <label className="pull-right"><FormattedMessage id= "wizard.titleSeverity" defaultMessage= "Alert Title and Severity" /></label>
+                    <label className="pull-right"><FormattedMessage id="wizard.titleSeverity" defaultMessage="Alert Title and Severity" /></label>
                 </Col>
                 <Col md={10}>
                     <Input style={{borderTopRightRadius: '0px', borderBottomRightRadius: '0px', height:'36px', width:'450px'}}

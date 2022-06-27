@@ -38,6 +38,7 @@ import CountCondition from './ruletype/CountCondition'
 import ActionsProvider from 'injection/ActionsProvider';
 import ButtonToEventDefinition from './buttons/ButtonToEventDefinition';
 import ButtonToNotification from './buttons/ButtonToNotification';
+import TitleSeverity from "./TitleSeverity";
 
 const NodesActions = ActionsProvider.getActions('Nodes');
 const StreamsStore = StoreProvider.getStore('Streams');
@@ -419,6 +420,9 @@ const CreateAlertInput = createReactClass({
                     {customizeLink}
                     <p className="description"><FormattedMessage id= "wizard.descripionParameters" defaultMessage= "Define the parameters of the alert rule." /></p>                    
                     <form className="form-inline">
+                        <TitleSeverity onUpdate={this._updateAlertField} title={this.state.alert.title} severity={this.state.alert.severity}
+                                       isPluginLoggingAlertPresent={this.state.isPluginLoggingAlertPresent}/>
+                        <br/>
                         {this.state.contentComponent}
                     </form>
                     {actions}

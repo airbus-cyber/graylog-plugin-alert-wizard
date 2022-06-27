@@ -127,10 +127,7 @@ const CorrelationCondition = createReactClass({
         }
         
         return (
-            <div>
-                <TitleSeverity onUpdate={this.props.onUpdate} title={this.state.alert.title} severity={this.state.alert.severity} 
-                                isPluginLoggingAlertPresent={this.props.isPluginLoggingAlertPresent}/>
-                <br/>
+            <>
                 <div style={{ backgroundColor: '#f6f6f6', padding: '10px' }}>
                     <FieldsCondition stream={this.state.alert.stream} onSaveStream={this._handleChangeStream} message={this.props.message} 
                                     matchData={this.props.matchData} />
@@ -154,7 +151,7 @@ const CorrelationCondition = createReactClass({
                 <br/>
                 <Description onUpdate={this.props.onUpdate} description={this.state.alert.description}/>
                 <br/>
-            </div>
+            </>
         );
         
     },
