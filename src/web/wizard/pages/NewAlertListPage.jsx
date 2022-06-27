@@ -26,8 +26,8 @@ import StoreProvider from 'injection/StoreProvider';
 import Routes from 'routing/Routes';
 import ActionsProvider from 'injection/ActionsProvider';
 import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
-import messages_fr from '../../translations/fr.json';
-import CreateListFormInput from "../components/lists/CreateListFormInput";
+import messages_fr from 'translations/fr.json';
+import CreateListFormInput from 'wizard/components/lists/CreateListFormInput';
 
 const CurrentUserStore = StoreProvider.getStore('CurrentUser');
 const ConfigurationActions = ActionsProvider.getActions('Configuration');

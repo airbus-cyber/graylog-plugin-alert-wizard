@@ -21,12 +21,12 @@ import createReactClass from 'create-react-class';
 import {Button, Col, Row} from 'components/graylog';
 import {LinkContainer} from 'react-router-bootstrap';
 import {DocumentTitle, PageHeader, Spinner} from 'components/common';
-import CreateAlertInput from '../components/CreateAlertInput';
-import AlertRuleActions from '../actions/AlertRuleActions';
+import CreateAlertInput from 'wizard/components/CreateAlertInput';
+import AlertRuleActions from 'wizard/actions/AlertRuleActions';
 import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
-import messages_fr from '../../translations/fr.json';
+import messages_fr from 'translations/fr.json';
 import withParams from 'routing/withParams';
-import Navigation from '../routing/Navigation';
+import Navigation from 'wizard/routing/Navigation';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];

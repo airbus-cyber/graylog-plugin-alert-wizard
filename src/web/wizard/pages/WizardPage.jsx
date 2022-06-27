@@ -16,16 +16,16 @@
  */
 
 import React from 'react';
-import Reflux from "reflux";
+import Reflux from 'reflux';
 import createReactClass from 'create-react-class';
 import {Col, Row} from 'react-bootstrap';
 import {IfPermitted, PageHeader, DocumentTitle} from 'components/common';
-import AlertRuleList from '../components/AlertRuleList';
-import ManageSettings from '../components/ManageSettings';
+import AlertRuleList from 'wizard/components/AlertRuleList';
+import ManageSettings from 'wizard/components/ManageSettings';
 import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
-import messages_fr from '../../translations/fr.json';
-import WizardConfigurationsActions from '../actions/WizardConfigurationsActions';
-import WizardConfigurationStore from "../stores/WizardConfigurationsStore";
+import messages_fr from 'translations/fr.json';
+import WizardConfigurationsActions from 'wizard/actions/WizardConfigurationsActions';
+import WizardConfigurationStore from 'wizard/stores/WizardConfigurationsStore';
 import StoreProvider from 'injection/StoreProvider';
 import ActionsProvider from 'injection/ActionsProvider';
 const PluginsStore = StoreProvider.getStore('Plugins');

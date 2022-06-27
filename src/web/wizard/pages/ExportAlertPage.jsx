@@ -23,12 +23,12 @@ import { Row, Col, Button } from 'components/graylog';
 import { DocumentTitle, PageHeader } from 'components/common';
 import UserNotification from 'util/UserNotification';
 import DateTime from 'logic/datetimes/DateTime';
-import messages_fr from '../../translations/fr.json';
-import AlertRuleActions from '../actions/AlertRuleActions';
-import FileSaver from '../logic/FileSaver';
-import IconDownload from '../components/icons/Download';
-import Navigation from '../routing/Navigation';
-import AlertRuleSelectionList from '../components/AlertRuleSelectionList'
+import messages_fr from 'translations/fr.json';
+import AlertRuleActions from 'wizard/actions/AlertRuleActions';
+import FileSaver from 'wizard/logic/FileSaver';
+import IconDownload from 'wizard/components/icons/Download';
+import Navigation from 'wizard/routing/Navigation';
+import AlertRuleSelectionList from 'wizard/components/AlertRuleSelectionList'
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];

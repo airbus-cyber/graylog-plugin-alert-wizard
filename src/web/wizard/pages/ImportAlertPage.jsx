@@ -21,10 +21,10 @@ import { LinkContainer } from 'react-router-bootstrap';
 import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
 import { DocumentTitle, PageHeader } from 'components/common';
 import { Row, Col, Button } from 'components/graylog';
-import messages_fr from '../../translations/fr.json';
-import AlertRuleActions from '../actions/AlertRuleActions';
-import Navigation from '../routing/Navigation';
-import AlertRuleSelectionList from '../components/AlertRuleSelectionList'
+import messages_fr from 'translations/fr.json';
+import AlertRuleActions from 'wizard/actions/AlertRuleActions';
+import Navigation from 'wizard/routing/Navigation';
+import AlertRuleSelectionList from 'wizard/components/AlertRuleSelectionList'
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];

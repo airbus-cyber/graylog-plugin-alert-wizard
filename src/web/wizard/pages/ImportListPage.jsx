@@ -18,12 +18,12 @@
 import React from 'react';
 import createReactClass from 'create-react-class';
 import Routes from 'routing/Routes';
-import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
-import messages_fr from '../../translations/fr.json';
+import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
+import { LinkContainer } from 'react-router-bootstrap';
 import { Row, Col, Button } from 'components/graylog';
-import AlertListActions from '../components/lists/AlertListActions';
-import {DocumentTitle, PageHeader, Spinner} from 'components/common';
-import {LinkContainer} from 'react-router-bootstrap';
+import messages_fr from 'translations/fr.json';
+import AlertListActions from 'wizard/components/lists/AlertListActions';
+import { DocumentTitle, PageHeader } from 'components/common';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
