@@ -21,14 +21,14 @@ import createReactClass from 'create-react-class';
 import ObjectUtils from 'util/ObjectUtils';
 import {FormattedMessage} from 'react-intl';
 import TitleSeverity from 'wizard/components/TitleSeverity';
-import FieldsCondition from 'wizard/components/FieldsCondition';
+import FieldsCondition from 'wizard/components/conditions/FieldsCondition';
 import NumberCondition from 'wizard/components/NumberCondition';
 import TimeRangeCondition from 'wizard/components/TimeRangeCondition';
 import Description from 'wizard/components/Description';
-import GroupByCondition from '../conditions/GroupByCondition';
+import GroupByCondition from 'wizard/components/conditions/GroupByCondition';
 import { Row, Col } from 'components/graylog';
 import {Button} from 'react-bootstrap';
-import IconArrowsV from "../icons/ArrowsV";
+import IconArrowsV from "wizard/components/icons/ArrowsV";
 
 const STREAM = {
         matching_type: '',

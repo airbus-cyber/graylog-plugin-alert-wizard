@@ -19,7 +19,7 @@ import Reflux from 'reflux';
 import URLUtils from 'util/URLUtils';
 import UserNotification from 'util/UserNotification';
 import fetch from 'logic/rest/FetchProvider';
-import WizardConfigurationsActions from '../actions/WizardConfigurationsActions';
+import WizardConfigurationsActions from 'wizard/actions/WizardConfigurationsActions';
 import RestUtils from './RestUtils';
 
 // TODO try to move this into wizard/configuration
