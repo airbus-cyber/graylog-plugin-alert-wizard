@@ -22,7 +22,7 @@ import ObjectUtils from 'util/ObjectUtils';
 import TitleSeverity from 'wizard/components/TitleSeverity';
 import FieldsCondition from 'wizard/components/conditions/FieldsCondition';
 import NumberCondition from 'wizard/components/conditions/NumberCondition';
-import TimeRangeCondition from 'wizard/components/TimeRangeCondition';
+import TimeRangeCondition from 'wizard/components/conditions/TimeRangeCondition';
 import Description from 'wizard/components/Description';
 import GroupByCondition from 'wizard/components/conditions/GroupByCondition';
 import DistinctCondition from 'wizard/components/conditions/DistinctCondition';
