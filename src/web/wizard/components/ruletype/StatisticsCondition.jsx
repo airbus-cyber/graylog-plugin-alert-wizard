@@ -23,7 +23,7 @@ import TitleSeverity from 'wizard/components/TitleSeverity';
 import FieldsCondition from 'wizard/components/conditions/FieldsCondition';
 import TimeRangeCondition from 'wizard/components/TimeRangeCondition';
 import Description from 'wizard/components/Description';
-import StatisticalCondition from 'wizard/components/StatisticalCondition';
+import StatisticalCondition from 'wizard/components/conditions/StatisticalCondition';
 
 const StatisticsCondition = createReactClass({
     displayName: 'StatisticsCondition',
