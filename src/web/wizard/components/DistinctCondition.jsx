@@ -23,7 +23,7 @@ import { MultiSelect } from 'components/common';
 import {FormattedMessage} from 'react-intl';
 import { Row, Col } from 'components/graylog';
 
-import withFormattedFields from './withFormattedFields';
+import withFormattedFields from './conditions/withFormattedFields';
 
 const DistinctCondition = createReactClass({
     displayName: 'DistinctCondition',

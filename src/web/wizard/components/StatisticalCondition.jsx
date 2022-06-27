@@ -24,7 +24,7 @@ import { Select } from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import { FormattedMessage } from 'react-intl';
 
-import withFormattedFields from './withFormattedFields';
+import withFormattedFields from './conditions/withFormattedFields';
 
 const StatisticalCondition = createReactClass({
     displayName: 'StatisticalCondition',

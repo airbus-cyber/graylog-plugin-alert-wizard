@@ -23,7 +23,7 @@ import { Input } from 'components/bootstrap';
 import { MultiSelect } from 'components/common';
 import { Row, Col } from 'components/graylog';
 
-import withFormattedFields from '../withFormattedFields';
+import withFormattedFields from './withFormattedFields';
 
 const GroupByCondition = createReactClass({
     displayName: 'GroupByCondition',

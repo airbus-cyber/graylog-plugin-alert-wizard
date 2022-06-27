@@ -17,12 +17,12 @@
 
 import React from 'react';
 
-import { Spinner } from 'components/common';
+import { Spinner } from '../graylog2-server/graylog2-web-interface/src/components/common';
 
 import lodash from 'lodash';
-import connect from 'stores/connect';
-import { FieldTypesStore } from 'views/stores/FieldTypesStore';
-import { defaultCompare } from 'views/logic/DefaultCompare';
+import connect from '../graylog2-server/graylog2-web-interface/src/stores/connect';
+import { FieldTypesStore } from '../graylog2-server/graylog2-web-interface/src/views/stores/FieldTypesStore';
+import { defaultCompare } from '../graylog2-server/graylog2-web-interface/src/views/logic/DefaultCompare';
 
 export default function(WrappedComponent) {
     const Container = class extends React.Component {
