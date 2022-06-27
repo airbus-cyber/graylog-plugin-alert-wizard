@@ -72,17 +72,17 @@ const NewAlertPage = createReactClass({
           <IntlProvider locale={language} messages={messages[language]}>
             <DocumentTitle title="New alert rule">
                 <div>
-                    <PageHeader title={<FormattedMessage id= "wizard.newAlertRule" defaultMessage= "Wizard: New alert rule" />}>
+                    <PageHeader title={<FormattedMessage id="wizard.newAlertRule" defaultMessage="Wizard: New alert rule" />}>
                         <span>
-                            <FormattedMessage id= "wizard.define" defaultMessage= "You can define an alert rule." />
+                            <FormattedMessage id="wizard.define" defaultMessage="You can define an alert rule." />
                         </span>
                         <span>
                             <FormattedMessage id="wizard.documentation" 
-                            defaultMessage= "Read more about Wizard alert rules in the documentation." />
+                            defaultMessage="Read more about Wizard alert rules in the documentation." />
                         </span>
                         <span>
                             <LinkContainer to={Navigation.getWizardRoute()}>
-                                <Button bsStyle="info"><FormattedMessage id= "wizard.back" defaultMessage= "Back to alert rules" /></Button>
+                                <Button bsStyle="info"><FormattedMessage id="wizard.back" defaultMessage="Back to alert rules" /></Button>
                             </LinkContainer>
                             &nbsp;
                         </span>
