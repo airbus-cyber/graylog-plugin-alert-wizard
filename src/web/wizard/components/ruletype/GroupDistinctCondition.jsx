@@ -25,7 +25,7 @@ import NumberCondition from 'wizard/components/NumberCondition';
 import TimeRangeCondition from 'wizard/components/TimeRangeCondition';
 import Description from 'wizard/components/Description';
 import GroupByCondition from 'wizard/components/conditions/GroupByCondition';
-import DistinctCondition from 'wizard/components/DistinctCondition';
+import DistinctCondition from 'wizard/components/conditions/DistinctCondition';
 
 const GroupDistinctCondition = createReactClass({
     displayName: 'GroupDistinctCondition',
