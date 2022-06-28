@@ -125,6 +125,8 @@ const CreateAlertInput = createReactClass({
         let time;
         let time_type;
         let alert = ObjectUtils.clone(this.props.alert);
+        // TODO should move this out of the component
+        // TODO should try to remove prop create (composition would be better)
         if (this.props.create) {
             alert.title = this.props.default_values.title;
             alert.severity = this.props.default_values.severity;
