@@ -28,7 +28,7 @@
 
 	<groupId>com.airbus-cyber-security.graylog</groupId>
 	<artifactId>graylog-plugin-alert-wizard</artifactId>
-	<version>4.0.0</version>
+	<version>4.0.1</version>
 	<packaging>jar</packaging>
 
 	<name>${project.artifactId}</name>
