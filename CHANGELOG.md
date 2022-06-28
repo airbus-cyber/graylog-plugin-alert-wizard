@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [4.2.1](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/4.2.0...4.2.1)
 ### Bug Fixes
 * The pipeline rule created with lists now matches exact values of the list rather than substrings ([issue #49](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/49))
+* The default value of the severity in the wizard configuration is set to "Info" ([issue #61](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/61))
 
 ## [4.2.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/4.1.0...4.2.0)
 ### Features

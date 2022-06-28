@@ -129,3 +129,6 @@ class Test(TestCase):
             time.sleep(60)
             self.assertEqual(0, self._graylog.get_events_count())
 
+    def test_get_config_should_have_a_default_severity_info_issue61(self):
+        configuration = self._graylog.get_alert_wizard_plugin_configuration()
+        self.assertEqual('info', configuration['default_values']['severity'])
