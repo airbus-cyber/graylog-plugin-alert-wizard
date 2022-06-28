@@ -46,7 +46,7 @@ public class AlertWizardConfigResource extends RestResource implements PluginRes
     private final ClusterConfigService clusterConfigService;
 
     @Inject
-    public AlertWizardConfigResource(final ClusterConfigService clusterConfigService) {
+    public AlertWizardConfigResource(ClusterConfigService clusterConfigService) {
         this.clusterConfigService = requireNonNull(clusterConfigService);
     }
 
@@ -55,8 +55,7 @@ public class AlertWizardConfigResource extends RestResource implements PluginRes
     @ApiOperation(value = "Get alert wizard configuration")
     @RequiresPermissions({CLUSTER_CONFIG_ENTRY_READ})
     public AlertWizardConfig config() {
-        return clusterConfigService.getOrDefault(AlertWizardConfig.class,
-                AlertWizardConfig.defaultConfig());
+        return this.clusterConfigService.getOrDefault(AlertWizardConfig.class, AlertWizardConfig.defaultConfig());
     }
 
     @PUT
@@ -65,7 +64,7 @@ public class AlertWizardConfigResource extends RestResource implements PluginRes
     @RequiresPermissions({CLUSTER_CONFIG_ENTRY_READ})
     @AuditEvent(type = AuditEventTypes.AUTHENTICATION_PROVIDER_CONFIGURATION_UPDATE)
     public AlertWizardConfig updateConfig(@ApiParam(name = "config", required = true) final AlertWizardConfig config) {
-        clusterConfigService.write(config);
+        this.clusterConfigService.write(config);
         return config;
     }
 
