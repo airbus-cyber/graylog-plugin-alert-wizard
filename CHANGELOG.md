@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [4.0.1](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/3.3.0...4.0.0) (2022-06-29)
+## [4.0.1](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/4.0.0...4.0.1) (2022-06-29)
 ### Bug Fixes
 * Updated graylog-plugin-aggregation-count dependency to [4.0.2](https://github.com/airbus-cyber/graylog-plugin-aggregation-count/blob/4.0.2/CHANGELOG.md)
 
