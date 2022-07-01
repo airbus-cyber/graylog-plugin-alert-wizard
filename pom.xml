@@ -305,6 +305,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>rpm-maven-plugin</artifactId>
+                <version>2.2.0</version>
                 <configuration>
                     <group>Application/Internet</group>
                     <prefixes>
