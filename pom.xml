@@ -133,7 +133,7 @@
 		<dependency>
 			<groupId>com.airbus-cyber-security.graylog</groupId>
 			<artifactId>graylog-plugin-aggregation-count</artifactId>
-			<version>4.1.0</version>
+			<version>4.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.airbus-cyber-security.graylog</groupId>
