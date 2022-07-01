@@ -60,6 +60,20 @@ jobs:
           source venv/bin/activate
           pip install -r requirements.txt
           python -m unittest --verbose
+      - name: Package signed .rpm
+        working-directory: plugin
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          echo -n "$GPG_PRIVATE_KEY" | gpg2 --batch --allow-secret-key-import --import
+          gpg2 --export-secret-keys --batch --pinentry-mode loopback --passphrase "$PASSPHRASE" > $HOME/.gnupg/secring.gpg
+          gpgconf --kill gpg-agent
+          gpg-agent --homedir $HOME/.gnupg --use-standard-socket --daemon --allow-preset-passphrase
+          /usr/lib/gnupg2/gpg-preset-passphrase --passphrase "$PASSPHRASE" --preset EE656BBE6B3BB6A9175906357570DD0D78DA030F
+          sudo apt-get install -y expect
+          mvn rpm:rpm --settings deployment/settings.xml
+          gpgconf --kill gpg-agent
       - name: Package signed .deb
         working-directory: plugin
         env:
@@ -79,6 +93,12 @@ jobs:
           name: jar
           path: plugin/target/${{ steps.requestPom.outputs.name }}-${{ steps.requestPom.outputs.version }}.jar
           if-no-files-found: error
+      - name: Archive .rpm
+        uses: actions/upload-artifact@v2
+        with:
+          name: rpm
+          path: plugin/target/rpm/${{ steps.requestPom.outputs.name }}/RPMS/noarch/${{ steps.requestPom.outputs.name }}-${{ steps.requestPom.outputs.version }}-1.noarch.rpm
+          if-no-files-found: error
       - name: Archive .deb
         uses: actions/upload-artifact@v2
         with:
@@ -91,6 +111,7 @@ jobs:
         with:
           files: |
             plugin/target/${{ steps.requestPom.outputs.name }}-${{ steps.requestPom.outputs.version }}.jar
+            plugin/target/rpm/${{ steps.requestPom.outputs.name }}/RPMS/noarch/${{ steps.requestPom.outputs.name }}-${{ steps.requestPom.outputs.version }}-1.noarch.rpm
             plugin/target/${{ steps.requestPom.outputs.name }}-${{ steps.requestPom.outputs.version }}.deb
           fail_on_unmatched_files: true
       - name: Deploy to Maven Central
