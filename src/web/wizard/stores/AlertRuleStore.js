@@ -22,7 +22,6 @@ import fetch from 'logic/rest/FetchProvider';
 import AlertRuleActions from 'wizard/actions/AlertRuleActions';
 import RestUtils from './RestUtils';
 
-// TODO move in rest/ with all other Stores and Actions
 const AlertRuleStore = Reflux.createStore({
     listenables: [AlertRuleActions],
     sourceUrl: RestUtils.buildSourceURL('alerts'),
