@@ -136,14 +136,14 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.alertRuleExporter = new AlertRuleExporter(
                 alertRuleService,
                 streamService,
-                alertRuleUtils,
+                this.alertRuleUtils,
                 eventDefinitionsResource,
                 eventNotificationsResource);
         this.alertRuleUtilsService = new AlertRuleUtilsService(
                 alertRuleService,
                 streamService,
                 alertService,
-                alertRuleUtils,
+                this.alertRuleUtils,
                 eventDefinitionsResource,
                 eventNotificationsResource,
                 clusterConfigService);
@@ -301,11 +301,11 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 streamPipelineObject2.getListPipelineFieldRule()));
 
         //Update list usage
-        for (FieldRule fieldRule: alertRuleUtils.nullSafe(streamPipelineObject.getListPipelineFieldRule())) {
-            alertListUtilsService.incrementUsage(fieldRule.getValue());
+        for (FieldRule fieldRule: this.alertRuleUtils.nullSafe(streamPipelineObject.getListPipelineFieldRule())) {
+            this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
-        for (FieldRule fieldRule: alertRuleUtils.nullSafe(streamPipelineObject2.getListPipelineFieldRule())) {
-            alertListUtilsService.incrementUsage(fieldRule.getValue());
+        for (FieldRule fieldRule: this.alertRuleUtils.nullSafe(streamPipelineObject2.getListPipelineFieldRule())) {
+            this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
     }
 
@@ -419,7 +419,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             }
         } else if (oldAlert.getConditionType().equals("OR")) {
             //Delete Event
-            eventDefinitionsResource.delete(eventID2);
+            this.eventDefinitionsResource.delete(eventID2);
         }
 
         this.alertRuleService.update(java.net.URLDecoder.decode(title, ENCODING),
@@ -442,19 +442,19 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                         streamPipelineObject2.getPipelineRuleID(),
                         streamPipelineObject2.getListPipelineFieldRule()));
 
-        //Decrement list usage
-        for (FieldRule fieldRule : alertRuleUtils.nullSafe(oldAlert.getPipelineFieldRules())) {
-            alertListUtilsService.decrementUsage(fieldRule.getValue());
+        // Decrement list usage
+        for (FieldRule fieldRule : this.alertRuleUtils.nullSafe(oldAlert.getPipelineFieldRules())) {
+            this.alertListUtilsService.decrementUsage(fieldRule.getValue());
         }
-        for (FieldRule fieldRule : alertRuleUtils.nullSafe(oldAlert.getSecondPipelineFieldRules())) {
-            alertListUtilsService.decrementUsage(fieldRule.getValue());
+        for (FieldRule fieldRule : this.alertRuleUtils.nullSafe(oldAlert.getSecondPipelineFieldRules())) {
+            this.alertListUtilsService.decrementUsage(fieldRule.getValue());
         }
-        //Increment list usage
-        for (FieldRule fieldRule : alertRuleUtils.nullSafe(streamPipelineObject.getListPipelineFieldRule())) {
-            alertListUtilsService.incrementUsage(fieldRule.getValue());
+        // Increment list usage
+        for (FieldRule fieldRule : this.alertRuleUtils.nullSafe(streamPipelineObject.getListPipelineFieldRule())) {
+            this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
-        for (FieldRule fieldRule : alertRuleUtils.nullSafe(streamPipelineObject2.getListPipelineFieldRule())) {
-            alertListUtilsService.incrementUsage(fieldRule.getValue());
+        for (FieldRule fieldRule : this.alertRuleUtils.nullSafe(streamPipelineObject2.getListPipelineFieldRule())) {
+            this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
 
         return Response.accepted().build();
@@ -524,8 +524,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String notificationID = this.alertRuleUtilsService.createNotification(alertTitle, loggingNotificationConfig.severity().getType(), userContext);
 
         // Create Condition
-        EventProcessorConfig eventConfig = eventDefinitionsResource.get(sourceAlert.getEventID()).config();
-        Map<String, Object> parametersCondition = alertRuleUtils.getConditionParameters(eventConfig);
+        EventProcessorConfig eventConfig = this.eventDefinitionsResource.get(sourceAlert.getEventID()).config();
+        Map<String, Object> parametersCondition = this.alertRuleUtils.getConditionParameters(eventConfig);
         EventProcessorConfig configuration = this.alertRuleUtilsService.createCondition(sourceAlert.getConditionType(), parametersCondition, firstStream.getId(), secondStreamID);
 
         //Create Event
@@ -560,11 +560,11 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 sourceAlert.getSecondPipelineFieldRules()));
 
         //Update list usage
-        for (FieldRule fieldRule : alertRuleUtils.nullSafe(sourceAlert.getPipelineFieldRules())) {
-            alertListUtilsService.incrementUsage(fieldRule.getValue());
+        for (FieldRule fieldRule : this.alertRuleUtils.nullSafe(sourceAlert.getPipelineFieldRules())) {
+            this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
-        for (FieldRule fieldRule : alertRuleUtils.nullSafe(sourceAlert.getSecondPipelineFieldRules())) {
-            alertListUtilsService.incrementUsage(fieldRule.getValue());
+        for (FieldRule fieldRule : this.alertRuleUtils.nullSafe(sourceAlert.getSecondPipelineFieldRules())) {
+            this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
 
         return Response.accepted().build();
@@ -599,13 +599,13 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
             //Delete Event
             if (alertRule.getEventID() != null && !alertRule.getEventID().isEmpty()) {
-                eventDefinitionsResource.delete(alertRule.getEventID());
+                this.eventDefinitionsResource.delete(alertRule.getEventID());
             }
             if (alertRule.getNotificationID() != null && !alertRule.getNotificationID().isEmpty()) {
                 eventNotificationsResource.delete(alertRule.getNotificationID());
             }
             if (alertRule.getSecondEventID() != null && !alertRule.getSecondEventID().isEmpty()) {
-                eventDefinitionsResource.delete(alertRule.getSecondEventID());
+                this.eventDefinitionsResource.delete(alertRule.getSecondEventID());
             }
 
             //Delete Pipeline
@@ -618,11 +618,11 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             }
 
             //Update list usage
-            for (FieldRule fieldRule : alertRuleUtils.nullSafe(alertRule.getPipelineFieldRules())) {
-                alertListUtilsService.decrementUsage(fieldRule.getValue());
+            for (FieldRule fieldRule : this.alertRuleUtils.nullSafe(alertRule.getPipelineFieldRules())) {
+                this.alertListUtilsService.decrementUsage(fieldRule.getValue());
             }
-            for (FieldRule fieldRule : alertRuleUtils.nullSafe(alertRule.getSecondPipelineFieldRules())) {
-                alertListUtilsService.decrementUsage(fieldRule.getValue());
+            for (FieldRule fieldRule : this.alertRuleUtils.nullSafe(alertRule.getSecondPipelineFieldRules())) {
+                this.alertListUtilsService.decrementUsage(fieldRule.getValue());
             }
         } catch (NotFoundException e) {
             LOG.error("Cannot find alert " + alertTitle, e);
