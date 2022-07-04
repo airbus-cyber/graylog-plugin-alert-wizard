@@ -114,25 +114,6 @@ public class AlertRuleUtils {
 		return parametersCondition;
 	}
 	
-    public String getGraylogConditionType(String alertRuleConditionType) {
-    	String conditionType;
-        switch (alertRuleConditionType) {
-		case "STATISTICAL":
-			conditionType = AbstractAlertCondition.Type.FIELD_VALUE.toString();
-			break;
-
-		case "THEN":
-		case "AND":
-			conditionType = TYPE_CORRELATION;
-			break;
-
-		default:
-			conditionType = TYPE_AGGREGATION;
-			break;
-		}
-        return conditionType;
-    }
-    
     public List<FieldRule> getListFieldRule(List<StreamRule> listStreamRule) {
          List<FieldRule> listFieldRule = new ArrayList<>();
          for (StreamRule streamRule: listStreamRule) {
