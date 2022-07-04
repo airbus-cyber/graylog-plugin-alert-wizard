@@ -61,33 +61,33 @@ public class AlertRuleExporter {
 		
 		for (String title : titles) {
 			try {
-				AlertRule alert = alertRuleService.load(title);
+				AlertRule alert = this.alertRuleService.load(title);
 				
 				String streamID = alert.getStreamID();
-		        Stream stream = streamService.load(streamID);
+		        Stream stream = this.streamService.load(streamID);
 				List<FieldRule> fieldRules = new ArrayList<>();
 				Optional.ofNullable(alert.getPipelineFieldRules()).ifPresent(fieldRules::addAll);
-				Optional.ofNullable(alertRuleUtils.getListFieldRule(stream.getStreamRules())).ifPresent(fieldRules::addAll);
+				Optional.ofNullable(this.alertRuleUtils.getListFieldRule(stream.getStreamRules())).ifPresent(fieldRules::addAll);
 				AlertRuleStream alertRuleStream = AlertRuleStream.create(streamID, stream.getMatchingType().toString(), fieldRules);
 
 				AlertRuleStream alertRuleStream2;
-		        if(alert.getSecondStreamID() != null && !alert.getSecondStreamID().isEmpty()) {
-		        	final Stream stream2 = streamService.load(alert.getSecondStreamID());
+		        if (alert.getSecondStreamID() != null && !alert.getSecondStreamID().isEmpty()) {
+		        	final Stream stream2 = this.streamService.load(alert.getSecondStreamID());
 					List<FieldRule> fieldRules2 = new ArrayList<>();
 					Optional.ofNullable(alert.getSecondPipelineFieldRules()).ifPresent(fieldRules2::addAll);
-					Optional.ofNullable(alertRuleUtils.getListFieldRule(stream2.getStreamRules())).ifPresent(fieldRules2::addAll);
+					Optional.ofNullable(this.alertRuleUtils.getListFieldRule(stream2.getStreamRules())).ifPresent(fieldRules2::addAll);
 		        	alertRuleStream2 = AlertRuleStream.create(alert.getSecondStreamID(), stream2.getMatchingType().toString(), fieldRules2);
-		        }else {
+		        } else {
 		        	alertRuleStream2 = AlertRuleStream.create("", "", Collections.emptyList());
 		        }
 
-		        //Get the condition parameters
-				EventProcessorConfig eventConfig = eventDefinitionsResource.get(alert.getEventID()).config();
-				Map<String, Object> parametersCondition = alertRuleUtils.getConditionParameters(eventConfig);
+		        // Get the condition parameters
+				EventProcessorConfig eventConfig = this.eventDefinitionsResource.get(alert.getEventID()).config();
+				Map<String, Object> parametersCondition = this.alertRuleUtils.getConditionParameters(eventConfig);
 
-				//Get the notification parameters
-				LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) eventNotificationsResource.get(alert.getNotificationID()).config();
-				Map<String, Object> parametersNotification = alertRuleUtils.getNotificationParameters(loggingNotificationConfig);
+				// Get the notification parameters
+				LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) this.eventNotificationsResource.get(alert.getNotificationID()).config();
+				Map<String, Object> parametersNotification = this.alertRuleUtils.getNotificationParameters(loggingNotificationConfig);
 
 				listAlertRules.add(ExportAlertRule.create(
 						title,
