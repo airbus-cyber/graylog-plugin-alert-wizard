@@ -375,7 +375,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String userName = getCurrentUser().getName();
 
         // Update stream.
-        Stream stream = streamService.load(oldAlert.getStreamID());
+        Stream stream = this.streamService.load(oldAlert.getStreamID());
         this.streamPipelineService.updateStream(stream, request.getStream(), alertTitle);
 
         //update pipeline
@@ -482,7 +482,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         final String creatorUser = getCurrentUser().getName();
 
         // Create stream.
-        Stream sourceFirstStream = streamService.load(sourceAlert.getStreamID());
+        Stream sourceFirstStream = this.streamService.load(sourceAlert.getStreamID());
         Stream firstStream = this.streamPipelineService.cloneStream(sourceFirstStream, alertTitle, creatorUser);
 
         //create pipeline
@@ -503,7 +503,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         //Create Second Stream and pipeline
         if (sourceAlert.getSecondStreamID() != null && !sourceAlert.getSecondStreamID().isEmpty()) {
-            final Stream sourceSecondStream = streamService.load(sourceAlert.getSecondStreamID());
+            Stream sourceSecondStream = this.streamService.load(sourceAlert.getSecondStreamID());
             secondStream = this.streamPipelineService.cloneStream(sourceSecondStream, alertTitle + "#2", creatorUser);
             secondStreamID = secondStream.getId();
             if (!sourceAlert.getSecondPipelineFieldRules().isEmpty()) {
@@ -515,12 +515,12 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
 
         for (Output output : sourceFirstStream.getOutputs()) {
-            streamService.addOutput(firstStream, output);
+            this.streamService.addOutput(firstStream, output);
         }
         this.clusterEventBus.post(StreamsChangedEvent.create(firstStream.getId()));
 
         // Create Notification
-        LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) eventNotificationsResource.get(sourceAlert.getNotificationID()).config();
+        LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) this.eventNotificationsResource.get(sourceAlert.getNotificationID()).config();
         String notificationID = this.alertRuleUtilsService.createNotification(alertTitle, loggingNotificationConfig.severity().getType(), userContext);
 
         // Create Condition
@@ -597,18 +597,18 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 this.streamPipelineService.deleteStreamFromID(alertRule.getSecondStreamID());
             }
 
-            //Delete Event
+            // Delete Event
             if (alertRule.getEventID() != null && !alertRule.getEventID().isEmpty()) {
                 this.eventDefinitionsResource.delete(alertRule.getEventID());
             }
             if (alertRule.getNotificationID() != null && !alertRule.getNotificationID().isEmpty()) {
-                eventNotificationsResource.delete(alertRule.getNotificationID());
+                this.eventNotificationsResource.delete(alertRule.getNotificationID());
             }
             if (alertRule.getSecondEventID() != null && !alertRule.getSecondEventID().isEmpty()) {
                 this.eventDefinitionsResource.delete(alertRule.getSecondEventID());
             }
 
-            //Delete Pipeline
+            // Delete Pipeline
             if (alertRule.getPipelineID() != null && alertRule.getPipelineRuleID() != null) {
                 this.streamPipelineService.deletePipeline(alertRule.getPipelineID(), alertRule.getPipelineRuleID());
             }
