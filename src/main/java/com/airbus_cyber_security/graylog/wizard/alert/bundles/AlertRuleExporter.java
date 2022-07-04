@@ -59,7 +59,7 @@ public class AlertRuleExporter {
 	public List<ExportAlertRule> export(List<String> titles){
 		List<ExportAlertRule> listAlertRules = Lists.newArrayListWithCapacity(titles.size()) ;
 		
-		for (String title : titles) {
+		for (String title: titles) {
 			try {
 				AlertRule alert = this.alertRuleService.load(title);
 				
@@ -72,7 +72,7 @@ public class AlertRuleExporter {
 
 				AlertRuleStream alertRuleStream2;
 		        if (alert.getSecondStreamID() != null && !alert.getSecondStreamID().isEmpty()) {
-		        	final Stream stream2 = this.streamService.load(alert.getSecondStreamID());
+		        	Stream stream2 = this.streamService.load(alert.getSecondStreamID());
 					List<FieldRule> fieldRules2 = new ArrayList<>();
 					Optional.ofNullable(alert.getSecondPipelineFieldRules()).ifPresent(fieldRules2::addAll);
 					Optional.ofNullable(this.alertRuleUtils.getListFieldRule(stream2.getStreamRules())).ifPresent(fieldRules2::addAll);
