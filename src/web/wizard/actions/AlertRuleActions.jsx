@@ -24,7 +24,6 @@ const AlertRuleActions = Reflux.createActions({
     create: {asyncResult: true},
     deleteByName: {asyncResult: true},
     update: {asyncResult: true},
-    clone: {asyncResult: true},
     exportAlertRules: {asyncResult: true},
     importAlertRules: {asyncResult: true},
 });
