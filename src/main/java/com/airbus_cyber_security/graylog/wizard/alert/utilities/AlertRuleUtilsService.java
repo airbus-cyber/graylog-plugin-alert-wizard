@@ -84,14 +84,14 @@ public class AlertRuleUtilsService {
     }
 
     public void checkIsValidRequest(AlertRuleRequest request) {
-        if (!alertRuleService.isValidRequest(request)) {
+        if (!this.alertRuleService.isValidRequest(request)) {
             LOG.error("Invalid alert rule request");
             throw new BadRequestException("Invalid alert rule request.");
         }
     }
 
     private int countAlerts(String streamID, DateTime since) {
-        final List<Alert> alerts = alertService.loadRecentOfStream(streamID, since, 999);
+        List<Alert> alerts = this.alertService.loadRecentOfStream(streamID, since, 999);
         return alerts.size();
     }
 
@@ -99,15 +99,15 @@ public class AlertRuleUtilsService {
         LOG.debug("Get data alert: " + alert.getTitle());
         try {
             String streamID = alert.getStreamID();
-            Stream stream = streamService.load(streamID);
+            Stream stream = this.streamService.load(streamID);
 
             // Get the event
             Map<String, Object> parametersCondition = null;
             String eventTitle;
             if (alert.getEventID() != null && !alert.getEventID().isEmpty()) {
-                EventDefinitionDto event = eventDefinitionsResource.get(alert.getEventID());
+                EventDefinitionDto event = this.eventDefinitionsResource.get(alert.getEventID());
                 eventTitle = event.title();
-                parametersCondition = alertRuleUtils.getConditionParameters(event.config());
+                parametersCondition = this.alertRuleUtils.getConditionParameters(event.config());
             } else {
                 eventTitle = alert.getTitle();
                 LOG.error("Alert " + alert.getTitle() + " is broken event id is null");
@@ -115,19 +115,19 @@ public class AlertRuleUtilsService {
 
             List<FieldRule> fieldRules = new ArrayList<>();
             Optional.ofNullable(alert.getPipelineFieldRules()).ifPresent(fieldRules::addAll);
-            Optional.ofNullable(alertRuleUtils.getListFieldRule(stream.getStreamRules())).ifPresent(fieldRules::addAll);
+            Optional.ofNullable(this.alertRuleUtils.getListFieldRule(stream.getStreamRules())).ifPresent(fieldRules::addAll);
             AlertRuleStream alertRuleStream = AlertRuleStream.create(streamID, stream.getMatchingType().toString(), fieldRules);
 
             AlertRuleStream alertRuleStream2 = null;
             if (alert.getSecondStreamID() != null && !alert.getSecondStreamID().isEmpty()) {
-                Stream stream2 = streamService.load(alert.getSecondStreamID());
+                Stream stream2 = this.streamService.load(alert.getSecondStreamID());
                 List<FieldRule> fieldRules2 = new ArrayList<>();
                 Optional.ofNullable(alert.getSecondPipelineFieldRules()).ifPresent(fieldRules2::addAll);
-                Optional.ofNullable(alertRuleUtils.getListFieldRule(stream2.getStreamRules())).ifPresent(fieldRules2::addAll);
+                Optional.ofNullable(this.alertRuleUtils.getListFieldRule(stream2.getStreamRules())).ifPresent(fieldRules2::addAll);
                 alertRuleStream2 = AlertRuleStream.create(alert.getSecondStreamID(), stream2.getMatchingType().toString(), fieldRules2);
             }
 
-            LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) eventNotificationsResource.get(alert.getNotificationID()).config();
+            LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) this.eventNotificationsResource.get(alert.getNotificationID()).config();
             LOG.debug("Severity: " + loggingNotificationConfig.severity().getType());
 
             return GetDataAlertRule.create(alert.getTitle(), eventTitle,
@@ -298,14 +298,14 @@ public class AlertRuleUtilsService {
     }
 
     private String getDefaultLogBody() {
-        final LoggingAlertConfig generalConfig = clusterConfigService.getOrDefault(LoggingAlertConfig.class,
+        final LoggingAlertConfig generalConfig = this.clusterConfigService.getOrDefault(LoggingAlertConfig.class,
                 LoggingAlertConfig.createDefault());
         return generalConfig.accessLogBody();
     }
 
     private int getDefaultTime() {
         // TODO would it work to get the configuration once directly in the constructor? Or better even, inject the AlertWizardConfig?
-        LoggingAlertConfig configuration = clusterConfigService.getOrDefault(LoggingAlertConfig.class,
+        LoggingAlertConfig configuration = this.clusterConfigService.getOrDefault(LoggingAlertConfig.class,
                 LoggingAlertConfig.createDefault());
         return configuration.accessAggregationTime();
     }
@@ -342,7 +342,7 @@ public class AlertRuleUtilsService {
     }
 
     public void updateNotification(String title, String notificationID, String severity) {
-        NotificationDto notification = eventNotificationsResource.get(notificationID);
+        NotificationDto notification = this.eventNotificationsResource.get(notificationID);
         LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) notification.config();
         if (!loggingNotificationConfig.severity().getType().equals(severity) || !notification.title().equals(title)) {
             LOG.debug("Update Notification " + title);
@@ -429,7 +429,7 @@ public class AlertRuleUtilsService {
 
     public void updateEvent(String alertTitle, String eventID, EventProcessorConfig configuration) {
         LOG.debug("Update Event: " + alertTitle + " ID: " + eventID);
-        EventDefinitionDto event = eventDefinitionsResource.get(eventID);
+        EventDefinitionDto event = this.eventDefinitionsResource.get(eventID);
         event = EventDefinitionDto.builder()
                 .id(event.id())
                 .title(alertTitle)
