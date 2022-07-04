@@ -75,9 +75,9 @@ public class AlertRuleUtils {
 			return 0;
 		}
 
-		if(expressionRight instanceof Expr.NumberValue){
+		if (expressionRight instanceof Expr.NumberValue) {
 			return ((Expr.NumberValue) expressionRight).value();
-		}else{
+		} else {
 			LOG.error("Can't get threshold, error cast Right Expression");
 			return 0;
 		}
@@ -117,9 +117,9 @@ public class AlertRuleUtils {
     public List<FieldRule> getListFieldRule(List<StreamRule> listStreamRule) {
          List<FieldRule> listFieldRule = new ArrayList<>();
          for (StreamRule streamRule: listStreamRule) {
-             if(streamRule.getInverted()){
+             if (streamRule.getInverted()) {
                  listFieldRule.add(FieldRule.create(streamRule.getId(), streamRule.getField(), -streamRule.getType().toInteger(), streamRule.getValue()));
-             }else{
+             } else {
                  listFieldRule.add(FieldRule.create(streamRule.getId(), streamRule.getField(), streamRule.getType().toInteger(), streamRule.getValue()));
              }
          }
@@ -127,8 +127,7 @@ public class AlertRuleUtils {
     }
     
 	public boolean isValidSeverity(String severity) {
-		return  (severity.equals("info") || severity.equals("low") ||
-				severity.equals("medium") || severity.equals("high"));
+		return (severity.equals("info") || severity.equals("low") || severity.equals("medium") || severity.equals("high"));
 	}
 
 	public Map<String, Object> getNotificationParameters(LoggingNotificationConfig loggingNotificationConfig){
