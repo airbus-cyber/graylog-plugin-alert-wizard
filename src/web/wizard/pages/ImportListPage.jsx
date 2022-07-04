@@ -22,7 +22,7 @@ import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Row, Col, Button } from 'components/graylog';
 import messages_fr from 'translations/fr.json';
-import AlertListActions from 'wizard/components/lists/AlertListActions';
+import AlertListActions from 'wizard/actions/AlertListActions';
 import { DocumentTitle, PageHeader } from 'components/common';
 
 let frLocaleData = require('react-intl/locale-data/fr');

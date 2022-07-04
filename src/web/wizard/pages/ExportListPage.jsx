@@ -17,16 +17,16 @@
 
 import React from 'react';
 import createReactClass from 'create-react-class';
-import Routes from 'routing/Routes';
 import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
+import {LinkContainer} from 'react-router-bootstrap';
 import messages_fr from 'translations/fr.json';
 import { Row, Col, Button } from 'components/graylog';
-import AlertListActions from 'wizard/components/lists/AlertListActions';
 import {DocumentTitle, PageHeader} from 'components/common';
-import {LinkContainer} from 'react-router-bootstrap';
-import FileSaver from 'wizard/logic/FileSaver';
 import UserNotification from 'util/UserNotification';
 import DateTime from 'logic/datetimes/DateTime';
+import Routes from 'routing/Routes';
+import AlertListActions from 'wizard/actions/AlertListActions';
+import FileSaver from 'wizard/logic/FileSaver';
 import IconDownload from 'wizard/components/icons/Download';
 
 let frLocaleData = require('react-intl/locale-data/fr');

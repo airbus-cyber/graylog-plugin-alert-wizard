@@ -29,7 +29,7 @@ import {DataTable, IfPermitted, OverlayElement, Spinner, Timestamp} from 'compon
 import PermissionsMixin from 'util/PermissionsMixin';
 import Routes from 'routing/Routes';
 import AlertListStore from 'wizard/stores/AlertListStore';
-import AlertListActions from './AlertListActions';
+import AlertListActions from 'wizard/actions/AlertListActions';
 import AlertListForm from './AlertListForm';
 
 const CurrentUserStore = StoreProvider.getStore('CurrentUser');

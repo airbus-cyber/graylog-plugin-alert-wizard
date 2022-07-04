@@ -27,7 +27,7 @@ import Routes from 'routing/Routes';
 import {LinkContainer} from 'react-router-bootstrap';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import {Input} from 'components/bootstrap';
-import AlertListActions from './AlertListActions';
+import AlertListActions from 'wizard/actions/AlertListActions';
 import AlertListStore from 'wizard/stores/AlertListStore';
 
 const INIT_LIST = {

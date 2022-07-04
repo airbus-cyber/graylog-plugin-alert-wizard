@@ -24,7 +24,7 @@ import {Input} from 'components/bootstrap';
 import {Select, Spinner, TypeAheadFieldInput} from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import StoreProvider from 'injection/StoreProvider';
-import AlertListActions from './lists/AlertListActions';
+import AlertListActions from 'wizard/actions/AlertListActions';
 import AlertListStore from 'wizard/stores/AlertListStore';
 import IconRemove from './icons/Remove';
 import FormsUtils from 'util/FormsUtils';

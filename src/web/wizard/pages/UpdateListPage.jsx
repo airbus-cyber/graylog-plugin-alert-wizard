@@ -23,7 +23,7 @@ import {Button, Col, Row} from 'components/graylog';
 import {LinkContainer} from 'react-router-bootstrap';
 import {DocumentTitle, PageHeader, Spinner} from 'components/common';
 import CreateListFormInput from 'wizard/components/lists/CreateListFormInput';
-import AlertListActions from 'wizard/components/lists/AlertListActions';
+import AlertListActions from 'wizard/actions/AlertListActions';
 import StoreProvider from 'injection/StoreProvider';
 import Routes from 'routing/Routes';
 import {addLocaleData, FormattedMessage, IntlProvider} from 'react-intl';

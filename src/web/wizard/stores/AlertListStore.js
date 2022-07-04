@@ -20,7 +20,7 @@ import URLUtils from 'util/URLUtils';
 import UserNotification from 'util/UserNotification';
 import fetch from 'logic/rest/FetchProvider';
 import RestUtils from './RestUtils';
-import AlertListActions from 'wizard/components/lists/AlertListActions';
+import AlertListActions from 'wizard/actions/AlertListActions';
 
 const AlertListStore = Reflux.createStore({
     listenables: [AlertListActions],
