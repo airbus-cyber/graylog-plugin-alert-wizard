@@ -17,16 +17,16 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
+import {FormattedMessage} from 'react-intl';
 import Reflux from 'reflux';
-import AlertListActions from './lists/AlertListActions';
 import createReactClass from 'create-react-class';
 import {Input} from 'components/bootstrap';
 import {Select, Spinner, TypeAheadFieldInput} from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import StoreProvider from 'injection/StoreProvider';
-import {FormattedMessage} from 'react-intl';
-import AlertListStore from "./lists/AlertListStore";
-import IconRemove from "./icons/Remove";
+import AlertListActions from './lists/AlertListActions';
+import AlertListStore from 'wizard/stores/AlertListStore';
+import IconRemove from './icons/Remove';
 import FormsUtils from 'util/FormsUtils';
 
 
