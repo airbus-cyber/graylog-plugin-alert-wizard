@@ -137,7 +137,18 @@ const AlertRuleList = createReactClass({
     },
 
     _onCloneSubmit(name, title, description) {
-        AlertRuleActions.clone(name, title, description).finally(() => this.list());
+        AlertRuleActions.get(name).then(rule => {
+            const newRule = {
+                title: title,
+                description: description,
+                severity: rule.severity,
+                condition_type: rule.condition_type,
+                condition_parameters: rule.condition_parameters,
+                stream: rule.stream,
+                second_stream: rule.second_stream
+            }
+            AlertRuleActions.create(newRule).finally(() => this.list());
+        });
     },
     
     _availableSeverityTypes() {
