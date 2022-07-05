@@ -132,13 +132,10 @@ public class StreamPipelineService {
         return "rule \"function " + alertTitle + "\"\nwhen\n" + fields + "then\n  route_to_stream(\"" + alertTitle + "\", \"" + stream.getId() + "\");\nend";
     }
 
-    public RuleDao createPipelineRule(String alertTitle, List<FieldRule> listfieldRule, Stream stream, String ruleID) {
+    public RuleDao createPipelineRule(String alertTitle, List<FieldRule> listfieldRule, Stream stream) {
         DateTime now = DateTime.now(DateTimeZone.UTC);
 
-        if (ruleID == null) {
-            // TODO factor the random utility (with LookupService)!!!
-            ruleID = RandomStringUtils.random(RANDOM_COUNT, RANDOM_CHARS);
-        }
+        String ruleID = RandomStringUtils.random(RANDOM_COUNT, RANDOM_CHARS);
         String ruleSource = createRuleSource(alertTitle, listfieldRule, stream);
         RuleDao cr = RuleDao.create(ruleID, "function " + alertTitle, AlertRuleUtils.COMMENT_ALERT_WIZARD, ruleSource, now, now);
 
@@ -278,7 +275,7 @@ public class StreamPipelineService {
         String pipelineRuleID = null;
         List<FieldRule> listPipelineFieldRule = extractPipelineFieldRules(listfieldRule);
         if (!listPipelineFieldRule.isEmpty()) {
-            RuleDao pipelineRule = createPipelineRule(alertTitle, listPipelineFieldRule, stream, null);
+            RuleDao pipelineRule = createPipelineRule(alertTitle, listPipelineFieldRule, stream);
             PipelineDao pipeline = createPipeline(alertTitle, matchingType);
             pipelineID = pipeline.id();
             pipelineRuleID = pipelineRule.id();
