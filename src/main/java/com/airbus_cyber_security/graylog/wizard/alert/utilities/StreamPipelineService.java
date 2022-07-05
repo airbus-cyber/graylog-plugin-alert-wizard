@@ -245,40 +245,6 @@ public class StreamPipelineService {
         this.clusterEventBus.post(StreamsChangedEvent.create(stream.getId()));
     }
 
-    public Stream cloneStream(Stream sourceStream, String newTitle, String creatorUser) throws ValidationException {
-        LOG.debug("Clone Stream: " + sourceStream.getId());
-        // Create stream.
-        final Map<String, Object> streamData = Maps.newHashMap();
-        streamData.put(StreamImpl.FIELD_TITLE, newTitle);
-        streamData.put(StreamImpl.FIELD_DESCRIPTION, AlertRuleUtils.COMMENT_ALERT_WIZARD);
-        streamData.put(StreamImpl.FIELD_CREATOR_USER_ID, creatorUser);
-        streamData.put(StreamImpl.FIELD_CREATED_AT, Tools.nowUTC());
-        streamData.put(StreamImpl.FIELD_MATCHING_TYPE, sourceStream.getMatchingType().toString());
-        streamData.put(StreamImpl.FIELD_REMOVE_MATCHES_FROM_DEFAULT_STREAM, sourceStream.getRemoveMatchesFromDefaultStream());
-        streamData.put(StreamImpl.FIELD_INDEX_SET_ID, indexSetID);
-
-        Stream stream = this.streamService.create(streamData);
-        stream.setDisabled(false);
-
-        String streamID = this.streamService.save(stream);
-
-        List<StreamRule> sourceStreamRules = this.streamRuleService.loadForStream(sourceStream);
-        for (StreamRule streamRule : sourceStreamRules) {
-            Map<String, Object> streamRuleData = Maps.newHashMapWithExpectedSize(6);
-
-            streamRuleData.put(StreamRuleImpl.FIELD_TYPE, streamRule.getType().toInteger());
-            streamRuleData.put(StreamRuleImpl.FIELD_FIELD, streamRule.getField());
-            streamRuleData.put(StreamRuleImpl.FIELD_VALUE, streamRule.getValue());
-            streamRuleData.put(StreamRuleImpl.FIELD_INVERTED, streamRule.getInverted());
-            streamRuleData.put(StreamRuleImpl.FIELD_STREAM_ID, new ObjectId(streamID));
-            streamRuleData.put(StreamRuleImpl.FIELD_DESCRIPTION, streamRule.getDescription());
-
-            StreamRule newStreamRule = this.streamRuleService.create(streamRuleData);
-            this.streamRuleService.save(newStreamRule);
-        }
-        return stream;
-    }
-
     private void deleteStream(Stream stream){
         try {
             if(stream != null) {
