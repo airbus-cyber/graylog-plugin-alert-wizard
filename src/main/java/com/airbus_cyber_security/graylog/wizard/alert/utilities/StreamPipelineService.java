@@ -153,12 +153,11 @@ public class StreamPipelineService {
     }
 
     public PipelineDao createPipeline(String alertTitle, String matchingType) {
-
-        final DateTime now = DateTime.now(DateTimeZone.UTC);
+        DateTime now = DateTime.now(DateTimeZone.UTC);
 
         String pipelineID = RandomStringUtils.random(RANDOM_COUNT, RANDOM_CHARS);
-        final PipelineDao cr = PipelineDao.create(pipelineID, alertTitle, AlertRuleUtils.COMMENT_ALERT_WIZARD, createPipelineStringSource(alertTitle, matchingType), now, now);
-        final PipelineDao save = pipelineService.save(cr);
+        PipelineDao cr = PipelineDao.create(pipelineID, alertTitle, AlertRuleUtils.COMMENT_ALERT_WIZARD, createPipelineStringSource(alertTitle, matchingType), now, now);
+        PipelineDao save = pipelineService.save(cr);
 
         Set<String> pipelineIds;
         try {
