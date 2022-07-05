@@ -443,17 +443,17 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                         streamPipelineObject2.getListPipelineFieldRule()));
 
         // Decrement list usage
-        for (FieldRule fieldRule : this.alertRuleUtils.nullSafe(oldAlert.getPipelineFieldRules())) {
+        for (FieldRule fieldRule: this.alertRuleUtils.nullSafe(oldAlert.getPipelineFieldRules())) {
             this.alertListUtilsService.decrementUsage(fieldRule.getValue());
         }
-        for (FieldRule fieldRule : this.alertRuleUtils.nullSafe(oldAlert.getSecondPipelineFieldRules())) {
+        for (FieldRule fieldRule: this.alertRuleUtils.nullSafe(oldAlert.getSecondPipelineFieldRules())) {
             this.alertListUtilsService.decrementUsage(fieldRule.getValue());
         }
         // Increment list usage
-        for (FieldRule fieldRule : this.alertRuleUtils.nullSafe(streamPipelineObject.getListPipelineFieldRule())) {
+        for (FieldRule fieldRule: this.alertRuleUtils.nullSafe(streamPipelineObject.getListPipelineFieldRule())) {
             this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
-        for (FieldRule fieldRule : this.alertRuleUtils.nullSafe(streamPipelineObject2.getListPipelineFieldRule())) {
+        for (FieldRule fieldRule: this.alertRuleUtils.nullSafe(streamPipelineObject2.getListPipelineFieldRule())) {
             this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
 
