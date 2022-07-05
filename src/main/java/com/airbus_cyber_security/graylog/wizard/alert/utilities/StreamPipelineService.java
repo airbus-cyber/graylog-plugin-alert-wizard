@@ -95,8 +95,8 @@ public class StreamPipelineService {
                 streamRuleData.put(StreamRuleImpl.FIELD_STREAM_ID, new ObjectId(streamID));
                 streamRuleData.put(StreamRuleImpl.FIELD_DESCRIPTION, AlertRuleUtils.COMMENT_ALERT_WIZARD);
 
-                final StreamRule newStreamRule = streamRuleService.create(streamRuleData);
-                streamRuleService.save(newStreamRule);
+                StreamRule newStreamRule = this.streamRuleService.create(streamRuleData);
+                this.streamRuleService.save(newStreamRule);
             }
         }
     }
@@ -237,12 +237,12 @@ public class StreamPipelineService {
         //TODO do it better (don't destroy if update)
         // Destroy existing stream rules
         for (StreamRule streamRule:stream.getStreamRules()) {
-            streamRuleService.destroy(streamRule);
+            this.streamRuleService.destroy(streamRule);
         }
         // Create stream rules.
         createStreamRule(alertRuleStream.getFieldRules(), stream.getId());
 
-        clusterEventBus.post(StreamsChangedEvent.create(stream.getId()));
+        this.clusterEventBus.post(StreamsChangedEvent.create(stream.getId()));
     }
 
     public Stream cloneStream(Stream sourceStream, String newTitle, String creatorUser) throws ValidationException {
@@ -257,14 +257,14 @@ public class StreamPipelineService {
         streamData.put(StreamImpl.FIELD_REMOVE_MATCHES_FROM_DEFAULT_STREAM, sourceStream.getRemoveMatchesFromDefaultStream());
         streamData.put(StreamImpl.FIELD_INDEX_SET_ID, indexSetID);
 
-        final Stream stream = this.streamService.create(streamData);
+        Stream stream = this.streamService.create(streamData);
         stream.setDisabled(false);
 
-        final String streamID = this.streamService.save(stream);
+        String streamID = this.streamService.save(stream);
 
-        final List<StreamRule> sourceStreamRules = streamRuleService.loadForStream(sourceStream);
+        List<StreamRule> sourceStreamRules = this.streamRuleService.loadForStream(sourceStream);
         for (StreamRule streamRule : sourceStreamRules) {
-            final Map<String, Object> streamRuleData = Maps.newHashMapWithExpectedSize(6);
+            Map<String, Object> streamRuleData = Maps.newHashMapWithExpectedSize(6);
 
             streamRuleData.put(StreamRuleImpl.FIELD_TYPE, streamRule.getType().toInteger());
             streamRuleData.put(StreamRuleImpl.FIELD_FIELD, streamRule.getField());
@@ -273,8 +273,8 @@ public class StreamPipelineService {
             streamRuleData.put(StreamRuleImpl.FIELD_STREAM_ID, new ObjectId(streamID));
             streamRuleData.put(StreamRuleImpl.FIELD_DESCRIPTION, streamRule.getDescription());
 
-            final StreamRule newStreamRule = streamRuleService.create(streamRuleData);
-            streamRuleService.save(newStreamRule);
+            StreamRule newStreamRule = this.streamRuleService.create(streamRuleData);
+            this.streamRuleService.save(newStreamRule);
         }
         return stream;
     }
@@ -283,8 +283,8 @@ public class StreamPipelineService {
         try {
             if(stream != null) {
                 this.streamService.destroy(stream);
-                clusterEventBus.post(StreamsChangedEvent.create(stream.getId()));
-                clusterEventBus.post(StreamDeletedEvent.create(stream.getId()));
+                this.clusterEventBus.post(StreamsChangedEvent.create(stream.getId()));
+                this.clusterEventBus.post(StreamDeletedEvent.create(stream.getId()));
             }
         } catch (NotFoundException e) {
             LOG.error("Cannot find the stream ", e);
