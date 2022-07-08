@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [4.0.2](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/4.0.1...4.0.2)
 ### Bug Fixes
+* Updated graylog-plugin-correlation-count dependency to [4.0.2](https://github.com/airbus-cyber/graylog-plugin-correlation-count/blob/4.0.2/CHANGELOG.md)
 
 ## [4.0.1](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/4.0.0...4.0.1)
 ### Bug Fixes
