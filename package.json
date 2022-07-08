@@ -1,6 +1,6 @@
 {
   "name": "AlertWizard",
-  "version": "4.2.1",
+  "version": "4.2.2",
   "description": "Graylog plugin AlertWizard Web Interface",
   "repository": {
     "type": "git",
