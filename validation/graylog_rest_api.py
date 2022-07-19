@@ -178,7 +178,7 @@ class GraylogRestApi:
             'description': '',
             # TODO: improve API => it should accept a list directly here...
             'lists': ';'.join(values),
-	    'title': title
+            'title': title
         }
         self._post('plugins/com.airbus_cyber_security.graylog.wizard/lists', payload)
 
