@@ -184,7 +184,6 @@ class GraylogRestApi:
 
     def get_notification_with_title(self, title):
         notifications = self._get('events/notifications')
-        associated_notification = None
         for notification in notifications.json()['notifications']:
             if notification['title'] == title:
                 return notification
