@@ -18,9 +18,13 @@ jobs:
         id: requestPom
         working-directory: plugin
         run: |
-          echo ::set-output name=name::$(mvn help:evaluate -Dexpression=project.name -q -DforceStdout)
-          echo ::set-output name=version::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo ::set-output name=graylogVersion::$(mvn help:evaluate -Dexpression=project.parent.version -q -DforceStdout)
+
+          NAME=$(mvn help:evaluate -Dexpression=project.name -q -DforceStdout)
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo ::set-output name=jarPath::target/${NAME}-${VERSION}.jar
+          echo ::set-output name=rpmPath::target/rpm/${NAME}/RPMS/noarch/${NAME}-${VERSION}-1.noarch.rpm
+          echo ::set-output name=debPath::target/${NAME}-${VERSION}.deb
       - name: Cache Graylog
         uses: actions/cache@v2
         id: cache
@@ -52,7 +56,7 @@ jobs:
         working-directory: plugin
         run: |
           mkdir runtime/graylog/plugin
-          cp target/${{ steps.requestPom.outputs.name }}-${{ steps.requestPom.outputs.version }}.jar runtime/graylog/plugin
+          cp ${{ steps.requestPom.outputs.jarPath }} runtime/graylog/plugin
       - name: Execute backend tests
         working-directory: plugin/validation
         run: |
@@ -66,14 +70,9 @@ jobs:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
+          mvn rpm:rpm
           echo -n "$GPG_PRIVATE_KEY" | gpg2 --batch --allow-secret-key-import --import
-          gpg2 --export-secret-keys --batch --pinentry-mode loopback --passphrase "$PASSPHRASE" > $HOME/.gnupg/secring.gpg
-          gpgconf --kill gpg-agent
-          gpg-agent --homedir $HOME/.gnupg --use-standard-socket --daemon --allow-preset-passphrase
-          /usr/lib/gnupg2/gpg-preset-passphrase --passphrase "$PASSPHRASE" --preset EE656BBE6B3BB6A9175906357570DD0D78DA030F
-          sudo apt-get install -y expect
-          mvn rpm:rpm --settings deployment/settings.xml
-          gpgconf --kill gpg-agent
+          rpm --define "_gpg_name Airbus CyberSecurity" --define "_gpg_sign_cmd_extra_args --pinentry-mode loopback --passphrase $PASSPHRASE" --addsign "${{ steps.requestPom.outputs.rpmPath }}"
       - name: Package signed .deb
         working-directory: plugin
         env:
@@ -91,28 +90,28 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: jar
-          path: plugin/target/${{ steps.requestPom.outputs.name }}-${{ steps.requestPom.outputs.version }}.jar
+          path: plugin/${{ steps.requestPom.outputs.jarPath }}
           if-no-files-found: error
       - name: Archive .rpm
         uses: actions/upload-artifact@v2
         with:
           name: rpm
-          path: plugin/target/rpm/${{ steps.requestPom.outputs.name }}/RPMS/noarch/${{ steps.requestPom.outputs.name }}-${{ steps.requestPom.outputs.version }}-1.noarch.rpm
+          path: plugin/${{ steps.requestPom.outputs.rpmPath }}
           if-no-files-found: error
       - name: Archive .deb
         uses: actions/upload-artifact@v2
         with:
           name: deb
-          path: plugin/target/${{ steps.requestPom.outputs.name }}-${{ steps.requestPom.outputs.version }}.deb
+          path: plugin/${{ steps.requestPom.outputs.debPath }}
           if-no-files-found: error
       - name: Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            plugin/target/${{ steps.requestPom.outputs.name }}-${{ steps.requestPom.outputs.version }}.jar
-            plugin/target/rpm/${{ steps.requestPom.outputs.name }}/RPMS/noarch/${{ steps.requestPom.outputs.name }}-${{ steps.requestPom.outputs.version }}-1.noarch.rpm
-            plugin/target/${{ steps.requestPom.outputs.name }}-${{ steps.requestPom.outputs.version }}.deb
+            plugin/${{ steps.requestPom.outputs.jarPath }}
+            plugin/${{ steps.requestPom.outputs.rpmPath }}
+            plugin/${{ steps.requestPom.outputs.debPath }}
           fail_on_unmatched_files: true
       - name: Deploy to Maven Central
         if: startsWith(github.ref, 'refs/tags/')
