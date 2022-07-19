@@ -1,5 +1,4 @@
 import requests
-import time
 from urllib import parse
 from requests.exceptions import ConnectionError
 
