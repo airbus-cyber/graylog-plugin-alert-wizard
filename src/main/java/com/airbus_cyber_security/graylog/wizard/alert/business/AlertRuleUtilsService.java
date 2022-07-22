@@ -233,16 +233,16 @@ public class AlertRuleUtilsService {
         }
     }
 
-    private Expression<Boolean> createExpressionFromThreshold(String ID, String thresholdType, int threshold) {
-        final Expr.NumberReference left = Expr.NumberReference.create(ID);
-        final Expr.NumberValue right = Expr.NumberValue.create(threshold);
+    private Expression<Boolean> createExpressionFromThreshold(String identifier, String thresholdType, int threshold) {
+        Expr.NumberReference left = Expr.NumberReference.create(identifier);
+        Expr.NumberValue right = Expr.NumberValue.create(threshold);
         switch (thresholdType) {
-            case "HIGHER": //For Compatibility with older version
+            case "HIGHER": // For Compatibility with older version, TODO remove
             case ">":
                 return Expr.Greater.create(left, right);
             case ">=":
                 return Expr.GreaterEqual.create(left, right);
-            case "LOWER": //For Compatibility with older version
+            case "LOWER": // For Compatibility with older version, TODO remove
             case "<":
                 return Expr.Lesser.create(left, right);
             case "<=":
@@ -257,14 +257,14 @@ public class AlertRuleUtilsService {
     public EventProcessorConfig createStatisticalCondition(String streamID, Map<String, Object> conditionParameter) {
         LOG.debug("Begin Stat, type: " + conditionParameter.get("type"));
 
-        String ID = UUID.randomUUID().toString();
-        final AggregationSeries serie = AggregationSeries.builder()
-                .id(ID)
+        String identifier = UUID.randomUUID().toString();
+        AggregationSeries serie = AggregationSeries.builder()
+                .id(identifier)
                 .function(mapTypeToAggregationFunction(conditionParameter.get("type").toString()))
                 .field(conditionParameter.get("field").toString())
                 .build();
 
-        final Expression<Boolean> expression = createExpressionFromThreshold(ID,
+        Expression<Boolean> expression = createExpressionFromThreshold(identifier,
                 conditionParameter.get("threshold_type").toString(),
                 (int) conditionParameter.get("threshold"));
 
