@@ -31,8 +31,8 @@ const NumberCondition = createReactClass({
     },   
     getDefaultProps() {
         return {
-            threshold_type:'',
-            threshold:'',
+            threshold_type: '',
+            threshold: '',
         };
     },
     getInitialState() {
