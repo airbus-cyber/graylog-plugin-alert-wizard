@@ -260,7 +260,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         Stream stream = this.streamPipelineService.createStream(streamConfiguration, alertTitle, userName);
         List<FieldRule> fieldRules = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration.getFieldRules());
         StreamPipelineObject streamPipelineObject = this.createPipelineAndRule(stream, alertTitle, fieldRules, streamConfiguration.getMatchingType());
-        String streamIdentifier = streamPipelineObject.getStream().getId();
+        String streamIdentifier = stream.getId();
 
         // Create second stream and pipeline
         String streamIdentifier2 = null;
@@ -275,7 +275,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         //Create Events
         String eventIdentifier = createEvent(alertTitle, notificationID, conditionType, conditionParameters, userContext, streamIdentifier, streamIdentifier2);
-        String eventIdentifier2 = createSecondEvent(alertTitle, notificationID, conditionType, conditionParameters, userContext, streamIdentifier2, streamPipelineObject2);
+        String eventIdentifier2 = createSecondEvent(alertTitle, notificationID, conditionType, conditionParameters, userContext, streamIdentifier2);
 
         this.clusterEventBus.post(StreamsChangedEvent.create(streamIdentifier));
         AlertRule alertRule = AlertRule.create(
@@ -312,16 +312,12 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return this.alertRuleUtilsService.createEvent(alertTitle, notificationID, configuration, userContext);
     }
 
-    private String createSecondEvent(String alertTitle, String notificationID, String conditionType, Map<String, Object> conditionParameters, UserContext userContext, String streamIdentifier2, StreamPipelineObject streamPipelineObject2) {
-        String eventIdentifier2 = null;
-        //Or Event for Second Stream
-        if (conditionType.equals("OR") && streamPipelineObject2.getStream() != null) {
-            //Create Condition
-            EventProcessorConfig configuration2 = this.alertRuleUtilsService.createAggregationCondition(streamIdentifier2, conditionParameters);
-            //Create Event
-            eventIdentifier2 = this.alertRuleUtilsService.createEvent(alertTitle + "#2", notificationID, configuration2, userContext);
+    private String createSecondEvent(String alertTitle, String notificationID, String conditionType, Map<String, Object> conditionParameters, UserContext userContext, String streamIdentifier2) {
+        if (!conditionType.equals("OR")) {
+            return null;
         }
-        return eventIdentifier2;
+        EventProcessorConfig configuration2 = this.alertRuleUtilsService.createAggregationCondition(streamIdentifier2, conditionParameters);
+        return this.alertRuleUtilsService.createEvent(alertTitle + "#2", notificationID, configuration2, userContext);
     }
 
     private void importAlertRule(ExportAlertRule alertRule, UserContext userContext) throws ValidationException {
