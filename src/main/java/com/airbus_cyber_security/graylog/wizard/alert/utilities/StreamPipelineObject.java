@@ -38,15 +38,14 @@ public class StreamPipelineObject {
         return pipelineRuleID;
     }
 
-    Stream stream;
-    String pipelineID;
-    String pipelineRuleID;
-    List<FieldRule> listPipelineFieldRule;
-    public StreamPipelineObject(Stream stream, String pipelineID, String pipelineRuleID, List<FieldRule> listPipelineFieldRule)
+    private final Stream stream;
+    private final String pipelineID;
+    private final String pipelineRuleID;
+
+    public StreamPipelineObject(Stream stream, String pipelineID, String pipelineRuleID)
     {
         this.stream = stream;
         this.pipelineID = pipelineID;
         this.pipelineRuleID = pipelineRuleID;
-        this.listPipelineFieldRule = listPipelineFieldRule;
     }
 }

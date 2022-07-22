@@ -245,15 +245,12 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     }
 
     public StreamPipelineObject createPipelineAndRule(Stream stream, String alertTitle, List<FieldRule> pipelineFieldRules, String matchingType){
-        String pipelineID = null;
-        String pipelineRuleID = null;
-        if (!pipelineFieldRules.isEmpty()) {
-            RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(alertTitle, pipelineFieldRules, stream);
-            PipelineDao pipeline = this.streamPipelineService.createPipeline(alertTitle, matchingType);
-            pipelineID = pipeline.id();
-            pipelineRuleID = pipelineRule.id();
+        if (pipelineFieldRules.isEmpty()) {
+            return new StreamPipelineObject(stream, null, null);
         }
-        return new StreamPipelineObject(stream, pipelineID, pipelineRuleID, pipelineFieldRules);
+        RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(alertTitle, pipelineFieldRules, stream);
+        PipelineDao pipeline = this.streamPipelineService.createPipeline(alertTitle, matchingType);
+        return new StreamPipelineObject(stream, pipeline.id(), pipelineRule.id());
     }
     private void createAlertRule(AlertRuleStream streamConfiguration, AlertRuleStream streamConfiguration2, String alertTitle, String notificationID,                                 String description, String conditionType,
                                  Map<String, Object> conditionParameters, UserContext userContext) throws ValidationException {
@@ -268,7 +265,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         // Create second stream and pipeline
         String streamIdentifier2 = null;
         List<FieldRule> fieldRules2 = null;
-        StreamPipelineObject streamPipelineObject2 = new StreamPipelineObject(null, null, null, null);
+        StreamPipelineObject streamPipelineObject2 = new StreamPipelineObject(null, null, null);
         if (conditionType.equals("THEN") || conditionType.equals("AND") || conditionType.equals("OR")) {
             Stream stream2 = this.streamPipelineService.createStream(streamConfiguration2, alertTitle + "#2", userName);
             streamIdentifier2 = stream2.getId();
@@ -407,7 +404,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         // update pipeline 2
         this.streamPipelineService.deletePipeline(oldAlert.getSecondPipelineID(), oldAlert.getSecondPipelineRuleID());
-        StreamPipelineObject streamPipelineObject2 = new StreamPipelineObject(null, null, null, null);
+        StreamPipelineObject streamPipelineObject2 = new StreamPipelineObject(null, null, null);
         List<FieldRule> fieldRules2 = null;
         if (stream2 != null) {
             streamID2 = stream2.getId();
