@@ -18,9 +18,7 @@
 package com.airbus_cyber_security.graylog.wizard.alert.utilities;
 
 
-// TODO remove stream from the StreamPipelineObject
-//      think about this object, I am not very fond of it
-public class StreamPipelineObject {
+public class Pipeline {
 
     public String getPipelineID() {
         return pipelineID;
@@ -33,7 +31,7 @@ public class StreamPipelineObject {
     private final String pipelineID;
     private final String pipelineRuleID;
 
-    public StreamPipelineObject(String pipelineID, String pipelineRuleID)
+    public Pipeline(String pipelineID, String pipelineRuleID)
     {
         this.pipelineID = pipelineID;
         this.pipelineRuleID = pipelineRuleID;
