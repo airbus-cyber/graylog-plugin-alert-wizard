@@ -192,6 +192,41 @@ public class AlertRuleUtilsService {
     }
 
     public EventProcessorConfig createAggregationCondition(String streamIdentifier, Map<String, Object> conditionParameter) {
+        /* TODO
+        0 MORE >
+        1 LESS <
+
+        createExpressionFromNumberThreshold()
+
+        Set<String> streams = ImmutableSet.of(streamIdentifier);
+
+        String identifier = UUID.randomUUID().toString();
+        AggregationSeries.Builder builder = AggregationSeries.builder()
+                .id(identifier)
+                .function(AggregationFunction.COUNT); // TODO check this is right
+
+        if (!distinctFields.isEmpty()) {
+                .field(distinctFields.next()????) TODO
+        }
+        AggregationSeries series = builder.build();
+        Expression<Boolean> expression = createExpressionFromNumberThreshold(identifier, thresholdType, threshold);
+
+
+        AggregationConditions conditions = AggregationConditions.builder()
+                .expression(expression)
+                .build()
+
+        return AggregationEventProcessorConfig.builder().create()
+                .query("")
+                .streams(streams)
+                .series(ImmutableList.of(series))
+                .groupBy(groupBy)
+                .conditions(conditions)
+                .executeEveryMs(executeEveryMs)
+                .searchWithinMs(searchWithinMs)
+                .build();
+        */
+
         String trhesholdType = (String) conditionParameter.get("threshold_type");
         int threshold = (int) conditionParameter.get("threshold");
         // TODO extract method to parse searchWithinMs
