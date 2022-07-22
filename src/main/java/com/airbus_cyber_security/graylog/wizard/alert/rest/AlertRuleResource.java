@@ -261,19 +261,19 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         // Create stream and pipeline
         Stream stream = this.streamPipelineService.createStream(streamConfiguration, alertTitle, userName);
-        List<FieldRule> pipelineFieldRules = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration.getFieldRules());
-        StreamPipelineObject streamPipelineObject = this.createPipelineAndRule(stream, alertTitle, pipelineFieldRules, streamConfiguration.getMatchingType());
+        List<FieldRule> fieldRules = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration.getFieldRules());
+        StreamPipelineObject streamPipelineObject = this.createPipelineAndRule(stream, alertTitle, fieldRules, streamConfiguration.getMatchingType());
         String streamIdentifier = streamPipelineObject.getStream().getId();
-        List<FieldRule> fieldRules = streamPipelineObject.getListPipelineFieldRule();
 
         // Create second stream and pipeline
         String streamIdentifier2 = null;
+        List<FieldRule> fieldRules2 = null;
         StreamPipelineObject streamPipelineObject2 = new StreamPipelineObject(null, null, null, null);
         if (conditionType.equals("THEN") || conditionType.equals("AND") || conditionType.equals("OR")) {
             Stream stream2 = this.streamPipelineService.createStream(streamConfiguration2, alertTitle + "#2", userName);
             streamIdentifier2 = stream2.getId();
-            List<FieldRule> pipelineFieldRules2 = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration2.getFieldRules());
-            streamPipelineObject2 = this.createPipelineAndRule(stream2, alertTitle + "#2", pipelineFieldRules2, streamConfiguration.getMatchingType());
+            fieldRules2 = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration2.getFieldRules());
+            streamPipelineObject2 = this.createPipelineAndRule(stream2, alertTitle + "#2", fieldRules2, streamConfiguration.getMatchingType());
         }
 
         //Create Events
@@ -298,14 +298,14 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 fieldRules,
                 streamPipelineObject2.getPipelineID(),
                 streamPipelineObject2.getPipelineRuleID(),
-                streamPipelineObject2.getListPipelineFieldRule());
+                fieldRules2);
         this.alertRuleService.create(alertRule);
 
         //Update list usage
         for (FieldRule fieldRule: this.alertRuleUtils.nullSafe(fieldRules)) {
             this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
-        for (FieldRule fieldRule: this.alertRuleUtils.nullSafe(streamPipelineObject2.getListPipelineFieldRule())) {
+        for (FieldRule fieldRule: this.alertRuleUtils.nullSafe(fieldRules2)) {
             this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
     }
@@ -398,8 +398,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         //update pipeline
         this.streamPipelineService.deletePipeline(oldAlert.getPipelineID(), oldAlert.getPipelineRuleID());
-        List<FieldRule> pipelineFieldRules = this.streamPipelineService.extractPipelineFieldRules(request.getStream().getFieldRules());
-        StreamPipelineObject streamPipelineObject = this.createPipelineAndRule(stream, alertTitle, pipelineFieldRules, request.getStream().getMatchingType());
+        List<FieldRule> fieldRules = this.streamPipelineService.extractPipelineFieldRules(request.getStream().getFieldRules());
+        StreamPipelineObject streamPipelineObject = this.createPipelineAndRule(stream, alertTitle, fieldRules, request.getStream().getMatchingType());
 
         // Update stream 2.
         Stream stream2 = this.streamPipelineService.createOrUpdateSecondStream(request.getSecondStream(), alertTitle, userName, request.getConditionType(), oldAlert);
@@ -408,10 +408,11 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         // update pipeline 2
         this.streamPipelineService.deletePipeline(oldAlert.getSecondPipelineID(), oldAlert.getSecondPipelineRuleID());
         StreamPipelineObject streamPipelineObject2 = new StreamPipelineObject(null, null, null, null);
+        List<FieldRule> fieldRules2 = null;
         if (stream2 != null) {
             streamID2 = stream2.getId();
-            List<FieldRule> pipelineFieldRules2 = this.streamPipelineService.extractPipelineFieldRules(request.getSecondStream().getFieldRules());
-            streamPipelineObject2 = this.createPipelineAndRule(stream2, alertTitle + "#2", pipelineFieldRules2, request.getStream().getMatchingType());
+            fieldRules2 = this.streamPipelineService.extractPipelineFieldRules(request.getSecondStream().getFieldRules());
+            streamPipelineObject2 = this.createPipelineAndRule(stream2, alertTitle + "#2", fieldRules2, request.getStream().getMatchingType());
         }
 
         //update Notification
@@ -453,10 +454,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 eventID2,
                 streamPipelineObject.getPipelineID(),
                 streamPipelineObject.getPipelineRuleID(),
-                streamPipelineObject.getListPipelineFieldRule(),
+                fieldRules,
                 streamPipelineObject2.getPipelineID(),
                 streamPipelineObject2.getPipelineRuleID(),
-                streamPipelineObject2.getListPipelineFieldRule());
+                fieldRules2);
         this.alertRuleService.update(java.net.URLDecoder.decode(title, ENCODING), alertRule);
 
         // Decrement list usage
@@ -467,10 +468,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             this.alertListUtilsService.decrementUsage(fieldRule.getValue());
         }
         // Increment list usage
-        for (FieldRule fieldRule: this.alertRuleUtils.nullSafe(streamPipelineObject.getListPipelineFieldRule())) {
+        for (FieldRule fieldRule: this.alertRuleUtils.nullSafe(fieldRules)) {
             this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
-        for (FieldRule fieldRule: this.alertRuleUtils.nullSafe(streamPipelineObject2.getListPipelineFieldRule())) {
+        for (FieldRule fieldRule: this.alertRuleUtils.nullSafe(fieldRules2)) {
             this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
 

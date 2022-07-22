@@ -44,6 +44,7 @@ public abstract class AlertRuleStream {
     
     @JsonProperty("field_rule")
     @Nullable
+    // TODO should be NotNull (empty list)!!!
     public abstract List<FieldRule> getFieldRules();
 
     @JsonCreator

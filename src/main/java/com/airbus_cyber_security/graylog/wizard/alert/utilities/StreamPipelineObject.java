@@ -38,10 +38,6 @@ public class StreamPipelineObject {
         return pipelineRuleID;
     }
 
-    public List<FieldRule> getListPipelineFieldRule() {
-        return listPipelineFieldRule;
-    }
-
     Stream stream;
     String pipelineID;
     String pipelineRuleID;
