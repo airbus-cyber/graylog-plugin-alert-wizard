@@ -18,6 +18,9 @@
 package com.airbus_cyber_security.graylog.wizard.alert.utilities;
 
 import com.airbus_cyber_security.graylog.wizard.alert.*;
+import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRule;
+import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRuleStream;
+import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetDataAlertRule;
 import com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig;

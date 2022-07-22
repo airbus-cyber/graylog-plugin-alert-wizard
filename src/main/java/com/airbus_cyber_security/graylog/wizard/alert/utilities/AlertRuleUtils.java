@@ -17,7 +17,7 @@
 
 package com.airbus_cyber_security.graylog.wizard.alert.utilities;
 
-import com.airbus_cyber_security.graylog.wizard.alert.FieldRule;
+import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
 import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
 import com.airbus_cyber_security.graylog.events.processor.aggregation.AggregationCountProcessorConfig;
 import com.airbus_cyber_security.graylog.events.processor.correlation.CorrelationCountProcessorConfig;

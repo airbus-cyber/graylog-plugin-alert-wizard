@@ -17,11 +17,6 @@
 
 package com.airbus_cyber_security.graylog.wizard.alert.utilities;
 
-import com.airbus_cyber_security.graylog.wizard.alert.FieldRule;
-import org.graylog2.plugin.streams.Stream;
-
-import java.util.List;
-
 
 // TODO remove stream from the StreamPipelineObject
 //      think about this object, I am not very fond of it
