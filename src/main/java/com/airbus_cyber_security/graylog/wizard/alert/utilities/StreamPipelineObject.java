@@ -26,9 +26,6 @@ import java.util.List;
 // TODO remove stream from the StreamPipelineObject
 //      think about this object, I am not very fond of it
 public class StreamPipelineObject {
-    public Stream getStream() {
-        return stream;
-    }
 
     public String getPipelineID() {
         return pipelineID;
@@ -38,13 +35,11 @@ public class StreamPipelineObject {
         return pipelineRuleID;
     }
 
-    private final Stream stream;
     private final String pipelineID;
     private final String pipelineRuleID;
 
-    public StreamPipelineObject(Stream stream, String pipelineID, String pipelineRuleID)
+    public StreamPipelineObject(String pipelineID, String pipelineRuleID)
     {
-        this.stream = stream;
         this.pipelineID = pipelineID;
         this.pipelineRuleID = pipelineRuleID;
     }
