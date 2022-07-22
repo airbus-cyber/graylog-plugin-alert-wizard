@@ -15,9 +15,8 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-package com.airbus_cyber_security.graylog.wizard.alert.utilities;
+package com.airbus_cyber_security.graylog.wizard.alert.business;
 
-import com.airbus_cyber_security.graylog.wizard.alert.*;
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRule;
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;

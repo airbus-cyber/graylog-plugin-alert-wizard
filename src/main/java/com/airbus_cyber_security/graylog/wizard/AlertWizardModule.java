@@ -17,7 +17,7 @@
 
 package com.airbus_cyber_security.graylog.wizard;
 
-import com.airbus_cyber_security.graylog.wizard.alert.AlertRuleService;
+import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleService;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.AlertRuleResource;
 import com.airbus_cyber_security.graylog.wizard.audit.AlertWizardAuditEventTypes;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfigResource;

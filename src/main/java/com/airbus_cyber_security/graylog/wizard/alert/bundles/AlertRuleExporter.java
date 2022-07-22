@@ -18,10 +18,10 @@
 package com.airbus_cyber_security.graylog.wizard.alert.bundles;
 
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRule;
-import com.airbus_cyber_security.graylog.wizard.alert.AlertRuleService;
+import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleService;
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
-import com.airbus_cyber_security.graylog.wizard.alert.utilities.AlertRuleUtils;
+import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleUtils;
 import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
 import com.google.common.collect.Lists;
 import org.graylog.events.processor.EventProcessorConfig;

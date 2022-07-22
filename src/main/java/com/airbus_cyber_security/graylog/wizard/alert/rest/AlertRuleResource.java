@@ -18,7 +18,7 @@
 package com.airbus_cyber_security.graylog.wizard.alert.rest;
 
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRule;
-import com.airbus_cyber_security.graylog.wizard.alert.AlertRuleService;
+import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleService;
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.alert.bundles.AlertRuleExporter;
@@ -28,10 +28,10 @@ import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.Alert
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetDataAlertRule;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetListAlertRule;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetListDataAlertRule;
-import com.airbus_cyber_security.graylog.wizard.alert.utilities.AlertRuleUtils;
-import com.airbus_cyber_security.graylog.wizard.alert.utilities.AlertRuleUtilsService;
-import com.airbus_cyber_security.graylog.wizard.alert.utilities.Pipeline;
-import com.airbus_cyber_security.graylog.wizard.alert.utilities.StreamPipelineService;
+import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleUtils;
+import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleUtilsService;
+import com.airbus_cyber_security.graylog.wizard.alert.business.Pipeline;
+import com.airbus_cyber_security.graylog.wizard.alert.business.StreamPipelineService;
 import com.airbus_cyber_security.graylog.wizard.audit.AlertWizardAuditEventTypes;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
 import com.airbus_cyber_security.graylog.wizard.config.rest.ImportPolicyType;
