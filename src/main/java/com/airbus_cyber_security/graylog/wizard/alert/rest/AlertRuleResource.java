@@ -264,6 +264,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         Stream stream2 = this.streamPipelineService.createStream(stream, alertTitle, userName);
         StreamPipelineObject streamPipelineObject = this.createPipelineAndRule(stream2, alertTitle, stream.getFieldRules(), stream.getMatchingType());
         String streamIdentifier = streamPipelineObject.getStream().getId();
+        List<FieldRule> fieldRules = streamPipelineObject.getListPipelineFieldRule();
 
         // Create second stream and pipeline
         String streamID2 = null;
@@ -290,27 +291,27 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         this.clusterEventBus.post(StreamsChangedEvent.create(streamIdentifier));
         AlertRule alertRule = AlertRule.create(
-            alertTitle,
-            streamIdentifier,
-            eventID,
-            notificationID,
-            DateTime.now(),
-            userName,
-            DateTime.now(),
-            description,
-            conditionType,
-            streamID2,
-            eventID2,
-            streamPipelineObject.getPipelineID(),
-            streamPipelineObject.getPipelineRuleID(),
-            streamPipelineObject.getListPipelineFieldRule(),
-            streamPipelineObject2.getPipelineID(),
-            streamPipelineObject2.getPipelineRuleID(),
-            streamPipelineObject2.getListPipelineFieldRule());
+                alertTitle,
+                streamIdentifier,
+                eventID,
+                notificationID,
+                DateTime.now(),
+                userName,
+                DateTime.now(),
+                description,
+                conditionType,
+                streamID2,
+                eventID2,
+                streamPipelineObject.getPipelineID(),
+                streamPipelineObject.getPipelineRuleID(),
+                fieldRules,
+                streamPipelineObject2.getPipelineID(),
+                streamPipelineObject2.getPipelineRuleID(),
+                streamPipelineObject2.getListPipelineFieldRule());
         this.alertRuleService.create(alertRule);
 
         //Update list usage
-        for (FieldRule fieldRule: this.alertRuleUtils.nullSafe(streamPipelineObject.getListPipelineFieldRule())) {
+        for (FieldRule fieldRule: this.alertRuleUtils.nullSafe(fieldRules)) {
             this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
         for (FieldRule fieldRule: this.alertRuleUtils.nullSafe(streamPipelineObject2.getListPipelineFieldRule())) {
@@ -431,23 +432,23 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             this.eventDefinitionsResource.delete(eventID2);
         }
         AlertRule alertRule = AlertRule.create(
-            alertTitle,
-            oldAlert.getStreamID(),
-            oldAlert.getEventID(),
-            oldAlert.getNotificationID(),
-            oldAlert.getCreatedAt(),
-            userName,
-            DateTime.now(),
-            request.getDescription(),
-            request.getConditionType(),
-            streamID2,
-            eventID2,
-            streamPipelineObject.getPipelineID(),
-            streamPipelineObject.getPipelineRuleID(),
-            streamPipelineObject.getListPipelineFieldRule(),
-            streamPipelineObject2.getPipelineID(),
-            streamPipelineObject2.getPipelineRuleID(),
-            streamPipelineObject2.getListPipelineFieldRule());
+                alertTitle,
+                oldAlert.getStreamID(),
+                oldAlert.getEventID(),
+                oldAlert.getNotificationID(),
+                oldAlert.getCreatedAt(),
+                userName,
+                DateTime.now(),
+                request.getDescription(),
+                request.getConditionType(),
+                streamID2,
+                eventID2,
+                streamPipelineObject.getPipelineID(),
+                streamPipelineObject.getPipelineRuleID(),
+                streamPipelineObject.getListPipelineFieldRule(),
+                streamPipelineObject2.getPipelineID(),
+                streamPipelineObject2.getPipelineRuleID(),
+                streamPipelineObject2.getListPipelineFieldRule());
 
         this.alertRuleService.update(java.net.URLDecoder.decode(title, ENCODING), alertRule);
 
