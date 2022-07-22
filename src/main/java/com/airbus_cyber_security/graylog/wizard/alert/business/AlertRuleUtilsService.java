@@ -187,15 +187,21 @@ public class AlertRuleUtilsService {
                 .build();
     }
 
-    public EventProcessorConfig createAggregationCondition(String streamID, Map<String, Object> conditionParameter) {
+    public EventProcessorConfig createAggregationCondition(String streamIdentifier, Map<String, Object> conditionParameter) {
+        String trhesholdType = (String) conditionParameter.get("threshold_type");
+        int threshold = (int) conditionParameter.get("threshold");
+        long searchWithinMs = Long.parseLong(conditionParameter.get("time").toString()) * 60 * 1000;
+        long executeEveryMs = Long.parseLong(conditionParameter.get("grace").toString()) * 60 * 1000;
+        Set<String> groupByFields = convertToHashSet(conditionParameter.get("grouping_fields"));
+        Set<String> distinctFields = convertToHashSet(conditionParameter.get("distinction_fields"));
         return AggregationCountProcessorConfig.builder()
-                .stream(streamID)
-                .thresholdType((String) conditionParameter.get("threshold_type"))
-                .threshold((int) conditionParameter.get("threshold"))
-                .searchWithinMs(Long.parseLong(conditionParameter.get("time").toString()) * 60 * 1000)
-                .executeEveryMs(Long.parseLong(conditionParameter.get("grace").toString()) * 60 * 1000)
-                .groupingFields(convertToHashSet(conditionParameter.get("grouping_fields")))
-                .distinctionFields(convertToHashSet(conditionParameter.get("distinction_fields")))
+                .stream(streamIdentifier)
+                .thresholdType(trhesholdType)
+                .threshold(threshold)
+                .searchWithinMs(searchWithinMs)
+                .executeEveryMs(executeEveryMs)
+                .groupingFields(groupByFields)
+                .distinctionFields(distinctFields)
                 .comment(AlertRuleUtils.COMMENT_ALERT_WIZARD)
                 .searchQuery("*")
                 .build();
