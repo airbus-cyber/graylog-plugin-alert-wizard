@@ -281,24 +281,25 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
 
         this.clusterEventBus.post(StreamsChangedEvent.create(streamIdentifier));
-        this.alertRuleService.create(AlertRule.create(
-                alertTitle,
-                streamIdentifier,
-                eventID,
-                notificationID,
-                DateTime.now(),
-                userName,
-                DateTime.now(),
-                description,
-                conditionType,
-                streamID2,
-                eventID2,
-                streamPipelineObject.getPipelineID(),
-                streamPipelineObject.getPipelineRuleID(),
-                streamPipelineObject.getListPipelineFieldRule(),
-                streamPipelineObject2.getPipelineID(),
-                streamPipelineObject2.getPipelineRuleID(),
-                streamPipelineObject2.getListPipelineFieldRule()));
+        AlertRule alertRule = AlertRule.create(
+            alertTitle,
+            streamIdentifier,
+            eventID,
+            notificationID,
+            DateTime.now(),
+            userName,
+            DateTime.now(),
+            description,
+            conditionType,
+            streamID2,
+            eventID2,
+            streamPipelineObject.getPipelineID(),
+            streamPipelineObject.getPipelineRuleID(),
+            streamPipelineObject.getListPipelineFieldRule(),
+            streamPipelineObject2.getPipelineID(),
+            streamPipelineObject2.getPipelineRuleID(),
+            streamPipelineObject2.getListPipelineFieldRule());
+        this.alertRuleService.create(alertRule);
 
         //Update list usage
         for (FieldRule fieldRule: this.alertRuleUtils.nullSafe(streamPipelineObject.getListPipelineFieldRule())) {
@@ -421,26 +422,26 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             //Delete Event
             this.eventDefinitionsResource.delete(eventID2);
         }
+        AlertRule alertRule = AlertRule.create(
+            alertTitle,
+            oldAlert.getStreamID(),
+            oldAlert.getEventID(),
+            oldAlert.getNotificationID(),
+            oldAlert.getCreatedAt(),
+            userName,
+            DateTime.now(),
+            request.getDescription(),
+            request.getConditionType(),
+            streamID2,
+            eventID2,
+            streamPipelineObject.getPipelineID(),
+            streamPipelineObject.getPipelineRuleID(),
+            streamPipelineObject.getListPipelineFieldRule(),
+            streamPipelineObject2.getPipelineID(),
+            streamPipelineObject2.getPipelineRuleID(),
+            streamPipelineObject2.getListPipelineFieldRule());
 
-        this.alertRuleService.update(java.net.URLDecoder.decode(title, ENCODING),
-                AlertRule.create(
-                        alertTitle,
-                        oldAlert.getStreamID(),
-                        oldAlert.getEventID(),
-                        oldAlert.getNotificationID(),
-                        oldAlert.getCreatedAt(),
-                        userName,
-                        DateTime.now(),
-                        request.getDescription(),
-                        request.getConditionType(),
-                        streamID2,
-                        eventID2,
-                        streamPipelineObject.getPipelineID(),
-                        streamPipelineObject.getPipelineRuleID(),
-                        streamPipelineObject.getListPipelineFieldRule(),
-                        streamPipelineObject2.getPipelineID(),
-                        streamPipelineObject2.getPipelineRuleID(),
-                        streamPipelineObject2.getListPipelineFieldRule()));
+        this.alertRuleService.update(java.net.URLDecoder.decode(title, ENCODING), alertRule);
 
         // Decrement list usage
         for (FieldRule fieldRule: this.alertRuleUtils.nullSafe(oldAlert.getPipelineFieldRules())) {
