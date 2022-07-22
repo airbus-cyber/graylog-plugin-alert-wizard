@@ -26,12 +26,10 @@ import org.graylog.plugins.pipelineprocessor.db.*;
 import org.graylog.plugins.pipelineprocessor.rest.PipelineConnections;
 import org.graylog2.database.NotFoundException;
 import org.graylog2.events.ClusterEventBus;
-import org.graylog2.plugin.Tools;
 import org.graylog2.plugin.database.ValidationException;
 import org.graylog2.plugin.streams.Stream;
 import org.graylog2.plugin.streams.StreamRule;
 import org.graylog2.rest.resources.streams.requests.CreateStreamRequest;
-import org.graylog2.streams.StreamImpl;
 import org.graylog2.streams.StreamRuleImpl;
 import org.graylog2.streams.StreamRuleService;
 import org.graylog2.streams.StreamService;
@@ -181,7 +179,7 @@ public class StreamPipelineService {
         }
     }
 
-    private Stream createStream(AlertRuleStream alertRuleStream, String title, String userName) throws ValidationException {
+    public Stream createStream(AlertRuleStream alertRuleStream, String title, String userName) throws ValidationException {
         LOG.debug("Create Stream: " + title);
         final CreateStreamRequest cr = CreateStreamRequest.create(title, AlertRuleUtils.COMMENT_ALERT_WIZARD,
                 Collections.emptyList(), "", alertRuleStream.getMatchingType(), false, indexSetID);
@@ -280,12 +278,5 @@ public class StreamPipelineService {
             pipelineRuleID = pipelineRule.id();
         }
         return new StreamPipelineObject(stream, pipelineID, pipelineRuleID, listPipelineFieldRule);
-    }
-
-    // TODO remove this method and remove stream from the StreamPipelineObject (which I am not very fond of)
-    public StreamPipelineObject createStreamAndPipeline(AlertRuleStream alertRuleStream, String alertTitle, String userName, String matchingType)
-            throws ValidationException {
-        Stream stream = createStream(alertRuleStream, alertTitle, userName);
-        return createPipelineAndRule(stream, alertTitle, alertRuleStream.getFieldRules(), matchingType);
     }
 }

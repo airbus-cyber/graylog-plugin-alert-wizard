@@ -22,6 +22,9 @@ import org.graylog2.plugin.streams.Stream;
 
 import java.util.List;
 
+
+// TODO remove stream from the StreamPipelineObject
+//      think about this object, I am not very fond of it
 public class StreamPipelineObject {
     public Stream getStream() {
         return stream;

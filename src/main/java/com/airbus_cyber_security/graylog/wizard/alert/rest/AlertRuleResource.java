@@ -249,14 +249,16 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String userName = getCurrentUser().getName();
 
         // Create stream and pipeline
-        StreamPipelineObject streamPipelineObject = this.streamPipelineService.createStreamAndPipeline(stream, alertTitle, userName, stream.getMatchingType());
+        Stream stream2 = this.streamPipelineService.createStream(stream, alertTitle, userName);
+        StreamPipelineObject streamPipelineObject = this.streamPipelineService.createPipelineAndRule(stream2, alertTitle, stream.getFieldRules(), stream.getMatchingType());
         String streamIdentifier = streamPipelineObject.getStream().getId();
 
         // Create second stream and pipeline
         String streamID2 = null;
         StreamPipelineObject streamPipelineObject2 = new StreamPipelineObject(null, null, null, null);
         if (conditionType.equals("THEN") || conditionType.equals("AND") || conditionType.equals("OR")) {
-            streamPipelineObject2 = this.streamPipelineService.createStreamAndPipeline(secondStream, alertTitle + "#2", userName, stream.getMatchingType());
+            Stream stream1 = this.streamPipelineService.createStream(secondStream, alertTitle + "#2", userName);
+            streamPipelineObject2 = this.streamPipelineService.createPipelineAndRule(stream1, alertTitle + "#2", secondStream.getFieldRules(), stream.getMatchingType());
             streamID2 = streamPipelineObject2.getStream().getId();
         }
 
