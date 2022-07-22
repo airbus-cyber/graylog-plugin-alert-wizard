@@ -25,7 +25,6 @@ import com.airbus_cyber_security.graylog.wizard.alert.bundles.AlertRuleExporter;
 import com.airbus_cyber_security.graylog.wizard.alert.bundles.ExportAlertRule;
 import com.airbus_cyber_security.graylog.wizard.alert.bundles.ExportAlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
-import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.CloneAlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetDataAlertRule;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetListAlertRule;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetListDataAlertRule;
@@ -36,7 +35,6 @@ import com.airbus_cyber_security.graylog.wizard.alert.utilities.StreamPipelineSe
 import com.airbus_cyber_security.graylog.wizard.audit.AlertWizardAuditEventTypes;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
 import com.airbus_cyber_security.graylog.wizard.config.rest.ImportPolicyType;
-import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
 import com.airbus_cyber_security.graylog.wizard.database.LookupService;
 import com.airbus_cyber_security.graylog.wizard.list.AlertListService;
 import com.airbus_cyber_security.graylog.wizard.list.utilities.AlertListUtilsService;
@@ -53,16 +51,12 @@ import org.graylog.plugins.pipelineprocessor.db.*;
 import org.graylog.security.UserContext;
 import org.graylog2.alerts.AlertService;
 import org.graylog2.audit.jersey.AuditEvent;
-import org.graylog2.configuration.HttpConfiguration;
 import org.graylog2.database.NotFoundException;
 import org.graylog2.events.ClusterEventBus;
 import org.graylog2.indexer.IndexSetRegistry;
-import org.graylog2.lookup.db.DBDataAdapterService;
-import org.graylog2.lookup.db.DBLookupTableService;
 import org.graylog2.plugin.cluster.ClusterConfigService;
 import org.graylog2.plugin.database.ValidationException;
 import org.graylog2.plugin.rest.PluginRestResource;
-import org.graylog2.plugin.streams.Output;
 import org.graylog2.plugin.streams.Stream;
 import org.graylog2.shared.rest.resources.RestResource;
 import org.graylog2.streams.StreamRuleService;
@@ -380,7 +374,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.streamPipelineService.updateStream(stream, request.getStream(), alertTitle);
 
         //update pipeline
-        StreamPipelineObject streamPipelineObject = this.streamPipelineService.updatePipeline(alertTitle, oldAlert.getPipelineID(), oldAlert.getPipelineRuleID(), request.getStream().getFieldRules(), stream, request.getStream().getMatchingType());
+        this.streamPipelineService.deletePipeline(oldAlert.getPipelineID(), oldAlert.getPipelineRuleID());
+        StreamPipelineObject streamPipelineObject = this.streamPipelineService.createPipelineAndRule(stream, alertTitle, request.getStream().getFieldRules(), request.getStream().getMatchingType());
 
         // Update stream 2.
         Stream stream2 = this.streamPipelineService.createOrUpdateSecondStream(request.getSecondStream(), alertTitle, userName, request.getConditionType(), oldAlert);
@@ -390,7 +385,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         StreamPipelineObject streamPipelineObject2 = new StreamPipelineObject(null, null, null, null);
         if (stream2 != null) {
             streamID2 = stream2.getId();
-            streamPipelineObject2 = this.streamPipelineService.updatePipeline(alertTitle + "#2", oldAlert.getSecondPipelineID(), oldAlert.getSecondPipelineRuleID(), request.getSecondStream().getFieldRules(), stream2, request.getStream().getMatchingType());
+            this.streamPipelineService.deletePipeline(oldAlert.getSecondPipelineID(), oldAlert.getSecondPipelineRuleID());
+            streamPipelineObject2 = this.streamPipelineService.createPipelineAndRule(stream2, alertTitle + "#2", request.getSecondStream().getFieldRules(), request.getStream().getMatchingType());
         } else if (oldAlert.getSecondStreamID() != null) {
             this.streamPipelineService.deletePipeline(oldAlert.getSecondPipelineID(), oldAlert.getSecondPipelineRuleID());
         }

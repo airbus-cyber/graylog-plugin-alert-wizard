@@ -269,7 +269,7 @@ public class StreamPipelineService {
         return listPipelineFieldRule;
     }
 
-    private StreamPipelineObject createPipelineAndRule(Stream stream, String alertTitle, List<FieldRule> listfieldRule, String matchingType){
+    public StreamPipelineObject createPipelineAndRule(Stream stream, String alertTitle, List<FieldRule> listfieldRule, String matchingType){
         String pipelineID = null;
         String pipelineRuleID = null;
         List<FieldRule> listPipelineFieldRule = extractPipelineFieldRules(listfieldRule);
@@ -288,10 +288,4 @@ public class StreamPipelineService {
         Stream stream = createStream(alertRuleStream, alertTitle, userName);
         return createPipelineAndRule(stream, alertTitle, alertRuleStream.getFieldRules(), matchingType);
     }
-
-    public StreamPipelineObject updatePipeline(String alertTitle, String pipelineID, String pipelineRuleID, List<FieldRule> listfieldRule, Stream stream, String matchingType) {
-        deletePipeline(pipelineID, pipelineRuleID);
-        return createPipelineAndRule(stream, alertTitle, listfieldRule, matchingType);
-    }
-
 }
