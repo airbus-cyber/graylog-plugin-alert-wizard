@@ -267,41 +267,41 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         List<FieldRule> fieldRules = streamPipelineObject.getListPipelineFieldRule();
 
         // Create second stream and pipeline
-        String streamID2 = null;
+        String streamIdentifier2 = null;
         StreamPipelineObject streamPipelineObject2 = new StreamPipelineObject(null, null, null, null);
         if (conditionType.equals("THEN") || conditionType.equals("AND") || conditionType.equals("OR")) {
             Stream stream1 = this.streamPipelineService.createStream(secondStream, alertTitle + "#2", userName);
             streamPipelineObject2 = this.createPipelineAndRule(stream1, alertTitle + "#2", secondStream.getFieldRules(), stream.getMatchingType());
-            streamID2 = streamPipelineObject2.getStream().getId();
+            streamIdentifier2 = streamPipelineObject2.getStream().getId();
         }
 
         // Create Condition
-        EventProcessorConfig configuration = this.alertRuleUtilsService.createCondition(conditionType, conditionParameters, streamIdentifier, streamID2);
+        EventProcessorConfig configuration = this.alertRuleUtilsService.createCondition(conditionType, conditionParameters, streamIdentifier, streamIdentifier2);
         //Create Event
-        String eventID = this.alertRuleUtilsService.createEvent(alertTitle, notificationID, configuration, userContext);
+        String eventIdentifier = this.alertRuleUtilsService.createEvent(alertTitle, notificationID, configuration, userContext);
 
-        String eventID2 = null;
+        String eventIdentifier2 = null;
         //Or Event for Second Stream
         if (conditionType.equals("OR") && streamPipelineObject2.getStream() != null) {
             //Create Condition
-            EventProcessorConfig configuration2 = this.alertRuleUtilsService.createAggregationCondition(streamID2, conditionParameters);
+            EventProcessorConfig configuration2 = this.alertRuleUtilsService.createAggregationCondition(streamIdentifier2, conditionParameters);
             //Create Event
-            eventID2 = this.alertRuleUtilsService.createEvent(alertTitle + "#2", notificationID, configuration2, userContext);
+            eventIdentifier2 = this.alertRuleUtilsService.createEvent(alertTitle + "#2", notificationID, configuration2, userContext);
         }
 
         this.clusterEventBus.post(StreamsChangedEvent.create(streamIdentifier));
         AlertRule alertRule = AlertRule.create(
                 alertTitle,
                 streamIdentifier,
-                eventID,
+                eventIdentifier,
                 notificationID,
                 DateTime.now(),
                 userName,
                 DateTime.now(),
                 description,
                 conditionType,
-                streamID2,
-                eventID2,
+                streamIdentifier2,
+                eventIdentifier2,
                 streamPipelineObject.getPipelineID(),
                 streamPipelineObject.getPipelineRuleID(),
                 fieldRules,
