@@ -244,13 +244,25 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return alertTitle;
     }
 
+    public StreamPipelineObject createPipelineAndRule(Stream stream, String alertTitle, List<FieldRule> listfieldRule, String matchingType){
+        String pipelineID = null;
+        String pipelineRuleID = null;
+        List<FieldRule> listPipelineFieldRule = this.streamPipelineService.extractPipelineFieldRules(listfieldRule);
+        if (!listPipelineFieldRule.isEmpty()) {
+            RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(alertTitle, listPipelineFieldRule, stream);
+            PipelineDao pipeline = this.streamPipelineService.createPipeline(alertTitle, matchingType);
+            pipelineID = pipeline.id();
+            pipelineRuleID = pipelineRule.id();
+        }
+        return new StreamPipelineObject(stream, pipelineID, pipelineRuleID, listPipelineFieldRule);
+    }
     private void createAlertRule(AlertRuleStream stream, AlertRuleStream secondStream, String alertTitle, String notificationID,                                 String description, String conditionType,
                                  Map<String, Object> conditionParameters, UserContext userContext) throws ValidationException {
         String userName = getCurrentUser().getName();
 
         // Create stream and pipeline
         Stream stream2 = this.streamPipelineService.createStream(stream, alertTitle, userName);
-        StreamPipelineObject streamPipelineObject = this.streamPipelineService.createPipelineAndRule(stream2, alertTitle, stream.getFieldRules(), stream.getMatchingType());
+        StreamPipelineObject streamPipelineObject = this.createPipelineAndRule(stream2, alertTitle, stream.getFieldRules(), stream.getMatchingType());
         String streamIdentifier = streamPipelineObject.getStream().getId();
 
         // Create second stream and pipeline
@@ -258,7 +270,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         StreamPipelineObject streamPipelineObject2 = new StreamPipelineObject(null, null, null, null);
         if (conditionType.equals("THEN") || conditionType.equals("AND") || conditionType.equals("OR")) {
             Stream stream1 = this.streamPipelineService.createStream(secondStream, alertTitle + "#2", userName);
-            streamPipelineObject2 = this.streamPipelineService.createPipelineAndRule(stream1, alertTitle + "#2", secondStream.getFieldRules(), stream.getMatchingType());
+            streamPipelineObject2 = this.createPipelineAndRule(stream1, alertTitle + "#2", secondStream.getFieldRules(), stream.getMatchingType());
             streamID2 = streamPipelineObject2.getStream().getId();
         }
 
@@ -377,20 +389,18 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         //update pipeline
         this.streamPipelineService.deletePipeline(oldAlert.getPipelineID(), oldAlert.getPipelineRuleID());
-        StreamPipelineObject streamPipelineObject = this.streamPipelineService.createPipelineAndRule(stream, alertTitle, request.getStream().getFieldRules(), request.getStream().getMatchingType());
+        StreamPipelineObject streamPipelineObject = this.createPipelineAndRule(stream, alertTitle, request.getStream().getFieldRules(), request.getStream().getMatchingType());
 
         // Update stream 2.
         Stream stream2 = this.streamPipelineService.createOrUpdateSecondStream(request.getSecondStream(), alertTitle, userName, request.getConditionType(), oldAlert);
         String streamID2 = null;
 
-        //update pipeline 2
+        // update pipeline 2
+        this.streamPipelineService.deletePipeline(oldAlert.getSecondPipelineID(), oldAlert.getSecondPipelineRuleID());
         StreamPipelineObject streamPipelineObject2 = new StreamPipelineObject(null, null, null, null);
         if (stream2 != null) {
             streamID2 = stream2.getId();
-            this.streamPipelineService.deletePipeline(oldAlert.getSecondPipelineID(), oldAlert.getSecondPipelineRuleID());
-            streamPipelineObject2 = this.streamPipelineService.createPipelineAndRule(stream2, alertTitle + "#2", request.getSecondStream().getFieldRules(), request.getStream().getMatchingType());
-        } else if (oldAlert.getSecondStreamID() != null) {
-            this.streamPipelineService.deletePipeline(oldAlert.getSecondPipelineID(), oldAlert.getSecondPipelineRuleID());
+            streamPipelineObject2 = this.createPipelineAndRule(stream2, alertTitle + "#2", request.getSecondStream().getFieldRules(), request.getStream().getMatchingType());
         }
 
         //update Notification

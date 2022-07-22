@@ -257,7 +257,7 @@ public class StreamPipelineService {
         }
     }
 
-    private List<FieldRule> extractPipelineFieldRules(List<FieldRule> listFieldRule){
+    public List<FieldRule> extractPipelineFieldRules(List<FieldRule> listFieldRule){
         List<FieldRule> listPipelineFieldRule = new ArrayList<>();
         for (FieldRule fieldRule : listFieldRule) {
             if (fieldRule.getType() == 7 || fieldRule.getType() == -7) {
@@ -265,18 +265,5 @@ public class StreamPipelineService {
             }
         }
         return listPipelineFieldRule;
-    }
-
-    public StreamPipelineObject createPipelineAndRule(Stream stream, String alertTitle, List<FieldRule> listfieldRule, String matchingType){
-        String pipelineID = null;
-        String pipelineRuleID = null;
-        List<FieldRule> listPipelineFieldRule = extractPipelineFieldRules(listfieldRule);
-        if (!listPipelineFieldRule.isEmpty()) {
-            RuleDao pipelineRule = createPipelineRule(alertTitle, listPipelineFieldRule, stream);
-            PipelineDao pipeline = createPipeline(alertTitle, matchingType);
-            pipelineID = pipeline.id();
-            pipelineRuleID = pipelineRule.id();
-        }
-        return new StreamPipelineObject(stream, pipelineID, pipelineRuleID, listPipelineFieldRule);
     }
 }
