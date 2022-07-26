@@ -163,6 +163,7 @@ public class AlertRuleUtilsService {
         }
     }
 
+    // TODO move method to AlertRuleUtils?
     private EventProcessorConfig createCorrelationCondition(String type, String streamID, String streamID2, Map<String, Object> conditionParameter) {
         String messageOrder;
         if (type.equals("THEN")) {
@@ -170,6 +171,9 @@ public class AlertRuleUtilsService {
         } else {
             messageOrder = "ANY";
         }
+
+        long searchWithinMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get("time").toString()));
+        long executeEveryMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get("grace").toString()));
 
         return CorrelationCountProcessorConfig.builder()
                 .stream(streamID)
@@ -179,8 +183,8 @@ public class AlertRuleUtilsService {
                 .additionalThresholdType((String) conditionParameter.get("additional_threshold_type"))
                 .additionalThreshold((int) conditionParameter.get("additional_threshold"))
                 .messagesOrder(messageOrder)
-                .searchWithinMs(Long.parseLong(conditionParameter.get("time").toString()) * 60 * 1000)
-                .executeEveryMs(Long.parseLong(conditionParameter.get("grace").toString()) * 60 * 1000)
+                .searchWithinMs(searchWithinMs)
+                .executeEveryMs(executeEveryMs)
                 .groupingFields(convertToHashSet(conditionParameter.get("grouping_fields")))
                 .comment(AlertRuleUtils.COMMENT_ALERT_WIZARD)
                 .searchQuery("*")
@@ -190,8 +194,10 @@ public class AlertRuleUtilsService {
     public EventProcessorConfig createAggregationCondition(String streamIdentifier, Map<String, Object> conditionParameter) {
         String trhesholdType = (String) conditionParameter.get("threshold_type");
         int threshold = (int) conditionParameter.get("threshold");
-        long searchWithinMs = Long.parseLong(conditionParameter.get("time").toString()) * 60 * 1000;
-        long executeEveryMs = Long.parseLong(conditionParameter.get("grace").toString()) * 60 * 1000;
+        // TODO extract method to parse searchWithinMs
+        long searchWithinMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get("time").toString()));
+        // TODO extract method to parse executeEveryMs
+        long executeEveryMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get("grace").toString()));
         Set<String> groupByFields = convertToHashSet(conditionParameter.get("grouping_fields"));
         Set<String> distinctFields = convertToHashSet(conditionParameter.get("distinction_fields"));
         return AggregationCountProcessorConfig.builder()
@@ -256,6 +262,10 @@ public class AlertRuleUtilsService {
 
     public EventProcessorConfig createStatisticalCondition(String streamID, Map<String, Object> conditionParameter) {
         LOG.debug("Begin Stat, type: " + conditionParameter.get("type"));
+        // TODO extract method to parse searchWithinMs
+        long searchWithinMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get("time").toString()));
+        // TODO extract method to parse executeEveryMs
+        long executeEveryMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get("grace").toString()));
 
         String identifier = UUID.randomUUID().toString();
         AggregationSeries serie = AggregationSeries.builder()
@@ -276,8 +286,8 @@ public class AlertRuleUtilsService {
                 .conditions(AggregationConditions.builder()
                         .expression(expression)
                         .build())
-                .executeEveryMs(Long.parseLong(conditionParameter.get("grace").toString()) * 60 * 1000)
-                .searchWithinMs(Long.parseLong(conditionParameter.get("time").toString()) * 60 * 1000)
+                .searchWithinMs(searchWithinMs)
+                .executeEveryMs(executeEveryMs)
                 .build();
     }
 

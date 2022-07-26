@@ -34,6 +34,8 @@ import java.util.*;
 
 public class AlertRuleUtils {
 
+	private static final int MILLISECONDS_IN_A_MINUTE = 60 * 1000;
+
 	private static final Logger LOG = LoggerFactory.getLogger(AlertRuleUtils.class);
 
 	public static final String GROUPING_FIELDS = "grouping_fields";
@@ -78,33 +80,42 @@ public class AlertRuleUtils {
 		}
 	}
 
+	// TODO should avoid these conversions by always working with ms (from the IHM down to the server)
+	private long convertMillisecondsToMinutes(long value) {
+		return value / MILLISECONDS_IN_A_MINUTE;
+	}
+
+	public long convertMinutesToMilliseconds(long value) {
+		return value * MILLISECONDS_IN_A_MINUTE;
+	}
+
 	public Map<String, Object> getConditionParameters(EventProcessorConfig eventConfig){
 		Map<String, Object> parametersCondition = Maps.newHashMap();
 		if (eventConfig.type().equals("aggregation-count")) {
 			AggregationCountProcessorConfig aggregationCountConfig = (AggregationCountProcessorConfig) eventConfig;
 			parametersCondition.put(THRESHOLD, aggregationCountConfig.threshold());
 			parametersCondition.put(THRESHOLD_TYPE, aggregationCountConfig.thresholdType());
-			parametersCondition.put(TIME, aggregationCountConfig.searchWithinMs() / 60 / 1000);
+			parametersCondition.put(TIME, this.convertMillisecondsToMinutes(aggregationCountConfig.searchWithinMs()));
 			parametersCondition.put(GROUPING_FIELDS, aggregationCountConfig.groupingFields());
 			parametersCondition.put(DISTINCTION_FIELDS, aggregationCountConfig.distinctionFields());
-			parametersCondition.put(GRACE,aggregationCountConfig.executeEveryMs()  / 60 / 1000);
+			parametersCondition.put(GRACE,this.convertMillisecondsToMinutes(aggregationCountConfig.executeEveryMs()));
 		} else if (eventConfig.type().equals("correlation-count")) {
 			CorrelationCountProcessorConfig correlationConfig = (CorrelationCountProcessorConfig) eventConfig;
 			parametersCondition.put(THRESHOLD, correlationConfig.threshold());
 			parametersCondition.put(THRESHOLD_TYPE, correlationConfig.thresholdType());
 			parametersCondition.put(ADDITIONAL_THRESHOLD, correlationConfig.additionalThreshold());
 			parametersCondition.put(ADDITIONAL_THRESHOLD_TYPE, correlationConfig.additionalThresholdType());
-			parametersCondition.put(TIME, correlationConfig.searchWithinMs() / 60 / 1000);
+			parametersCondition.put(TIME, this.convertMillisecondsToMinutes(correlationConfig.searchWithinMs()));
 			parametersCondition.put(GROUPING_FIELDS, correlationConfig.groupingFields());
-			parametersCondition.put(GRACE, correlationConfig.executeEveryMs()  / 60 / 1000);
+			parametersCondition.put(GRACE, this.convertMillisecondsToMinutes(correlationConfig.executeEveryMs()));
 		} else if (eventConfig.type().equals("aggregation-v1")) {
 			AggregationEventProcessorConfig aggregationConfig = (AggregationEventProcessorConfig) eventConfig;
-			parametersCondition.put(TIME, aggregationConfig.searchWithinMs() / 60 / 1000);
+			parametersCondition.put(TIME, this.convertMillisecondsToMinutes(aggregationConfig.searchWithinMs()));
 			parametersCondition.put(THRESHOLD, getThreshold(aggregationConfig.conditions().get().expression().get()));
 			parametersCondition.put(THRESHOLD_TYPE, aggregationConfig.conditions().get().expression().get().expr());
 			parametersCondition.put("type", aggregationConfig.series().get(0).function().toString());
 			parametersCondition.put("field", aggregationConfig.series().get(0).field().get());
-			parametersCondition.put(GRACE, aggregationConfig.executeEveryMs()  / 60 / 1000);
+			parametersCondition.put(GRACE, this.convertMillisecondsToMinutes(aggregationConfig.executeEveryMs()));
 		}
 		return parametersCondition;
 	}
