@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ### Bug Fixes
 * The pipeline rule created with lists now matches exact values of the list rather than substrings ([issue #49](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/49))
 * The default value of the severity in the wizard configuration is set to "Info" ([issue #61](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/61))
+* The default value of the time range unit in the wizard configuration is set to "minutes" ([issue #62](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/62))
 
 ## [4.2.2](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/4.2.1...4.2.2)
 ### Bug Fixes

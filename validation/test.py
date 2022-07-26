@@ -132,3 +132,7 @@ class Test(TestCase):
     def test_get_config_should_have_a_default_severity_info_issue61(self):
         configuration = self._graylog.get_alert_wizard_plugin_configuration()
         self.assertEqual('info', configuration['default_values']['severity'])
+
+    def test_get_config_should_have_a_default_time_range_unit_of_minutes_issue62(self):
+        configuration = self._graylog.get_alert_wizard_plugin_configuration()
+        self.assertEqual(1, configuration['default_values']['time_type'])

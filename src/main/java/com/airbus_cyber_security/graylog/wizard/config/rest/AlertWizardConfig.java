@@ -70,7 +70,7 @@ public abstract class AlertWizardConfig {
 						"",
 						0,
 						1,
-						0,
+						1,
 						"",
 						0,
 						"",
