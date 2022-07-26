@@ -10,6 +10,7 @@
     </Appenders>
     <Loggers>
         <!-- Application Loggers -->
+        <Logger name="com.airbus_cyber_security.graylog" level="debug"/>
         <Logger name="org.graylog2" level="info"/>
         <Logger name="com.github.joschi.jadconfig" level="warn"/>
         <!-- Prevent DEBUG message about Lucene Expressions not found. -->
