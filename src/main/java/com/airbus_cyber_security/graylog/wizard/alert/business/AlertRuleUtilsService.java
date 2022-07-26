@@ -25,9 +25,9 @@ import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetD
 import com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig;
 import com.airbus_cyber_security.graylog.events.config.SeverityType;
 import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
-import com.airbus_cyber_security.graylog.events.processor.aggregation.AggregationCountProcessorConfig;
 import com.airbus_cyber_security.graylog.events.processor.correlation.CorrelationCountProcessorConfig;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import org.graylog.events.conditions.Expr;
 import org.graylog.events.conditions.Expression;
 import org.graylog.events.notifications.EventNotificationHandler;
@@ -105,6 +105,7 @@ public class AlertRuleUtilsService {
 
             // Get the event
             Map<String, Object> parametersCondition = null;
+            // TODO why not just always get the event title from the alert?
             String eventTitle;
             if (alert.getEventID() != null && !alert.getEventID().isEmpty()) {
                 EventDefinitionDto event = this.eventDefinitionsResource.get(alert.getEventID());
@@ -114,12 +115,10 @@ public class AlertRuleUtilsService {
                 eventTitle = alert.getTitle();
                 LOG.error("Alert " + alert.getTitle() + " is broken event id is null");
             }
-
             List<FieldRule> fieldRules = new ArrayList<>();
             Optional.ofNullable(alert.getPipelineFieldRules()).ifPresent(fieldRules::addAll);
             Optional.ofNullable(this.alertRuleUtils.getListFieldRule(stream.getStreamRules())).ifPresent(fieldRules::addAll);
             AlertRuleStream alertRuleStream = AlertRuleStream.create(streamID, stream.getMatchingType().toString(), fieldRules);
-
             AlertRuleStream alertRuleStream2 = null;
             if (alert.getSecondStreamID() != null && !alert.getSecondStreamID().isEmpty()) {
                 Stream stream2 = this.streamService.load(alert.getSecondStreamID());
@@ -128,7 +127,6 @@ public class AlertRuleUtilsService {
                 Optional.ofNullable(this.alertRuleUtils.getListFieldRule(stream2.getStreamRules())).ifPresent(fieldRules2::addAll);
                 alertRuleStream2 = AlertRuleStream.create(alert.getSecondStreamID(), stream2.getMatchingType().toString(), fieldRules2);
             }
-
             LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) this.eventNotificationsResource.get(alert.getNotificationID()).config();
             LOG.debug("Severity: " + loggingNotificationConfig.severity().getType());
 
@@ -191,60 +189,56 @@ public class AlertRuleUtilsService {
                 .build();
     }
 
-    public EventProcessorConfig createAggregationCondition(String streamIdentifier, Map<String, Object> conditionParameter) {
-        /* TODO
-        0 MORE >
-        1 LESS <
+    private Expression<Boolean> createExpressionFromNumberThreshold(String identifier, String thresholdType, int threshold) {
+        Expr.NumberReference left = Expr.NumberReference.create(identifier);
+        Expr.NumberValue right = Expr.NumberValue.create(threshold);
+        switch (thresholdType) {
+            case "MORE":
+                return Expr.Greater.create(left, right);
+            case "LESS":
+                return Expr.Lesser.create(left, right);
+            default:
+                throw new BadRequestException();
+        }
+    }
 
-        createExpressionFromNumberThreshold()
+    public EventProcessorConfig createAggregationCondition(String streamIdentifier, Map<String, Object> conditionParameter) {
+        List<String> groupByFields = (List<String>) conditionParameter.get("grouping_fields");
+        List<String> distinctFields = (List<String>) conditionParameter.get("distinction_fields");
 
         Set<String> streams = ImmutableSet.of(streamIdentifier);
-
-        String identifier = UUID.randomUUID().toString();
-        AggregationSeries.Builder builder = AggregationSeries.builder()
-                .id(identifier)
-                .function(AggregationFunction.COUNT); // TODO check this is right
-
-        if (!distinctFields.isEmpty()) {
-                .field(distinctFields.next()????) TODO
-        }
-        AggregationSeries series = builder.build();
-        Expression<Boolean> expression = createExpressionFromNumberThreshold(identifier, thresholdType, threshold);
-
-
-        AggregationConditions conditions = AggregationConditions.builder()
-                .expression(expression)
-                .build()
-
-        return AggregationEventProcessorConfig.builder().create()
-                .query("")
-                .streams(streams)
-                .series(ImmutableList.of(series))
-                .groupBy(groupBy)
-                .conditions(conditions)
-                .executeEveryMs(executeEveryMs)
-                .searchWithinMs(searchWithinMs)
-                .build();
-        */
-
-        String trhesholdType = (String) conditionParameter.get("threshold_type");
-        int threshold = (int) conditionParameter.get("threshold");
         // TODO extract method to parse searchWithinMs
         long searchWithinMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get("time").toString()));
         // TODO extract method to parse executeEveryMs
         long executeEveryMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get("grace").toString()));
-        Set<String> groupByFields = convertToHashSet(conditionParameter.get("grouping_fields"));
-        Set<String> distinctFields = convertToHashSet(conditionParameter.get("distinction_fields"));
-        return AggregationCountProcessorConfig.builder()
-                .stream(streamIdentifier)
-                .thresholdType(trhesholdType)
-                .threshold(threshold)
-                .searchWithinMs(searchWithinMs)
+
+        String thresholdType = (String) conditionParameter.get("threshold_type");
+        int threshold = (int) conditionParameter.get("threshold");
+
+        String identifier = UUID.randomUUID().toString();
+        AggregationSeries.Builder seriesBuilder = AggregationSeries.builder().id(identifier);
+
+        if (distinctFields.isEmpty()) {
+            seriesBuilder.function(AggregationFunction.COUNT);
+        } else {
+            seriesBuilder.function(AggregationFunction.CARD).field(distinctFields.get(0));
+        }
+
+        AggregationSeries series = seriesBuilder.build();
+
+        Expression<Boolean> expression = createExpressionFromNumberThreshold(identifier, thresholdType, threshold);
+        AggregationConditions conditions = AggregationConditions.builder()
+                .expression(expression)
+                .build();
+
+        return AggregationEventProcessorConfig.builder()
+                .query("")
+                .streams(streams)
+                .groupBy(groupByFields)
+                .series(ImmutableList.of(series))
+                .conditions(conditions)
                 .executeEveryMs(executeEveryMs)
-                .groupingFields(groupByFields)
-                .distinctionFields(distinctFields)
-                .comment(AlertRuleUtils.COMMENT_ALERT_WIZARD)
-                .searchQuery("*")
+                .searchWithinMs(searchWithinMs)
                 .build();
     }
 
@@ -421,7 +415,7 @@ public class AlertRuleUtilsService {
     }
 
     public EventProcessorConfig createCondition(String conditionType, Map<String, Object> conditionParameter, String streamID, String streamID2) {
-        LOG.debug("Create condition type:" + conditionType);
+        LOG.debug("Create condition type: {}", conditionType);
 
         if (conditionType.equals("THEN") || conditionType.equals("AND")) {
             return createCorrelationCondition(conditionType, streamID, streamID2, conditionParameter);

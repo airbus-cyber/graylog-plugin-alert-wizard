@@ -26,6 +26,7 @@ import org.graylog.events.conditions.Expr;
 import org.graylog.events.conditions.Expression;
 import org.graylog.events.processor.EventProcessorConfig;
 import org.graylog.events.processor.aggregation.AggregationEventProcessorConfig;
+import org.graylog.events.processor.aggregation.AggregationSeries;
 import org.graylog2.plugin.streams.StreamRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,6 +93,7 @@ public class AlertRuleUtils {
 	public Map<String, Object> getConditionParameters(EventProcessorConfig eventConfig){
 		Map<String, Object> parametersCondition = Maps.newHashMap();
 		if (eventConfig.type().equals("aggregation-count")) {
+			// TODO: remove this case, in theory it is not necessary anymore
 			AggregationCountProcessorConfig aggregationCountConfig = (AggregationCountProcessorConfig) eventConfig;
 			parametersCondition.put(THRESHOLD, aggregationCountConfig.threshold());
 			parametersCondition.put(THRESHOLD_TYPE, aggregationCountConfig.thresholdType());
@@ -113,8 +115,13 @@ public class AlertRuleUtils {
 			parametersCondition.put(TIME, this.convertMillisecondsToMinutes(aggregationConfig.searchWithinMs()));
 			parametersCondition.put(THRESHOLD, getThreshold(aggregationConfig.conditions().get().expression().get()));
 			parametersCondition.put(THRESHOLD_TYPE, aggregationConfig.conditions().get().expression().get().expr());
-			parametersCondition.put("type", aggregationConfig.series().get(0).function().toString());
-			parametersCondition.put("field", aggregationConfig.series().get(0).field().get());
+			AggregationSeries series = aggregationConfig.series().get(0);
+			// TODO should introduce constants here for "type" and "field"...
+			parametersCondition.put("type", series.function().toString());
+			Optional<String> seriesField = series.field();
+			if (seriesField.isPresent()) {
+				parametersCondition.put("field", seriesField.get());
+			}
 			parametersCondition.put(GRACE, this.convertMillisecondsToMinutes(aggregationConfig.executeEveryMs()));
 		}
 		return parametersCondition;
