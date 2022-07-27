@@ -112,21 +112,23 @@ public class AlertRuleUtils {
 		} else if (eventConfig.type().equals("aggregation-v1")) {
 			AggregationEventProcessorConfig aggregationConfig = (AggregationEventProcessorConfig) eventConfig;
 			parametersCondition.put(TIME, this.convertMillisecondsToMinutes(aggregationConfig.searchWithinMs()));
+			parametersCondition.put(GRACE, this.convertMillisecondsToMinutes(aggregationConfig.executeEveryMs()));
 			parametersCondition.put(THRESHOLD, getThreshold(aggregationConfig.conditions().get().expression().get()));
 			parametersCondition.put(THRESHOLD_TYPE, aggregationConfig.conditions().get().expression().get().expr());
 			AggregationSeries series = aggregationConfig.series().get(0);
 			// TODO should introduce constants here for "type" and "field"...
 			parametersCondition.put("type", series.function().toString());
+			List<String> distinctFields = new ArrayList<>();
 			Optional<String> seriesField = series.field();
 			if (seriesField.isPresent()) {
 				// TODO think about this, but there is some code smell here...
 				// It is because AggregationEventProcessorConfig is used both for Count and Statistical conditions
 				String distinctField = seriesField.get();
 				parametersCondition.put("field", distinctField);
-				parametersCondition.put(DISTINCTION_FIELDS, ImmutableList.of(distinctField));
+				distinctFields.add(distinctField);
 			}
-			parametersCondition.put(GRACE, this.convertMillisecondsToMinutes(aggregationConfig.executeEveryMs()));
 			parametersCondition.put(GROUPING_FIELDS, aggregationConfig.groupBy());
+			parametersCondition.put(DISTINCTION_FIELDS, distinctFields);
 		}
 		return parametersCondition;
 	}
