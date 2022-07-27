@@ -33,8 +33,8 @@ const language = navigator.language.split(/[-_]/)[0];
 addLocaleData(frLocaleData);
 
 const messages = {
-            'fr': messages_fr
-        };
+    'fr': messages_fr
+};
 
 const UpdateAlertPage = createReactClass({
     displayName: 'UpdateAlertPage',
