@@ -147,3 +147,25 @@ class Test(TestCase):
         self._graylog.create_alert_rule_group_distinct(title, rule, [], ['x'], _PERIOD)
         alert_rule = self._graylog.get_alert_rule(title)
         self.assertEqual(1, len(alert_rule['condition_parameters']['distinction_fields']))
+
+    def test_get_alert_with_group_by_fields_should_contain_the_group_by_fields(self):
+        title = 'rule_distinct'
+        rule = {
+            'field': 'source',
+            'type': 1,
+            'value': 'toto'
+        }
+        self._graylog.create_alert_rule_group_distinct(title, rule, ['x'], [], _PERIOD)
+        alert_rule = self._graylog.get_alert_rule(title)
+        self.assertEqual(1, len(alert_rule['condition_parameters']['grouping_fields']))
+
+    def test_get_alert_with_distinct_fields_should_contain_the_distinct_fields(self):
+        title = 'rule_distinct'
+        rule = {
+            'field': 'source',
+            'type': 1,
+            'value': 'toto'
+        }
+        self._graylog.create_alert_rule_group_distinct(title, rule, [], ['x'], _PERIOD)
+        alert_rule = self._graylog.get_alert_rule(title)
+        self.assertEqual(1, len(alert_rule['condition_parameters']['distinction_fields']))

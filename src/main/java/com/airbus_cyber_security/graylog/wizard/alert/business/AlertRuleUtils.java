@@ -126,6 +126,7 @@ public class AlertRuleUtils {
 				parametersCondition.put(DISTINCTION_FIELDS, ImmutableList.of(distinctField));
 			}
 			parametersCondition.put(GRACE, this.convertMillisecondsToMinutes(aggregationConfig.executeEveryMs()));
+			parametersCondition.put(GROUPING_FIELDS, aggregationConfig.groupBy());
 		}
 		return parametersCondition;
 	}
