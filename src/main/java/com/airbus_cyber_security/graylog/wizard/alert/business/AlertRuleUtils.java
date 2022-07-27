@@ -19,9 +19,7 @@ package com.airbus_cyber_security.graylog.wizard.alert.business;
 
 import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
 import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
-import com.airbus_cyber_security.graylog.events.processor.aggregation.AggregationCountProcessorConfig;
 import com.airbus_cyber_security.graylog.events.processor.correlation.CorrelationCountProcessorConfig;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import org.graylog.events.conditions.Expr;
 import org.graylog.events.conditions.Expression;
@@ -93,16 +91,6 @@ public class AlertRuleUtils {
 		Map<String, Object> parametersCondition = Maps.newHashMap();
 
 		switch (eventConfig.type()) {
-			case "aggregation-count":
-				// TODO: remove this case, in theory it is not necessary anymore
-				AggregationCountProcessorConfig aggregationCountConfig = (AggregationCountProcessorConfig) eventConfig;
-				parametersCondition.put(THRESHOLD, aggregationCountConfig.threshold());
-				parametersCondition.put(THRESHOLD_TYPE, aggregationCountConfig.thresholdType());
-				parametersCondition.put(TIME, this.convertMillisecondsToMinutes(aggregationCountConfig.searchWithinMs()));
-				parametersCondition.put(GROUPING_FIELDS, aggregationCountConfig.groupingFields());
-				parametersCondition.put(DISTINCTION_FIELDS, aggregationCountConfig.distinctionFields());
-				parametersCondition.put(GRACE,this.convertMillisecondsToMinutes(aggregationCountConfig.executeEveryMs()));
-				break;
 			case "correlation-count":
 				CorrelationCountProcessorConfig correlationConfig = (CorrelationCountProcessorConfig) eventConfig;
 				parametersCondition.put(THRESHOLD, correlationConfig.threshold());
