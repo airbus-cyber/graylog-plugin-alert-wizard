@@ -136,3 +136,14 @@ class Test(TestCase):
     def test_get_config_should_have_a_default_time_range_unit_of_minutes__issue62(self):
         configuration = self._graylog.get_alert_wizard_plugin_configuration()
         self.assertEqual(1, configuration['default_values']['time_type'])
+
+    def test_get_alert_with_distinct_fields_should_contain_the_distinct_fields(self):
+        title = 'rule_distinct'
+        rule = {
+            'field': 'source',
+            'type': 1,
+            'value': 'toto'
+        }
+        self._graylog.create_alert_rule_group_distinct(title, rule, [], ['x'], _PERIOD)
+        alert_rule = self._graylog.get_alert_rule(title)
+        self.assertEqual(1, len(alert_rule['condition_parameters']['distinction_fields']))

@@ -21,6 +21,7 @@ import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
 import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
 import com.airbus_cyber_security.graylog.events.processor.aggregation.AggregationCountProcessorConfig;
 import com.airbus_cyber_security.graylog.events.processor.correlation.CorrelationCountProcessorConfig;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import org.graylog.events.conditions.Expr;
 import org.graylog.events.conditions.Expression;
@@ -118,7 +119,11 @@ public class AlertRuleUtils {
 			parametersCondition.put("type", series.function().toString());
 			Optional<String> seriesField = series.field();
 			if (seriesField.isPresent()) {
-				parametersCondition.put("field", seriesField.get());
+				// TODO think about this, but there is some code smell here...
+				// It is because AggregationEventProcessorConfig is used both for Count and Statistical conditions
+				String distinctField = seriesField.get();
+				parametersCondition.put("field", distinctField);
+				parametersCondition.put(DISTINCTION_FIELDS, ImmutableList.of(distinctField));
 			}
 			parametersCondition.put(GRACE, this.convertMillisecondsToMinutes(aggregationConfig.executeEveryMs()));
 		}

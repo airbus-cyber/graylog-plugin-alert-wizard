@@ -54,6 +54,9 @@ class Graylog:
     def create_alert_rule_count(self, *args):
         return self._api.create_alert_rule_count(*args)
 
+    def create_alert_rule_group_distinct(self, *args):
+        return self._api.create_alert_rule_group_distinct(*args)
+
     def create_alert_rule_and(self, *args, **kwargs):
         return self._api.create_alert_rule_and(*args, **kwargs)
 
