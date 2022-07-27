@@ -91,44 +91,51 @@ public class AlertRuleUtils {
 
 	public Map<String, Object> getConditionParameters(EventProcessorConfig eventConfig){
 		Map<String, Object> parametersCondition = Maps.newHashMap();
-		if (eventConfig.type().equals("aggregation-count")) {
-			// TODO: remove this case, in theory it is not necessary anymore
-			AggregationCountProcessorConfig aggregationCountConfig = (AggregationCountProcessorConfig) eventConfig;
-			parametersCondition.put(THRESHOLD, aggregationCountConfig.threshold());
-			parametersCondition.put(THRESHOLD_TYPE, aggregationCountConfig.thresholdType());
-			parametersCondition.put(TIME, this.convertMillisecondsToMinutes(aggregationCountConfig.searchWithinMs()));
-			parametersCondition.put(GROUPING_FIELDS, aggregationCountConfig.groupingFields());
-			parametersCondition.put(DISTINCTION_FIELDS, aggregationCountConfig.distinctionFields());
-			parametersCondition.put(GRACE,this.convertMillisecondsToMinutes(aggregationCountConfig.executeEveryMs()));
-		} else if (eventConfig.type().equals("correlation-count")) {
-			CorrelationCountProcessorConfig correlationConfig = (CorrelationCountProcessorConfig) eventConfig;
-			parametersCondition.put(THRESHOLD, correlationConfig.threshold());
-			parametersCondition.put(THRESHOLD_TYPE, correlationConfig.thresholdType());
-			parametersCondition.put(ADDITIONAL_THRESHOLD, correlationConfig.additionalThreshold());
-			parametersCondition.put(ADDITIONAL_THRESHOLD_TYPE, correlationConfig.additionalThresholdType());
-			parametersCondition.put(TIME, this.convertMillisecondsToMinutes(correlationConfig.searchWithinMs()));
-			parametersCondition.put(GROUPING_FIELDS, correlationConfig.groupingFields());
-			parametersCondition.put(GRACE, this.convertMillisecondsToMinutes(correlationConfig.executeEveryMs()));
-		} else if (eventConfig.type().equals("aggregation-v1")) {
-			AggregationEventProcessorConfig aggregationConfig = (AggregationEventProcessorConfig) eventConfig;
-			parametersCondition.put(TIME, this.convertMillisecondsToMinutes(aggregationConfig.searchWithinMs()));
-			parametersCondition.put(GRACE, this.convertMillisecondsToMinutes(aggregationConfig.executeEveryMs()));
-			parametersCondition.put(THRESHOLD, getThreshold(aggregationConfig.conditions().get().expression().get()));
-			parametersCondition.put(THRESHOLD_TYPE, aggregationConfig.conditions().get().expression().get().expr());
-			AggregationSeries series = aggregationConfig.series().get(0);
-			// TODO should introduce constants here for "type" and "field"...
-			parametersCondition.put("type", series.function().toString());
-			List<String> distinctFields = new ArrayList<>();
-			Optional<String> seriesField = series.field();
-			if (seriesField.isPresent()) {
-				// TODO think about this, but there is some code smell here...
-				// It is because AggregationEventProcessorConfig is used both for Count and Statistical conditions
-				String distinctField = seriesField.get();
-				parametersCondition.put("field", distinctField);
-				distinctFields.add(distinctField);
-			}
-			parametersCondition.put(GROUPING_FIELDS, aggregationConfig.groupBy());
-			parametersCondition.put(DISTINCTION_FIELDS, distinctFields);
+
+		switch (eventConfig.type()) {
+			case "aggregation-count":
+				// TODO: remove this case, in theory it is not necessary anymore
+				AggregationCountProcessorConfig aggregationCountConfig = (AggregationCountProcessorConfig) eventConfig;
+				parametersCondition.put(THRESHOLD, aggregationCountConfig.threshold());
+				parametersCondition.put(THRESHOLD_TYPE, aggregationCountConfig.thresholdType());
+				parametersCondition.put(TIME, this.convertMillisecondsToMinutes(aggregationCountConfig.searchWithinMs()));
+				parametersCondition.put(GROUPING_FIELDS, aggregationCountConfig.groupingFields());
+				parametersCondition.put(DISTINCTION_FIELDS, aggregationCountConfig.distinctionFields());
+				parametersCondition.put(GRACE,this.convertMillisecondsToMinutes(aggregationCountConfig.executeEveryMs()));
+				break;
+			case "correlation-count":
+				CorrelationCountProcessorConfig correlationConfig = (CorrelationCountProcessorConfig) eventConfig;
+				parametersCondition.put(THRESHOLD, correlationConfig.threshold());
+				parametersCondition.put(THRESHOLD_TYPE, correlationConfig.thresholdType());
+				parametersCondition.put(ADDITIONAL_THRESHOLD, correlationConfig.additionalThreshold());
+				parametersCondition.put(ADDITIONAL_THRESHOLD_TYPE, correlationConfig.additionalThresholdType());
+				parametersCondition.put(TIME, this.convertMillisecondsToMinutes(correlationConfig.searchWithinMs()));
+				parametersCondition.put(GROUPING_FIELDS, correlationConfig.groupingFields());
+				parametersCondition.put(GRACE, this.convertMillisecondsToMinutes(correlationConfig.executeEveryMs()));
+				break;
+			case "aggregation-v1":
+				AggregationEventProcessorConfig aggregationConfig = (AggregationEventProcessorConfig) eventConfig;
+				parametersCondition.put(TIME, this.convertMillisecondsToMinutes(aggregationConfig.searchWithinMs()));
+				parametersCondition.put(GRACE, this.convertMillisecondsToMinutes(aggregationConfig.executeEveryMs()));
+				parametersCondition.put(THRESHOLD, getThreshold(aggregationConfig.conditions().get().expression().get()));
+				parametersCondition.put(THRESHOLD_TYPE, aggregationConfig.conditions().get().expression().get().expr());
+				AggregationSeries series = aggregationConfig.series().get(0);
+				// TODO should introduce constants here for "type" and "field"...
+				parametersCondition.put("type", series.function().toString());
+				List<String> distinctFields = new ArrayList<>();
+				Optional<String> seriesField = series.field();
+				if (seriesField.isPresent()) {
+					// TODO think about this, but there is some code smell here...
+					// It is because AggregationEventProcessorConfig is used both for Count and Statistical conditions
+					String distinctField = seriesField.get();
+					parametersCondition.put("field", distinctField);
+					distinctFields.add(distinctField);
+				}
+				parametersCondition.put(GROUPING_FIELDS, aggregationConfig.groupBy());
+				parametersCondition.put(DISTINCTION_FIELDS, distinctFields);
+				break;
+			default:
+				throw new UnsupportedOperationException();
 		}
 		return parametersCondition;
 	}
