@@ -6,31 +6,31 @@
 
 #### Alert Wizard plugin for Graylog to manage the alert rules
 
-An alert wizard for configuring alert rules on Graylog.  
+An alert wizard for configuring alert rules on Graylog.
  
-Perfect for example to configure together and at the same time a stream, an alert condition and a logging alert notification.  
+Perfect for example to configure together and at the same time a stream, an alert condition and a logging alert notification.
 
-**Required Graylog version:** see compatibility table below for required version  
+**Required Graylog version:** see compatibility table below for required version
 
-**Required Graylog plugins:**
+**Packaged Graylog plugins:**
 * [graylog-plugin-logging-alert](https://github.com/airbus-cyber/graylog-plugin-logging-alert)
-* [graylog-plugin-aggregation-count](https://github.com/airbus-cyber/graylog-plugin-aggregation-count)
 * [graylog-plugin-correlation-count](https://github.com/airbus-cyber/graylog-plugin-correlation-count)
 
-## Graylog and Plugins Version Compatibility
+## Graylog Version Compatibility
 
-| Wizard Plugin Version | Graylog Version | Logging Alert Plugin Version | Aggregation Count Plugin Version | Correlation Count Plugin Version |
-| --------------------- | --------------- | ---------------------------- | -------------------------------- | -------------------------------- |
-| 4.2.x                 | 4.2.x           | 4.1.x                        | 4.1.x                            | 4.1.x                            |
-| 4.1.x                 | 4.2.x           | 4.1.x                        | 4.1.x                            | 4.1.x                            |
-| 4.0.x                 | 4.1.x           | 4.0.x                        | 4.0.x                            | 4.0.x                            |
-| 3.3.x                 | 3.3.x           | 2.2.x                        | 2.2.x                            | 2.2.x                            |
-| 3.2.x                 | 3.2.x           | 2.1.x                        | 2.1.x                            | 2.1.x                            |
-| 3.1.x                 | 3.0.x           | 1.2.x                        | 1.2.x                            | 1.2.x                            |
-| 3.0.x                 | 3.0.x           | 1.2.x                        | 1.2.x                            | 1.2.x                            |
-| 2.0.x                 | 2.5.x           | 1.1.x                        | 1.1.x                            | 1.1.x                            |
-| 1.1.x                 | 2.5.x           | 1.0.x                        | 1.0.x                            | 1.0.x                            |
-| 1.0.0                 | 2.4.x           | 1.0.x                        | 1.0.x                            | 1.0.x                            |
+| Wizard Plugin Version | Graylog Version |
+| --------------------- | --------------- |
+| 4.3.x                 | 4.2.x           |
+| 4.2.x                 | 4.2.x           |
+| 4.1.x                 | 4.2.x           |
+| 4.0.x                 | 4.1.x           |
+| 3.3.x                 | 3.3.x           |
+| 3.2.x                 | 3.2.x           |
+| 3.1.x                 | 3.0.x           |
+| 3.0.x                 | 3.0.x           |
+| 2.0.x                 | 2.5.x           |
+| 1.1.x                 | 2.5.x           |
+| 1.0.0                 | 2.4.x           |
 
 ### Upgrading to 3.2.0
 
