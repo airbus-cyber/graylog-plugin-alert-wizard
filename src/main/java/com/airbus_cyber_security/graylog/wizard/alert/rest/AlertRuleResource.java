@@ -340,7 +340,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
     @POST
     @Timed
-    @ApiOperation(value = "Create a alert")
+    @ApiOperation(value = "Create an alert")
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_CREATE)
     @ApiResponses(value = {@ApiResponse(code = 400, message = "The supplied request is not valid.")})
