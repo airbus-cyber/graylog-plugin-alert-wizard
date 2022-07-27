@@ -74,6 +74,7 @@ const CreateAlertInput = createReactClass({
 
     propTypes: {
         alert: PropTypes.object,
+        // TODO should remove this prop (prefer composition)
         create: PropTypes.bool.isRequired,
     },
     contextTypes: {
