@@ -36,9 +36,7 @@ import java.util.*;
 public class AlertRuleUtils {
 
 	private static final int MILLISECONDS_IN_A_MINUTE = 60 * 1000;
-
 	private static final Logger LOG = LoggerFactory.getLogger(AlertRuleUtils.class);
-
 	public static final String GROUPING_FIELDS = "grouping_fields";
 	public static final String DISTINCTION_FIELDS = "distinction_fields";
 	public static final String TIME = "time";
