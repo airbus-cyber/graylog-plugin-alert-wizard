@@ -34,18 +34,18 @@ const DistinctCondition = createReactClass({
     },   
     getInitialState() {
         return {
-            distinction_fields:this.props.distinction_fields,
+            distinct_by: this.props.distinct_by,
         };
     },
     _onDistinctionFieldsChange(nextValue) {
-        const values = (nextValue === '' ? [] : [nextValue]);
-        this.setState({distinction_fields: values});
-        this.props.onUpdate('distinction_fields', values);
+        this.setState({distinct_by: nextValue});
+        this.props.onUpdate('distinct_by', nextValue);
     },
 
     render() {
         const { formattedFields } = this.props;
 
+        // TODO remove the ref property on the input :(
         return (
             <Row>
                 <Col md={2} style={{ marginTop: 5, marginBottom: 0 }}>
@@ -53,10 +53,10 @@ const DistinctCondition = createReactClass({
                 </Col>
                 <Col md={10}>
                     <label><FormattedMessage id= "wizard.distinctByLabel" defaultMessage= "Messages must be distincted by" /></label>
-                    <Input ref="distinction_fields" id="distinction_fields" name="distinction_fields">
+                    <Input ref="distinct_by" id="distinct_by" name="distinct_by">
                         <div style={{minWidth:'300px'}}>
                         <Select options={formattedFields}
-                                value={this.state.distinction_fields.length === 0 ? '' : this.state.distinction_fields[0]}
+                                value={this.state.distinct_by}
                                 onChange={this._onDistinctionFieldsChange}
                                 allowCreate={true}/>
                         <Input />

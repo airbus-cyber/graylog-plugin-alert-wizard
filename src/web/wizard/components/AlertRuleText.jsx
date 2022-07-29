@@ -128,8 +128,7 @@ const AlertRuleText = createReactClass({
     _getDistinctByRule(){
         return (<FormattedMessage id ="wizard.DistinctByRule" 
                 defaultMessage={"with distinct value of {distinctBy}, "}
-                values={{distinctBy: <strong>{Array.isArray(this.props.alert.condition_parameters.distinction_fields) ? 
-                        this.props.alert.condition_parameters.distinction_fields.join(' ') : this.props.alert.condition_parameters.distinction_fields}</strong> }}/> );
+                values={{distinctBy: <strong>{this.props.alert.condition_parameters.distinct_by}</strong> }}/> );
     },
     
     render() {
@@ -158,7 +157,7 @@ const AlertRuleText = createReactClass({
                     if (this.props.alert.condition_parameters.grouping_fields && this.props.alert.condition_parameters.grouping_fields.length > 0) {
                         textRule.push(this._getGroupByRule());
                     }
-                    if (this.props.alert.condition_parameters.distinction_fields && this.props.alert.condition_parameters.distinction_fields.length > 0) {
+                    if (this.props.alert.condition_parameters.distinct_by !== '') {
                         textRule.push(this._getDistinctByRule());
                     }
                     textRule.push(this._getMatchRule(this.props.alert.stream.matching_type));

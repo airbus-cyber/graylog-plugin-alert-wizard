@@ -205,7 +205,7 @@ public class AlertRuleUtilsService {
 
     public EventProcessorConfig createAggregationCondition(String streamIdentifier, Map<String, Object> conditionParameter) {
         List<String> groupByFields = (List<String>) conditionParameter.get(AlertRuleUtils.GROUPING_FIELDS);
-        List<String> distinctFields = (List<String>) conditionParameter.get(AlertRuleUtils.DISTINCTION_FIELDS);
+        String distinctBy = (String) conditionParameter.get(AlertRuleUtils.DISTINCT_BY);
 
         Set<String> streams = ImmutableSet.of(streamIdentifier);
         // TODO extract method to parse searchWithinMs
@@ -219,10 +219,10 @@ public class AlertRuleUtilsService {
         String identifier = UUID.randomUUID().toString();
         AggregationSeries.Builder seriesBuilder = AggregationSeries.builder().id(identifier);
 
-        if (distinctFields.isEmpty()) {
+        if (distinctBy.isEmpty()) {
             seriesBuilder.function(AggregationFunction.COUNT);
         } else {
-            seriesBuilder.function(AggregationFunction.CARD).field(distinctFields.get(0));
+            seriesBuilder.function(AggregationFunction.CARD).field(distinctBy);
         }
 
         AggregationSeries series = seriesBuilder.build();

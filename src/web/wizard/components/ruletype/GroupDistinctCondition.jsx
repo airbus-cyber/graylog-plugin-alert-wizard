@@ -84,7 +84,7 @@ const GroupDistinctCondition = createReactClass({
                 <br/>
                 <GroupByCondition onUpdate={this._handleChangeCondition} grouping_fields={this.props.alert.condition_parameters.grouping_fields} />
                 <br/>
-                <DistinctCondition onUpdate={this._handleChangeCondition} distinction_fields={this.props.alert.condition_parameters.distinction_fields} />
+                <DistinctCondition onUpdate={this._handleChangeCondition} distinct_by={this.props.alert.condition_parameters.distinct_by} />
                 <br/>
                 <Description onUpdate={this.props.onUpdate} description={this.props.alert.description}/>
                 <br/>

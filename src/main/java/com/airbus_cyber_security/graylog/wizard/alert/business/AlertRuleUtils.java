@@ -43,7 +43,7 @@ public class AlertRuleUtils {
 	public static final String FIELD = "field";
 	public static final String TYPE = "type";
 	public static final String GROUPING_FIELDS = "grouping_fields";
-	public static final String DISTINCTION_FIELDS = "distinction_fields";
+	public static final String DISTINCT_BY = "distinct_by";
 	public static final String TIME = "time";
 	public static final String GRACE = "grace";
 	public static final String ADDITIONAL_THRESHOLD = "additional_threshold";
@@ -115,18 +115,17 @@ public class AlertRuleUtils {
 				parametersCondition.put(THRESHOLD_TYPE, aggregationConfig.conditions().get().expression().get().expr());
 				AggregationSeries series = aggregationConfig.series().get(0);
 				parametersCondition.put(TYPE, series.function().toString());
-				List<String> distinctFields = new ArrayList<>();
+				String distinctBy = "";
 				Optional<String> seriesField = series.field();
 				if (seriesField.isPresent()) {
 					// TODO think about this, but there is some code smell here...
 					// It is because AggregationEventProcessorConfig is used both for Count and Statistical conditions
-					String distinctField = seriesField.get();
+					distinctBy = seriesField.get();
 					// TODO should introduce constants here for "field"...
-					parametersCondition.put(FIELD, distinctField);
-					distinctFields.add(distinctField);
+					parametersCondition.put(FIELD, distinctBy);
 				}
 				parametersCondition.put(GROUPING_FIELDS, aggregationConfig.groupBy());
-				parametersCondition.put(DISTINCTION_FIELDS, distinctFields);
+				parametersCondition.put(DISTINCT_BY, distinctBy);
 				break;
 			default:
 				throw new UnsupportedOperationException();

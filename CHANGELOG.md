@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 * The default value of the time range unit in the wizard configuration is set to "minutes" ([issue #62](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/62))
 ### Changes
 * Group/Distinct condition now accepts at most only one distinct field
+* Condition parameter distinction_fields renamed into distinct_by. It now accepts only one value
 
 ## [4.2.2](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/4.2.1...4.2.2)
 ### Bug Fixes

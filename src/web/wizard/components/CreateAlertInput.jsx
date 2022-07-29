@@ -55,7 +55,7 @@ const INIT_ALERT = {
             additional_threshold_type: '',
             additional_threshold: 0,
             grouping_fields: [],
-            distinction_fields: [],
+            distinct_by: '',
             field: '',
             type: ''
         },
