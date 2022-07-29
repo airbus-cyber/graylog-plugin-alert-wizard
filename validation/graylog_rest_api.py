@@ -79,17 +79,15 @@ class GraylogRestApi:
 
     def _create_alert_rule(self, title, rule, condition_type,
                            additional_threshold_type='', additional_threshold=0, second_stream=None, time=1,
-                           group_by_fields=None, distinct_fields=None):
+                           group_by_fields=None, distinct_by=''):
         if group_by_fields is None:
             group_by_fields = []
-        if distinct_fields is None:
-            distinct_fields = []
         alert_rule = {
             'condition_parameters': {
                 'additional_threshold': additional_threshold,
                 'additional_threshold_type': additional_threshold_type,
                 'backlog': 500,
-                'distinction_fields': distinct_fields,
+                'distinct_by': distinct_by,
                 'field': '',
                 'grace': 1,
                 'grouping_fields': group_by_fields,
@@ -118,8 +116,8 @@ class GraylogRestApi:
     def create_alert_rule_count(self, title, rule, time):
         return self._create_alert_rule(title, rule, 'COUNT', time)
 
-    def create_alert_rule_group_distinct(self, title, rule, group_by_fields, distinct_fields, time):
-        return self._create_alert_rule(title, rule, 'GROUP_DISTINCT', time, group_by_fields=group_by_fields, distinct_fields=distinct_fields)
+    def create_alert_rule_group_distinct(self, title, rule, group_by_fields, distinct_by, time):
+        return self._create_alert_rule(title, rule, 'GROUP_DISTINCT', time, group_by_fields=group_by_fields, distinct_by=distinct_by)
 
     def create_alert_rule_and(self, title, time, additional_threshold=0):
         rule = {

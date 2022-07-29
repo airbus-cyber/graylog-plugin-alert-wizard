@@ -144,22 +144,23 @@ class Test(TestCase):
             'type': 1,
             'value': 'toto'
         }
-        self._graylog.create_alert_rule_group_distinct(title, rule, ['x'], [], _PERIOD)
+        self._graylog.create_alert_rule_group_distinct(title, rule, ['x'], '', _PERIOD)
         alert_rule = self._graylog.get_alert_rule(title)
         self.assertEqual(1, len(alert_rule['condition_parameters']['grouping_fields']))
 
-    def test_get_alert_with_distinct_fields_should_contain_the_distinct_fields(self):
+    def test_get_alert_with_distinct_by_should_contain_the_distinct_by_field(self):
         title = 'rule_distinct'
         rule = {
             'field': 'source',
             'type': 1,
             'value': 'toto'
         }
-        self._graylog.create_alert_rule_group_distinct(title, rule, [], ['x'], _PERIOD)
+        distinct_by = 'x'
+        self._graylog.create_alert_rule_group_distinct(title, rule, [], distinct_by, _PERIOD)
         alert_rule = self._graylog.get_alert_rule(title)
-        self.assertEqual(1, len(alert_rule['condition_parameters']['distinction_fields']))
+        self.assertEqual(distinct_by, alert_rule['condition_parameters']['distinct_by'])
 
-    def test_get_alert_with_no_distinct_fields_should_contain_an_empty_distinct_fields(self):
+    def test_get_alert_with_no_distinct_by_should_contain_an_empty_distinct_by_field(self):
         title = 'rule_count'
         rule = {
             'field': 'source',
@@ -168,4 +169,4 @@ class Test(TestCase):
         }
         self._graylog.create_alert_rule_count(title, rule, _PERIOD)
         alert_rule = self._graylog.get_alert_rule(title)
-        self.assertEqual(0, len(alert_rule['condition_parameters']['distinction_fields']))
+        self.assertEqual('', alert_rule['condition_parameters']['distinct_by'])
