@@ -170,8 +170,8 @@ public class AlertRuleUtilsService {
             messageOrder = "ANY";
         }
 
-        long searchWithinMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get("time").toString()));
-        long executeEveryMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get("grace").toString()));
+        long searchWithinMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(AlertRuleUtils.TIME).toString()));
+        long executeEveryMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(AlertRuleUtils.GRACE).toString()));
 
         return CorrelationCountProcessorConfig.builder()
                 .stream(streamID)
@@ -209,7 +209,7 @@ public class AlertRuleUtilsService {
 
         Set<String> streams = ImmutableSet.of(streamIdentifier);
         // TODO extract method to parse searchWithinMs
-        long searchWithinMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get("time").toString()));
+        long searchWithinMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(AlertRuleUtils.TIME).toString()));
         // TODO extract method to parse executeEveryMs
         long executeEveryMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get("grace").toString()));
 
@@ -294,7 +294,7 @@ public class AlertRuleUtilsService {
         String type = conditionParameter.get(AlertRuleUtils.TYPE).toString();
         LOG.debug("Begin Stat, type: {}", type);
         // TODO extract method to parse searchWithinMs
-        long searchWithinMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get("time").toString()));
+        long searchWithinMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(AlertRuleUtils.TIME).toString()));
         // TODO extract method to parse executeEveryMs
         long executeEveryMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get("grace").toString()));
 
