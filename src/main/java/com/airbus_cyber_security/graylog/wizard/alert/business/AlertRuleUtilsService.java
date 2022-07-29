@@ -205,7 +205,7 @@ public class AlertRuleUtilsService {
 
     public EventProcessorConfig createAggregationCondition(String streamIdentifier, Map<String, Object> conditionParameter) {
         List<String> groupByFields = (List<String>) conditionParameter.get(AlertRuleUtils.GROUPING_FIELDS);
-        List<String> distinctFields = (List<String>) conditionParameter.get("distinction_fields");
+        List<String> distinctFields = (List<String>) conditionParameter.get(AlertRuleUtils.DISTINCTION_FIELDS);
 
         Set<String> streams = ImmutableSet.of(streamIdentifier);
         // TODO extract method to parse searchWithinMs
