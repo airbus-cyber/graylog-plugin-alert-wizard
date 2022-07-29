@@ -183,7 +183,8 @@ public class AlertRuleUtilsService {
                 .messagesOrder(messageOrder)
                 .searchWithinMs(searchWithinMs)
                 .executeEveryMs(executeEveryMs)
-                .groupingFields(convertToHashSet(conditionParameter.get("grouping_fields")))
+                // TODO CorrelationCountProcessorConfig.groupingFields should be of type List (or better just Collection/Iterable) rather than Set
+                .groupingFields(new HashSet<>((List<String>) conditionParameter.get(AlertRuleUtils.GROUPING_FIELDS)))
                 .comment(AlertRuleUtils.COMMENT_ALERT_WIZARD)
                 .searchQuery("*")
                 .build();
@@ -203,7 +204,7 @@ public class AlertRuleUtilsService {
     }
 
     public EventProcessorConfig createAggregationCondition(String streamIdentifier, Map<String, Object> conditionParameter) {
-        List<String> groupByFields = (List<String>) conditionParameter.get("grouping_fields");
+        List<String> groupByFields = (List<String>) conditionParameter.get(AlertRuleUtils.GROUPING_FIELDS);
         List<String> distinctFields = (List<String>) conditionParameter.get("distinction_fields");
 
         Set<String> streams = ImmutableSet.of(streamIdentifier);
