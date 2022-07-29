@@ -555,7 +555,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     public Response importAlertRules(@ApiParam(name = "JSON body", required = true) @Valid @NotNull List<ExportAlertRule> request, @Context UserContext userContext) {
         Response responses = Response.accepted().build();
 
-        for (ExportAlertRule alertRule : request) {
+        for (ExportAlertRule alertRule: request) {
             if (!alertRuleService.isValidImportRequest(alertRule)) {
                 LOG.error("Invalid alert rule:" + alertRule.getTitle());
             } else {
