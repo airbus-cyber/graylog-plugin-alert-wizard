@@ -558,13 +558,13 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         for (ExportAlertRule alertRule: request) {
             if (!alertRuleService.isValidImportRequest(alertRule)) {
                 LOG.error("Invalid alert rule:" + alertRule.getTitle());
-            } else {
-                try {
-                    importAlertRule(alertRule, userContext);
-                } catch (Exception e) {
-                    LOG.error("Cannot create alert " + alertRule.getTitle() + ": ", e.getMessage());
-                    responses = Response.serverError().build();
-                }
+                continue;
+            }
+            try {
+                importAlertRule(alertRule, userContext);
+            } catch (Exception e) {
+                LOG.error("Cannot create alert " + alertRule.getTitle() + ": ", e.getMessage());
+                responses = Response.serverError().build();
             }
         }
 
