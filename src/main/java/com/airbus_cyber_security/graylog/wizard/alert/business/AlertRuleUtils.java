@@ -38,6 +38,8 @@ public class AlertRuleUtils {
 	private static final Logger LOG = LoggerFactory.getLogger(AlertRuleUtils.class);
 
 	// TODO all these constants should be private => see where this leads us in term of code reorganisation (something like a conditionParametersParser?)
+	//      indeed: should rather parse the conditionParameters as soon as it gets in the system, in order to get a tidy class with getters
+	//      there is even a way to do it nicely with Jackson: see jackson-docs polymorphic type handling, jsonsubtypes
 	public static final String FIELD = "field";
 	public static final String TYPE = "type";
 	public static final String GROUPING_FIELDS = "grouping_fields";
