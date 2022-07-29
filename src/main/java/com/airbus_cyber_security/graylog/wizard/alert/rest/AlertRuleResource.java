@@ -350,16 +350,18 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             throws ValidationException, BadRequestException {
 
         this.alertRuleUtilsService.checkIsValidRequest(request);
-        AlertRuleStream stream = request.getStream();
-        AlertRuleStream secondStream = request.getSecondStream();
+
         String title = request.getTitle();
         String alertTitle = checkImportPolicyAndGetTitle(title);
+        AlertRuleStream stream = request.getStream();
+        AlertRuleStream secondStream = request.getSecondStream();
+        String severity = request.getSeverity();
         String conditionType = request.getConditionType();
         String description = request.getDescription();
         Map<String, Object> conditionParameters = request.conditionParameters();
 
         // Create Notification
-        String notificationID = this.alertRuleUtilsService.createNotification(alertTitle, request.getSeverity(), userContext);
+        String notificationID = this.alertRuleUtilsService.createNotification(alertTitle, severity, userContext);
 
         createAlertRule(stream, secondStream, alertTitle, notificationID, description, conditionType, conditionParameters, userContext);
 

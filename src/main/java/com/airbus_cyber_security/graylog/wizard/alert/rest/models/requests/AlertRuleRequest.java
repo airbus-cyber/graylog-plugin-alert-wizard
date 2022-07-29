@@ -35,14 +35,17 @@ public abstract class AlertRuleRequest {
     @NotNull
     public abstract String getTitle();
 
+    // TODO should be @NotNull
     @JsonProperty("severity")
     @Nullable
     public abstract String getSeverity();
 
+    // TODO should be @NotNull (encode the absence of description with an empty string)
     @JsonProperty("description")
     @Nullable
     public abstract String getDescription();
 
+    // TODO should be @NotNull
     @JsonProperty("condition_type")
     @Nullable
     public abstract String getConditionType();
