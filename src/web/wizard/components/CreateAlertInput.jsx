@@ -167,7 +167,6 @@ const CreateAlertInput = createReactClass({
             time: time,
             time_type: time_type,
             contentComponent: <Spinner/>,
-            isPluginAggregation: true,
             isPluginCorrelation: true,
             isPluginLoggingAlert: true,
         };
@@ -176,20 +175,16 @@ const CreateAlertInput = createReactClass({
         NodesActions.list().then(nodes => {
             if(nodes.nodes[0]) {
                 PluginsStore.list(nodes.nodes[0].node_id).then(plugins => {
-                    let isPluginAggregationPresent = false;
                     let isPluginCorrelationPresent = false;
                     let isPluginLoggingAlertPresent = false;
                     for (let i = 0; i < plugins.length; i++) {
-                        if (plugins[i].unique_id === "com.airbus-cyber-security.graylog.AggregationCountPlugin") {
-                            isPluginAggregationPresent = true;
-                        } else if (plugins[i].unique_id === "com.airbus-cyber-security.graylog.CorrelationCountPlugin") {
+                        if (plugins[i].unique_id === "com.airbus-cyber-security.graylog.CorrelationCountPlugin") {
                             isPluginCorrelationPresent = true;
                         } else if (plugins[i].unique_id === "com.airbus-cyber-security.graylog.LoggingAlertPlugin") {
                             isPluginLoggingAlertPresent = true;
                         }
                     }
                     this.setState({
-                        isPluginAggregation: isPluginAggregationPresent,
                         isPluginCorrelation: isPluginCorrelationPresent,
                         isPluginLoggingAlert: isPluginLoggingAlertPresent
                     });
@@ -388,7 +383,7 @@ const CreateAlertInput = createReactClass({
                     <NavItem eventKey={'COUNT'} title={this.state.messages.tooltipCountCondition}>
                         <FormattedMessage id= "wizard.countCondition" defaultMessage= "Count" />
                     </NavItem>
-                    <NavItem eventKey={'GROUP_DISTINCT'} title={this.state.messages.tooltipGroupDistinctCondition} disabled={!this.state.isPluginAggregation}>
+                    <NavItem eventKey={'GROUP_DISTINCT'} title={this.state.messages.tooltipGroupDistinctCondition}>
                         <FormattedMessage id= "wizard.groupDistinctCondition" defaultMessage= "Group / Distinct" />
                     </NavItem>
                     <NavItem eventKey={'STATISTICAL'} title={this.state.messages.tooltipStatisticalCondition}>
