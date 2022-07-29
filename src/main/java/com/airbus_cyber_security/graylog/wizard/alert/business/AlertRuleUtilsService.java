@@ -211,7 +211,7 @@ public class AlertRuleUtilsService {
         // TODO extract method to parse searchWithinMs
         long searchWithinMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(AlertRuleUtils.TIME).toString()));
         // TODO extract method to parse executeEveryMs
-        long executeEveryMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get("grace").toString()));
+        long executeEveryMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(AlertRuleUtils.GRACE).toString()));
 
         String thresholdType = (String) conditionParameter.get("threshold_type");
         int threshold = (int) conditionParameter.get("threshold");
@@ -296,7 +296,7 @@ public class AlertRuleUtilsService {
         // TODO extract method to parse searchWithinMs
         long searchWithinMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(AlertRuleUtils.TIME).toString()));
         // TODO extract method to parse executeEveryMs
-        long executeEveryMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get("grace").toString()));
+        long executeEveryMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(AlertRuleUtils.GRACE).toString()));
 
         String identifier = UUID.randomUUID().toString();
         AggregationSeries serie = AggregationSeries.builder()
