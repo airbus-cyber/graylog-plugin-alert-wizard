@@ -184,11 +184,11 @@ const AlertRuleList = createReactClass({
         let alertValid;
         let colorValid;
         let streamID;
-        if(alert.condition_parameters === null || alert.stream === null){
+        if (alert.condition_parameters === null || alert.stream === null) {
             alertValid = false;
             colorValid = "#F7230C";
             streamID = '';
-        }else{
+        } else {
             alertValid = true;
             colorValid = "#000000";
             streamID = alert.stream.id;
@@ -198,7 +198,7 @@ const AlertRuleList = createReactClass({
         }
         
         let streamId2 = null;
-        if(alert.second_stream){
+        if (alert.second_stream) {
             streamId2 = alert.second_stream.id;
         }
         
