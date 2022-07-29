@@ -213,8 +213,8 @@ public class AlertRuleUtilsService {
         // TODO extract method to parse executeEveryMs
         long executeEveryMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(AlertRuleUtils.GRACE).toString()));
 
-        String thresholdType = (String) conditionParameter.get("threshold_type");
-        int threshold = (int) conditionParameter.get("threshold");
+        String thresholdType = (String) conditionParameter.get(AlertRuleUtils.THRESHOLD_TYPE);
+        int threshold = (int) conditionParameter.get(AlertRuleUtils.THRESHOLD);
 
         String identifier = UUID.randomUUID().toString();
         AggregationSeries.Builder seriesBuilder = AggregationSeries.builder().id(identifier);
@@ -306,8 +306,8 @@ public class AlertRuleUtilsService {
                 .build();
 
         Expression<Boolean> expression = createExpressionFromThreshold(identifier,
-                conditionParameter.get("threshold_type").toString(),
-                (int) conditionParameter.get("threshold"));
+                conditionParameter.get(AlertRuleUtils.THRESHOLD_TYPE).toString(),
+                (int) conditionParameter.get(AlertRuleUtils.THRESHOLD));
 
         return AggregationEventProcessorConfig.builder()
                 .query("")
