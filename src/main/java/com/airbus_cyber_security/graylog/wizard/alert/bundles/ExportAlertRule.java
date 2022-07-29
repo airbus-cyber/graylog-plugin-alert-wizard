@@ -58,12 +58,12 @@ public abstract class ExportAlertRule {
 
     @JsonCreator    
     public static ExportAlertRule create(@JsonProperty("title") String title,
-                                                @JsonProperty("notification_parameters") Map<String, Object> notificationParameters,
-                                                @JsonProperty("description") String description,
-                                                @JsonProperty("condition_type") String conditionType,
-                                                @JsonProperty("condition_parameters") Map<String, Object> conditionParameters,
-                                                @JsonProperty("stream") AlertRuleStream stream,
-                                                @JsonProperty("second_stream") AlertRuleStream stream2) {
+                                         @JsonProperty("notification_parameters") Map<String, Object> notificationParameters,
+                                         @JsonProperty("description") String description,
+                                         @JsonProperty("condition_type") String conditionType,
+                                         @JsonProperty("condition_parameters") Map<String, Object> conditionParameters,
+                                         @JsonProperty("stream") AlertRuleStream stream,
+                                         @JsonProperty("second_stream") AlertRuleStream stream2) {
         return new AutoValue_ExportAlertRule(title, notificationParameters, description, conditionType, conditionParameters, stream, stream2);
     }
 }
