@@ -19,8 +19,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import createReactClass from 'create-react-class';
 import { Input } from 'components/bootstrap';
-import { MultiSelect } from 'components/common';
-import {FormattedMessage} from 'react-intl';
+import { Select } from 'components/common';
+import { FormattedMessage } from 'react-intl';
 import { Row, Col } from 'components/graylog';
 
 import withFormattedFields from './withFormattedFields';
@@ -38,7 +38,7 @@ const DistinctCondition = createReactClass({
         };
     },
     _onDistinctionFieldsChange(nextValue) {
-        const values = (nextValue === '' ? [] : nextValue.split(','));
+        const values = (nextValue === '' ? [] : [nextValue]);
         this.setState({distinction_fields: values});
         this.props.onUpdate('distinction_fields', values);
     },
@@ -55,11 +55,11 @@ const DistinctCondition = createReactClass({
                     <label><FormattedMessage id= "wizard.distinctByLabel" defaultMessage= "Messages must be distincted by" /></label>
                     <Input ref="distinction_fields" id="distinction_fields" name="distinction_fields">
                         <div style={{minWidth:'300px'}}>
-                        <MultiSelect autoFocus={false}
-                                  options={formattedFields}
-                                  value={this.state.distinction_fields ? (Array.isArray(this.state.distinction_fields) ? this.state.distinction_fields.join(',') : this.state.distinction_fields) : undefined}
-                                  onChange={this._onDistinctionFieldsChange}
-                                  allowCreate={true}/>
+                        <Select options={formattedFields}
+                                value={this.state.distinction_fields.length === 0 ? '' : this.state.distinction_fields[0]}
+                                onChange={this._onDistinctionFieldsChange}
+                                allowCreate={true}/>
+                        <Input />
                         </div>
                     </Input>
                 </Col>

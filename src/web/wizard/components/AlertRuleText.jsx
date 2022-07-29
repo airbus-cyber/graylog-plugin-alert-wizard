@@ -18,8 +18,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
-import {Spinner} from 'components/common';
-import {FormattedMessage} from 'react-intl';
+import { Spinner } from 'components/common';
+import { FormattedMessage } from 'react-intl';
 
 const AlertRuleText = createReactClass({
     displayName: 'AlertRuleText',
@@ -140,10 +140,10 @@ const AlertRuleText = createReactClass({
                 </div>
             );
         }
-        try{
+        try {
             let textRule = [];
-            if(this.props.alert.condition_parameters !== null && this.props.alert.stream !== null){
-                if(this.props.alert.condition_type === "STATISTICAL"){                    
+            if(this.props.alert.condition_parameters !== null && this.props.alert.stream !== null) {
+                if (this.props.alert.condition_type === "STATISTICAL") {                    
                     textRule.push(<FormattedMessage id ="wizard.StatisticalRule" 
                         defaultMessage= {"Trigger an alert when the {type} of {field} is {threshold_type} {threshold} in the last {time} minutes "}
                         values={{type: <strong>{this._getAggregationType(this.props.alert.condition_parameters.type)}</strong> , 
@@ -153,19 +153,19 @@ const AlertRuleText = createReactClass({
                             time: <strong>{this.props.alert.condition_parameters.time}</strong>}}/> );     
                     textRule.push(this._getMatchRule(this.props.alert.stream.matching_type));
                     textRule.push(this._getTextFieldRule(this.props.alert.stream));
-                }else if(this.props.alert.condition_type === "GROUP_DISTINCT"){
+                } else if(this.props.alert.condition_type === "GROUP_DISTINCT") {
                     textRule.push(this._getTriggerRule());
-                    if(this.props.alert.condition_parameters.grouping_fields && this.props.alert.condition_parameters.grouping_fields.length > 0){
+                    if (this.props.alert.condition_parameters.grouping_fields && this.props.alert.condition_parameters.grouping_fields.length > 0) {
                         textRule.push(this._getGroupByRule());
                     }
-                    if(this.props.alert.condition_parameters.distinction_fields && this.props.alert.condition_parameters.distinction_fields.length > 0){
+                    if (this.props.alert.condition_parameters.distinction_fields && this.props.alert.condition_parameters.distinction_fields.length > 0) {
                         textRule.push(this._getDistinctByRule());
                     }
                     textRule.push(this._getMatchRule(this.props.alert.stream.matching_type));
                     textRule.push(this._getTextFieldRule(this.props.alert.stream));
-                }else if(this.props.alert.condition_type === "THEN"){
+                } else if(this.props.alert.condition_type === "THEN") {
                     textRule.push(this._getTriggerRule());
-                    if(this.props.alert.condition_parameters.grouping_fields && this.props.alert.condition_parameters.grouping_fields.length > 0){
+                    if (this.props.alert.condition_parameters.grouping_fields && this.props.alert.condition_parameters.grouping_fields.length > 0) {
                          textRule.push(this._getGroupByRule());
                     }
                     textRule.push(this._getMatchRule(this.props.alert.stream.matching_type));
@@ -175,15 +175,15 @@ const AlertRuleText = createReactClass({
                             defaultMessage={"followed by {threshold_type} {threshold} messages "}
                             values={{threshold_type: <strong>{this._getThresholdType(this.props.alert.condition_parameters.additional_threshold_type)}</strong>, 
                                     threshold: <strong>{this.props.alert.condition_parameters.additional_threshold}</strong> }}/>);
-                    if(this.props.alert.condition_parameters.grouping_fields && this.props.alert.condition_parameters.grouping_fields.length > 0){
+                    if (this.props.alert.condition_parameters.grouping_fields && this.props.alert.condition_parameters.grouping_fields.length > 0) {
                         textRule.push(this._getGroupByRule());
                     }
                     textRule.push(this._getMatchRule(this.props.alert.second_stream.matching_type));
                     textRule.push(this._getTextFieldRule(this.props.alert.second_stream));
                     
-                }else if(this.props.alert.condition_type === "AND"){
+                } else if (this.props.alert.condition_type === "AND"){
                     textRule.push(this._getTriggerRule());
-                    if(this.props.alert.condition_parameters.grouping_fields && this.props.alert.condition_parameters.grouping_fields.length > 0){
+                    if (this.props.alert.condition_parameters.grouping_fields && this.props.alert.condition_parameters.grouping_fields.length > 0) {
                          textRule.push(this._getGroupByRule());
                     }
                     textRule.push(this._getMatchRule(this.props.alert.stream.matching_type));
@@ -193,20 +193,20 @@ const AlertRuleText = createReactClass({
                             defaultMessage={"AND when there are {threshold_type} {threshold} messages "}
                             values={{threshold_type: <strong>{this._getThresholdType(this.props.alert.condition_parameters.additional_threshold_type)}</strong>, 
                                     threshold: <strong>{this.props.alert.condition_parameters.additional_threshold}</strong> }}/>);
-                    if(this.props.alert.condition_parameters.grouping_fields && this.props.alert.condition_parameters.grouping_fields.length > 0){
+                    if (this.props.alert.condition_parameters.grouping_fields && this.props.alert.condition_parameters.grouping_fields.length > 0) {
                         textRule.push(this._getGroupByRule());
                     }
                     textRule.push(this._getMatchRule(this.props.alert.second_stream.matching_type));
                     textRule.push(this._getTextFieldRule(this.props.alert.second_stream));
                     
-                }else if(this.props.alert.condition_type === "OR"){
+                } else if (this.props.alert.condition_type === "OR"){
                     textRule.push(this._getTriggerRule());
                     textRule.push(this._getMatchRule(this.props.alert.stream.matching_type));
                     textRule.push(this._getTextFieldRule(this.props.alert.stream));
                     textRule.push(<FormattedMessage id ="wizard.or" defaultMessage={"OR "}/>);
                     textRule.push(this._getMatchRule(this.props.alert.second_stream.matching_type));
                     textRule.push(this._getTextFieldRule(this.props.alert.second_stream));
-                }else{
+                } else {
                     textRule.push(this._getTriggerRule());
                     textRule.push(this._getMatchRule(this.props.alert.stream.matching_type));
                     textRule.push(this._getTextFieldRule(this.props.alert.stream));
@@ -216,7 +216,7 @@ const AlertRuleText = createReactClass({
             return (
                     <span style={{whiteSpace: 'pre-line'}}>{textRule}</span>
             );
-        }catch(e){
+        } catch(e) {
             return (
                     <span></span>
             );
