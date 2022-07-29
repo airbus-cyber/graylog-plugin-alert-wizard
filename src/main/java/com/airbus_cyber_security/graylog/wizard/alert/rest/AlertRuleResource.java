@@ -181,6 +181,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return this.alertRuleUtilsService.constructDataAlertRule(alert);
     }
 
+    // TODO is this really necessary? Should either be just the GET, or the GET with a formatting option (if performance are really an issue)
     @GET
     @Path("/data")
     @Timed
