@@ -532,6 +532,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.alertRuleService.destroy(alertTitle);
     }
 
+    // TODO: maybe export could be implemented in pure JS and remove this endpoint
     @POST
     @Path("/export")
     @Timed
@@ -544,6 +545,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return alertRuleExporter.export(request.getTitles());
     }
 
+    // TODO: maybe import could be implemented in pure JS and remove this endpoint
     @PUT
     @Path("/import")
     @Timed
