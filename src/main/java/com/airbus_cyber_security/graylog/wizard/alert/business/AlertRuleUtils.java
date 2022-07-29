@@ -38,6 +38,7 @@ public class AlertRuleUtils {
 	private static final Logger LOG = LoggerFactory.getLogger(AlertRuleUtils.class);
 
 	// TODO all these constants should be private => see where this leads us in term of code reorganisation (something like a conditionParametersParser?)
+	public static final String FIELD = "field";
 	public static final String TYPE = "type";
 	public static final String GROUPING_FIELDS = "grouping_fields";
 	public static final String DISTINCTION_FIELDS = "distinction_fields";
@@ -119,7 +120,7 @@ public class AlertRuleUtils {
 					// It is because AggregationEventProcessorConfig is used both for Count and Statistical conditions
 					String distinctField = seriesField.get();
 					// TODO should introduce constants here for "field"...
-					parametersCondition.put("field", distinctField);
+					parametersCondition.put(FIELD, distinctField);
 					distinctFields.add(distinctField);
 				}
 				parametersCondition.put(GROUPING_FIELDS, aggregationConfig.groupBy());

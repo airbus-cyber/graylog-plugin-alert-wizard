@@ -301,7 +301,7 @@ public class AlertRuleUtilsService {
         AggregationSeries serie = AggregationSeries.builder()
                 .id(identifier)
                 .function(mapTypeToAggregationFunction(type))
-                .field(conditionParameter.get("field").toString())
+                .field(conditionParameter.get(AlertRuleUtils.FIELD).toString())
                 .build();
 
         Expression<Boolean> expression = createExpressionFromThreshold(identifier,
