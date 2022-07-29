@@ -290,7 +290,8 @@ public class AlertRuleUtilsService {
     }
 
     public EventProcessorConfig createStatisticalCondition(String streamID, Map<String, Object> conditionParameter) {
-        LOG.debug("Begin Stat, type: " + conditionParameter.get("type"));
+        String type = conditionParameter.get(AlertRuleUtils.TYPE).toString();
+        LOG.debug("Begin Stat, type: {}", type);
         // TODO extract method to parse searchWithinMs
         long searchWithinMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get("time").toString()));
         // TODO extract method to parse executeEveryMs
@@ -299,7 +300,7 @@ public class AlertRuleUtilsService {
         String identifier = UUID.randomUUID().toString();
         AggregationSeries serie = AggregationSeries.builder()
                 .id(identifier)
-                .function(mapTypeToAggregationFunction(conditionParameter.get("type").toString()))
+                .function(mapTypeToAggregationFunction(type))
                 .field(conditionParameter.get("field").toString())
                 .build();
 

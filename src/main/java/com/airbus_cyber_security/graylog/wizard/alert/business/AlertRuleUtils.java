@@ -36,6 +36,9 @@ public class AlertRuleUtils {
 
 	private static final int MILLISECONDS_IN_A_MINUTE = 60 * 1000;
 	private static final Logger LOG = LoggerFactory.getLogger(AlertRuleUtils.class);
+
+	// TODO all these constants should be private => see where this leads us in term of code reorganisation (something like a conditionParametersParser?)
+	public static final String TYPE = "type";
 	public static final String GROUPING_FIELDS = "grouping_fields";
 	public static final String DISTINCTION_FIELDS = "distinction_fields";
 	public static final String TIME = "time";
@@ -108,14 +111,14 @@ public class AlertRuleUtils {
 				parametersCondition.put(THRESHOLD, getThreshold(aggregationConfig.conditions().get().expression().get()));
 				parametersCondition.put(THRESHOLD_TYPE, aggregationConfig.conditions().get().expression().get().expr());
 				AggregationSeries series = aggregationConfig.series().get(0);
-				// TODO should introduce constants here for "type" and "field"...
-				parametersCondition.put("type", series.function().toString());
+				parametersCondition.put(TYPE, series.function().toString());
 				List<String> distinctFields = new ArrayList<>();
 				Optional<String> seriesField = series.field();
 				if (seriesField.isPresent()) {
 					// TODO think about this, but there is some code smell here...
 					// It is because AggregationEventProcessorConfig is used both for Count and Statistical conditions
 					String distinctField = seriesField.get();
+					// TODO should introduce constants here for "field"...
 					parametersCondition.put("field", distinctField);
 					distinctFields.add(distinctField);
 				}

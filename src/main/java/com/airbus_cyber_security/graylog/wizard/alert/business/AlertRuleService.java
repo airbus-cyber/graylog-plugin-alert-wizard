@@ -129,7 +129,7 @@ public class AlertRuleService {
 	}
 	
 	private boolean isValidCondStatistical(Map<String, Object> conditionParameters) {
-		return (conditionParameters.containsKey("type") &&
+		return (conditionParameters.containsKey(AlertRuleUtils.TYPE) &&
 				conditionParameters.containsKey("field") &&
 				isValidStatThresholdType(conditionParameters.get(AlertRuleUtils.THRESHOLD_TYPE).toString()));
 	}
