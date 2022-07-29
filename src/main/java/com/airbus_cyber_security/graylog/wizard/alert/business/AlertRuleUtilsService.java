@@ -380,12 +380,12 @@ public class AlertRuleUtilsService {
 
     public String createNotificationFromParameters(String alertTitle, Map<String, Object> parametersNotification, UserContext userContext) {
         LoggingNotificationConfig loggingNotificationConfig = LoggingNotificationConfig.builder()
-                .singleMessage((boolean) parametersNotification.getOrDefault("single_notification", false))
-                .severity(SeverityType.valueOf(parametersNotification.get("severity").toString().toUpperCase()))
-                .logBody(parametersNotification.getOrDefault("log_body", this.getDefaultLogBody()).toString())
-                .splitFields(convertToHashSet(parametersNotification.get("split_fields")))
-                .aggregationTime((int) parametersNotification.getOrDefault("aggregation_time", 0))
-                .alertTag(parametersNotification.getOrDefault("alert_tag", "LoggingAlert").toString())
+                .singleMessage((boolean) parametersNotification.getOrDefault(AlertRuleUtils.SINGLE_NOTIFICATION, false))
+                .severity(SeverityType.valueOf(parametersNotification.get(AlertRuleUtils.SEVERITY).toString().toUpperCase()))
+                .logBody(parametersNotification.getOrDefault(AlertRuleUtils.LOG_BODY, this.getDefaultLogBody()).toString())
+                .splitFields(convertToHashSet(parametersNotification.get(AlertRuleUtils.SPLIT_FIELDS)))
+                .aggregationTime((int) parametersNotification.getOrDefault(AlertRuleUtils.AGGREGATION_TIME, 0))
+                .alertTag(parametersNotification.getOrDefault(AlertRuleUtils.ALERT_TAG, "LoggingAlert").toString())
                 .build();
         return this.createNotification(alertTitle, loggingNotificationConfig, userContext);
     }
