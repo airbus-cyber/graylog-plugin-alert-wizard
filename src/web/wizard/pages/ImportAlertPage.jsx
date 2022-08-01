@@ -20,6 +20,7 @@ import createReactClass from 'create-react-class';
 import { LinkContainer } from 'react-router-bootstrap';
 import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
 import { DocumentTitle, PageHeader } from 'components/common';
+import { Input } from 'components/bootstrap';
 import { Row, Col, Button } from 'components/graylog';
 import messages_fr from 'translations/fr.json';
 import AlertRuleActions from 'wizard/actions/AlertRuleActions';
@@ -34,6 +35,7 @@ const messages = {
     'fr': messages_fr
 };
 
+// TODO should try to factor import code between this page and ImportListPage
 const ImportAlertPage = createReactClass({
     displayName: 'ImportAlertPage',
 
@@ -42,19 +44,23 @@ const ImportAlertPage = createReactClass({
             selectedAlertTitles: new Set()
         };
     },
+
+    onSelectUploadFile(event) {
+        this.setState({selectedFile: event.target.files[0]})
+    },
     
     onSubmitUploadFile(submitEvent) {
         submitEvent.preventDefault();
-        if (!this.refs.uploadedFile.files || !this.refs.uploadedFile.files[0]) {
-          return;
+        if (!this.state.selectedFile) {
+            return;
         }
-        
+
         const reader = new FileReader();
         reader.onload = (evt) => {     
             this.setState({alertRules: JSON.parse(evt.target.result)});
         };
           
-        reader.readAsText(this.refs.uploadedFile.files[0]);
+        reader.readAsText(this.state.selectedFile);
     },
 
     handleRuleSelectionChanged(selection) {
@@ -96,7 +102,7 @@ const ImportAlertPage = createReactClass({
                             <Col md={12}>
                                 <form onSubmit={this.onSubmitUploadFile} className="upload" encType="multipart/form-data">
                                     <div className="form-group">
-                                        <input ref="uploadedFile" type="file" name="bundle" />
+                                        <Input type="file" name="bundle" onChange={this.onSelectUploadFile} />
                                     </div>
                                     <button type="submit" className="btn btn-success">
                                         <FormattedMessage id="wizard.upload" defaultMessage="Upload" />
