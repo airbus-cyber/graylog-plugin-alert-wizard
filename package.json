@@ -34,5 +34,6 @@
   },
   "resolutions": {
     "upath": "1.1.2"
-  }
+  },
+  "private": true
 }
