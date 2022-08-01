@@ -48,7 +48,18 @@ const ImportAlertPage = createReactClass({
     onSelectUploadFile(event) {
         this.setState({selectedFile: event.target.files[0]})
     },
-    
+
+    normalizeImportedRules(rules) {
+        const result = rules.map(function (rule) {
+            let condition_parameters = { ...rule.condition_parameters };
+            if (condition_parameters.type === 'MEAN') {
+                condition_parameters.type = 'AVG';
+            }
+            return { ...rule, condition_parameters: condition_parameters };
+        });
+        return result;
+    },
+
     onSubmitUploadFile(submitEvent) {
         submitEvent.preventDefault();
         if (!this.state.selectedFile) {
@@ -56,8 +67,10 @@ const ImportAlertPage = createReactClass({
         }
 
         const reader = new FileReader();
-        reader.onload = (evt) => {     
-            this.setState({alertRules: JSON.parse(evt.target.result)});
+        reader.onload = (evt) => {
+            const importedRules = JSON.parse(evt.target.result);
+            const rules = this.normalizeImportedRules(importedRules);
+            this.setState({alertRules: rules});
         };
           
         reader.readAsText(this.state.selectedFile);
