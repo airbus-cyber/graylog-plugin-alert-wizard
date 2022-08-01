@@ -196,7 +196,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             try {
                 alertsData.add(this.alertRuleUtilsService.constructDataAlertRule(alert));
             } catch (NotFoundException e) {
-                LOG.warn("Alert " + alert.getTitle() + " is broken: " + e.getMessage());
+                LOG.warn("Alert {} is broken: {}", alert.getTitle(), e.getMessage());
                 alertsData.add(GetDataAlertRule.create(alert.getTitle(), alert.getTitle(),
                         "",
                         alert.getEventID(),
