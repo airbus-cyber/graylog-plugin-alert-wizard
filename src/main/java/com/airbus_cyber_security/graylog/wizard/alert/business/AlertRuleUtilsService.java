@@ -245,7 +245,6 @@ public class AlertRuleUtilsService {
 
     private AggregationFunction mapTypeToAggregationFunction(String type) {
         switch (type) {
-            case "MEAN": //For Compatibility with older version
             case "AVG":
                 return AggregationFunction.AVG;
             case "MIN":
