@@ -26,6 +26,7 @@ import messages_fr from 'translations/fr.json';
 import AlertRuleActions from 'wizard/actions/AlertRuleActions';
 import Navigation from 'wizard/routing/Navigation';
 import AlertRuleSelectionList from 'wizard/components/AlertRuleSelectionList'
+import RulesImport from 'wizard/logic/RulesImport'
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
@@ -49,17 +50,6 @@ const ImportAlertPage = createReactClass({
         this.setState({selectedFile: event.target.files[0]})
     },
 
-    normalizeImportedRules(rules) {
-        const result = rules.map(function (rule) {
-            let condition_parameters = { ...rule.condition_parameters };
-            if (condition_parameters.type === 'MEAN') {
-                condition_parameters.type = 'AVG';
-            }
-            return { ...rule, condition_parameters: condition_parameters };
-        });
-        return result;
-    },
-
     onSubmitUploadFile(submitEvent) {
         submitEvent.preventDefault();
         if (!this.state.selectedFile) {
@@ -69,7 +59,7 @@ const ImportAlertPage = createReactClass({
         const reader = new FileReader();
         reader.onload = (evt) => {
             const importedRules = JSON.parse(evt.target.result);
-            const rules = this.normalizeImportedRules(importedRules);
+            const rules = RulesImport.normalizeImportedRules(importedRules);
             this.setState({alertRules: rules});
         };
           

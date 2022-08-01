@@ -176,8 +176,7 @@
                                 <include>src/web/**/*.css</include>
                             </includes>
                             <excludes>
-                                <exclude>build.config.js</exclude>
-                                <exclude>webpack.config.js</exclude>
+                                <exclude>*.config.js</exclude>
                             </excludes>
                         </licenseSet>
                     </licenseSets>
@@ -382,4 +381,39 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>web-interface-build</id>
+            <activation>
+                <property>
+                    <name>!skip.web.build</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.github.eirslett</groupId>
+                        <artifactId>frontend-maven-plugin</artifactId>
+                        <configuration>
+                            <skip>false</skip>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>yarn test</id>
+                                <goals>
+                                    <goal>yarn</goal>
+                                </goals>
+                                <phase>test</phase>
+                                <configuration>
+                                    <arguments>test</arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 </project>
