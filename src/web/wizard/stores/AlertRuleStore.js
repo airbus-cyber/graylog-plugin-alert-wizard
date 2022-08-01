@@ -140,12 +140,11 @@ const AlertRuleStore = Reflux.createStore({
         AlertRuleActions.deleteByName.promise(promise);
     },
 
-    exportAlertRules(titles){
-	const url = URLUtils.qualifyUrl(this.sourceUrl + '/export');
+    exportAlertRules(titles) {
+	    const url = URLUtils.qualifyUrl(this.sourceUrl + '/export');
         const method = 'POST';
         
-	const promise = fetch(method, url, titles)
-        .then(
+        const promise = fetch(method, url, titles).then(
             response => {
                 this.exportAlertRules = JSON.stringify(response);
                 this.trigger({exportAlertRules: this.exportAlertRules});
@@ -155,22 +154,23 @@ const AlertRuleStore = Reflux.createStore({
                 UserNotification.error(`Export alert rules failed with status: ${error}`,
                     'Could not export alert rules');
             });
-	AlertRuleActions.exportAlertRules.promise(promise);
+        AlertRuleActions.exportAlertRules.promise(promise);
     },
     
-    importAlertRules(alertRules){
-	const url = URLUtils.qualifyUrl(this.sourceUrl + '/import');
+    importAlertRules(alertRules) {
+	    const url = URLUtils.qualifyUrl(this.sourceUrl + '/import');
         const method = 'PUT';
         
-        const promise = fetch(method, url, alertRules).then(() => {
-                    UserNotification.success('Alert rules successfully imported');
-                    return true;
-                }, (error) => {
-                    UserNotification.error(`Importing alert rules failed with status: ${error.message}`,
-                        'Could not import alert rules');
-                });
+        const promise = fetch(method, url, alertRules).then(
+            () => {
+                UserNotification.success('Alert rules successfully imported');
+                return true;
+            }, (error) => {
+                UserNotification.error(`Importing alert rules failed with status: ${error.message}`,
+                    'Could not import alert rules');
+            });
         	
-	AlertRuleActions.importAlertRules.promise(promise);
+	    AlertRuleActions.importAlertRules.promise(promise);
     },
 });
 
