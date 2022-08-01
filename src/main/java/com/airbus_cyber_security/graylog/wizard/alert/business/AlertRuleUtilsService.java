@@ -272,12 +272,10 @@ public class AlertRuleUtilsService {
         Expr.NumberReference left = Expr.NumberReference.create(identifier);
         Expr.NumberValue right = Expr.NumberValue.create(threshold);
         switch (thresholdType) {
-            case "HIGHER": // For Compatibility with older version, TODO remove
             case ">":
                 return Expr.Greater.create(left, right);
             case ">=":
                 return Expr.GreaterEqual.create(left, right);
-            case "LOWER": // For Compatibility with older version, TODO remove
             case "<":
                 return Expr.Lesser.create(left, right);
             case "<=":

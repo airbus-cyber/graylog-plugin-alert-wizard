@@ -18,7 +18,7 @@
 import RulesImport from './RulesImport'
 
 describe('RulesImport.normalizeImportedRules', () => {
-    it('should convert condition type MEAN into AVG', () => {
+    it('should convert condition type MEAN to AVG', () => {
         const rule = [{
             'notification_parameters': {
                 'severity': 'INFO',
@@ -50,5 +50,73 @@ describe('RulesImport.normalizeImportedRules', () => {
         }];
         const result = RulesImport.normalizeImportedRules(rule)
         expect(result[0].condition_parameters.type).toBe('AVG')
+    });
+
+    it('should convert threshold type HIGHER to >', () => {
+        const rule = [{
+            'notification_parameters': {
+                'severity': 'INFO',
+                'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
+                'split_fields': [],
+                'single_notification': false,
+                'aggregation_time': 0,
+                'alert_tag': 'LoggingAlert'
+            },
+            'condition_parameters': {
+                'distinct_by': 'x',
+                'field': 'x',
+                'grace': 1,
+                'threshold': 0,
+                'threshold_type': 'HIGHER',
+                'grouping_fields': [],
+                'time': 1,
+                'type': 'AVG'
+            },
+            'stream': {
+                'matching_type': 'AND',
+                'field_rule': [{'field': 'b', 'type': 1, 'value': 'b', 'id': '62e7ae768a47ae63221aad48'}],
+                'id': '62e7ae768a47ae63221aad46'
+            },
+            'title': 'b',
+            'description': null,
+            'second_stream': {'matching_type': '', 'field_rule': [], 'id': ''},
+            'condition_type': 'STATISTICAL'
+        }];
+        const result = RulesImport.normalizeImportedRules(rule)
+        expect(result[0].condition_parameters.threshold_type).toBe('>')
+    });
+
+    it('should convert threshold type LOWER to <', () => {
+        const rule = [{
+            'notification_parameters': {
+                'severity': 'INFO',
+                'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
+                'split_fields': [],
+                'single_notification': false,
+                'aggregation_time': 0,
+                'alert_tag': 'LoggingAlert'
+            },
+            'condition_parameters': {
+                'distinct_by': 'x',
+                'field': 'x',
+                'grace': 1,
+                'threshold': 0,
+                'threshold_type': 'LOWER',
+                'grouping_fields': [],
+                'time': 1,
+                'type': 'AVG'
+            },
+            'stream': {
+                'matching_type': 'AND',
+                'field_rule': [{'field': 'b', 'type': 1, 'value': 'b', 'id': '62e7ae768a47ae63221aad48'}],
+                'id': '62e7ae768a47ae63221aad46'
+            },
+            'title': 'b',
+            'description': null,
+            'second_stream': {'matching_type': '', 'field_rule': [], 'id': ''},
+            'condition_type': 'STATISTICAL'
+        }];
+        const result = RulesImport.normalizeImportedRules(rule)
+        expect(result[0].condition_parameters.threshold_type).toBe('<')
     });
 });

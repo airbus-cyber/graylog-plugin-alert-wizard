@@ -22,6 +22,12 @@ export default {
             if (condition_parameters.type === 'MEAN') {
                 condition_parameters.type = 'AVG';
             }
+            if (condition_parameters.threshold_type === 'HIGHER') {
+                condition_parameters.threshold_type = '>';
+            }
+            if (condition_parameters.threshold_type === 'LOWER') {
+                condition_parameters.threshold_type = '<';
+            }
             return { ...rule, condition_parameters: condition_parameters };
         });
     }
