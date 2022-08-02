@@ -173,7 +173,7 @@ const CreateAlertInput = createReactClass({
     },
     _isPluginsPresent(){
         NodesActions.list().then(nodes => {
-            if(nodes.nodes[0]) {
+            if (nodes.nodes[0]) {
                 PluginsStore.list(nodes.nodes[0].node_id).then(plugins => {
                     let isPluginCorrelationPresent = false;
                     let isPluginLoggingAlertPresent = false;
@@ -224,7 +224,7 @@ const CreateAlertInput = createReactClass({
         const update = ObjectUtils.clone(this.state.alert);
         update[field] = value;
         this.setState({alert: update});
-        if(field !== "condition_type"){
+        if (field !== "condition_type") {
             this.setState({isModified: true});
         }
         if (value === '') {

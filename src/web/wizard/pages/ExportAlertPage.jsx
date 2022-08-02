@@ -29,6 +29,7 @@ import FileSaver from 'wizard/logic/FileSaver';
 import IconDownload from 'wizard/components/icons/Download';
 import Navigation from 'wizard/routing/Navigation';
 import AlertRuleSelectionList from 'wizard/components/AlertRuleSelectionList'
+import RulesImportExport from 'wizard/logic/RulesImportExport'
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
@@ -63,9 +64,10 @@ const ExportAlertPage = createReactClass({
           titles: Array.from(this.state.selectedAlertTitles),
         };
         AlertRuleActions.exportAlertRules(request).then((response) => {           
-            UserNotification.success('Successfully export alert rules. Starting download...', 'Success!');  
-            let date = DateTime.ignoreTZ(DateTime.now()).toString(DateTime.Formats.DATETIME).replace(/:/g, '').replace(/ /g, '_')
-            FileSaver.save(response, date+'_alert_rules.json', 'application/json', 'utf-8');
+            UserNotification.success('Successfully export alert rules. Starting download...', 'Success!');
+            let exportData =  RulesImportExport.createExportDataFromRules(response);
+            let date = DateTime.ignoreTZ(DateTime.now()).toString(DateTime.Formats.DATETIME).replace(/:/g, '').replace(/ /g, '_');
+            FileSaver.save(JSON.stringify(exportData), date+'_alert_rules.json', 'application/json', 'utf-8');
         });
     },
 

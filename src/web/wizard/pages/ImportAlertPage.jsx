@@ -26,7 +26,7 @@ import messages_fr from 'translations/fr.json';
 import AlertRuleActions from 'wizard/actions/AlertRuleActions';
 import Navigation from 'wizard/routing/Navigation';
 import AlertRuleSelectionList from 'wizard/components/AlertRuleSelectionList'
-import RulesImport from 'wizard/logic/RulesImport'
+import RulesImportExport from 'wizard/logic/RulesImportExport'
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
@@ -59,10 +59,10 @@ const ImportAlertPage = createReactClass({
         const reader = new FileReader();
         reader.onload = (evt) => {
             const importedRules = JSON.parse(evt.target.result);
-            const rules = RulesImport.normalizeImportedRules(importedRules);
+            const rules = RulesImportExport.normalizeImportedRules(importedRules);
             this.setState({alertRules: rules});
         };
-          
+
         reader.readAsText(this.state.selectedFile);
     },
 
@@ -91,8 +91,8 @@ const ImportAlertPage = createReactClass({
                                 <FormattedMessage id="wizard.importAlertRule" defaultMessage="You can import an alert rule." />
                             </span>
                             <span>
-                                <FormattedMessage id="wizard.documentation" 
-                                defaultMessage= "Read more about Wizard alert rules in the documentation." />
+                                <FormattedMessage id="wizard.documentation"
+                                                  defaultMessage= "Read more about Wizard alert rules in the documentation." />
                             </span>
                             <span>
                                 <LinkContainer to={Navigation.getWizardRoute()}>

@@ -146,9 +146,7 @@ const AlertRuleStore = Reflux.createStore({
         
         const promise = fetch(method, url, titles).then(
             response => {
-                this.exportAlertRules = JSON.stringify(response);
-                this.trigger({exportAlertRules: this.exportAlertRules});
-                return this.exportAlertRules;
+                return response;
             },
             error => {
                 UserNotification.error(`Export alert rules failed with status: ${error}`,
