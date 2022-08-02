@@ -49,7 +49,8 @@ public abstract class AlertRuleRequest {
     @JsonProperty("condition_type")
     @Nullable
     public abstract String getConditionType();
-    
+
+    // TODO this should be typed (its an union of 3 possibilities)...
     @JsonProperty("condition_parameters")
     public abstract Map<String, Object> conditionParameters();
     
