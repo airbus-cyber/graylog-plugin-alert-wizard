@@ -199,7 +199,7 @@ public class AlertRuleUtilsService {
             case "LESS":
                 return Expr.Lesser.create(left, right);
             default:
-                throw new BadRequestException();
+                throw new BadRequestException("createExpressionFromNumberThreshold: unexpected threshold type " + thresholdType);
         }
     }
 
