@@ -30,6 +30,12 @@ class Graylog:
     def stop(self):
         self._server.stop()
 
+    def start_logs_capture(self):
+        self._server.start_logs_capture()
+    
+    def extract_logs(self):
+        return self._server.extract_logs()
+
     def create_gelf_input(self):
         identifier = self._api.create_gelf_input()
         while not self._api.gelf_input_is_running(identifier):
@@ -59,6 +65,9 @@ class Graylog:
 
     def create_alert_rule_and(self, *args, **kwargs):
         return self._api.create_alert_rule_and(*args, **kwargs)
+
+    def create_alert_rule_then(self, *args, **kwargs):
+        return self._api.create_alert_rule_then(*args, **kwargs)
 
     # TODO shouldn't it rather be named export_alert_rules?
     def create_alert_rules_export(self, alert_rule_titles):

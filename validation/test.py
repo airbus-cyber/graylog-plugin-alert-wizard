@@ -170,3 +170,11 @@ class Test(TestCase):
         self._graylog.create_alert_rule_count(title, rule, _PERIOD)
         alert_rule = self._graylog.get_alert_rule(title)
         self.assertEqual('', alert_rule['condition_parameters']['distinct_by'])
+   
+    def test_create_alert_rule_then_should_not_fail(self):
+        self._graylog.start_logs_capture()
+        self._graylog.create_alert_rule_then('rule_then', _PERIOD)
+        logs = self._graylog.extract_logs()
+        print(logs)
+        self.assertNotIn('ERROR', logs)
+

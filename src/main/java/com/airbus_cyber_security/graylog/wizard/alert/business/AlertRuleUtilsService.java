@@ -160,6 +160,14 @@ public class AlertRuleUtilsService {
             return new HashSet<>();
         }
     }
+    
+    private String convertThresholdTypeToCorrelation(String thresholdType) {
+        if (thresholdType == AlertRuleService.THRESHOLD_TYPE_MORE) {
+            return "MORE";
+        } else {
+            return "LESS";
+        }
+    }
 
     // TODO move method to AlertRuleUtils?
     private EventProcessorConfig createCorrelationCondition(String type, String streamID, String streamID2, Map<String, Object> conditionParameter) {
@@ -169,16 +177,18 @@ public class AlertRuleUtilsService {
         } else {
             messageOrder = "ANY";
         }
+        String thresholdType = convertThresholdTypeToCorrelation((String) conditionParameter.get(AlertRuleUtils.THRESHOLD_TYPE));
+        String additionalThresholdType = convertThresholdTypeToCorrelation((String) conditionParameter.get(AlertRuleUtils.ADDITIONAL_THRESHOLD_TYPE));       
 
         long searchWithinMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(AlertRuleUtils.TIME).toString()));
         long executeEveryMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(AlertRuleUtils.GRACE).toString()));
 
         return CorrelationCountProcessorConfig.builder()
                 .stream(streamID)
-                .thresholdType((String) conditionParameter.get(AlertRuleUtils.THRESHOLD_TYPE))
+                .thresholdType(thresholdType)
                 .threshold((int) conditionParameter.get(AlertRuleUtils.THRESHOLD))
                 .additionalStream(streamID2)
-                .additionalThresholdType((String) conditionParameter.get(AlertRuleUtils.ADDITIONAL_THRESHOLD_TYPE))
+                .additionalThresholdType(additionalThresholdType)
                 .additionalThreshold((int) conditionParameter.get(AlertRuleUtils.ADDITIONAL_THRESHOLD))
                 .messagesOrder(messageOrder)
                 .searchWithinMs(searchWithinMs)
