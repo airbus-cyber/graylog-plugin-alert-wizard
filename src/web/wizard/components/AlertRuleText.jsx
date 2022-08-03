@@ -141,7 +141,7 @@ const AlertRuleText = createReactClass({
         }
         try {
             let textRule = [];
-            if(this.props.alert.condition_parameters !== null && this.props.alert.stream !== null) {
+            if (this.props.alert.condition_parameters !== null && this.props.alert.stream !== null) {
                 if (this.props.alert.condition_type === "STATISTICAL") {                    
                     textRule.push(<FormattedMessage id ="wizard.StatisticalRule" 
                         defaultMessage= {"Trigger an alert when the {type} of {field} is {threshold_type} {threshold} in the last {time} minutes "}
@@ -152,7 +152,7 @@ const AlertRuleText = createReactClass({
                             time: <strong>{this.props.alert.condition_parameters.time}</strong>}}/> );     
                     textRule.push(this._getMatchRule(this.props.alert.stream.matching_type));
                     textRule.push(this._getTextFieldRule(this.props.alert.stream));
-                } else if(this.props.alert.condition_type === "GROUP_DISTINCT") {
+                } else if (this.props.alert.condition_type === "GROUP_DISTINCT") {
                     textRule.push(this._getTriggerRule());
                     if (this.props.alert.condition_parameters.grouping_fields && this.props.alert.condition_parameters.grouping_fields.length > 0) {
                         textRule.push(this._getGroupByRule());
@@ -162,7 +162,7 @@ const AlertRuleText = createReactClass({
                     }
                     textRule.push(this._getMatchRule(this.props.alert.stream.matching_type));
                     textRule.push(this._getTextFieldRule(this.props.alert.stream));
-                } else if(this.props.alert.condition_type === "THEN") {
+                } else if (this.props.alert.condition_type === "THEN") {
                     textRule.push(this._getTriggerRule());
                     if (this.props.alert.condition_parameters.grouping_fields && this.props.alert.condition_parameters.grouping_fields.length > 0) {
                          textRule.push(this._getGroupByRule());
