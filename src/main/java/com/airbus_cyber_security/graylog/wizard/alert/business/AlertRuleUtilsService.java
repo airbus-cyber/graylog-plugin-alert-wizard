@@ -162,7 +162,7 @@ public class AlertRuleUtilsService {
     }
     
     private String convertThresholdTypeToCorrelation(String thresholdType) {
-        if (thresholdType == AlertRuleService.THRESHOLD_TYPE_MORE) {
+        if (thresholdType.equals(AlertRuleService.THRESHOLD_TYPE_MORE)) {
             return "MORE";
         } else {
             return "LESS";

@@ -93,6 +93,15 @@ public class AlertRuleUtils {
 		return value * MILLISECONDS_IN_A_MINUTE;
 	}
 
+	// TODO should introduce constants for MORE and LESS
+	private String convertCorrelationCountThresholdType(String thresholdType) {
+            if (thresholdType.equals("MORE")) {
+                return AlertRuleService.THRESHOLD_TYPE_MORE;
+            } else {
+                return AlertRuleService.THRESHOLD_TYPE_LESS;
+            }
+	}
+
 	public Map<String, Object> getConditionParameters(EventProcessorConfig eventConfig){
 		Map<String, Object> parametersCondition = Maps.newHashMap();
 
@@ -100,9 +109,11 @@ public class AlertRuleUtils {
 			case "correlation-count":
 				CorrelationCountProcessorConfig correlationConfig = (CorrelationCountProcessorConfig) eventConfig;
 				parametersCondition.put(THRESHOLD, correlationConfig.threshold());
-				parametersCondition.put(THRESHOLD_TYPE, correlationConfig.thresholdType());
+				String thresholdType = convertCorrelationCountThresholdType(correlationConfig.thresholdType());
+				String additionalThresholdType = convertCorrelationCountThresholdType(correlationConfig.additionalThresholdType());
+				parametersCondition.put(THRESHOLD_TYPE, thresholdType);
 				parametersCondition.put(ADDITIONAL_THRESHOLD, correlationConfig.additionalThreshold());
-				parametersCondition.put(ADDITIONAL_THRESHOLD_TYPE, correlationConfig.additionalThresholdType());
+				parametersCondition.put(ADDITIONAL_THRESHOLD_TYPE, additionalThresholdType);
 				parametersCondition.put(TIME, this.convertMillisecondsToMinutes(correlationConfig.searchWithinMs()));
 				parametersCondition.put(GROUPING_FIELDS, correlationConfig.groupingFields());
 				parametersCondition.put(GRACE, this.convertMillisecondsToMinutes(correlationConfig.executeEveryMs()));
