@@ -14,23 +14,39 @@
  * along with this program. If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
+ 
+function normalizeConditionParameters(condition_parameters) {
+    let result = { ...condition_parameters };
+    if (condition_parameters.type === 'MEAN') {
+        result.type = 'AVG';
+    }
+    const threshold_type = condition_parameters.threshold_type;
+    if ((threshold_type === 'HIGHER') || (threshold_type === 'MORE')) {
+        result.threshold_type = '>';
+    }
+    if ((threshold_type === 'LOWER') || (threshold_type === 'LESS')) {
+        result.threshold_type = '<';
+    }
+    const distinction_fields = condition_parameters.distinction_fields;
+    if (distinction_fields !== undefined) {
+        if (distinction_fields.length === 0) {
+            result.distinct_by = ''
+        } else {
+            result.distinct_by = condition_parameters.distinction_fields[0]
+        }
+    }
+    return result;
+}
+
+function normalizeImportedRule(rule) {
+    let condition_parameters = normalizeConditionParameters(rule.condition_parameters);
+    return { ...rule, condition_parameters: condition_parameters };
+}
 
 export default {
     normalizeImportedRules(exportData) {
         if (exportData.version === undefined) {
-            return exportData.map(function (rule) {
-                let condition_parameters = { ...rule.condition_parameters };
-                if (condition_parameters.type === 'MEAN') {
-                    condition_parameters.type = 'AVG';
-                }
-                if (condition_parameters.threshold_type === 'HIGHER') {
-                    condition_parameters.threshold_type = '>';
-                }
-                if (condition_parameters.threshold_type === 'LOWER') {
-                    condition_parameters.threshold_type = '<';
-                }
-                return { ...rule, condition_parameters: condition_parameters };
-            });
+            return exportData.map(normalizeImportedRule);
         }
         return exportData.rules
     },

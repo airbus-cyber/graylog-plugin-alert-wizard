@@ -49,10 +49,11 @@ const NumberCondition = createReactClass({
             this.setState({threshold_type: nextProps.threshold_type});
         }
     },
+    // TODO should factor constants with ManageSettings
     _availableThresholdTypes() {
         return [
-            {value: 'MORE', label: <FormattedMessage id= "wizard.more" defaultMessage= "more than" />},
-            {value: 'LESS', label: <FormattedMessage id= "wizard.less" defaultMessage= "less than" />},
+            {value: '>', label: <FormattedMessage id= "wizard.more" defaultMessage= "more than" />},
+            {value: '<', label: <FormattedMessage id= "wizard.less" defaultMessage= "less than" />},
         ];
     },
     _onThresholdTypeSelect(id) {

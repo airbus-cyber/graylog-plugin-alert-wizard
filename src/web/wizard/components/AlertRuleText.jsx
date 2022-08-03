@@ -39,11 +39,12 @@ const AlertRuleText = createReactClass({
     _getMatchingType(type) {
         return this._availableMatchingTypes().filter((t) => t.value === type)[0].label;
     },
-    
+
+    // TODO should split this in two methods: there is a different meaning to > and < (also would be easier if it were a dictionary)
     _availableThresholdTypes() {
         return [
-            {value: 'MORE', label: <FormattedMessage id= "wizard.more" defaultMessage= "more than" />},
-            {value: 'LESS', label: <FormattedMessage id= "wizard.less" defaultMessage= "less than" />},
+            {value: '>', label: <FormattedMessage id= "wizard.more" defaultMessage= "more than" />},
+            {value: '<', label: <FormattedMessage id= "wizard.less" defaultMessage= "less than" />},
             {value: '>', label: <FormattedMessage id= "wizard.higher" defaultMessage= "higher than" />},
             {value: '>=', label: <FormattedMessage id= "wizard.higherEqual" defaultMessage= "higher or equal than" />},
             {value: '<', label: <FormattedMessage id= "wizard.lower" defaultMessage= "lower than" />},

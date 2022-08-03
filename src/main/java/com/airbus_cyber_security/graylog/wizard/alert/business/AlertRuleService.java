@@ -49,6 +49,11 @@ public class AlertRuleService {
 	private static final Logger LOG = LoggerFactory.getLogger(AlertRuleService.class);
 	private static final String TITLE = "title";
 
+	// TODO should try to make these constants private and group the code (more compact)
+	public static final String THRESHOLD_TYPE_MORE = ">";
+
+	public static final String THRESHOLD_TYPE_LESS = "<";
+
 	@Inject
 	public AlertRuleService(MongoConnection mongoConnection, MongoJackObjectMapperProvider mapperProvider,
 							Validator validator) {
@@ -148,7 +153,7 @@ public class AlertRuleService {
 	}
 	
 	private boolean isValidThresholdType(String thresholdType) {
-		return (thresholdType.equals("MORE") || thresholdType.equals("LESS"));
+		return (thresholdType.equals(THRESHOLD_TYPE_MORE) || thresholdType.equals(THRESHOLD_TYPE_LESS));
 	}
 	
 	private boolean isValidStatThresholdType(String thresholdType) {

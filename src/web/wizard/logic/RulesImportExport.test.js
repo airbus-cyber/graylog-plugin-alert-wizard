@@ -29,7 +29,7 @@ describe('RulesImport.normalizeImportedRules', () => {
                 'alert_tag': 'LoggingAlert'
             },
             'condition_parameters': {
-                'distinct_by': 'x',
+                'distinction_fields': ['x'],
                 'field': 'x',
                 'grace': 1,
                 'threshold': 0,
@@ -63,31 +63,30 @@ describe('RulesImport.normalizeImportedRules', () => {
                 'alert_tag': 'LoggingAlert'
             },
             'condition_parameters': {
-                'distinct_by': 'x',
-                'field': 'x',
                 'grace': 1,
+                'distinction_fields': ['x'],
                 'threshold': 0,
                 'threshold_type': 'HIGHER',
                 'grouping_fields': [],
                 'time': 1,
-                'type': 'AVG'
             },
             'stream': {
                 'matching_type': 'AND',
-                'field_rule': [{'field': 'b', 'type': 1, 'value': 'b', 'id': '62e7ae768a47ae63221aad48'}],
+                'field_rule': [{'field': 'a', 'type': 1, 'value': 'a', 'id': '62e7ae768a47ae63221aad48'}],
                 'id': '62e7ae768a47ae63221aad46'
             },
-            'title': 'b',
+            'title': 'a',
             'description': null,
-            'second_stream': {'matching_type': '', 'field_rule': [], 'id': ''},
-            'condition_type': 'STATISTICAL'
+            'condition_type': 'COUNT',
+            'second_stream': {'matching_type': '', 'field_rule': [], 'id': ''}
         }];
+
         const result = RulesImportExport.normalizeImportedRules(rule)
         expect(result[0].condition_parameters.threshold_type).toBe('>')
     });
 
     it('should convert threshold type LOWER to <', () => {
-        const rule = [{
+       const rule = [{
             'notification_parameters': {
                 'severity': 'INFO',
                 'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
@@ -97,30 +96,156 @@ describe('RulesImport.normalizeImportedRules', () => {
                 'alert_tag': 'LoggingAlert'
             },
             'condition_parameters': {
-                'distinct_by': 'x',
-                'field': 'x',
                 'grace': 1,
+                'distinction_fields': ['x'],
                 'threshold': 0,
                 'threshold_type': 'LOWER',
                 'grouping_fields': [],
                 'time': 1,
-                'type': 'AVG'
             },
             'stream': {
                 'matching_type': 'AND',
-                'field_rule': [{'field': 'b', 'type': 1, 'value': 'b', 'id': '62e7ae768a47ae63221aad48'}],
+                'field_rule': [{'field': 'a', 'type': 1, 'value': 'a', 'id': '62e7ae768a47ae63221aad48'}],
                 'id': '62e7ae768a47ae63221aad46'
             },
-            'title': 'b',
+            'title': 'a',
             'description': null,
-            'second_stream': {'matching_type': '', 'field_rule': [], 'id': ''},
-            'condition_type': 'STATISTICAL'
+            'condition_type': 'COUNT',
+            'second_stream': {'matching_type': '', 'field_rule': [], 'id': ''}
+        }];
+        const result = RulesImportExport.normalizeImportedRules(rule)
+        expect(result[0].condition_parameters.threshold_type).toBe('<')
+    });
+    
+    it('should convert condition parameter distinction_fields to distinct_by', () => {
+       const rule = [{
+            'notification_parameters': {
+                'severity': 'INFO',
+                'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
+                'split_fields': [],
+                'single_notification': false,
+                'aggregation_time': 0,
+                'alert_tag': 'LoggingAlert'
+            },
+            'condition_parameters': {
+                'grace': 1,
+                'distinction_fields': [],
+                'threshold': 0,
+                'threshold_type': 'MORE',
+                'grouping_fields': [],
+                'time': 1,
+            },
+            'stream': {
+                'matching_type': 'AND',
+                'field_rule': [{'field': 'a', 'type': 1, 'value': 'a', 'id': '62e7ae768a47ae63221aad48'}],
+                'id': '62e7ae768a47ae63221aad46'
+            },
+            'title': 'a',
+            'description': null,
+            'condition_type': 'COUNT',
+            'second_stream': {'matching_type': '', 'field_rule': [], 'id': ''}
+        }];
+        const result = RulesImportExport.normalizeImportedRules(rule)
+        expect(result[0].condition_parameters.distinct_by).toBe('')
+    });
+
+    it('should use the first value of distinction_fields as distinct_by', () => {
+       const rule = [{
+            'notification_parameters': {
+                'severity': 'INFO',
+                'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
+                'split_fields': [],
+                'single_notification': false,
+                'aggregation_time': 0,
+                'alert_tag': 'LoggingAlert'
+            },
+            'condition_parameters': {
+                'grace': 1,
+                'distinction_fields': ['x'],
+                'threshold': 0,
+                'threshold_type': 'MORE',
+                'grouping_fields': [],
+                'time': 1,
+            },
+            'stream': {
+                'matching_type': 'AND',
+                'field_rule': [{'field': 'a', 'type': 1, 'value': 'a', 'id': '62e7ae768a47ae63221aad48'}],
+                'id': '62e7ae768a47ae63221aad46'
+            },
+            'title': 'a',
+            'description': null,
+            'condition_type': 'COUNT',
+            'second_stream': {'matching_type': '', 'field_rule': [], 'id': ''}
+        }];
+        const result = RulesImportExport.normalizeImportedRules(rule)
+        expect(result[0].condition_parameters.distinct_by).toBe('x')
+    });
+    
+    it('should convert threshold type MORE into >', () => {
+       const rule = [{
+            'notification_parameters': {
+                'severity': 'INFO',
+                'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
+                'split_fields': [],
+                'single_notification': false,
+                'aggregation_time': 0,
+                'alert_tag': 'LoggingAlert'
+            },
+            'condition_parameters': {
+                'grace': 1,
+                'distinction_fields': ['x'],
+                'threshold': 0,
+                'threshold_type': 'MORE',
+                'grouping_fields': [],
+                'time': 1,
+            },
+            'stream': {
+                'matching_type': 'AND',
+                'field_rule': [{'field': 'a', 'type': 1, 'value': 'a', 'id': '62e7ae768a47ae63221aad48'}],
+                'id': '62e7ae768a47ae63221aad46'
+            },
+            'title': 'a',
+            'description': null,
+            'condition_type': 'COUNT',
+            'second_stream': {'matching_type': '', 'field_rule': [], 'id': ''}
+        }];
+        const result = RulesImportExport.normalizeImportedRules(rule)
+        expect(result[0].condition_parameters.threshold_type).toBe('>')
+    });
+
+    it('should convert threshold type LESS into <', () => {
+       const rule = [{
+            'notification_parameters': {
+                'severity': 'INFO',
+                'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
+                'split_fields': [],
+                'single_notification': false,
+                'aggregation_time': 0,
+                'alert_tag': 'LoggingAlert'
+            },
+            'condition_parameters': {
+                'grace': 1,
+                'distinction_fields': ['x'],
+                'threshold': 0,
+                'threshold_type': 'LESS',
+                'grouping_fields': [],
+                'time': 1,
+            },
+            'stream': {
+                'matching_type': 'AND',
+                'field_rule': [{'field': 'a', 'type': 1, 'value': 'a', 'id': '62e7ae768a47ae63221aad48'}],
+                'id': '62e7ae768a47ae63221aad46'
+            },
+            'title': 'a',
+            'description': null,
+            'condition_type': 'COUNT',
+            'second_stream': {'matching_type': '', 'field_rule': [], 'id': ''}
         }];
         const result = RulesImportExport.normalizeImportedRules(rule)
         expect(result[0].condition_parameters.threshold_type).toBe('<')
     });
 
-    it('should handle new format with version number correctly', function() {
+    it('should handle new format with version number correctly', () => {
         const exportData = {
             'version': '1.0.0',
             'rules': [{

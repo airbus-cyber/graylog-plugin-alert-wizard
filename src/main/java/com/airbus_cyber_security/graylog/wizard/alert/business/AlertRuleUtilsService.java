@@ -194,9 +194,9 @@ public class AlertRuleUtilsService {
         Expr.NumberReference left = Expr.NumberReference.create(identifier);
         Expr.NumberValue right = Expr.NumberValue.create(threshold);
         switch (thresholdType) {
-            case "MORE":
+            case AlertRuleService.THRESHOLD_TYPE_MORE:
                 return Expr.Greater.create(left, right);
-            case "LESS":
+            case AlertRuleService.THRESHOLD_TYPE_LESS:
                 return Expr.Lesser.create(left, right);
             default:
                 throw new BadRequestException("createExpressionFromNumberThreshold: unexpected threshold type " + thresholdType);

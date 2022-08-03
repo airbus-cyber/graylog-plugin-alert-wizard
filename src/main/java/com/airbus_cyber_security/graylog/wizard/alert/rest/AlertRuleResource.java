@@ -568,7 +568,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             try {
                 importAlertRule(alertRule, userContext);
             } catch (Exception e) {
-                LOG.error("Cannot create alert {}: {}", alertRule.getTitle(), e.getMessage());
+                LOG.error("Cannot create alert {}: {}", alertRule.getTitle(), e);
                 responses = Response.serverError().build();
             }
         }
