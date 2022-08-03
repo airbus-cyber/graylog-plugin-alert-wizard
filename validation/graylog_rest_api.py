@@ -92,7 +92,7 @@ class GraylogRestApi:
                 'grace': 1,
                 'grouping_fields': group_by_fields,
                 'threshold': 0,
-                'threshold_type': 'MORE',
+                'threshold_type': '>',
                 'time': time,
                 'type': ''
             },
@@ -135,7 +135,7 @@ class GraylogRestApi:
             ],
             'matching_type': 'AND'
         }
-        return self._create_alert_rule(title, rule, 'AND', additional_threshold_type='LESS', additional_threshold=additional_threshold, second_stream=second_stream, time=time)
+        return self._create_alert_rule(title, rule, 'AND', additional_threshold_type='<', additional_threshold=additional_threshold, second_stream=second_stream, time=time)
 
     def create_alert_rules_export(self, alert_rule_titles):
         export_selection = {

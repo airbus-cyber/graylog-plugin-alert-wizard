@@ -69,13 +69,13 @@ class Test(TestCase):
         title = 'rule_title'
         self._graylog.create_alert_rule_and(title, _PERIOD)
         retrieved_alert_rule = self._graylog.get_alert_rule(title)
-        self.assertEqual('LESS', retrieved_alert_rule['condition_parameters']['additional_threshold_type'])
+        self.assertEqual('<', retrieved_alert_rule['condition_parameters']['additional_threshold_type'])
 
     def test_export_alert_rule_should_return_correct_additional_threshold_type__issue34(self):
         title = 'rule_title'
         self._graylog.create_alert_rule_and(title, _PERIOD)
         exported_alert_rule = self._graylog.create_alert_rules_export([title])
-        self.assertEqual('LESS', exported_alert_rule[0]['condition_parameters']['additional_threshold_type'])
+        self.assertEqual('<', exported_alert_rule[0]['condition_parameters']['additional_threshold_type'])
 
     def test_get_alert_rule_should_return_correct_additional_threshold__issue69(self):
         title = 'rule_title'
