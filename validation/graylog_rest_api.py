@@ -78,7 +78,7 @@ class GraylogRestApi:
         return response.json()['id']
 
     def _create_alert_rule(self, title, rule, condition_type, time,
-                           additional_threshold_type='', additional_threshold=0, second_stream=None,
+                           threshold_type='>', additional_threshold_type='', additional_threshold=0, second_stream=None,
                            group_by_fields=None, distinct_by=''):
         if group_by_fields is None:
             group_by_fields = []
@@ -92,7 +92,7 @@ class GraylogRestApi:
                 'grace': 1,
                 'grouping_fields': group_by_fields,
                 'threshold': 0,
-                'threshold_type': '>',
+                'threshold_type': threshold_type,
                 'time': time,
                 'type': ''
             },
@@ -137,7 +137,7 @@ class GraylogRestApi:
         }
         return self._create_alert_rule(title, rule, 'AND', time, additional_threshold_type='<', additional_threshold=additional_threshold, second_stream=second_stream)
 
-    def create_alert_rule_then(self, title, time):
+    def create_alert_rule_then(self, title, threshold_type, time):
         rule = {
             'field': 'source',
             'type': 1,
@@ -153,7 +153,8 @@ class GraylogRestApi:
             ],
             'matching_type': 'AND'
         }
-        return self._create_alert_rule(title, rule, 'THEN', time, additional_threshold_type='>', additional_threshold=0, second_stream=second_stream)
+        return self._create_alert_rule(title, rule, 'THEN', time, threshold_type=threshold_type,
+                                       additional_threshold_type='>', additional_threshold=0, second_stream=second_stream)
 
     def create_alert_rules_export(self, alert_rule_titles):
         export_selection = {

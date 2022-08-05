@@ -173,8 +173,13 @@ class Test(TestCase):
    
     def test_create_alert_rule_then_should_not_fail(self):
         self._graylog.start_logs_capture()
-        self._graylog.create_alert_rule_then('rule_then', _PERIOD)
+        self._graylog.create_alert_rule_then('rule_then', '>', _PERIOD)
         logs = self._graylog.extract_logs()
-        print(logs)
         self.assertNotIn('ERROR', logs)
+
+    def test_get_alert_rule_then_should_have_correct_threshold_type(self):
+        title = 'rule_then'
+        self._graylog.create_alert_rule_then(title, '>', _PERIOD)
+        alert_rule = self._graylog.get_alert_rule(title)
+        self.assertEqual('>', alert_rule['condition_parameters']['threshold_type'])
 
