@@ -154,22 +154,6 @@ const AlertRuleStore = Reflux.createStore({
             });
         AlertRuleActions.exportAlertRules.promise(promise);
     },
-    
-    importAlertRules(alertRules) {
-	    const url = URLUtils.qualifyUrl(this.sourceUrl + '/import');
-        const method = 'PUT';
-        
-        const promise = fetch(method, url, alertRules).then(
-            () => {
-                UserNotification.success('Alert rules successfully imported');
-                return true;
-            }, (error) => {
-                UserNotification.error(`Importing alert rules failed with status: ${error.message}`,
-                    'Could not import alert rules');
-            });
-        	
-	    AlertRuleActions.importAlertRules.promise(promise);
-    },
 });
 
 export default AlertRuleStore;
