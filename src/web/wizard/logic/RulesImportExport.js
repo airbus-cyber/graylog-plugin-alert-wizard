@@ -14,25 +14,33 @@
  * along with this program. If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
- 
+
+function normalizeThresholdType(threshold_type) {
+    if ((threshold_type === 'HIGHER') || (threshold_type === 'MORE')) {
+        return '>';
+    }
+    if ((threshold_type === 'LOWER') || (threshold_type === 'LESS')) {
+        return '<';
+    }
+    return threshold_type;
+}
+
 function normalizeConditionParameters(condition_parameters) {
     let result = { ...condition_parameters };
     if (condition_parameters.type === 'MEAN') {
         result.type = 'AVG';
     }
-    const threshold_type = condition_parameters.threshold_type;
-    if ((threshold_type === 'HIGHER') || (threshold_type === 'MORE')) {
-        result.threshold_type = '>';
-    }
-    if ((threshold_type === 'LOWER') || (threshold_type === 'LESS')) {
-        result.threshold_type = '<';
+    result.threshold_type = normalizeThresholdType(condition_parameters.threshold_type);
+    const additional_threshold_type = condition_parameters.additional_threshold_type;
+    if (additional_threshold_type) {
+        result.additional_threshold_type = normalizeThresholdType(additional_threshold_type);
     }
     const distinction_fields = condition_parameters.distinction_fields;
     if (distinction_fields !== undefined) {
         if (distinction_fields.length === 0) {
-            result.distinct_by = ''
+            result.distinct_by = '';
         } else {
-            result.distinct_by = condition_parameters.distinction_fields[0]
+            result.distinct_by = condition_parameters.distinction_fields[0];
         }
     }
     return result;

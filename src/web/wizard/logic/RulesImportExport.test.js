@@ -313,4 +313,69 @@ describe('RulesImport.normalizeImportedRules', () => {
         const result = RulesImportExport.normalizeImportedRules(rule)
         expect(result[0].severity).toBe('INFO')
     });
+
+    it('should convert additional threshold type LESS into <', () => {
+       const rule = [{
+            'notification_parameters': {
+                'severity': 'INFO',
+                'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
+                'split_fields': [],
+                'single_notification': false,
+                'aggregation_time': 0,
+                'alert_tag': 'LoggingAlert'
+            },
+            'condition_parameters': {
+                'grace': 1,
+                'threshold': 1,
+                'threshold_type': 'MORE',
+                'additional_threshold': 1,
+                'additional_threshold_type': 'LESS',
+                'grouping_fields': ['x', 'y'],
+                'time': 1,
+            },
+            'stream': {
+                'matching_type': 'AND',
+                'field_rule': [{'field': 'a', 'type': 1, 'value': 'a', 'id': '62e7ae768a47ae63221aad48'}],
+                'id': '62e7ae768a47ae63221aad46'
+            },
+            'title': 'and',
+            'description': null,
+            'condition_type': 'AND',
+            'second_stream': {'matching_type': 'OR', 'field_rule': [{'field': 'b', 'type': 1, 'value': 'b', 'id': '62ea1a644022c1284fe4a2f0'}], 'id': '62ea1a644022c1284fe4a2ee'}
+        }];
+        const result = RulesImportExport.normalizeImportedRules(rule)
+        expect(result[0].condition_parameters.additional_threshold_type).toBe('<')
+    });
+
+    it('should keep threshold_type for STATISTICAL rules', () => {
+       const rule = [{
+            'notification_parameters': {
+                'severity': 'INFO',
+                'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
+                'split_fields': [],
+                'single_notification': false,
+                'aggregation_time': 0,
+                'alert_tag': 'LoggingAlert'
+            },
+            'condition_parameters': {
+                'field': 'x',
+                'grace': 1,
+                'threshold': 1,
+                'threshold_type': '>',
+                'time': 1,
+                'type': 'AVG'
+            },
+            'stream': {
+                'matching_type': 'AND',
+                'field_rule': [{'field': 'a', 'type': 1, 'value': 'a', 'id': '62e7ae768a47ae63221aad48'}],
+                'id': '62e7ae768a47ae63221aad46'
+            },
+            'title': 'statistics',
+            'description': null,
+            'condition_type': 'STATISTICAL',
+            'second_stream': {'matching_type': '', 'field_rule': [], 'id': ''}
+        }];
+        const result = RulesImportExport.normalizeImportedRules(rule)
+        expect(result[0].condition_parameters.threshold_type).toBe('>')
+    });
 });
