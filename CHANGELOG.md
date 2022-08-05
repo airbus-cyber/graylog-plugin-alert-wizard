@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 ### Changes
 * Group/Distinct condition now accepts at most only one distinct field
 * Condition parameter distinction_fields renamed into distinct_by. It now accepts only one value
+* Removed rest resource plugins/com.airbus_cyber_security.graylog.wizard/alerts/import, imports are now implemented using regular create POSTs
 
 ## [4.2.2](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/4.2.1...4.2.2)
 ### Bug Fixes

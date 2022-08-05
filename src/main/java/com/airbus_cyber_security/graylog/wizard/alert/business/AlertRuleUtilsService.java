@@ -366,15 +366,6 @@ public class AlertRuleUtilsService {
         return configuration.accessAggregationTime();
     }
 
-    public String createNotification(String alertTitle, LoggingNotificationConfig loggingNotificationConfig, UserContext userContext) {
-        NotificationDto notification = NotificationDto.builder()
-                .config(loggingNotificationConfig)
-                .title(alertTitle)
-                .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
-                .build();
-        return this.createNotificationFromDto(notification, userContext);
-    }
-
     public String createNotification(String alertTitle, String severity, UserContext userContext) {
         LoggingNotificationConfig loggingNotificationConfig = LoggingNotificationConfig.builder()
                 .singleMessage(false)
@@ -382,19 +373,12 @@ public class AlertRuleUtilsService {
                 .logBody(this.getDefaultLogBody())
                 .aggregationTime(this.getDefaultTime())
                 .build();
-        return this.createNotification(alertTitle, loggingNotificationConfig, userContext);
-    }
-
-    public String createNotificationFromParameters(String alertTitle, Map<String, Object> parametersNotification, UserContext userContext) {
-        LoggingNotificationConfig loggingNotificationConfig = LoggingNotificationConfig.builder()
-                .singleMessage((boolean) parametersNotification.getOrDefault(AlertRuleUtils.SINGLE_NOTIFICATION, false))
-                .severity(SeverityType.valueOf(parametersNotification.get(AlertRuleUtils.SEVERITY).toString().toUpperCase()))
-                .logBody(parametersNotification.getOrDefault(AlertRuleUtils.LOG_BODY, this.getDefaultLogBody()).toString())
-                .splitFields(convertToHashSet(parametersNotification.get(AlertRuleUtils.SPLIT_FIELDS)))
-                .aggregationTime((int) parametersNotification.getOrDefault(AlertRuleUtils.AGGREGATION_TIME, 0))
-                .alertTag(parametersNotification.getOrDefault(AlertRuleUtils.ALERT_TAG, "LoggingAlert").toString())
+        NotificationDto notification = NotificationDto.builder()
+                .config(loggingNotificationConfig)
+                .title(alertTitle)
+                .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
                 .build();
-        return this.createNotification(alertTitle, loggingNotificationConfig, userContext);
+        return this.createNotificationFromDto(notification, userContext);
     }
 
     public void updateNotification(String title, String notificationID, String severity) {

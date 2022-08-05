@@ -220,7 +220,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private String checkImportPolicyAndGetTitle(String title) {
         String alertTitle = title;
         if (this.alertRuleService.isPresent(alertTitle)) {
-            final AlertWizardConfig configGeneral = clusterConfigService.get(AlertWizardConfig.class);
+            AlertWizardConfig configGeneral = clusterConfigService.get(AlertWizardConfig.class);
             ImportPolicyType importPolicy = configGeneral.accessImportPolicy();
             if (importPolicy != null && importPolicy.equals(ImportPolicyType.RENAME)) {
                 String newAlertTitle;
@@ -238,8 +238,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                     throw new BadRequestException("Failed to replace alert rule.");
                 }
             } else {
-                LOG.error("Failed to create alert rule : Alert rule title already exist");
-                throw new BadRequestException("Failed to create alert rule : Alert rule title already exist.");
+                LOG.error("Failed to create alert rule: Alert rule title already exist");
+                throw new BadRequestException("Failed to create alert rule: Alert rule title already exist.");
             }
         }
         return alertTitle;
@@ -253,9 +253,43 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         PipelineDao pipeline = this.streamPipelineService.createPipeline(alertTitle, matchingType);
         return new Pipeline(pipeline.id(), pipelineRule.id());
     }
-    private void createAlertRule(AlertRuleStream streamConfiguration, AlertRuleStream streamConfiguration2, String alertTitle, String notificationID,                                 String description, String conditionType,
-                                 Map<String, Object> conditionParameters, UserContext userContext) throws ValidationException {
+
+    private String createEvent(String alertTitle, String notificationID, String conditionType, Map<String, Object> conditionParameters, UserContext userContext, String streamIdentifier, String streamIdentifier2) {
+        EventProcessorConfig configuration = this.alertRuleUtilsService.createCondition(conditionType, conditionParameters, streamIdentifier, streamIdentifier2);
+        return this.alertRuleUtilsService.createEvent(alertTitle, notificationID, configuration, userContext);
+    }
+
+    private String createSecondEvent(String alertTitle, String notificationID, String conditionType, Map<String, Object> conditionParameters, UserContext userContext, String streamIdentifier2) {
+        if (!conditionType.equals("OR")) {
+            return null;
+        }
+        EventProcessorConfig configuration2 = this.alertRuleUtilsService.createAggregationCondition(streamIdentifier2, conditionParameters);
+        return this.alertRuleUtilsService.createEvent(alertTitle + "#2", notificationID, configuration2, userContext);
+    }
+
+    @POST
+    @Timed
+    @ApiOperation(value = "Create an alert")
+    @RequiresAuthentication
+    @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_CREATE)
+    @ApiResponses(value = {@ApiResponse(code = 400, message = "The supplied request is not valid.")})
+    @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_CREATE)
+    public Response create(@ApiParam(name = "JSON body", required = true) @Valid @NotNull AlertRuleRequest request, @Context UserContext userContext)
+            throws ValidationException, BadRequestException {
+
+        this.alertRuleUtilsService.checkIsValidRequest(request);
+
         String userName = getCurrentUser().getName();
+        String title = request.getTitle();
+        String alertTitle = checkImportPolicyAndGetTitle(title);
+        AlertRuleStream streamConfiguration = request.getStream();
+        AlertRuleStream streamConfiguration2 = request.getSecondStream();
+        String severity = request.getSeverity();
+        String conditionType = request.getConditionType();
+        String description = request.getDescription();
+        Map<String, Object> conditionParameters = request.conditionParameters();
+
+        String notificationID = this.alertRuleUtilsService.createNotification(alertTitle, severity, userContext);
 
         // Create stream and pipeline
         Stream stream = this.streamPipelineService.createStream(streamConfiguration, alertTitle, userName);
@@ -306,64 +340,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         for (FieldRule fieldRule: this.alertRuleUtils.nullSafe(fieldRules2)) {
             this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
-    }
-
-    private String createEvent(String alertTitle, String notificationID, String conditionType, Map<String, Object> conditionParameters, UserContext userContext, String streamIdentifier, String streamIdentifier2) {
-        EventProcessorConfig configuration = this.alertRuleUtilsService.createCondition(conditionType, conditionParameters, streamIdentifier, streamIdentifier2);
-        return this.alertRuleUtilsService.createEvent(alertTitle, notificationID, configuration, userContext);
-    }
-
-    private String createSecondEvent(String alertTitle, String notificationID, String conditionType, Map<String, Object> conditionParameters, UserContext userContext, String streamIdentifier2) {
-        if (!conditionType.equals("OR")) {
-            return null;
-        }
-        EventProcessorConfig configuration2 = this.alertRuleUtilsService.createAggregationCondition(streamIdentifier2, conditionParameters);
-        return this.alertRuleUtilsService.createEvent(alertTitle + "#2", notificationID, configuration2, userContext);
-    }
-
-    private void importAlertRule(ExportAlertRule alertRule, UserContext userContext) throws ValidationException {
-        String title = alertRule.getTitle();
-        String alertTitle = checkImportPolicyAndGetTitle(title);
-        AlertRuleStream stream = alertRule.getStream();
-        AlertRuleStream secondStream = alertRule.getSecondStream();
-        String conditionType = alertRule.getConditionType();
-        String description = alertRule.getDescription();
-        Map<String, Object> conditionParameters = alertRule.conditionParameters();
-
-        Map<String, Object> parametersNotification = alertRule.notificationParameters();
-
-        // TODO could factorize this down into createAlertRule, but need to remove convertToHashSet first...
-        // Create Notification
-        String notificationID = this.alertRuleUtilsService.createNotificationFromParameters(alertTitle, parametersNotification, userContext);
-
-        createAlertRule(stream, secondStream, alertTitle, notificationID, description, conditionType, conditionParameters, userContext);
-    }
-
-    @POST
-    @Timed
-    @ApiOperation(value = "Create an alert")
-    @RequiresAuthentication
-    @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_CREATE)
-    @ApiResponses(value = {@ApiResponse(code = 400, message = "The supplied request is not valid.")})
-    @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_CREATE)
-    public Response create(@ApiParam(name = "JSON body", required = true) @Valid @NotNull AlertRuleRequest request, @Context UserContext userContext)
-            throws ValidationException, BadRequestException {
-
-        this.alertRuleUtilsService.checkIsValidRequest(request);
-
-        String title = request.getTitle();
-        String alertTitle = checkImportPolicyAndGetTitle(title);
-        AlertRuleStream stream = request.getStream();
-        AlertRuleStream secondStream = request.getSecondStream();
-        String severity = request.getSeverity();
-        String conditionType = request.getConditionType();
-        String description = request.getDescription();
-        Map<String, Object> conditionParameters = request.conditionParameters();
-
-        // Create Notification
-        String notificationID = this.alertRuleUtilsService.createNotification(alertTitle, severity, userContext);
-
-        createAlertRule(stream, secondStream, alertTitle, notificationID, description, conditionType, conditionParameters, userContext);
 
         return Response.ok().build();
     }
@@ -546,33 +522,5 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     public List<ExportAlertRule> getExportAlertRule(@ApiParam(name = "JSON body", required = true) @Valid @NotNull ExportAlertRuleRequest request) {
         LOG.debug("List titles : " + request.getTitles());
         return alertRuleExporter.export(request.getTitles());
-    }
-
-    // TODO: maybe import could be implemented in pure JS and remove this endpoint
-    @PUT
-    @Path("/import")
-    @Timed
-    @ApiOperation(value = "Import a alert")
-    @RequiresAuthentication
-    @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_CREATE)
-    @ApiResponses(value = {@ApiResponse(code = 400, message = "The supplied request is not valid.")})
-    @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_CREATE)
-    public Response importAlertRules(@ApiParam(name = "JSON body", required = true) @Valid @NotNull List<ExportAlertRule> request, @Context UserContext userContext) {
-        Response responses = Response.accepted().build();
-
-        for (ExportAlertRule alertRule: request) {
-            if (!alertRuleService.isValidImportRequest(alertRule)) {
-                LOG.error("Invalid alert rule:" + alertRule.getTitle());
-                continue;
-            }
-            try {
-                importAlertRule(alertRule, userContext);
-            } catch (Exception e) {
-                LOG.error("Cannot create alert {}: {}", alertRule.getTitle(), e);
-                responses = Response.serverError().build();
-            }
-        }
-
-        return responses;
     }
 }

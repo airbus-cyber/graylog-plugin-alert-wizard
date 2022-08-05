@@ -200,9 +200,4 @@ public class AlertRuleService {
 				isValidStream(request.getStream()) &&
 				isValidCondition(request.getConditionType(), request.conditionParameters(), request.getSecondStream()));
     }
-
-	public boolean isValidImportRequest(ExportAlertRule request){
-		return (isValidTitle(request.getTitle()) &&
-				isValidStream(request.getStream()) );
-	}
 }
