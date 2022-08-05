@@ -40,7 +40,8 @@ function normalizeConditionParameters(condition_parameters) {
 
 function normalizeImportedRule(rule) {
     let condition_parameters = normalizeConditionParameters(rule.condition_parameters);
-    return { ...rule, condition_parameters: condition_parameters };
+    let severity = rule.notification_parameters.severity;
+    return { ...rule, severity, condition_parameters };
 }
 
 export default {
@@ -48,7 +49,11 @@ export default {
         if (exportData.version === undefined) {
             return exportData.map(normalizeImportedRule);
         }
-        return exportData.rules
+        // TODO: should remove this part, should only be exportData.rules
+        return exportData.rules.map(rule => {
+            rule.severity = rule.notification_parameters.severity;
+            return rule
+        });
     },
 
     createExportDataFromRules(rules) {

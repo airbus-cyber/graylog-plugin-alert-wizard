@@ -74,9 +74,11 @@ const ImportAlertPage = createReactClass({
         evt.preventDefault();
         
         const { alertRules, selectedAlertTitles } = this.state;
-        const request = alertRules.filter(alertRule => selectedAlertTitles.has(alertRule.title))
+        const rules = alertRules.filter(alertRule => selectedAlertTitles.has(alertRule.title))
 
-        AlertRuleActions.importAlertRules(request);
+        for (const rule of rules) {
+            AlertRuleActions.create(rule);
+        }
     },
     
     render() {
