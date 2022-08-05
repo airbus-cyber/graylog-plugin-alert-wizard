@@ -79,7 +79,7 @@ class GraylogRestApi:
 
     def _create_alert_rule(self, title, rule, condition_type, time,
                            threshold_type='>', additional_threshold_type='', additional_threshold=0, second_stream=None,
-                           group_by_fields=None, distinct_by=''):
+                           group_by_fields=None, distinct_by='', field='', statistics_function=''):
         if group_by_fields is None:
             group_by_fields = []
         alert_rule = {
@@ -88,13 +88,13 @@ class GraylogRestApi:
                 'additional_threshold_type': additional_threshold_type,
                 'backlog': 500,
                 'distinct_by': distinct_by,
-                'field': '',
+                'field': field,
                 'grace': 1,
                 'grouping_fields': group_by_fields,
                 'threshold': 0,
                 'threshold_type': threshold_type,
                 'time': time,
-                'type': ''
+                'type': statistics_function
             },
             'condition_type': condition_type,
             'severity': 'info',
@@ -119,29 +119,19 @@ class GraylogRestApi:
     def create_alert_rule_group_distinct(self, title, rule, group_by_fields, distinct_by, time):
         return self._create_alert_rule(title, rule, 'GROUP_DISTINCT', time, group_by_fields=group_by_fields, distinct_by=distinct_by)
 
-    def create_alert_rule_and(self, title, time, additional_threshold=0):
+    def create_alert_rule_statistics(self, title, time):
         rule = {
-            'field': 'source',
+            'field': 'a',
             'type': 1,
-            'value': 'toto'
+            'value': 'b'
         }
-        second_stream = {
-            'field_rule': [
-                {
-                    'field': 'b',
-                    'type': 1,
-                    'value': 'titi'
-                }
-            ],
-            'matching_type': 'AND'
-        }
-        return self._create_alert_rule(title, rule, 'AND', time, additional_threshold_type='<', additional_threshold=additional_threshold, second_stream=second_stream)
+        return self._create_alert_rule(title, rule, 'STATISTICAL', time, field='x', statistics_function='AVG')
 
     def create_alert_rule_then(self, title, threshold_type, time):
         rule = {
-            'field': 'source',
+            'field': 'a',
             'type': 1,
-            'value': 'toto'
+            'value': 'b'
         }
         second_stream = {
             'field_rule': [
@@ -155,6 +145,24 @@ class GraylogRestApi:
         }
         return self._create_alert_rule(title, rule, 'THEN', time, threshold_type=threshold_type,
                                        additional_threshold_type='>', additional_threshold=0, second_stream=second_stream)
+
+    def create_alert_rule_and(self, title, time, additional_threshold=0):
+        rule = {
+            'field': 'a',
+            'type': 1,
+            'value': 'b'
+        }
+        second_stream = {
+            'field_rule': [
+                {
+                    'field': 'b',
+                    'type': 1,
+                    'value': 'titi'
+                }
+            ],
+            'matching_type': 'AND'
+        }
+        return self._create_alert_rule(title, rule, 'AND', time, additional_threshold_type='<', additional_threshold=additional_threshold, second_stream=second_stream)
 
     def create_alert_rules_export(self, alert_rule_titles):
         export_selection = {

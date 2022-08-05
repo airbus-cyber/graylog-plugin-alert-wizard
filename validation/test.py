@@ -183,3 +183,8 @@ class Test(TestCase):
         alert_rule = self._graylog.get_alert_rule(title)
         self.assertEqual('>', alert_rule['condition_parameters']['threshold_type'])
 
+    def test_create_alert_rule_statistics_should_not_fail(self):
+        title = 'statistics'
+        status_code = self._graylog.create_alert_rule_statistics(title, _PERIOD)
+        self.assertEqual(200, status_code)
+

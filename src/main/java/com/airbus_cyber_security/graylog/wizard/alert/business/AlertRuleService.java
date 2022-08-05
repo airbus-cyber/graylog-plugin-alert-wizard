@@ -134,11 +134,11 @@ public class AlertRuleService {
 	}
 	
     private boolean isValidCondStatistical(Map<String, Object> conditionParameters) {
-        if (conditionParameters.containsKey(AlertRuleUtils.TYPE)) {
+        if (!conditionParameters.containsKey(AlertRuleUtils.TYPE)) {
             LOG.debug("Missing condition parameter {}", AlertRuleUtils.TYPE);
             return false;
         }
-        if (conditionParameters.containsKey(AlertRuleUtils.FIELD)) {
+        if (!conditionParameters.containsKey(AlertRuleUtils.FIELD)) {
             LOG.debug("Missing condition parameter {}", AlertRuleUtils.FIELD);
             return false;
         }

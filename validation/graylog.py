@@ -63,11 +63,14 @@ class Graylog:
     def create_alert_rule_group_distinct(self, *args):
         return self._api.create_alert_rule_group_distinct(*args)
 
-    def create_alert_rule_and(self, *args, **kwargs):
-        return self._api.create_alert_rule_and(*args, **kwargs)
+    def create_alert_rule_statistics(self, *args):
+        return self._api.create_alert_rule_statistics(*args)
 
     def create_alert_rule_then(self, *args, **kwargs):
         return self._api.create_alert_rule_then(*args, **kwargs)
+
+    def create_alert_rule_and(self, *args, **kwargs):
+        return self._api.create_alert_rule_and(*args, **kwargs)
 
     # TODO shouldn't it rather be named export_alert_rules?
     def create_alert_rules_export(self, alert_rule_titles):
