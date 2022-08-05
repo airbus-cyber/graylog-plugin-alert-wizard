@@ -124,7 +124,7 @@ public class AlertRuleService {
 		if(stream.getMatchingType().equals("AND") || stream.getMatchingType().equals("OR")){
 			for (FieldRule fieldRule : stream.getFieldRules()) {
 				if (fieldRule.getField() == null || fieldRule.getField().isEmpty() ||
-						fieldRule.getType() < -7 || fieldRule.getType() > 7	) {
+						fieldRule.getType() < -7 || fieldRule.getType() > 7) {
 					return false;
 				}
 			}
@@ -180,7 +180,7 @@ public class AlertRuleService {
 	public boolean isValidRequest(AlertRuleRequest request){
 		return (isValidTitle(request.getTitle()) && 
 				isValidStream(request.getStream()) &&
-				isValidCondition(request.getConditionType(), request.conditionParameters(), request.getSecondStream()) );
+				isValidCondition(request.getConditionType(), request.conditionParameters(), request.getSecondStream()));
     }
 
 	public boolean isValidImportRequest(ExportAlertRule request){
