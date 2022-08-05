@@ -36,7 +36,7 @@ import java.util.List;
 public abstract class AlertRule {
 
 
-	@JsonProperty("title")
+    @JsonProperty("title")
     @NotNull
     public abstract String getTitle();
     
@@ -104,7 +104,7 @@ public abstract class AlertRule {
     @Nullable
     public abstract List<FieldRule> getSecondPipelineFieldRules();
 
-	@JsonCreator
+    @JsonCreator
     public static AlertRule create(@JsonProperty("_id") String objectId,
                                    @JsonProperty("title") String title,
                                    @JsonProperty("stream") String streamID,
