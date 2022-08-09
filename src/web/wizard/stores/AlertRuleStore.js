@@ -52,14 +52,13 @@ const SOURCE_URL = RestUtils.buildSourceURL('alerts')
 
 const AlertRuleStore = Reflux.createStore({
     listenables: [AlertRuleActions],
-    sourceUrl: RestUtils.buildSourceURL('alerts'),
     alerts: undefined,
 
     init() {
         this.trigger({alerts: this.alerts});
     },
     list() {
-        const promise = fetch('GET', URLUtils.qualifyUrl(this.sourceUrl))
+        const promise = fetch('GET', URLUtils.qualifyUrl(SOURCE_URL))
             .then(
                 response => {
                     this.alerts = response.alerts;
@@ -73,7 +72,7 @@ const AlertRuleStore = Reflux.createStore({
         AlertRuleActions.list.promise(promise);
     },
     listWithData() {
-        const promise = fetch('GET', URLUtils.qualifyUrl(this.sourceUrl + '/data'))
+        const promise = fetch('GET', URLUtils.qualifyUrl(SOURCE_URL + '/data'))
             .then(
                 response => {
                     this.alerts = response.alerts_data;
@@ -87,7 +86,7 @@ const AlertRuleStore = Reflux.createStore({
         AlertRuleActions.listWithData.promise(promise);
     },
     get(name) {
-        const promise = fetch('GET', URLUtils.qualifyUrl(this.sourceUrl + '/' + encodeURIComponent(name)))
+        const promise = fetch('GET', URLUtils.qualifyUrl(SOURCE_URL + '/' + encodeURIComponent(name)))
             .then(
                 response => {
                     this.trigger({alert: response});
@@ -125,7 +124,7 @@ const AlertRuleStore = Reflux.createStore({
         AlertRuleActions.create.promise(promise);
     },
     update(name, updatedAlert) {
-        const url = URLUtils.qualifyUrl(this.sourceUrl + '/' + encodeURIComponent(name));
+        const url = URLUtils.qualifyUrl(SOURCE_URL + '/' + encodeURIComponent(name));
         const method = 'PUT';
 
         const request = {
@@ -152,7 +151,7 @@ const AlertRuleStore = Reflux.createStore({
     },
 
     deleteByName(alertName) {
-        const url = URLUtils.qualifyUrl(this.sourceUrl + '/' + encodeURIComponent(alertName));
+        const url = URLUtils.qualifyUrl(SOURCE_URL + '/' + encodeURIComponent(alertName));
         const method = 'DELETE';
 
         const promise = fetch(method, url)
