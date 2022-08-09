@@ -99,7 +99,7 @@ const AlertRuleStore = Reflux.createStore({
         AlertRuleActions.get.promise(promise);
     },
     create(newAlert) {
-        const url = URLUtils.qualifyUrl(this.sourceUrl);
+        const url = URLUtils.qualifyUrl(SOURCE_URL);
 
         const request = {
             title: newAlert.title,
