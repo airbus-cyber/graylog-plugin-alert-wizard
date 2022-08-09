@@ -67,7 +67,7 @@ public abstract class AlertWizardConfig {
 				.accessDefaultValues(DefaultValues.create("",
 						"info",
 						"",
-						"",
+						">",
 						0,
 						1,
 						1,
