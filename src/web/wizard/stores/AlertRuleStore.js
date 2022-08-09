@@ -15,12 +15,40 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
+// TODO should remove Reflux and AlertRuleActions (use store directly), see the code below
+/*
+import URLUtils from 'util/URLUtils';
+import UserNotification from 'util/UserNotification';
+import fetch from 'logic/rest/FetchProvider';
+import RestUtils from './RestUtils';
+
+const SOURCE_URL = RestUtils.buildSourceURL('alerts')
+
+export default {
+    get(name) {
+        const promise = fetch('GET', URLUtils.qualifyUrl(SOURCE_URL + '/' + encodeURIComponent(name)))
+            .then(
+                response => {
+                    return response;
+                },
+                error => {
+                    UserNotification.error(`Fetching alert rule failed with status: ${error}`,
+                        'Could not retrieve alert rule');
+                });
+        return promise;
+    }
+};
+*/
+
 import Reflux from 'reflux';
 import URLUtils from 'util/URLUtils';
+// TODO should not depend on a graphical element!!!!
 import UserNotification from 'util/UserNotification';
 import fetch from 'logic/rest/FetchProvider';
 import AlertRuleActions from 'wizard/actions/AlertRuleActions';
 import RestUtils from './RestUtils';
+
+const SOURCE_URL = RestUtils.buildSourceURL('alerts')
 
 const AlertRuleStore = Reflux.createStore({
     listenables: [AlertRuleActions],
@@ -30,7 +58,6 @@ const AlertRuleStore = Reflux.createStore({
     init() {
         this.trigger({alerts: this.alerts});
     },
-
     list() {
         const promise = fetch('GET', URLUtils.qualifyUrl(this.sourceUrl))
             .then(

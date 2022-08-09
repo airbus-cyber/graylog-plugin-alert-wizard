@@ -15,6 +15,8 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
+// TODO change extension to .js
+
 const RestUtils = {
     buildSourceURL(path) {
         return '/plugins/com.airbus_cyber_security.graylog.wizard/' + path;

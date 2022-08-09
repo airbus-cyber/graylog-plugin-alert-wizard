@@ -44,7 +44,7 @@ const ExportAlertPage = createReactClass({
 
     getInitialState() {
         return {
-            selectedAlertTitles: new Set()
+            selectedAlertTitles: []
         };
     },
 
@@ -55,20 +55,22 @@ const ExportAlertPage = createReactClass({
     },
 
     handleRuleSelectionChanged(selection) {
-        this.setState({ selectedAlertTitles: selection })
+        this.setState({ selectedAlertTitles: Array.from(selection) })
     },
 
-    onSubmit(evt) {
+    async onSubmit(evt) {
         evt.preventDefault();
-        const request = {
-          titles: Array.from(this.state.selectedAlertTitles),
-        };
-        AlertRuleActions.exportAlertRules(request).then((response) => {           
-            UserNotification.success('Successfully export alert rules. Starting download...', 'Success!');
-            let exportData =  RulesImportExport.createExportDataFromRules(response);
-            let date = DateTime.ignoreTZ(DateTime.now()).toString(DateTime.Formats.DATETIME).replace(/:/g, '').replace(/ /g, '_');
-            FileSaver.save(JSON.stringify(exportData), date+'_alert_rules.json', 'application/json', 'utf-8');
-        });
+
+        const alerts = []
+        for (const title of this.state.selectedAlertTitles) {
+            const alert = await AlertRuleActions.get(title)
+            alerts.push(alert)
+        }
+
+        UserNotification.success('Successfully export alert rules. Starting download...', 'Success!');
+        let exportData = RulesImportExport.createExportDataFromRules(alerts);
+        let date = DateTime.ignoreTZ(DateTime.now()).toString(DateTime.Formats.DATETIME).replace(/:/g, '').replace(/ /g, '_');
+        FileSaver.save(JSON.stringify(exportData), date+'_alert_rules.json', 'application/json', 'utf-8');
     },
 
     render() {

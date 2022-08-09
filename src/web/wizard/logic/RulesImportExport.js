@@ -57,11 +57,7 @@ export default {
         if (exportData.version === undefined) {
             return exportData.map(normalizeImportedRule);
         }
-        // TODO: should remove this part, should only be exportData.rules
-        return exportData.rules.map(rule => {
-            rule.severity = rule.notification_parameters.severity;
-            return rule
-        });
+        return exportData.rules;
     },
 
     createExportDataFromRules(rules) {
