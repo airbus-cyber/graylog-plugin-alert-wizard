@@ -144,15 +144,15 @@ const FieldsCondition = createReactClass({
         this.setState({stream: update});
         this.props.onSaveStream('field_rule', update['field_rule']);
     },
-    _checkFieldsCondition(){
+    _checkFieldsCondition() {
         if (this.props.message !== undefined) {
             /* Create temporary stream */
             let tempRules = [];
             for (let index = 0; index < this.state.stream.field_rule.length; index++) {
-                if(this._isRuleValid(this.state.stream.field_rule[index])){
+                if (this._isRuleValid(this.state.stream.field_rule[index])) {
                     let inverted = false;
                     let type = this.state.stream.field_rule[index].type;
-                    if(type < 0){
+                    if (type < 0) {
                         inverted = true;
                         type = -this.state.stream.field_rule[index].type;
                     }
@@ -165,12 +165,13 @@ const FieldsCondition = createReactClass({
                 }   
             }
             
-            let tempStream = {  title: "WizardTempStream",
-                            description: "Temporary stream to test wizard rules",
-                            matching_type: this.state.stream.matching_type,
-                            rules:tempRules,
-                            index_set_id: this.state.indexSets[0].id
-                        };
+            let tempStream = {
+                title: "WizardTempStream",
+                description: "Temporary stream to test wizard rules",
+                matching_type: this.state.stream.matching_type,
+                rules: tempRules,
+                index_set_id: this.state.indexSets[0].id
+            };
             
             StreamsStore.save(tempStream, stream => {
                 this.setState({tempStreamID: stream.stream_id}); 
