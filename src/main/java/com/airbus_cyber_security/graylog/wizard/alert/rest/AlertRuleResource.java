@@ -21,9 +21,6 @@ import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRule;
 import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleService;
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
-import com.airbus_cyber_security.graylog.wizard.alert.bundles.AlertRuleExporter;
-import com.airbus_cyber_security.graylog.wizard.alert.bundles.ExportAlertRule;
-import com.airbus_cyber_security.graylog.wizard.alert.bundles.ExportAlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetDataAlertRule;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetListAlertRule;
@@ -100,7 +97,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private final AlertRuleUtilsService alertRuleUtilsService;
     private final StreamPipelineService streamPipelineService;
     private final AlertListUtilsService alertListUtilsService;
-    private final AlertRuleExporter alertRuleExporter;
 
 
     @Inject
@@ -127,12 +123,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         this.alertRuleUtils = new AlertRuleUtils();
         this.alertListUtilsService = new AlertListUtilsService(alertListService);
-        this.alertRuleExporter = new AlertRuleExporter(
-                alertRuleService,
-                streamService,
-                this.alertRuleUtils,
-                eventDefinitionsResource,
-                eventNotificationsResource);
         this.alertRuleUtilsService = new AlertRuleUtilsService(
                 alertRuleService,
                 streamService,
@@ -509,18 +499,5 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
 
         this.alertRuleService.destroy(alertTitle);
-    }
-
-    // TODO: maybe export could be implemented in pure JS and remove this endpoint
-    @POST
-    @Path("/export")
-    @Timed
-    @ApiOperation(value = "Export alert rules")
-    @RequiresAuthentication
-    @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_READ)
-    @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_READ)
-    public List<ExportAlertRule> getExportAlertRule(@ApiParam(name = "JSON body", required = true) @Valid @NotNull ExportAlertRuleRequest request) {
-        LOG.debug("List titles : " + request.getTitles());
-        return alertRuleExporter.export(request.getTitles());
     }
 }
