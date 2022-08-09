@@ -166,21 +166,6 @@ const AlertRuleStore = Reflux.createStore({
             });
         AlertRuleActions.deleteByName.promise(promise);
     },
-
-    exportAlertRules(titles) {
-	    const url = URLUtils.qualifyUrl(this.sourceUrl + '/export');
-        const method = 'POST';
-        
-        const promise = fetch(method, url, titles).then(
-            response => {
-                return response;
-            },
-            error => {
-                UserNotification.error(`Export alert rules failed with status: ${error}`,
-                    'Could not export alert rules');
-            });
-        AlertRuleActions.exportAlertRules.promise(promise);
-    },
 });
 
 export default AlertRuleStore;
