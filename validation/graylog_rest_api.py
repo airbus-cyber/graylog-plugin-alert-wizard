@@ -164,13 +164,6 @@ class GraylogRestApi:
         }
         return self._create_alert_rule(title, rule, 'AND', time, additional_threshold_type='<', additional_threshold=additional_threshold, second_stream=second_stream)
 
-    def create_alert_rules_export(self, alert_rule_titles):
-        export_selection = {
-            'titles': alert_rule_titles
-        }
-        response = self._post('plugins/com.airbus_cyber_security.graylog.wizard/alerts/export', export_selection)
-        return response.json()
-
     def get_alert_rule(self, name):
         response = self._get('plugins/com.airbus_cyber_security.graylog.wizard/alerts/' + name)
         return response.json()

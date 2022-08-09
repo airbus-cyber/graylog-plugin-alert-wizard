@@ -72,10 +72,6 @@ class Graylog:
     def create_alert_rule_and(self, *args, **kwargs):
         return self._api.create_alert_rule_and(*args, **kwargs)
 
-    # TODO shouldn't it rather be named export_alert_rules?
-    def create_alert_rules_export(self, alert_rule_titles):
-        return self._api.create_alert_rules_export(alert_rule_titles)
-    
     def create_list(self, *args):
         self._api.create_list(*args)
 
