@@ -9,7 +9,8 @@ All notable changes to this project will be documented in this file.
 * The pipeline rule created with lists now matches exact values of the list rather than substrings ([issue #49](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/49))
 * The default value of the severity in the wizard configuration is set to "Info" ([issue #61](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/61))
 * The default value of the time range unit in the wizard configuration is set to "minutes" ([issue #62](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/62))
-* The default value of the threshold type the is set to ">" ([issue #63](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/63))
+* The default value of the threshold type is set to "more than" ([issue #63](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/63))
+* The default value of the matching type is set to "all"
 ### Changes
 * Group/Distinct condition now accepts at most only one distinct field. During import of old rules, only the first distinct field is kept
 * Rest resources plugins/com.airbus_cyber_security.graylog.wizard/alerts and plugins/com.airbus_cyber_security.graylog.wizard/alerts/{title}: condition_parameters.distinction_fields renamed into distinct_by. It now accepts only one value
