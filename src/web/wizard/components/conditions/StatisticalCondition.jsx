@@ -112,6 +112,7 @@ const StatisticalCondition = createReactClass({
                                 <div style={{width:'200px'}}>
                                 <Select
                                     required
+                                    clearable={false}
                                     value={this.state.type}
                                     options={this._availableAggregationTypes()}
                                     matchProp="value"
@@ -141,6 +142,7 @@ const StatisticalCondition = createReactClass({
                                 <div style={{width:'200px'}}>
                                 <Select
                                     required
+                                    clearable={false}
                                     value={this.state.threshold_type}
                                     options={this._availableThresholdTypes()}
                                     matchProp="value"
