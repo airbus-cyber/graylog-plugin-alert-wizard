@@ -6,3 +6,9 @@ Coding conventions
 * do not use ../ in imports (always go down)
 * avoid ref
 * define propTypes and use isRequired whenever possible
+
+
+Graylog Components
+------------------
+
+* components/common/Select. Use clearable={false} to ensure there is always a value

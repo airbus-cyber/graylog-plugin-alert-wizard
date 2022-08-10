@@ -107,14 +107,14 @@ const FieldsCondition = createReactClass({
         let update = ObjectUtils.clone(this.state.stream);
         update.field_rule[index] = rule;
         this.setState({stream: update});
-        this.props.onSaveStream('field_rule', update['field_rule']);
+        this.props.onSaveStream('field_rule', update.field_rule);
     },
 
     _onDeleteFieldRuleSubmit(index) {
         let update = ObjectUtils.clone(this.state.stream);
-        update['field_rule'].splice(index, 1);
+        update.field_rule.splice(index, 1);
         this.setState({stream: update});
-        this.props.onSaveStream('field_rule', update['field_rule']);
+        this.props.onSaveStream('field_rule', update.field_rule);
     },
     _isRuleValid(rule){
         if (!(rule.field !== '' &&
@@ -140,9 +140,9 @@ const FieldsCondition = createReactClass({
     _addFieldRule() {
         const rule = {field: '', type: '', value: ''};
         const update = ObjectUtils.clone(this.state.stream);
-        update['field_rule'].push(rule);
+        update.field_rule.push(rule);
         this.setState({stream: update});
-        this.props.onSaveStream('field_rule', update['field_rule']);
+        this.props.onSaveStream('field_rule', update.field_rule);
     },
     _checkFieldsCondition() {
         if (this.props.message !== undefined) {
@@ -188,7 +188,7 @@ const FieldsCondition = createReactClass({
                         newRules.push(rule);
                     }
                     const update = ObjectUtils.clone(this.state.stream);
-                    update['field_rule'] = newRules;
+                    update.field_rule = newRules;
                     this.setState({stream: update}); 
                     
                     /*Check the rules*/
@@ -224,7 +224,7 @@ const FieldsCondition = createReactClass({
         const color = (this.state.matchData ? this._getMatchDataColor() : '#FFFFFF');
         let listFieldRule = this.state.stream.field_rule.map((rule) =>
             <div><FieldRule rule={rule} onUpdate={this._onUpdateFieldRuleSubmit} onDelete={this._onDeleteFieldRuleSubmit}
-                           index={this.state.stream['field_rule'].indexOf(rule)}
+                           index={this.state.stream.field_rule.indexOf(rule)}
                            matchData={this.state.matchData}/>
                 <br/>
             </div>
@@ -242,6 +242,7 @@ const FieldsCondition = createReactClass({
                     <Select style={{backgroundColor: color}}
                         autosize={false}
                         required
+                        clearable={false}
                         value={this.state.stream.matching_type}
                         options={this._availableMatchingType()}
                         matchProp="value"
