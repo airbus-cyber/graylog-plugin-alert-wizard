@@ -5,4 +5,4 @@ Coding conventions
 * avoid ternary operator (condition?expression1:expression2)
 * do not use ../ in imports (always go down)
 * avoid ref
-
+* define propTypes and use isRequired whenever possible
