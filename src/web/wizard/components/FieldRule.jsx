@@ -16,7 +16,6 @@
  */
 
 // TODO move this class somewhere down... Used only in ./conditions/FieldsCondition
-// TODO remove all the refs!!!
 
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -202,10 +201,10 @@ const FieldRule = createReactClass({
                 borderBottomLeftRadius: '0px',
                 height: '36px'
             }}
-                   ref="value" id="value" name="value" type="text"
+                   id="value" name="value" type="text"
                    onChange={this._onValueChanged("value")} value={this.state.rule.value}/>
             : (this.state.rule.type === 7 || this.state.rule.type === -7) ?
-                <Input ref="alertLists" id="alertLists" name="alertLists">
+                <Input id="alertLists" name="alertLists">
                     <div style={{width: '150px'}}>
                         <Select style={{backgroundColor: color, borderRadius: '0px'}}
                                 autosize={false}
@@ -241,12 +240,12 @@ const FieldRule = createReactClass({
             return (
                 <form className="form-inline">
                     {deleteAction}
-                    <Input ref="field" id="field" name="field">
+                    <Input id="field" name="field">
                         <div style={{width: '200px'}}>
                             <TypeAheadFieldInput id="field-input" type="text" required name="field" defaultValue={this.state.rule.field} onChange={this._onRuleFieldSelect} autoFocus />
                         </div>
                     </Input>
-                    <Input ref="type" id="type" name="type">
+                    <Input id="type" name="type">
                         <div style={{width: '200px'}}>
                             <Select style={{backgroundColor: color}}
                                     required
