@@ -74,6 +74,7 @@ const TimeRangeCondition = createReactClass({
                         <div style={{width:'150px'}}>
                         <Select
                             required
+                            clearable={false}
                             value={this.state.time_type.toString()}
                             options={this._availableTimeTypes()}
                             matchProp="value"

@@ -87,6 +87,7 @@ const TitleSeverity = createReactClass({
                             matchProp="value"
                             onChange={this._onSeverityTypeSelect}
                             disabled={!this.props.isPluginLoggingAlertPresent}
+                            clearable={false}
                             placeholder={<FormattedMessage id= "wizard.select" defaultMessage= "Select..." />}
                         />
                         </div>

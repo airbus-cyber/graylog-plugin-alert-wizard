@@ -80,6 +80,7 @@ const NumberCondition = createReactClass({
                         <div style={{width:'150px'}}>
                         <Select
                             required
+                            clearable={false}
                             value={this.state.threshold_type}
                             options={this._availableThresholdTypes()}
                             matchProp="value"
