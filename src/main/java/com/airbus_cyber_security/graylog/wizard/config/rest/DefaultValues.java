@@ -33,12 +33,12 @@ import javax.validation.constraints.NotNull;
 @CollectionName("default_values")
 public abstract class DefaultValues {
 
-	@JsonProperty("title")
-	@Nullable
+    @JsonProperty("title")
+    @Nullable
     public abstract String getTitle();
 	
-	@JsonProperty("severity")
-	@Nullable
+    @JsonProperty("severity")
+    @Nullable
     public abstract String getSeverity();
 	
     @JsonProperty("matching_type")
