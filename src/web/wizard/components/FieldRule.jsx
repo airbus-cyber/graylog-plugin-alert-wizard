@@ -16,6 +16,7 @@
  */
 
 // TODO move this class somewhere down... Used only in ./conditions/FieldsCondition
+// TODO remove all the refs!!!
 
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -137,6 +138,7 @@ const FieldRule = createReactClass({
     },
 
     _onRuleTypeSelect(value) {
+        // TODO parseInt('') returns NaN which is a problem later on (will turn into null after a call to ObjectUtils.clone
         this._updateAlertField('type', parseInt(value));
     },
 
@@ -208,6 +210,7 @@ const FieldRule = createReactClass({
                         <Select style={{backgroundColor: color, borderRadius: '0px'}}
                                 autosize={false}
                                 required
+                                clearable={false}
                                 value={this.state.rule.value}
                                 options={this._createSelectItemsListTitle(this.state.lists)}
                                 matchProp="value"
@@ -247,6 +250,7 @@ const FieldRule = createReactClass({
                         <div style={{width: '200px'}}>
                             <Select style={{backgroundColor: color}}
                                     required
+                                    clearable={false}
                                     value={this.state.rule.type.toString()}
                                     options={this._availableRuleType()}
                                     matchProp="value"

@@ -303,6 +303,7 @@ const ManageSettings = createReactClass({
                           matchProp="value"
                           value={this.state.config.default_values.severity}
                           onChange={this._onSeverityTypeSelect}
+                          clearable={false}
                   />
                 </Input>     
                 <Input ref="matching_type" id="matching_type" name="matching_type" 
@@ -313,6 +314,7 @@ const ManageSettings = createReactClass({
                         options={this._availableMatchingType()}
                         matchProp="value"
                         onChange={this._onMatchingTypeSelect}
+                        clearable={false}
                     />
                 </Input>
                 <Input ref="threshold_type" id="threshold_type" name="threshold_type" 
@@ -323,6 +325,7 @@ const ManageSettings = createReactClass({
                         options={this._availableThresholdTypes()}
                         matchProp="value"
                         onChange={this._onThresholdTypeSelect}
+                        clearable={false}
                     />
                 </Input>
                 <Input ref="threshold" id="threshold" name="threshold" type="number" min="0"
@@ -339,6 +342,7 @@ const ManageSettings = createReactClass({
                         options={this._availableTimeTypes()}
                         matchProp="value"
                         onChange={this._onTimeTypeSelect}
+                        clearable={false}
                     />
                 </Input>
 
@@ -353,6 +357,7 @@ const ManageSettings = createReactClass({
                         options={this._availableRuleType()}
                         matchProp="value"
                         onChange={this._onRuleTypeSelect}
+                        clearable={false}
                     />
                 </Input>
                 <Input ref="field_value" id="field_value" name="field_value" type="text" 
