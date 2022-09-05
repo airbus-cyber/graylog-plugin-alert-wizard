@@ -150,17 +150,6 @@ public class AlertRuleUtilsService {
         }
     }
 
-    // TODO try to remove this method: not nice at all
-    private HashSet<String> convertToHashSet(Object object) {
-        if (object instanceof HashSet) {
-            return (HashSet<String>) object;
-        } else if (object instanceof List) {
-            return new HashSet<>((List<String>) object);
-        } else {
-            return new HashSet<>();
-        }
-    }
-    
     private String convertThresholdTypeToCorrelation(String thresholdType) {
         if (thresholdType.equals(AlertRuleService.THRESHOLD_TYPE_MORE)) {
             return "MORE";
@@ -194,7 +183,7 @@ public class AlertRuleUtilsService {
                 .searchWithinMs(searchWithinMs)
                 .executeEveryMs(executeEveryMs)
                 // TODO CorrelationCountProcessorConfig.groupingFields should be of type List (or better just Collection/Iterable) rather than Set
-                .groupingFields(new HashSet<>((List<String>) conditionParameter.get(AlertRuleUtils.GROUPING_FIELDS)))
+                .groupingFields((List<String>) conditionParameter.get(AlertRuleUtils.GROUPING_FIELDS))
                 .comment(AlertRuleUtils.COMMENT_ALERT_WIZARD)
                 .searchQuery("*")
                 .build();

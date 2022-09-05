@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 * The default value of the time range unit in the wizard configuration is set to "minutes" ([issue #62](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/62))
 * The default value of the threshold type is set to "more than" ([issue #63](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/63))
 * The default value of the matching type is set to "all"
+* Updated graylog-plugin-correlation-count dependency to [4.1.2](https://github.com/airbus-cyber/graylog-plugin-correlation-count/blob/4.1.2/CHANGELOG.md)
 ### Changes
 * Group/Distinct condition now accepts at most only one distinct field. During import of old rules, only the first distinct field is kept
 * Rest resources plugins/com.airbus_cyber_security.graylog.wizard/alerts and plugins/com.airbus_cyber_security.graylog.wizard/alerts/{title}: condition_parameters.distinction_fields renamed into distinct_by. It now accepts only one value
