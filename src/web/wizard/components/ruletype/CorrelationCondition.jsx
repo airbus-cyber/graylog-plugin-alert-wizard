@@ -66,7 +66,7 @@ const CorrelationCondition = createReactClass({
 
     _handleChangeStream(field, value) {
         let update = ObjectUtils.clone(this.state.alert);
-        if(update.stream === null){
+        if (update.stream === null) {
             update.stream = STREAM;
         }
         update.stream[field] = value;
@@ -75,7 +75,7 @@ const CorrelationCondition = createReactClass({
     },
     _handleChangeSecondStream(field, value) {
         let update = ObjectUtils.clone(this.state.alert);
-        if(update.second_stream === null){
+        if (update.second_stream === null) {
             update.second_stream = STREAM;
         }
         update.second_stream[field] = value;
@@ -83,11 +83,11 @@ const CorrelationCondition = createReactClass({
         this.props.onUpdate('second_stream', update.second_stream);
     },
     _handleChangeAdditionalNbrCond(field, value) {
-        if (field === "threshold"){
+        if (field === "threshold") {
             this._handleChangeCondition("additional_threshold", value);
-        }else if (field === "threshold_type"){
+        } else if (field === "threshold_type") {
             this._handleChangeCondition("additional_threshold_type", value);
-        }else{
+        } else {
             this._handleChangeCondition(field, value);
         }
     },
