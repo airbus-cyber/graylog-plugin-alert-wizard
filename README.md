@@ -32,6 +32,20 @@ Perfect for example to configure together and at the same time a stream, an aler
 | 1.1.x                 | 2.5.x           |
 | 1.0.0                 | 2.4.x           |
 
+
+## Upgrading
+
+### Upgrading to 4.3.0
+
+Follow the migration procedure:
+1. Export rules and lists from the preceding version,
+2. Delete all rules and lists,
+3. Install version 4.3.0,
+4. Import rules and lists.
+Group/Distinct conditions now accept at most only one distinct field. During import of rules, only the first distinct field will be kept.
+
+> **WARNING**: The REST API for rules has changed. See the [README](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/blob/master/CHANGELOG.md).
+
 ### Upgrading to 3.2.0
 
 **Possible issues to Import alert rules from version 3.0.0 or 3.1.0:**
