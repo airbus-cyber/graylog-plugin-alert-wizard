@@ -106,46 +106,16 @@ const CreateAlertInput = createReactClass({
             alert: INIT_ALERT
         };
     },
-
     getInitialState() {
-        let time;
-        let time_type;
         let alert = ObjectUtils.clone(this.props.alert);
         // TODO should move this out of the component
         // TODO should try to remove prop create (composition would be better)
-        if (this.props.create) {
-            alert.title = this.props.default_values.title;
-            alert.severity = this.props.default_values.severity;
-            alert.condition_parameters.threshold_type = this.props.default_values.threshold_type;
-            alert.condition_parameters.additional_threshold_type = this.props.default_values.threshold_type;
-            alert.condition_parameters.threshold = this.props.default_values.threshold;
-            alert.stream.matching_type = this.props.default_values.matching_type;
-            alert.stream.field_rule[0].field = this.props.default_values.field;
-            alert.stream.field_rule[0].type = this.props.default_values.field_type.toString();
-            alert.stream.field_rule[0].value = this.props.default_values.field_value;
-            time = this.props.default_values.time;
-            time_type = this.props.default_values.time_type;
-            alert.condition_parameters.time = time * time_type;
-            alert.condition_parameters.repeat_notifications = this.props.default_values.repeat_notifications;
-            alert.condition_parameters.grace = this.props.default_values.grace;
-            alert.condition_parameters.backlog = this.props.default_values.backlog;
-
-        } else {
+        if (!this.props.create) {
             /* Display title condition */
             alert.title = this.props.alert.title_condition;
-            
-            if (this.props.alert.condition_parameters.time >= 1440) {
-                time = this.props.alert.condition_parameters.time / 1440;
-                time_type = 1440;
-            } else if (this.props.alert.condition_parameters.time >= 60) {
-                time = this.props.alert.condition_parameters.time / 60;
-                time_type = 60;
-            } else {
-                time = this.props.alert.condition_parameters.time;
-                time_type = 1;
-            }
         }
 
+        let { time, time_type } = this._destructureTime(this.props.alert.condition_parameters.time);
         return {
             alert: alert,
             isModified: false,
@@ -156,6 +126,24 @@ const CreateAlertInput = createReactClass({
             isPluginCorrelation: true,
             isPluginLoggingAlert: true,
         };
+    },
+    _destructureTime(time) {
+        if (time >= 1440) {
+            return {
+                time: time / 1440,
+                time_type: 1440
+            }
+        }
+        if (time >= 60) {
+            return {
+                time: time / 60,
+                time_type: 60
+            }
+        }
+        return {
+            time: time,
+            time_type: 1
+        }
     },
     _isPluginsPresent(){
         NodesActions.list().then(nodes => {
@@ -331,6 +319,8 @@ const CreateAlertInput = createReactClass({
         );
 
         let buttonSave;
+        // TODO should move this out of the component
+        // TODO should try to remove prop create (composition would be better)
         if (this.props.create) {
             buttonSave = (
                 <Button onClick={this._save} bsStyle="primary" disabled={!this.state.isValid} className="btn btn-md btn-primary">

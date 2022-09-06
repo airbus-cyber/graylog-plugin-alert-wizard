@@ -32,8 +32,8 @@ const language = navigator.language.split(/[-_]/)[0];
 addLocaleData(frLocaleData);
 
 const messages = {
-            'fr': messages_fr
-        };
+    'fr': messages_fr
+};
 
 const NewAlertPage = createReactClass({
     displayName: 'NewAlertPage',
@@ -65,7 +65,41 @@ const NewAlertPage = createReactClass({
         if (this._isConfigurationLoading()) {
             componentCreateAlertInput = <Spinner/>;
         } else {
-            componentCreateAlertInput = <CreateAlertInput create={true} default_values={this.state.configurations.default_values}/>;
+            const default_values = this.state.configurations.default_values;
+            const time = default_values.time;
+            const time_type = default_values.time_type;
+            const alert = {
+                title: default_values.title,
+                severity: default_values.severity,
+                condition_type: 'COUNT',
+                condition_parameters: {
+                    threshold_type: default_values.threshold_type,
+                    additional_threshold_type: default_values.threshold_type,
+                    threshold: default_values.threshold,
+                    additional_threshold: 0,
+                    time: time * time_type,
+                    repeat_notifications: default_values.repeat_notifications,
+                    grace: default_values.grace,
+                    backlog: default_values.backlog,
+                    grouping_fields: [],
+                    distinct_by: '',
+                    field: '',
+                    type: ''
+                },
+                stream: {
+                    matching_type: default_values.matching_type,
+                    field_rule: [{
+                        field: default_values.field,
+                        type: default_values.field_type.toString(),
+                        value: default_values.field_value
+                    }],
+                },
+                second_stream: {
+                    matching_type: '',
+                    field_rule: [{field: '', type: '', value: ''}],
+                }
+            };
+            componentCreateAlertInput = <CreateAlertInput create={true} alert={alert} />;
         }
 
         return (
