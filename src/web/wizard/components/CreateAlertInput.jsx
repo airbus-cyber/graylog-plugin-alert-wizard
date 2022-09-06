@@ -103,22 +103,7 @@ const CreateAlertInput = createReactClass({
     },
     getDefaultProps() {
         return {
-            alert: INIT_ALERT,
-            default_values: {
-                title: '',
-                severity: '',
-                matching_type: '',
-                threshold_type: '',
-                threshold: 0,
-                time: 1,
-                time_type: 1,
-                field: '',
-                field_type: '',
-                field_value: '',
-                repeat_notifications: false,
-                grace: 1,
-                backlog: 500
-            },
+            alert: INIT_ALERT
         };
     },
 
