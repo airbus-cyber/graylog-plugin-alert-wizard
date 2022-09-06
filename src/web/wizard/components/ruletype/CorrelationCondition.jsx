@@ -23,7 +23,6 @@ import createReactClass from 'create-react-class';
 import ObjectUtils from 'util/ObjectUtils';
 import { Button } from 'react-bootstrap';
 import { FormattedMessage } from 'react-intl';
-import TitleSeverity from 'wizard/components/TitleSeverity';
 import FieldsCondition from 'wizard/components/conditions/FieldsCondition';
 import NumberCondition from 'wizard/components/conditions/NumberCondition';
 import TimeRangeCondition from 'wizard/components/conditions/TimeRangeCondition';
