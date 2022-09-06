@@ -132,6 +132,7 @@ const CreateAlertInput = createReactClass({
             alert.title = this.props.default_values.title;
             alert.severity = this.props.default_values.severity;
             alert.condition_parameters.threshold_type = this.props.default_values.threshold_type;
+            alert.condition_parameters.additional_threshold_type = this.props.default_values.threshold_type;
             alert.condition_parameters.threshold = this.props.default_values.threshold;
             alert.stream.matching_type = this.props.default_values.matching_type;
             alert.stream.field_rule[0].field = this.props.default_values.field;
