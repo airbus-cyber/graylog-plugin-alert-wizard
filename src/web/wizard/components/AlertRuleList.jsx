@@ -269,7 +269,7 @@ const AlertRuleList = createReactClass({
         let nbDays = (DateTime.now() - DateTime.parseFromString(alert.last_modified).toMoment()) / 1000 / 60 / 60 / 24;
         let nbAlertDay = Math.round(alert.alert_count / Math.ceil(nbDays));
         
-        let tabFields = [<td className="limited">{alert.title_condition}</td>];
+        let tabFields = [<td className="limited">{alert.title}</td>];
         this.props.config.field_order.map((field) => {
             if (field.enabled) {
                 switch (field.name) {

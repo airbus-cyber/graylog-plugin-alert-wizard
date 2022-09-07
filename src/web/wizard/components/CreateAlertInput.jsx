@@ -108,12 +108,6 @@ const CreateAlertInput = createReactClass({
     },
     getInitialState() {
         let alert = ObjectUtils.clone(this.props.alert);
-        // TODO should move this out of the component
-        // TODO should try to remove prop create (composition would be better)
-        if (!this.props.create) {
-            /* Display title condition */
-            alert.title = this.props.alert.title_condition;
-        }
 
         let { time, time_type } = this._destructureTime(this.props.alert.condition_parameters.time);
         return {
