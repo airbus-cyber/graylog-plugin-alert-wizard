@@ -36,8 +36,6 @@ import CorrelationCondition from './ruletype/CorrelationCondition'
 import OrCondition from './ruletype/OrCondition'
 import CountCondition from './ruletype/CountCondition'
 import ActionsProvider from 'injection/ActionsProvider';
-import ButtonToEventDefinition from './buttons/ButtonToEventDefinition';
-import ButtonToNotification from './buttons/ButtonToNotification';
 import TitleSeverity from "./TitleSeverity";
 
 const NodesActions = ActionsProvider.getActions('Nodes');
@@ -74,6 +72,7 @@ const CreateAlertInput = createReactClass({
 
     propTypes: {
         alert: PropTypes.object,
+        navigationToRuleComponents: PropTypes.element,
         // TODO should remove this prop (prefer composition)
         create: PropTypes.bool.isRequired,
     },
@@ -327,17 +326,6 @@ const CreateAlertInput = createReactClass({
                         <FormattedMessage id="wizard.save" defaultMessage="Save" />
                     </Button>{' '}
                 </div>);
-        
-        let customizeLink;
-        // TODO should try to avoid this variable: should cut the components so that they can be assembled differently if we are in a create or an update
-        if (!this.props.create) {
-            customizeLink = (
-              <div className="alert-actions pull-right">
-                  <ButtonToEventDefinition target={this.state.alert.condition} disabled={this.state.isModified} />{' '}
-                  <ButtonToNotification target={this.state.alert.notification} disabled={this.state.isModified} />
-              </div>
-            );
-        }
                 
         const subnavigation = (
                 <Nav stacked bsStyle="pills" activeKey={this.state.alert.condition_type} onSelect={key => this._handleSelect(key)}>
@@ -377,7 +365,7 @@ const CreateAlertInput = createReactClass({
                     </div>
                     <hr/>
                     <h2><FormattedMessage id= "wizard.titleParameters" defaultMessage= "Alert rule parameters" /></h2>
-                    {customizeLink}
+                    {this.props.navigationToRuleComponents}
                     <p className="description"><FormattedMessage id= "wizard.descripionParameters" defaultMessage= "Define the parameters of the alert rule." /></p>                    
                     <form className="form-inline">
                         <TitleSeverity onUpdate={this._updateAlertField} title={this.state.alert.title} severity={this.state.alert.severity}

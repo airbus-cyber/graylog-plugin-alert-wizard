@@ -27,6 +27,8 @@ import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
 import messages_fr from 'translations/fr.json';
 import withParams from 'routing/withParams';
 import Navigation from 'wizard/routing/Navigation';
+import ButtonToEventDefinition from 'wizard/components/buttons/ButtonToEventDefinition';
+import ButtonToNotification from 'wizard/components/buttons/ButtonToNotification';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
@@ -65,6 +67,13 @@ const UpdateAlertPage = createReactClass({
             return <Spinner/>;
         }
 
+        let navigationToRuleComponents = (
+              <div className="alert-actions pull-right">
+                  <ButtonToEventDefinition target={this.state.alert.condition} />{' '}
+                  <ButtonToNotification target={this.state.alert.notification} />
+              </div>
+        );
+
         return (
           <IntlProvider locale={language} messages={messages[language]}>
             <DocumentTitle title="Edit alert rule">
@@ -88,7 +97,7 @@ const UpdateAlertPage = createReactClass({
                     </PageHeader>
                     <Row className="content">
                         <Col md={12}>
-                            <CreateAlertInput create={false} alert={this.state.alertData}/>
+                            <CreateAlertInput create={false} alert={this.state.alertData} navigationToRuleComponents={navigationToRuleComponents} />
                         </Col>
                     </Row>
                 </div>
