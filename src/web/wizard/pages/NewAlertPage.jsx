@@ -26,6 +26,7 @@ import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
 import messages_fr from 'translations/fr.json';
 import WizardConfigurationsActions from 'wizard/actions/WizardConfigurationsActions';
 import Navigation from 'wizard/routing/Navigation';
+import AlertRuleActions from 'wizard/actions/AlertRuleActions';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
@@ -59,11 +60,20 @@ const NewAlertPage = createReactClass({
         return !this.state.configurations;
     },
 
+    _save(alert) {
+        AlertRuleActions.create.triggerPromise(alert).then((response) => {
+            if (response !== true) {
+                return;
+            }
+            Navigation.redirectToWizard();
+        });
+    },
+
     render() {
 
-        let componentCreateAlertInput;
+        let componentCreateAlertRule;
         if (this._isConfigurationLoading()) {
-            componentCreateAlertInput = <Spinner/>;
+            componentCreateAlertRule = <Spinner/>;
         } else {
             const default_values = this.state.configurations.default_values;
             const time = default_values.time;
@@ -99,7 +109,7 @@ const NewAlertPage = createReactClass({
                     field_rule: [{field: '', type: '', value: ''}],
                 }
             };
-            componentCreateAlertInput = <AlertRuleForm create={true} alert={alert} />;
+            componentCreateAlertRule = <AlertRuleForm alert={alert} onSave={this._save} />;
         }
 
         return (
@@ -123,7 +133,7 @@ const NewAlertPage = createReactClass({
                     </PageHeader>
                     <Row className="content">
                         <Col md={12}>
-                            {componentCreateAlertInput}
+                            {componentCreateAlertRule}
                         </Col>
                     </Row>
                 </div>

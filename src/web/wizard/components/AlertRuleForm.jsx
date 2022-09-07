@@ -67,14 +67,13 @@ const INIT_ALERT = {
         },
     };
 
-const CreateAlertInput = createReactClass({
-    displayName: 'CreateAlertInput',
+const AlertRuleForm = createReactClass({
+    displayName: 'AlertRuleForm',
 
     propTypes: {
         alert: PropTypes.object,
         navigationToRuleComponents: PropTypes.element,
-        // TODO should remove this prop (prefer composition)
-        create: PropTypes.bool.isRequired,
+        onSave: PropTypes.func.isRequired
     },
     contextTypes: {
         intl: PropTypes.object.isRequired,
@@ -166,26 +165,6 @@ const CreateAlertInput = createReactClass({
                 });
             }
         });
-    },
-    _save() {
-        AlertRuleActions.create.triggerPromise(this.state.alert).then((response) => {
-            if (response === true) {
-                AlertRuleActions.get(this.state.alert.title).then(alert => {
-                    this.setState({alert: alert}, Navigation.redirectToWizard);
-                });
-            }
-        });
-        this.setState({isModified: false});
-    },
-    _update() {
-        AlertRuleActions.update.triggerPromise(this.props.alert.title, this.state.alert).then((response) => {
-            if (response === true) {
-                AlertRuleActions.get(this.state.alert.title).then(alert => {
-                    this.setState({alert: alert}, Navigation.redirectToWizard);
-                });
-            }
-        });
-        this.setState({isModified: false});
     },
     _updateAlertField(field, value) {
         const update = ObjectUtils.clone(this.state.alert);
@@ -304,27 +283,24 @@ const CreateAlertInput = createReactClass({
     },
     
     render: function () {
-        let actions;
         const buttonCancel = (
             <LinkContainer to={Navigation.getWizardRoute()}>
                 <Button><FormattedMessage id= "wizard.cancel" defaultMessage= "Cancel" /></Button>
             </LinkContainer>
         );
 
-        let onSave;
-        // TODO should move this out of the component
-        // TODO should try to remove prop create
-        if (this.props.create) {
-            onSave = this._save;
-        } else {
-            onSave = this._update;
-        }
-        actions = (
+        const buttonSave = (
+            <Button onClick={() => this.props.onSave(this.state.alert)}
+                    disabled={!(this.state.isModified && this.state.isValid)}
+                    bsStyle="primary" className="btn btn-md btn-primary">
+                <FormattedMessage id="wizard.save" defaultMessage="Save" />
+            </Button>
+        );
+
+        const actions = (
                 <div className="alert-actions pull-left">
                     {buttonCancel}{' '}
-                    <Button onClick={onSave} bsStyle="primary" disabled={!(this.state.isModified && this.state.isValid)} className="btn btn-md btn-primary">
-                        <FormattedMessage id="wizard.save" defaultMessage="Save" />
-                    </Button>{' '}
+                    {buttonSave}{' '}
                 </div>);
                 
         const subnavigation = (
@@ -352,33 +328,33 @@ const CreateAlertInput = createReactClass({
             );
 
         return (
-        <div>
-            <Row>
-                <Col md={2} className={WizardStyle.subnavigation}>{subnavigation}</Col>
-                <Col md={10} className={WizardStyle.contentpane}>
-                    <h2>
-                        <FormattedMessage id= "wizard.loadMessage" defaultMessage= "Load a message to test fields conditions" />
-                    </h2>
-                    <div className="stream-loader">
-                        <LoaderTabs messageId={this.props.messageId} index={this.props.index}
-                                    onMessageLoaded={this._onMessageLoaded}/>
-                    </div>
-                    <hr/>
-                    <h2><FormattedMessage id= "wizard.titleParameters" defaultMessage= "Alert rule parameters" /></h2>
-                    {this.props.navigationToRuleComponents}
-                    <p className="description"><FormattedMessage id= "wizard.descripionParameters" defaultMessage= "Define the parameters of the alert rule." /></p>                    
-                    <form className="form-inline">
-                        <TitleSeverity onUpdate={this._updateAlertField} title={this.state.alert.title} severity={this.state.alert.severity}
-                                       isPluginLoggingAlertPresent={this.state.isPluginLoggingAlertPresent}/>
-                        <br/>
-                        {this.state.contentComponent}
-                    </form>
-                    {actions}
-                </Col>
-            </Row>
-        </div>
+            <div>
+                <Row>
+                    <Col md={2} className={WizardStyle.subnavigation}>{subnavigation}</Col>
+                    <Col md={10} className={WizardStyle.contentpane}>
+                        <h2>
+                            <FormattedMessage id= "wizard.loadMessage" defaultMessage= "Load a message to test fields conditions" />
+                        </h2>
+                        <div className="stream-loader">
+                            <LoaderTabs messageId={this.props.messageId} index={this.props.index}
+                                        onMessageLoaded={this._onMessageLoaded}/>
+                        </div>
+                        <hr/>
+                        <h2><FormattedMessage id= "wizard.titleParameters" defaultMessage= "Alert rule parameters" /></h2>
+                        {this.props.navigationToRuleComponents}
+                        <p className="description"><FormattedMessage id= "wizard.descripionParameters" defaultMessage= "Define the parameters of the alert rule." /></p>
+                        <form className="form-inline">
+                            <TitleSeverity onUpdate={this._updateAlertField} title={this.state.alert.title} severity={this.state.alert.severity}
+                                           isPluginLoggingAlertPresent={this.state.isPluginLoggingAlertPresent}/>
+                            <br/>
+                            {this.state.contentComponent}
+                        </form>
+                        {actions}
+                    </Col>
+                </Row>
+            </div>
         );
     },
 });
 
-export default CreateAlertInput;
+export default AlertRuleForm;

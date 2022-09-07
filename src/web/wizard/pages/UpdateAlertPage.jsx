@@ -50,6 +50,7 @@ const UpdateAlertPage = createReactClass({
             alertData: null,
         };
     },
+
     componentDidMount() {
         AlertRuleActions.get(this.props.params.alertRuleTitle).then(alert => {
             this.setState({alert: alert});
@@ -58,8 +59,18 @@ const UpdateAlertPage = createReactClass({
             this.setState({alertData: alertData});
         });
     },
+
     _isLoading() {
         return !this.state.alert || !this.state.alertData;
+    },
+
+    _update(alert) {
+        AlertRuleActions.update.triggerPromise(this.state.alertData.title, alert).then((response) => {
+            if (response !== true) {
+                return;
+            }
+            Navigation.redirectToWizard();
+        });
     },
 
     render() {
@@ -97,7 +108,7 @@ const UpdateAlertPage = createReactClass({
                     </PageHeader>
                     <Row className="content">
                         <Col md={12}>
-                            <AlertRuleForm create={false} alert={this.state.alertData} navigationToRuleComponents={navigationToRuleComponents} />
+                            <AlertRuleForm alert={this.state.alertData} navigationToRuleComponents={navigationToRuleComponents} onSave={this._update} />
                         </Col>
                     </Row>
                 </div>
