@@ -36,10 +36,6 @@ public abstract class GetDataAlertRule {
 	@NotNull
 	public abstract String getTitle();
 	
-	@JsonProperty("title_condition")
-	@NotNull
-	public abstract String getTitleCondition();
-
 	@JsonProperty("severity")
 	@Nullable
 	public abstract String getSeverity();
@@ -92,7 +88,6 @@ public abstract class GetDataAlertRule {
     
 	@JsonCreator
 	public static GetDataAlertRule create(@JsonProperty("title") String title,
-										  @JsonProperty("title_condition") String titleCondition,
                                           @JsonProperty("severity") String severity,
                                           @JsonProperty("condition") String conditionID,
                                           @JsonProperty("notification") String notificationID,
@@ -106,7 +101,7 @@ public abstract class GetDataAlertRule {
                                           @JsonProperty("condition_parameters") Map<String, Object> conditionParameters,
                                           @JsonProperty("stream") AlertRuleStream stream,
                                           @JsonProperty("second_stream") AlertRuleStream stream2) {
-		return new AutoValue_GetDataAlertRule(title, titleCondition, severity, conditionID, notificationID, createdAt, creatorUserId,
+		return new AutoValue_GetDataAlertRule(title, severity, conditionID, notificationID, createdAt, creatorUserId,
                 lastModified, isDisabled, description, alertCount, conditionType, conditionParameters, stream, stream2);
 	}
 

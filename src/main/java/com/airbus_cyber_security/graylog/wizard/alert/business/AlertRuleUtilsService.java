@@ -105,14 +105,10 @@ public class AlertRuleUtilsService {
 
             // Get the event
             Map<String, Object> parametersCondition = null;
-            // TODO why not just always get the event title from the alert?
-            String eventTitle;
             if (alert.getEventID() != null && !alert.getEventID().isEmpty()) {
                 EventDefinitionDto event = this.eventDefinitionsResource.get(alert.getEventID());
-                eventTitle = event.title();
                 parametersCondition = this.alertRuleUtils.getConditionParameters(event.config());
             } else {
-                eventTitle = alert.getTitle();
                 LOG.error("Alert " + alert.getTitle() + " is broken event id is null");
             }
             List<FieldRule> fieldRules = new ArrayList<>();
@@ -130,7 +126,7 @@ public class AlertRuleUtilsService {
             LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) this.eventNotificationsResource.get(alert.getNotificationID()).config();
             LOG.debug("Severity: " + loggingNotificationConfig.severity().getType());
 
-            return GetDataAlertRule.create(alert.getTitle(), eventTitle,
+            return GetDataAlertRule.create(alert.getTitle(),
                     loggingNotificationConfig.severity().getType(),
                     alert.getEventID(),
                     alert.getNotificationID(),

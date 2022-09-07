@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
-## [4.3.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/4.2.1...4.3.0)
+## [4.3.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/4.3.0...4.4.0)
+### Changes
+* When getting rest resources plugins/com.airbus_cyber_security.graylog.wizard/alerts/data and plugins/com.airbus_cyber_security.graylog.wizard/alerts/{title}: field title_condition is removed
+
+## [4.3.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/4.2.2...4.3.0)
 ### Features
 * Native aggregation is used instead of [graylog-plugin-aggregation-count](https://github.com/airbus-cyber/graylog-plugin-aggregation-count) ([issue #71](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/71))
 ### Bug Fixes
