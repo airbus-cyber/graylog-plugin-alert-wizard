@@ -312,28 +312,20 @@ const CreateAlertInput = createReactClass({
             </LinkContainer>
         );
 
-        let buttonSave;
+        let onSave;
         // TODO should move this out of the component
-        // TODO should try to remove prop create (composition would be better)
+        // TODO should try to remove prop create
         if (this.props.create) {
-            buttonSave = (
-                <Button onClick={this._save} bsStyle="primary" disabled={!this.state.isValid} className="btn btn-md btn-primary">
-                    <FormattedMessage id= "wizard.save" defaultMessage= "Save" />
-                </Button>
-            );
+            onSave = this._save;
         } else {
-            buttonSave = (
-                <Button onClick={this._update} bsStyle="primary" disabled={!(this.state.isModified && this.state.isValid)}
-                        className="btn btn-md btn-primary">
-                    <FormattedMessage id= "wizard.save" defaultMessage= "Save" />
-                </Button>
-            );  
+            onSave = this._update;
         }
-        
         actions = (
                 <div className="alert-actions pull-left">
                     {buttonCancel}{' '}
-                    {buttonSave}{' '}
+                    <Button onClick={onSave} bsStyle="primary" disabled={!(this.state.isModified && this.state.isValid)} className="btn btn-md btn-primary">
+                        <FormattedMessage id="wizard.save" defaultMessage="Save" />
+                    </Button>{' '}
                 </div>);
         
         let customizeLink;
