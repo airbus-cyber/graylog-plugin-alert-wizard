@@ -182,26 +182,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         final List<AlertRule> alerts = this.alertRuleService.all();
 
         List<GetDataAlertRule> alertsData = new ArrayList<>();
-        for (AlertRule alert : alerts) {
-            try {
-                alertsData.add(this.alertRuleUtilsService.constructDataAlertRule(alert));
-            } catch (NotFoundException e) {
-                LOG.warn("Alert {} is broken: {}", alert.getTitle(), e.getMessage());
-                alertsData.add(GetDataAlertRule.create(alert.getTitle(), alert.getTitle(),
-                        "",
-                        alert.getEventID(),
-                        alert.getNotificationID(),
-                        alert.getCreatedAt(),
-                        alert.getCreatorUserId(),
-                        alert.getLastModified(),
-                        false,
-                        alert.getDescription(),
-                        0,
-                        alert.getConditionType(),
-                        null,
-                        null,
-                        null));
-            }
+        for (AlertRule alert: alerts) {
+            alertsData.add(this.alertRuleUtilsService.constructDataAlertRule(alert));
         }
 
         return GetListDataAlertRule.create(alertsData);
