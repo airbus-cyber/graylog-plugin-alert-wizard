@@ -21,7 +21,7 @@ import createReactClass from 'create-react-class';
 import {Button, Col, Row} from 'components/graylog';
 import {LinkContainer} from 'react-router-bootstrap';
 import {DocumentTitle, PageHeader, Spinner} from 'components/common';
-import CreateAlertInput from 'wizard/components/CreateAlertInput';
+import AlertRuleForm from 'wizard/components/AlertRuleForm';
 import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
 import messages_fr from 'translations/fr.json';
 import WizardConfigurationsActions from 'wizard/actions/WizardConfigurationsActions';
@@ -99,7 +99,7 @@ const NewAlertPage = createReactClass({
                     field_rule: [{field: '', type: '', value: ''}],
                 }
             };
-            componentCreateAlertInput = <CreateAlertInput create={true} alert={alert} />;
+            componentCreateAlertInput = <AlertRuleForm create={true} alert={alert} />;
         }
 
         return (
