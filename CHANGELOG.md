@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file.
 
 ## [4.4.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/4.3.0...4.4.0)
+### Features
+* Add compatibility with [Graylog 4.3](https://www.graylog.org/post/announcing-graylog-v4-3-graylog-operations-graylog-security) ([issue #75](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/75))
 ### Bug Fixes
 * The default value of the matching type is set to "all" for the second stream too ([issue #85](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/85))
 ### Changes

@@ -21,21 +21,21 @@ import Reflux from 'reflux';
 import createReactClass from 'create-react-class';
 import AlertRuleStore from 'wizard/stores/AlertRuleStore';
 import AlertRuleActions from 'wizard/actions/AlertRuleActions';
-import StoreProvider from 'injection/StoreProvider';
-import {Tooltip} from 'react-bootstrap';
-import {DataTable, IfPermitted, OverlayElement, Spinner, Timestamp} from 'components/common';
-import {Button} from 'components/graylog';
+// TODO remove imports from react-bootstrap everywhere, and use only components/bootstrap?
+import { Tooltip } from 'react-bootstrap';
+import { DataTable, IfPermitted, OverlayElement, Spinner, Timestamp } from 'components/common';
+import { Button } from 'components/bootstrap';
 import PermissionsMixin from 'util/PermissionsMixin';
 import Routes from 'routing/Routes';
-import {LinkContainer} from 'react-router-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 import AlertForm from './AlertForm';
 import DateTime from 'logic/datetimes/DateTime';
-import {FormattedMessage} from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import AlertRuleText from './AlertRuleText'
 import ButtonToEventDefinition from './buttons/ButtonToEventDefinition';
 import ButtonToNotification from './buttons/ButtonToNotification';
+import StreamsStore from 'stores/streams/StreamsStore';
 
-const StreamsStore = StoreProvider.getStore('Streams');
 
 const AlertRuleList = createReactClass({
     displayName: 'AlertRuleList',

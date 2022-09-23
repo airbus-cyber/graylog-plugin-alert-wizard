@@ -26,6 +26,7 @@ import com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig;
 import com.airbus_cyber_security.graylog.events.config.SeverityType;
 import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
 import com.airbus_cyber_security.graylog.events.processor.correlation.CorrelationCountProcessorConfig;
+import com.airbus_cyber_security.graylog.events.processor.correlation.checks.OrderType;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.graylog.events.conditions.Expr;
@@ -155,12 +156,13 @@ public class AlertRuleUtilsService {
     }
 
     // TODO move method to AlertRuleUtils?
+    // TODO instead of a String, the type could already be a com.airbus_cyber_security.graylog.events.processor.correlation.checks.OrderType
     private EventProcessorConfig createCorrelationCondition(String type, String streamID, String streamID2, Map<String, Object> conditionParameter) {
-        String messageOrder;
+        OrderType messageOrder;
         if (type.equals("THEN")) {
-            messageOrder = "AFTER";
+            messageOrder = OrderType.AFTER;
         } else {
-            messageOrder = "ANY";
+            messageOrder = OrderType.ANY;
         }
         String thresholdType = convertThresholdTypeToCorrelation((String) conditionParameter.get(AlertRuleUtils.THRESHOLD_TYPE));
         String additionalThresholdType = convertThresholdTypeToCorrelation((String) conditionParameter.get(AlertRuleUtils.ADDITIONAL_THRESHOLD_TYPE));       

@@ -15,6 +15,9 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
+// sources of inspiration for this code: 
+// * pages/ShowNodePage.jsx
+// * pages/ShowMessagePage.tsx
 import React from 'react';
 import Reflux from 'reflux';
 import createReactClass from 'create-react-class';
@@ -26,10 +29,8 @@ import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
 import messages_fr from 'translations/fr.json';
 import WizardConfigurationsActions from 'wizard/actions/WizardConfigurationsActions';
 import WizardConfigurationStore from 'wizard/stores/WizardConfigurationsStore';
-import StoreProvider from 'injection/StoreProvider';
-import ActionsProvider from 'injection/ActionsProvider';
-const PluginsStore = StoreProvider.getStore('Plugins');
-const NodesActions = ActionsProvider.getActions('Nodes');
+import PluginsStore from 'stores/plugins/PluginsStore';
+import { NodesActions } from 'stores/nodes/NodesStore';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];

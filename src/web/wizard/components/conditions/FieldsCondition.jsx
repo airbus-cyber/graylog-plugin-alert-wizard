@@ -15,24 +15,23 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
+// sources of inspiration for this code: 
+// * pages/ShowMessagePage.tsx
+// * pages/IndexSetPage.tsx
 import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
 import Reflux from 'reflux';
-import { Row, Col } from 'components/graylog';
+// TODO rather use Button from components/bootstrap?
 import { Button } from 'react-bootstrap';
-import { Input } from 'components/bootstrap';
+import { Input, Row, Col } from 'components/bootstrap';
 import { Select, Spinner } from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
-import StoreProvider from 'injection/StoreProvider';
 import { FormattedMessage } from 'react-intl';
-import ActionsProvider from 'injection/ActionsProvider';
 import FieldRule from 'wizard/components/FieldRule';
 import IconAdd from "wizard/components/icons/Add";
-
-const StreamsStore = StoreProvider.getStore('Streams');
-const IndexSetsStore = StoreProvider.getStore('IndexSets');
-const IndexSetsActions = ActionsProvider.getActions('IndexSets');
+import StreamsStore from 'stores/streams/StreamsStore';
+import { IndexSetsActions, IndexSetsStore } from 'stores/indices/IndexSetsStore';
 
 const STREAM = {
     matching_type: '',

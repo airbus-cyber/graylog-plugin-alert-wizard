@@ -15,24 +15,24 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
+// sources of inspiration for this code: 
+// * pages/ShowNodePage.jsx
+// * pages/ConfigurationsPage.tsx
+// * pages/NodesPage.jsx
 import PropTypes from 'prop-types';
 import React from 'react';
 import Reflux from 'reflux';
 import createReactClass from 'create-react-class';
-import {Button, Col, Row} from 'components/graylog';
-import {LinkContainer} from 'react-router-bootstrap';
-import {DocumentTitle, PageHeader, Spinner} from 'components/common';
-import StoreProvider from 'injection/StoreProvider';
+import { Button, Col, Row } from 'components/bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
+import { DocumentTitle, PageHeader, Spinner } from 'components/common';
 import Routes from 'routing/Routes';
-import ActionsProvider from 'injection/ActionsProvider';
-import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
+import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
 import messages_fr from 'translations/fr.json';
 import CreateListFormInput from 'wizard/components/lists/CreateListFormInput';
-
-const CurrentUserStore = StoreProvider.getStore('CurrentUser');
-const ConfigurationActions = ActionsProvider.getActions('Configuration');
-const ConfigurationsStore = StoreProvider.getStore('Configurations');
-const NodesStore = StoreProvider.getStore('Nodes');
+import CurrentUserStore from 'stores/users/CurrentUserStore';
+import { ConfigurationsActions, ConfigurationsStore } from 'stores/configurations/ConfigurationsStore';
+import NodesStore from 'stores/nodes/NodesStore';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];

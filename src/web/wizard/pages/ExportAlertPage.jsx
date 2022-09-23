@@ -19,7 +19,7 @@ import React from 'react';
 import createReactClass from 'create-react-class';
 import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
 import { LinkContainer } from 'react-router-bootstrap';
-import { Row, Col, Button } from 'components/graylog';
+import { Row, Col, Button } from 'components/bootstrap';
 import { DocumentTitle, PageHeader } from 'components/common';
 import UserNotification from 'util/UserNotification';
 import DateTime from 'logic/datetimes/DateTime';

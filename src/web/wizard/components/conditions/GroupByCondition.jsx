@@ -19,9 +19,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
 import { FormattedMessage } from 'react-intl';
-import { Input } from 'components/bootstrap';
+import { Input, Row, Col } from 'components/bootstrap';
 import { MultiSelect } from 'components/common';
-import { Row, Col } from 'components/graylog';
 
 import withFormattedFields from './withFormattedFields';
 

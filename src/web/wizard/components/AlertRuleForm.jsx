@@ -15,32 +15,30 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
+// sources of inspiration for this code: views/components/common/EditableTitle.tsx
 import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
-import {Nav, NavItem} from 'components/graylog';
-import {Button, Col, Row} from 'components/graylog';
-import {Spinner} from 'components/common';
+import { Button, Col, Row, Nav, NavItem } from 'components/bootstrap';
+import { Spinner } from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import AlertRuleActions from 'wizard/actions/AlertRuleActions';
 import Navigation from 'wizard/routing/Navigation';
-import {LinkContainer} from 'react-router-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 import 'react-confirm-alert/src/react-confirm-alert.css';
-import {FormattedMessage} from 'react-intl';
-import StoreProvider from 'injection/StoreProvider';
+import { FormattedMessage } from 'react-intl';
 import LoaderTabs from 'components/messageloaders/LoaderTabs';
-import WizardStyle from '!style!css!./WizardStyle.css';
+import styles from './WizardStyle.css';
 import StatisticsCondition from './ruletype/StatisticsCondition'
 import GroupDistinctCondition from './ruletype/GroupDistinctCondition'
 import CorrelationCondition from './ruletype/CorrelationCondition'
 import OrCondition from './ruletype/OrCondition'
 import CountCondition from './ruletype/CountCondition'
-import ActionsProvider from 'injection/ActionsProvider';
 import TitleSeverity from "./TitleSeverity";
+import StreamsStore from 'stores/streams/StreamsStore';
+import PluginsStore from 'stores/plugins/PluginsStore';
+import { NodesActions } from 'stores/nodes/NodesStore';
 
-const NodesActions = ActionsProvider.getActions('Nodes');
-const StreamsStore = StoreProvider.getStore('Streams');
-const PluginsStore = StoreProvider.getStore('Plugins');
 
 const INIT_ALERT = {
         title: '',
@@ -305,7 +303,7 @@ const AlertRuleForm = createReactClass({
                 
         const subnavigation = (
                 <Nav stacked bsStyle="pills" activeKey={this.state.alert.condition_type} onSelect={key => this._handleSelect(key)}>
-                    <NavItem key="divider" disabled title="Rule Type" className={WizardStyle.divider}>{this.state.messages.ruleType}</NavItem>
+                    <NavItem key="divider" disabled title="Rule Type" className={styles.divider}>{this.state.messages.ruleType}</NavItem>
                     <NavItem eventKey={'COUNT'} title={this.state.messages.tooltipCountCondition}>
                         <FormattedMessage id= "wizard.countCondition" defaultMessage= "Count" />
                     </NavItem>
@@ -330,8 +328,8 @@ const AlertRuleForm = createReactClass({
         return (
             <div>
                 <Row>
-                    <Col md={2} className={WizardStyle.subnavigation}>{subnavigation}</Col>
-                    <Col md={10} className={WizardStyle.contentpane}>
+                    <Col md={2} className={styles.subnavigation}>{subnavigation}</Col>
+                    <Col md={10} className={styles.contentpane}>
                         <h2>
                             <FormattedMessage id= "wizard.loadMessage" defaultMessage= "Load a message to test fields conditions" />
                         </h2>

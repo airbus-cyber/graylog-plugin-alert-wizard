@@ -21,6 +21,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
 import ObjectUtils from 'util/ObjectUtils';
+// TODO why are we not using the Button from components/bootstrap like elsewhere?
 import { Button } from 'react-bootstrap';
 import { FormattedMessage } from 'react-intl';
 import FieldsCondition from 'wizard/components/conditions/FieldsCondition';
@@ -28,7 +29,7 @@ import NumberCondition from 'wizard/components/conditions/NumberCondition';
 import TimeRangeCondition from 'wizard/components/conditions/TimeRangeCondition';
 import Description from 'wizard/components/Description';
 import GroupByCondition from 'wizard/components/conditions/GroupByCondition';
-import { Row, Col } from 'components/graylog';
+import { Row, Col } from 'components/bootstrap';
 import IconArrowsV from "wizard/components/icons/ArrowsV";
 
 const STREAM = {

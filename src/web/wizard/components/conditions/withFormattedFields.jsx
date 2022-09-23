@@ -21,11 +21,15 @@ import { Spinner } from 'components/common';
 
 import lodash from 'lodash';
 import connect from 'stores/connect';
-import { FieldTypesStore } from 'views/stores/FieldTypesStore';
 import { defaultCompare } from 'views/logic/DefaultCompare';
+import useFieldTypes from 'views/logic/fieldtypes/useFieldTypes';
+import { ALL_MESSAGES_TIMERANGE } from 'views/Constants';
 
+
+// TODO try to avoid this HOL. We just like to get the formattedFields...
 export default function(WrappedComponent) {
     const Container = class extends React.Component {
+        // TODO maybe should use react's useMemo instead of lodash.memoize
         formatFields = lodash.memoize(
             (fieldTypes) => {
                 return fieldTypes
@@ -42,26 +46,19 @@ export default function(WrappedComponent) {
         );
 
         render() {
-            const { fieldTypes, ...passThroughProps } = this.props;
-
-            const isLoading = typeof fieldTypes.all !== 'object';
+            const { data: fieldTypes } = useFieldTypes([], ALL_MESSAGES_TIMERANGE);
+            const isLoading = !fieldTypes;
 
             if (isLoading) {
                 return <Spinner text="Loading, please wait..." />;
             }
 
-            const allFieldTypes = fieldTypes.all.toJS();
-            const formattedFields = this.formatFields(allFieldTypes);
+            const formattedFields = this.formatFields(fieldTypes);
 
             return (
-                <WrappedComponent
-                    formattedFields={formattedFields}
-                    {...passThroughProps}
-                />
+                <WrappedComponent formattedFields={formattedFields} {...this.props} />
             );
         }
     };
-    return connect(Container, {
-        fieldTypes: FieldTypesStore
-    });
+    return Container;
 }

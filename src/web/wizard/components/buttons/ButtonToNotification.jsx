@@ -18,9 +18,10 @@
 import createReactClass from 'create-react-class';
 import React from 'react';
 import PropTypes from 'prop-types';
-import {LinkContainer} from 'react-router-bootstrap';
-import {Button} from 'components/graylog';
-import {FormattedMessage} from 'react-intl';
+import { LinkContainer } from 'react-router-bootstrap';
+// TODO make our own InfoButton and factor?
+import { Button } from 'components/bootstrap';
+import { FormattedMessage } from 'react-intl';
 import Routes from 'routing/Routes';
 
 const ButtonToNotification = createReactClass({

@@ -17,22 +17,21 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import {FormattedMessage} from 'react-intl';
-import {LinkContainer} from 'react-router-bootstrap';
+import { FormattedMessage } from 'react-intl';
+import { LinkContainer } from 'react-router-bootstrap';
 import createReactClass from 'create-react-class';
 import DateTime from 'logic/datetimes/DateTime';
 import Reflux from 'reflux';
-import StoreProvider from 'injection/StoreProvider';
-import {Tooltip} from 'react-bootstrap';
-import {Button} from 'components/graylog';
-import {DataTable, IfPermitted, OverlayElement, Spinner, Timestamp} from 'components/common';
+import { Tooltip } from 'react-bootstrap';
+import { Button } from 'components/bootstrap';
+import { DataTable, IfPermitted, OverlayElement, Spinner, Timestamp } from 'components/common';
 import PermissionsMixin from 'util/PermissionsMixin';
 import Routes from 'routing/Routes';
 import AlertListStore from 'wizard/stores/AlertListStore';
 import AlertListActions from 'wizard/actions/AlertListActions';
 import AlertListForm from './AlertListForm';
+import CurrentUserStore from 'stores/users/CurrentUserStore';
 
-const CurrentUserStore = StoreProvider.getStore('CurrentUser');
 
 const AlertListDisplay = createReactClass({
         displayName: 'AlertListDisplay',

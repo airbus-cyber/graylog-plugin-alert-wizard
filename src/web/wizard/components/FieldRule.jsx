@@ -25,14 +25,12 @@ import createReactClass from 'create-react-class';
 import {Input} from 'components/bootstrap';
 import {Select, Spinner, TypeAheadFieldInput} from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
-import StoreProvider from 'injection/StoreProvider';
 import AlertListActions from 'wizard/actions/AlertListActions';
 import AlertListStore from 'wizard/stores/AlertListStore';
 import IconRemove from './icons/Remove';
 import FormsUtils from 'util/FormsUtils';
+import CurrentUserStore from 'stores/users/CurrentUserStore';
 
-
-const CurrentUserStore = StoreProvider.getStore('CurrentUser');
 
 const FieldRule = createReactClass({
     displayName: 'FieldRule',

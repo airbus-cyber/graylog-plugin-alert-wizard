@@ -19,19 +19,17 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import Reflux from 'reflux';
 import createReactClass from 'create-react-class';
-import {Button, Col, Row} from 'components/graylog';
-import {LinkContainer} from 'react-router-bootstrap';
-import {DocumentTitle, PageHeader, Spinner} from 'components/common';
+import { Button, Col, Row } from 'components/bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
+import { DocumentTitle, PageHeader, Spinner } from 'components/common';
 import CreateListFormInput from 'wizard/components/lists/CreateListFormInput';
 import AlertListActions from 'wizard/actions/AlertListActions';
-import StoreProvider from 'injection/StoreProvider';
 import Routes from 'routing/Routes';
-import {addLocaleData, FormattedMessage, IntlProvider} from 'react-intl';
+import { addLocaleData, FormattedMessage, IntlProvider } from 'react-intl';
 import messages_fr from 'translations/fr.json';
 import withParams from 'routing/withParams';
-
-const CurrentUserStore = StoreProvider.getStore('CurrentUser');
-const NodesStore = StoreProvider.getStore('Nodes');
+import CurrentUserStore from 'stores/users/CurrentUserStore';
+import NodesStore from 'stores/nodes/NodesStore';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];

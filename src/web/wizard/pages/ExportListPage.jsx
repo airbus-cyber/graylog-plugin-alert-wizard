@@ -15,13 +15,15 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
+// sources of inspiration for this code: 
+// * views/components/views/MissingRequirements.tsx
 import React from 'react';
 import createReactClass from 'create-react-class';
-import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
-import {LinkContainer} from 'react-router-bootstrap';
+import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
+import { LinkContainer } from 'react-router-bootstrap';
 import messages_fr from 'translations/fr.json';
-import { Row, Col, Button } from 'components/graylog';
-import {DocumentTitle, PageHeader} from 'components/common';
+import { Row, Col, Button } from 'components/bootstrap';
+import { DocumentTitle, PageHeader} from 'components/common';
 import UserNotification from 'util/UserNotification';
 import DateTime from 'logic/datetimes/DateTime';
 import Routes from 'routing/Routes';

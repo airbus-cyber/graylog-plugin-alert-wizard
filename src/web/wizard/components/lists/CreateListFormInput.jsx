@@ -18,15 +18,14 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
-import {FormattedMessage} from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import Reflux from 'reflux';
-import {Button, Col, Row} from 'components/graylog';
-import {Spinner} from 'components/common';
+import { Spinner } from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import Routes from 'routing/Routes';
-import {LinkContainer} from 'react-router-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 import 'react-confirm-alert/src/react-confirm-alert.css';
-import {Input} from 'components/bootstrap';
+import { Input, Button, Col, Row } from 'components/bootstrap';
 import AlertListActions from 'wizard/actions/AlertListActions';
 import AlertListStore from 'wizard/stores/AlertListStore';
 

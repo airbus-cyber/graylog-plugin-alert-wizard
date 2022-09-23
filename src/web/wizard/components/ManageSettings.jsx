@@ -20,12 +20,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
-import {Col, Table, FormGroup, Tooltip} from 'react-bootstrap';
-import {Button} from 'components/graylog';
-import {Select, SortableList, Spinner, OverlayElement} from 'components/common';
+// TODO rather use components from components/bootsrap?
+import { Col, Table, FormGroup, Tooltip } from 'react-bootstrap';
+import { Button } from 'components/bootstrap';
+import { Select, SortableList, Spinner, OverlayElement } from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
-import {BootstrapModalForm, Input} from 'components/bootstrap';
-import {FormattedMessage} from 'react-intl';
+import { BootstrapModalForm, Input } from 'components/bootstrap';
+import { FormattedMessage } from 'react-intl';
 import FormsUtils from 'util/FormsUtils';
 
 const ManageSettings = createReactClass({
