@@ -36,7 +36,7 @@ import OrCondition from './ruletype/OrCondition'
 import CountCondition from './ruletype/CountCondition'
 import TitleSeverity from "./TitleSeverity";
 import StreamsStore from 'stores/streams/StreamsStore';
-import PluginsStore from 'stores/plugins/PluginsStore';
+import { PluginsStore } from 'stores/plugins/PluginsStore';
 import { NodesActions } from 'stores/nodes/NodesStore';
 
 

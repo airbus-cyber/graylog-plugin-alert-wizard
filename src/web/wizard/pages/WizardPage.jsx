@@ -29,7 +29,7 @@ import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
 import messages_fr from 'translations/fr.json';
 import WizardConfigurationsActions from 'wizard/actions/WizardConfigurationsActions';
 import WizardConfigurationStore from 'wizard/stores/WizardConfigurationsStore';
-import PluginsStore from 'stores/plugins/PluginsStore';
+import { PluginsStore } from 'stores/plugins/PluginsStore';
 import { NodesActions } from 'stores/nodes/NodesStore';
 
 let frLocaleData = require('react-intl/locale-data/fr');

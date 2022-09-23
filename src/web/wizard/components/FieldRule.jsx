@@ -29,7 +29,7 @@ import AlertListActions from 'wizard/actions/AlertListActions';
 import AlertListStore from 'wizard/stores/AlertListStore';
 import IconRemove from './icons/Remove';
 import FormsUtils from 'util/FormsUtils';
-import CurrentUserStore from 'stores/users/CurrentUserStore';
+import { CurrentUserStore } from 'stores/users/CurrentUserStore';
 
 
 const FieldRule = createReactClass({

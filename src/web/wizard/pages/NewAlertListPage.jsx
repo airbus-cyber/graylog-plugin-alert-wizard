@@ -30,9 +30,9 @@ import Routes from 'routing/Routes';
 import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
 import messages_fr from 'translations/fr.json';
 import CreateListFormInput from 'wizard/components/lists/CreateListFormInput';
-import CurrentUserStore from 'stores/users/CurrentUserStore';
+import { CurrentUserStore } from 'stores/users/CurrentUserStore';
 import { ConfigurationsActions, ConfigurationsStore } from 'stores/configurations/ConfigurationsStore';
-import NodesStore from 'stores/nodes/NodesStore';
+import { NodesStore } from 'stores/nodes/NodesStore';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];

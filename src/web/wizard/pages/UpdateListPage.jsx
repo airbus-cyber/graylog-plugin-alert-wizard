@@ -28,8 +28,8 @@ import Routes from 'routing/Routes';
 import { addLocaleData, FormattedMessage, IntlProvider } from 'react-intl';
 import messages_fr from 'translations/fr.json';
 import withParams from 'routing/withParams';
-import CurrentUserStore from 'stores/users/CurrentUserStore';
-import NodesStore from 'stores/nodes/NodesStore';
+import { CurrentUserStore } from 'stores/users/CurrentUserStore';
+import { NodesStore } from 'stores/nodes/NodesStore';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];

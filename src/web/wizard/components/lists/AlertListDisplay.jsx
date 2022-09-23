@@ -30,7 +30,7 @@ import Routes from 'routing/Routes';
 import AlertListStore from 'wizard/stores/AlertListStore';
 import AlertListActions from 'wizard/actions/AlertListActions';
 import AlertListForm from './AlertListForm';
-import CurrentUserStore from 'stores/users/CurrentUserStore';
+import { CurrentUserStore } from 'stores/users/CurrentUserStore';
 
 
 const AlertListDisplay = createReactClass({
