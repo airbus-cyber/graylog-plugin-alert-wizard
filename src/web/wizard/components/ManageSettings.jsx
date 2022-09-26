@@ -350,10 +350,10 @@ const ManageSettings = createReactClass({
                 </Input>
 
                 <Input ref="field" id="field" name="field" type="text" 
-                       label={<FormattedMessage id= "wizard.field" defaultMessage= "Field" />}
+                       label={<FormattedMessage id="wizard.field" defaultMessage="Field" />}
                        onChange={this._onValueChanged("field")} value={this.state.config.default_values.field}/>
                 <Input ref="typefield_type" id="field_type" name="field_type" 
-                       label={<FormattedMessage id= "wizard.fieldType" defaultMessage= "Field type" />}>
+                       label={<FormattedMessage id="wizard.fieldType" defaultMessage="Field type" />}>
                     <Select placeholder={<FormattedMessage id= "wizard.select" defaultMessage= "Select..." />}
                         autosize={true}
                         value={this.state.config.default_values.field_type ? this.state.config.default_values.field_type.toString() : ''}
