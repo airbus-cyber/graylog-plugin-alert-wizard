@@ -99,9 +99,9 @@ const NewAlertPage = createReactClass({
                 stream: {
                     matching_type: default_values.matching_type,
                     field_rule: [{
-                        field: default_values.field,
-                        type: default_values.field_type.toString(),
-                        value: default_values.field_value
+                        field: '',
+                        type: '',
+                        value: ''
                     }],
                 },
                 second_stream: {
