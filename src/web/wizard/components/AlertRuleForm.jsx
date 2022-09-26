@@ -22,7 +22,6 @@ import createReactClass from 'create-react-class';
 import { Button, Col, Row, Nav, NavItem } from 'components/bootstrap';
 import { Spinner } from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
-import AlertRuleActions from 'wizard/actions/AlertRuleActions';
 import Navigation from 'wizard/routing/Navigation';
 import { LinkContainer } from 'react-router-bootstrap';
 import 'react-confirm-alert/src/react-confirm-alert.css';
