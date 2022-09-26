@@ -24,40 +24,38 @@ import { defaultCompare } from 'views/logic/DefaultCompare';
 import useFieldTypes from 'views/logic/fieldtypes/useFieldTypes';
 import { ALL_MESSAGES_TIMERANGE } from 'views/Constants';
 
-
-// TODO try to avoid this HOL. We just like to get the formattedFields...
-export default function(WrappedComponent) {
-    const Container = class extends React.Component {
-        // TODO maybe should use react's useMemo instead of lodash.memoize
-        formatFields = lodash.memoize(
-            (fieldTypes) => {
-                return fieldTypes
-                    .sort((ftA, ftB) => defaultCompare(ftA.name, ftB.name))
-                    .map((fieldType) => {
-                        return {
-                            label: `${fieldType.name} – ${fieldType.value.type.type}`,
-                            value: fieldType.name,
-                        };
-                    }
-                );
-            },
-            (fieldTypes) => fieldTypes.map((ft) => ft.name).join('-'),
-        );
-
-        render() {
-            const { data: fieldTypes } = useFieldTypes([], ALL_MESSAGES_TIMERANGE);
-            const isLoading = !fieldTypes;
-
-            if (isLoading) {
-                return <Spinner text="Loading, please wait..." />;
-            }
-
-            const formattedFields = this.formatFields(fieldTypes);
-
-            return (
-                <WrappedComponent formattedFields={formattedFields} {...this.props} />
+// TODO maybe should use react's useMemo instead of lodash.memoize
+const formatFields = lodash.memoize(
+    (fieldTypes) => {
+        return fieldTypes
+            .sort((ftA, ftB) => defaultCompare(ftA.name, ftB.name))
+            .map((fieldType) => {
+                    return {
+                        label: `${fieldType.name} – ${fieldType.value.type.type}`,
+                        value: fieldType.name,
+                    };
+                }
             );
+    },
+    (fieldTypes) => fieldTypes.map((ft) => ft.name).join('-'),
+);
+
+// TODO try to avoid this HOL. We would just like to get the formattedFields...
+// The best is probably to create a new hook useFormattedFields, but this probably requires the component that use it to be functional too
+export default function(WrappedComponent) {
+    const Container = (props) => {
+        const { data: fieldTypes } = useFieldTypes([], ALL_MESSAGES_TIMERANGE);
+        const isLoading = !fieldTypes;
+
+        if (isLoading) {
+            return <Spinner text="Loading, please wait..." />;
         }
+
+        const formattedFields = formatFields(fieldTypes);
+
+        return (
+            <WrappedComponent formattedFields={formattedFields} {...props} />
+        );
     };
     return Container;
 }
