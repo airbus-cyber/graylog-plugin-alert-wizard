@@ -72,7 +72,8 @@ const AlertRuleText = createReactClass({
     _getAggregationType(type) {
         return this._availableAggregationTypes().filter((t) => t.value === type)[0].label;
     },
-    
+
+    // TODO try to factor this code with the one in FieldRule.jsx and ManageSettings
     _availableRuleType() {
         return [
             {value: 1, label: <FormattedMessage id= "wizard.matchesExactly" defaultMessage= "matches exactly" />},
