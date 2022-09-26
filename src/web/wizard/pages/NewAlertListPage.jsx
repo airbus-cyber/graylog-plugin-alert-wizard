@@ -56,7 +56,7 @@ const NewAlertListPage = createReactClass({
     },
 
     componentDidMount() {
-        ConfigurationActions.list(this.WIZARD_CLUSTER_CONFIG);
+        ConfigurationsActions.list(this.WIZARD_CLUSTER_CONFIG);
     },
 
      _getConfig() {
