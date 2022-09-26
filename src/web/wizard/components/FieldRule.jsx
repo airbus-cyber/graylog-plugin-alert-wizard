@@ -47,6 +47,7 @@ const FieldRule = createReactClass({
         intl: PropTypes.object.isRequired,
     },
 
+    // TODO remove and make field 'rule' required in propTypes!
     getDefaultProps() {
         return {
             rule: {field: '', type: '', value: ''},
