@@ -50,7 +50,7 @@ const AlertRuleList = createReactClass({
         intl: PropTypes.object.isRequired,
     },
     
-    componentWillMount(){
+    componentWillMount() {
         const fieldsTitle = {
             title: this.context.intl.formatMessage({id: "wizard.title", defaultMessage: "Title"}),
             severity: this.context.intl.formatMessage({id: "wizard.severity", defaultMessage: "Severity"}),
@@ -98,7 +98,7 @@ const AlertRuleList = createReactClass({
     _onResume(stream, stream2) {
         return () => {
             StreamsStore.resume(stream, response => response).finally(() => this.list());
-            if(stream2 !== null && stream2 !== ''){
+            if (stream2 !== null && stream2 !== '') {
                 StreamsStore.resume(stream2, response => response).finally(() => this.list()); 
             }
         }
@@ -107,7 +107,7 @@ const AlertRuleList = createReactClass({
         return () => {
             if (window.confirm(`${this.state.messages.confirmDisable} "${name}" ?`)) {
                 StreamsStore.pause(stream, response => response).finally(() => this.list());
-                if(stream2 !== null && stream2 !== ''){
+                if (stream2 !== null && stream2 !== '') {
                     StreamsStore.pause(stream2, response => response);
                 }
             }
@@ -192,7 +192,7 @@ const AlertRuleList = createReactClass({
             alertValid = true;
             colorValid = "#000000";
             streamID = alert.stream.id;
-            if(alert.disabled){
+            if (alert.disabled) {
                 colorValid = "#ABABAB";
             }
         }
@@ -304,11 +304,11 @@ const AlertRuleList = createReactClass({
                         </td>);
                         break;
                     case 'Status':
-                        if(alertValid){
+                        if (alertValid) {
                             tabFields.push(<td className="limited">{alert.disabled ? 
                                     <span style={{backgroundColor: 'orange', color: 'white'}}><FormattedMessage id ="wizard.disabled" defaultMessage="Disabled" /></span> : 
                                     <FormattedMessage id ="wizard.enabled" defaultMessage="Enabled" />}</td>);
-                        }else{
+                        } else {
                             tabFields.push(<td className="limited"><FormattedMessage id ="wizard.corrupted" defaultMessage="Corrupted" /></td>);
                         }
                         break;
