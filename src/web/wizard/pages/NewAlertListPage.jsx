@@ -56,6 +56,7 @@ const NewAlertListPage = createReactClass({
     },
 
     componentDidMount() {
+        // TODO try to write a test which protects against ConfigurationsActions being spelled ConfigurationActions
         ConfigurationsActions.list(this.WIZARD_CLUSTER_CONFIG);
     },
 
