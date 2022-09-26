@@ -68,10 +68,10 @@ const FieldsCondition = createReactClass({
         this.setState({messages:messages});
     },
     componentWillReceiveProps(nextProps) {
-        if(!_.isEqual(nextProps.matchData, this.props.matchData)){
+        if (!_.isEqual(nextProps.matchData, this.props.matchData)) {
             this.setState({matchData: nextProps.matchData});
         }
-        if(!_.isEqual(nextProps.stream, this.props.stream) && nextProps.stream !== null){
+        if (!_.isEqual(nextProps.stream, this.props.stream) && nextProps.stream !== null) {
             this.setState({stream: nextProps.stream});
             this.setState({matchData: undefined});
         }
