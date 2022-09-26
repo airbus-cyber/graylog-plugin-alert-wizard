@@ -60,7 +60,7 @@ const FieldsCondition = createReactClass({
     componentDidMount() {
         IndexSetsActions.list(false);
     },
-    componentWillMount(){
+    componentWillMount() {
         const messages = {
                 add: this.context.intl.formatMessage({id: "wizard.add", defaultMessage: "Add"}),
                 tryFieldsCondition: this.context.intl.formatMessage({id: "wizard.tryFieldsCondition", defaultMessage: "Try the fields condition"}),
@@ -115,7 +115,7 @@ const FieldsCondition = createReactClass({
         this.setState({stream: update});
         this.props.onSaveStream('field_rule', update.field_rule);
     },
-    _isRuleValid(rule){
+    _isRuleValid(rule) {
         if (!(rule.field !== '' &&
                 (rule.type === 5 || rule.type === -5) ||
                 rule.field !== '' && rule.value !== '' &&
@@ -130,7 +130,7 @@ const FieldsCondition = createReactClass({
     },
     _isFieldRulesValid() {
         for (let i = 0; i < this.state.stream.field_rule.length; i++) {
-            if (!this._isRuleValid(this.state.stream.field_rule[i])){
+            if (!this._isRuleValid(this.state.stream.field_rule[i])) {
                 return false;
             }
         }
@@ -205,7 +205,7 @@ const FieldsCondition = createReactClass({
             this.setState({matchData: undefined});
         }
     },
-    _getMatchDataColor(){
+    _getMatchDataColor() {
         return (this.state.matchData.matches ? '#dff0d8' : '#f2dede');
     },
     _isLoading() {
