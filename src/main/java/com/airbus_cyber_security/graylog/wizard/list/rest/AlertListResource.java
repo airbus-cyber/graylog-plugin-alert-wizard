@@ -116,7 +116,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
     private String checkImportPolicyAndGetTitle(String title){
         String listTitle = title;
         if (this.alertListService.isPresent(listTitle)) {
-            final AlertWizardConfig configGeneral = clusterConfigService.get(AlertWizardConfig.class);
+            AlertWizardConfig configGeneral = clusterConfigService.get(AlertWizardConfig.class);
             ImportPolicyType importPolicy = configGeneral.accessImportPolicy();
             if (importPolicy != null && importPolicy.equals(ImportPolicyType.RENAME)) {
                 String newListTitle;
