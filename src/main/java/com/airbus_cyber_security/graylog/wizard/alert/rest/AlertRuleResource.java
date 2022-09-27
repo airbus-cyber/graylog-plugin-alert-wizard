@@ -192,7 +192,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private String checkImportPolicyAndGetTitle(String title) {
         String alertTitle = title;
         if (this.alertRuleService.isPresent(alertTitle)) {
-            AlertWizardConfig configGeneral = clusterConfigService.get(AlertWizardConfig.class);
+            // TODO should be get or default here: it will return null when starting with a fresh instance of graylog
+            // Idem in AlertListRessource. Add a test that creates two alerts with same title
+            AlertWizardConfig configGeneral = this.clusterConfigService.get(AlertWizardConfig.class);
             ImportPolicyType importPolicy = configGeneral.accessImportPolicy();
             if (importPolicy != null && importPolicy.equals(ImportPolicyType.RENAME)) {
                 String newAlertTitle;
