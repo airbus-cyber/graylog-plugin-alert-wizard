@@ -43,7 +43,7 @@ const AlertRuleList = createReactClass({
     mixins: [Reflux.connect(AlertRuleStore), PermissionsMixin],
 
     propTypes: {
-        config: PropTypes.object.isRequired,
+        field_order: PropTypes.array.isRequired,
     },
 
     contextTypes: {
@@ -270,7 +270,7 @@ const AlertRuleList = createReactClass({
         let nbAlertDay = Math.round(alert.alert_count / Math.ceil(nbDays));
         
         let tabFields = [<td className="limited">{alert.title}</td>];
-        this.props.config.field_order.map((field) => {
+        this.props.field_order.map((field) => {
             if (field.enabled) {
                 switch (field.name) {
                     case 'Severity':
@@ -332,7 +332,7 @@ const AlertRuleList = createReactClass({
     render() {
         const filterKeys = ['title', 'severity', 'created_at', 'last_modified', 'creator_user_id'];
         let headers = [this.state.fieldsTitle.title];
-        this.props.config.field_order.map((field) => {
+        this.props.field_order.map((field) => {
             if (field.enabled) {
                 headers.push(this._getFieldName(field.name));
             }
