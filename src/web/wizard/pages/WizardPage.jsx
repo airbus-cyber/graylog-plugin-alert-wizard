@@ -21,11 +21,11 @@
 import React from 'react';
 import Reflux from 'reflux';
 import createReactClass from 'create-react-class';
-import {Col, Row} from 'react-bootstrap';
-import {IfPermitted, PageHeader, DocumentTitle} from 'components/common';
+import { Col, Row } from 'react-bootstrap';
+import { IfPermitted, PageHeader, DocumentTitle, Spinner } from 'components/common';
 import AlertRuleList from 'wizard/components/AlertRuleList';
 import ManageSettings from 'wizard/components/ManageSettings';
-import {addLocaleData, IntlProvider, FormattedMessage} from 'react-intl';
+import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
 import messages_fr from 'translations/fr.json';
 import WizardConfigurationsActions from 'wizard/actions/WizardConfigurationsActions';
 import WizardConfigurationStore from 'wizard/stores/WizardConfigurationsStore';
@@ -71,40 +71,13 @@ const WizardPage = createReactClass({
         WizardConfigurationsActions.update(config);
     },
 
-    _getConfig() {
-        if (this.state.configurations) {
-            return this.state.configurations;
-        }
-        return {
-            field_order: [{name: 'Severity', enabled: true}, 
-                          {name: 'Description', enabled: true}, 
-                          {name: 'Created', enabled: true},
-                          {name: 'Last Modified', enabled: true},
-                          {name: 'User', enabled: true}, 
-                          {name: 'Alerts', enabled: true},
-                          {name: 'Status', enabled: true},
-                          {name: 'Rule', enabled: false}],
-            default_values: {
-                title: "",
-                severity: "",
-                matching_type: "",
-                threshold_type: "",
-                threshold: 0,
-                time: 1,
-                time_type: 0,
-                grace: 1,
-                backlog: 500
-            },
-            import_policy: "DONOTHING"
-        };
-    },
-    
     render() {
-        if (!this.state.plugins && this.state.nodes) {
-            this._getPlugins();
+        const configuration = this.state.configurations;
+        if (!configuration) {
+            return <Spinner text="Loading, please wait..." />;
         }
-        const configWizard = this._getConfig();
 
+        // TODO write a test if <AlertRuleList config={configuration.field_order} /> instead of field_order
         return (
         <IntlProvider locale={language} messages={messages[language]}>         
             <DocumentTitle title="Alert Rules">
@@ -124,7 +97,7 @@ const WizardPage = createReactClass({
                       </span>
                       <span>
                         <IfPermitted permissions="wizard_alerts_rules:read">
-                          <ManageSettings config={configWizard} onSave={this._saveConfig}/>
+                          <ManageSettings config={configuration} onSave={this._saveConfig}/>
                         </IfPermitted>
                       </span>
                     </PageHeader>
@@ -132,7 +105,7 @@ const WizardPage = createReactClass({
                     <Row className="content">
                       <Col md={12}>
                         <IfPermitted permissions="wizard_alerts_rules:read">
-                          <AlertRuleList config={configWizard.field_order} />
+                          <AlertRuleList field_order={configuration.field_order} />
                         </IfPermitted>
                       </Col>
                     </Row>
