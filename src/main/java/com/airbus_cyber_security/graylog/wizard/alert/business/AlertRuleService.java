@@ -57,8 +57,8 @@ public class AlertRuleService {
 	public AlertRuleService(MongoConnection mongoConnection, MongoJackObjectMapperProvider mapperProvider,
 							Validator validator) {
 		this.validator = validator;
-		final String collectionName = AlertRule.class.getAnnotation(CollectionName.class).value();
-		final DBCollection dbCollection = mongoConnection.getDatabase().getCollection(collectionName);
+		String collectionName = AlertRule.class.getAnnotation(CollectionName.class).value();
+		DBCollection dbCollection = mongoConnection.getDatabase().getCollection(collectionName);
 		this.coll = JacksonDBCollection.wrap(dbCollection, AlertRule.class, String.class, mapperProvider.get());
 		this.coll.createIndex(new BasicDBObject(TITLE, 1), new BasicDBObject("unique", true));
 	}
