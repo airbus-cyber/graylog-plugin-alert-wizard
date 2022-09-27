@@ -25,7 +25,6 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.graylog2.audit.AuditEventTypes;
 import org.graylog2.audit.jersey.AuditEvent;
-import org.graylog2.plugin.cluster.ClusterConfigService;
 import org.graylog2.plugin.rest.PluginRestResource;
 import org.graylog2.shared.rest.resources.RestResource;
 
@@ -33,21 +32,21 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-import static java.util.Objects.requireNonNull;
 import static org.graylog2.shared.security.RestPermissions.CLUSTER_CONFIG_ENTRY_READ;
 
+// TODO rename into AlertWizardConfigurationResource
 @RequiresAuthentication
-@Api(value = "Wizard/Config", description = "Manage alert wizard setings")
+@Api(value="Wizard/Config", description="Manage alert wizard setings")
 @Path("/config")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class AlertWizardConfigResource extends RestResource implements PluginRestResource {
 	
-    private final ClusterConfigService clusterConfigService;
+    private final AlertWizardConfigurationService configurationService;
 
     @Inject
-    public AlertWizardConfigResource(ClusterConfigService clusterConfigService) {
-        this.clusterConfigService = requireNonNull(clusterConfigService);
+    public AlertWizardConfigResource(AlertWizardConfigurationService configurationService) {
+        this.configurationService = configurationService;
     }
 
     @GET
@@ -55,7 +54,7 @@ public class AlertWizardConfigResource extends RestResource implements PluginRes
     @ApiOperation(value = "Get alert wizard configuration")
     @RequiresPermissions({CLUSTER_CONFIG_ENTRY_READ})
     public AlertWizardConfig config() {
-        return this.clusterConfigService.getOrDefault(AlertWizardConfig.class, AlertWizardConfig.defaultConfig());
+        return this.configurationService.getConfiguration();
     }
 
     @PUT
@@ -63,9 +62,9 @@ public class AlertWizardConfigResource extends RestResource implements PluginRes
     @ApiOperation(value = "Update alert wizard configuration")
     @RequiresPermissions({CLUSTER_CONFIG_ENTRY_READ})
     @AuditEvent(type = AuditEventTypes.AUTHENTICATION_PROVIDER_CONFIGURATION_UPDATE)
-    public AlertWizardConfig updateConfig(@ApiParam(name = "config", required = true) final AlertWizardConfig config) {
-        this.clusterConfigService.write(config);
-        return config;
+    public AlertWizardConfig updateConfig(@ApiParam(name = "config", required = true) AlertWizardConfig configuration) {
+        this.configurationService.updateConfiguration(configuration);
+        return configuration;
     }
 
 }

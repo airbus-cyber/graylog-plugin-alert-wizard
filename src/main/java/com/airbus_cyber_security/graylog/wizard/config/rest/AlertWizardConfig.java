@@ -27,6 +27,7 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
+// TODO rename into AlertWizardConfiguration
 @AutoValue
 @JsonAutoDetect
 public abstract class AlertWizardConfig {

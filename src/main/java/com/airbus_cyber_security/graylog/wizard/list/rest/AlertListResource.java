@@ -19,6 +19,7 @@ package com.airbus_cyber_security.graylog.wizard.list.rest;
 
 import com.airbus_cyber_security.graylog.wizard.audit.AlertWizardAuditEventTypes;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
+import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfigurationService;
 import com.airbus_cyber_security.graylog.wizard.config.rest.ImportPolicyType;
 import com.airbus_cyber_security.graylog.wizard.list.AlertList;
 import com.airbus_cyber_security.graylog.wizard.list.AlertListService;
@@ -26,7 +27,6 @@ import com.airbus_cyber_security.graylog.wizard.list.bundles.AlertListExporter;
 import com.airbus_cyber_security.graylog.wizard.list.bundles.ExportAlertList;
 import com.airbus_cyber_security.graylog.wizard.list.bundles.ExportAlertListRequest;
 import com.airbus_cyber_security.graylog.wizard.list.rest.models.requests.AlertListRequest;
-import com.airbus_cyber_security.graylog.wizard.list.rest.models.requests.CloneAlertListRequest;
 import com.airbus_cyber_security.graylog.wizard.list.rest.models.responses.GetAlertList;
 import com.airbus_cyber_security.graylog.wizard.list.rest.models.responses.GetListAlertList;
 import com.airbus_cyber_security.graylog.wizard.list.utilities.AlertListUtilsService;
@@ -69,16 +69,16 @@ public class AlertListResource extends RestResource implements PluginRestResourc
     private static final String TITLE = "title";
 
     private final AlertListService alertListService;
-    private final ClusterConfigService clusterConfigService;
+    private final AlertWizardConfigurationService configurationService;
     private final AlertListExporter alertListExporter;
     private final AlertListUtilsService alertListUtilsService;
 
 
     @Inject
     public AlertListResource(AlertListService alertListService,
-                             ClusterConfigService clusterConfigService) {
+                             AlertWizardConfigurationService configurationService) {
         this.alertListService = alertListService;
-        this.clusterConfigService = clusterConfigService;
+        this.configurationService = configurationService;
         this.alertListUtilsService = new AlertListUtilsService(alertListService);
         this.alertListExporter = new AlertListExporter(alertListService);
     }
@@ -116,7 +116,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
     private String checkImportPolicyAndGetTitle(String title){
         String listTitle = title;
         if (this.alertListService.isPresent(listTitle)) {
-            AlertWizardConfig configGeneral = clusterConfigService.get(AlertWizardConfig.class);
+            AlertWizardConfig configGeneral = configurationService.getConfiguration();
             ImportPolicyType importPolicy = configGeneral.accessImportPolicy();
             if (importPolicy != null && importPolicy.equals(ImportPolicyType.RENAME)) {
                 String newListTitle;

@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 * Add compatibility with [Graylog 4.3](https://www.graylog.org/post/announcing-graylog-v4-3-graylog-operations-graylog-security) ([issue #75](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/75))
 ### Bug Fixes
 * The default value of the matching type is set to "all" for the second stream too ([issue #85](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/85))
+* Creation a rule with the same name as a previously created rule does not raise an exception anymore ([issue #96](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues96))
 ### Changes
 * When getting rest resources plugins/com.airbus_cyber_security.graylog.wizard/alerts/data and plugins/com.airbus_cyber_security.graylog.wizard/alerts/{title}: field title_condition is removed
 

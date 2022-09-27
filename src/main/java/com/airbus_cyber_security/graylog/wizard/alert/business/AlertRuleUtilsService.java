@@ -341,13 +341,12 @@ public class AlertRuleUtilsService {
     }
 
     private String getDefaultLogBody() {
-        final LoggingAlertConfig generalConfig = this.clusterConfigService.getOrDefault(LoggingAlertConfig.class,
+        LoggingAlertConfig generalConfig = this.clusterConfigService.getOrDefault(LoggingAlertConfig.class,
                 LoggingAlertConfig.createDefault());
         return generalConfig.accessLogBody();
     }
 
     private int getDefaultTime() {
-        // TODO would it work to get the configuration once directly in the constructor? Or better even, inject the AlertWizardConfig?
         LoggingAlertConfig configuration = this.clusterConfigService.getOrDefault(LoggingAlertConfig.class,
                 LoggingAlertConfig.createDefault());
         return configuration.accessAggregationTime();

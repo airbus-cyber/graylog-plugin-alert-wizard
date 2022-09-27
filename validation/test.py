@@ -104,14 +104,14 @@ class Test(TestCase):
             self.fail('Event not generated within 60 seconds')
 
     def test_create_alert_rule_with_list_should_not_generate_event_on_substrings_of_elements_in_list__issue49(self):
-        title = 'list'
-        self._graylog.create_list(title, ['administrator', 'toto', 'root', 'foobar'])
+        list_title = 'list'
+        self._graylog.create_list(list_title, ['administrator', 'toto', 'root', 'foobar'])
         rule = {
             'field': 'x',
             'type': 7,
-            'value': title
+            'value': list_title
         }
-        self._graylog.create_alert_rule_count(title, rule, _PERIOD)
+        self._graylog.create_alert_rule_count(list_title, rule, _PERIOD)
 
         with self._graylog.create_gelf_input() as inputs:
             inputs.send({'_x': 'admin'})
@@ -182,3 +182,15 @@ class Test(TestCase):
         status_code = self._graylog.create_alert_rule_statistics(title, _PERIOD)
         self.assertEqual(200, status_code)
 
+    def test_create_alert_rule_with_same_name_should_not_fail(self):
+        title = 'aaa'
+        rule = {
+            'field': 'source',
+            'type': 1,
+            'value': 'toto'
+        }
+        self._graylog.create_alert_rule_count(title, rule, _PERIOD)
+        self._graylog.start_logs_capture()
+        self._graylog.create_alert_rule_count(title, rule, _PERIOD)
+        logs = self._graylog.extract_logs()
+        self.assertNotIn('ERROR', logs)

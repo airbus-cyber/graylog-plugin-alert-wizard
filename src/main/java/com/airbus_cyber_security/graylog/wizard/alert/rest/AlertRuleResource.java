@@ -31,6 +31,7 @@ import com.airbus_cyber_security.graylog.wizard.alert.business.Pipeline;
 import com.airbus_cyber_security.graylog.wizard.alert.business.StreamPipelineService;
 import com.airbus_cyber_security.graylog.wizard.audit.AlertWizardAuditEventTypes;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
+import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfigurationService;
 import com.airbus_cyber_security.graylog.wizard.config.rest.ImportPolicyType;
 import com.airbus_cyber_security.graylog.wizard.database.LookupService;
 import com.airbus_cyber_security.graylog.wizard.list.AlertListService;
@@ -48,6 +49,7 @@ import org.graylog.plugins.pipelineprocessor.db.*;
 import org.graylog.security.UserContext;
 import org.graylog2.alerts.AlertService;
 import org.graylog2.audit.jersey.AuditEvent;
+import org.graylog2.cluster.ClusterConfig;
 import org.graylog2.database.NotFoundException;
 import org.graylog2.events.ClusterEventBus;
 import org.graylog2.indexer.IndexSetRegistry;
@@ -88,7 +90,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
     private final StreamService streamService;
     private final ClusterEventBus clusterEventBus;
-    private final ClusterConfigService clusterConfigService;
+    private final AlertWizardConfigurationService configurationService;
     private final EventDefinitionsResource eventDefinitionsResource;
     private final EventNotificationsResource eventNotificationsResource;
 
@@ -109,6 +111,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                              ClusterEventBus clusterEventBus,
                              IndexSetRegistry indexSetRegistry,
                              AlertService alertService,
+                             AlertWizardConfigurationService configurationService,
                              ClusterConfigService clusterConfigService,
                              PipelineStreamConnectionsService pipelineStreamConnectionsService,
                              AlertListService alertListService,
@@ -117,12 +120,13 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.alertRuleService = alertRuleService;
         this.streamService = streamService;
         this.clusterEventBus = clusterEventBus;
-        this.clusterConfigService = clusterConfigService;
+        this.configurationService = configurationService;
         this.eventDefinitionsResource = eventDefinitionsResource;
         this.eventNotificationsResource = eventNotificationsResource;
 
         this.alertRuleUtils = new AlertRuleUtils();
         this.alertListUtilsService = new AlertListUtilsService(alertListService);
+        // TODO should probably inject AlertRuleUtilsService instead of instanciating it
         this.alertRuleUtilsService = new AlertRuleUtilsService(
                 alertRuleService,
                 streamService,
@@ -131,6 +135,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 eventDefinitionsResource,
                 eventNotificationsResource,
                 clusterConfigService);
+        // TODO should probably inject StreamPipelineService instead of instanciating it
         this.streamPipelineService = new StreamPipelineService(
                 streamService,
                 streamRuleService,
@@ -194,7 +199,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         if (this.alertRuleService.isPresent(alertTitle)) {
             // TODO should be get or default here: it will return null when starting with a fresh instance of graylog
             // Idem in AlertListRessource. Add a test that creates two alerts with same title
-            AlertWizardConfig configGeneral = this.clusterConfigService.get(AlertWizardConfig.class);
+            AlertWizardConfig configGeneral = this.configurationService.getConfiguration();
             ImportPolicyType importPolicy = configGeneral.accessImportPolicy();
             if (importPolicy != null && importPolicy.equals(ImportPolicyType.RENAME)) {
                 String newAlertTitle;
@@ -212,7 +217,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                     throw new BadRequestException("Failed to replace alert rule.");
                 }
             } else {
-                LOG.error("Failed to create alert rule: Alert rule title already exist");
+                LOG.info("Failed to create alert rule: Alert rule title already exist");
                 throw new BadRequestException("Failed to create alert rule: Alert rule title already exist.");
             }
         }
