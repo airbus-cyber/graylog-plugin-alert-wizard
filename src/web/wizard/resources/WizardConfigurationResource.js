@@ -3,11 +3,11 @@ import UserNotification from 'util/UserNotification';
 import fetch from 'logic/rest/FetchProvider';
 import RestUtils from 'wizard/stores/RestUtils';
 
-const SOURCE_URL = RestUtils.buildSourceURL('config');
+// TODO should combine methods into buildSourceURL?
+const SOURCE_URL = URLUtils.qualifyUrl(RestUtils.buildSourceURL('config'));
 
 function get() {
-    // TODO move URLUtils.qualifyUrl up into constant SOURCE_URL
-    return fetch('GET', URLUtils.qualifyUrl(SOURCE_URL))
+    return fetch('GET', SOURCE_URL)
         .then(response => {
             return response;
         })
@@ -24,7 +24,7 @@ function update(configuration) {
         import_policy: configuration.import_policy,
     };
 
-    return fetch('PUT', URLUtils.qualifyUrl(SOURCE_URL), request)
+    return fetch('PUT', SOURCE_URL, request)
         .then(response => {
             UserNotification.success('Wizard configurations successfully updated');
             return response;
