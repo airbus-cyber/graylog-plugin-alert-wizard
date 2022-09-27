@@ -63,10 +63,6 @@ public class AlertRuleService {
 		this.coll.createIndex(new BasicDBObject(TITLE, 1), new BasicDBObject("unique", true));
 	}
 
-	public long count() {
-		return coll.count();
-	}
-
 	public AlertRule create(AlertRule alert) {
 		final Set<ConstraintViolation<AlertRule>> violations = validator.validate(alert);
 		if (violations.isEmpty()) {
