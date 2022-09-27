@@ -19,7 +19,6 @@
 // * pages/ShowNodePage.jsx
 // * pages/ShowMessagePage.tsx
 import React from 'react';
-import Reflux from 'reflux';
 import createReactClass from 'create-react-class';
 import { Col, Row } from 'react-bootstrap';
 import { IfPermitted, PageHeader, DocumentTitle, Spinner } from 'components/common';
@@ -27,8 +26,7 @@ import AlertRuleList from 'wizard/components/AlertRuleList';
 import ManageSettings from 'wizard/components/ManageSettings';
 import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
 import messages_fr from 'translations/fr.json';
-import WizardConfigurationsActions from 'wizard/actions/WizardConfigurationsActions';
-import WizardConfigurationStore from 'wizard/stores/WizardConfigurationsStore';
+import WizardConfigurationResource from 'wizard/resources/WizardConfigurationResource';
 import { PluginsStore } from 'stores/plugins/PluginsStore';
 import { NodesActions } from 'stores/nodes/NodesStore';
 
@@ -43,8 +41,6 @@ const messages = {
 const WizardPage = createReactClass({
     displayName: 'WizardPage',
 
-    mixins: [Reflux.connect(WizardConfigurationStore)],
-
     getInitialState() {
         return {
             configurations: null,
@@ -53,7 +49,9 @@ const WizardPage = createReactClass({
     },
 
     componentDidMount() {
-        WizardConfigurationsActions.list();
+        WizardConfigurationResource.get().then(configurations => {
+            this.setState({configurations: configurations});
+        });
         NodesActions.list().then(nodes => {
             if (nodes.nodes[0]) {
                 PluginsStore.list(nodes.nodes[0].node_id).then((plugins) => {
@@ -68,7 +66,7 @@ const WizardPage = createReactClass({
     },
 
     _saveConfig(config) {
-        WizardConfigurationsActions.update(config);
+        WizardConfigurationResource.update(config);
     },
 
     render() {

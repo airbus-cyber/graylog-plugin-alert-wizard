@@ -24,7 +24,7 @@ import { DocumentTitle, PageHeader, Spinner } from 'components/common';
 import AlertRuleForm from 'wizard/components/AlertRuleForm';
 import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
 import messages_fr from 'translations/fr.json';
-import WizardConfigurationsActions from 'wizard/actions/WizardConfigurationsActions';
+import WizardConfigurationResource from 'wizard/resources/WizardConfigurationResource';
 import Navigation from 'wizard/routing/Navigation';
 import AlertRuleActions from 'wizard/actions/AlertRuleActions';
 
@@ -51,7 +51,7 @@ const NewAlertPage = createReactClass({
     },
 
     componentDidMount() {
-        WizardConfigurationsActions.list().then(configurations => {
+        WizardConfigurationResource.get().then(configurations => {
             this.setState({configurations: configurations});
         });
     },
