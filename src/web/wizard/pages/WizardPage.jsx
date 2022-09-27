@@ -88,7 +88,7 @@ const WizardPage = createReactClass({
                             />
                       </span>
                       <span>
-                            <FormattedMessage id ="wizard.documentation" 
+                          <FormattedMessage id ="wizard.documentation"
                             defaultMessage="Read more about Wizard alert rules in the documentation" />
                           {this.state.version &&
                           <FormattedMessage id="wizard.version" defaultMessage=" (wizard version : {version})."
