@@ -35,7 +35,6 @@ import java.util.List;
 @CollectionName("wizard_alerts")
 public abstract class AlertRule {
 
-
     @JsonProperty("title")
     @NotNull
     public abstract String getTitle();
