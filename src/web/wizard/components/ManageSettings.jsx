@@ -158,24 +158,6 @@ const ManageSettings = createReactClass({
             {value: '1440', label: <FormattedMessage id= "wizard.days" defaultMessage= "days" />},
         ];
     },
-    _availableRuleType() {
-        return [
-            {value: '1', label: <FormattedMessage id= "wizard.matchesExactly" defaultMessage= "matches exactly" />},
-            {value: '-1', label: <FormattedMessage id= "wizard.notMatchesExactly" defaultMessage= "does not match exactly" />},
-            {value: '2', label: <FormattedMessage id= "wizard.matchesRegularExpression" defaultMessage= "matches regular expression" />},
-            {value: '-2', label: <FormattedMessage id= "wizard.notMatchRegularExpression" defaultMessage= "does not match regular expression" />},
-            {value: '3', label: <FormattedMessage id= "wizard.greaterThan" defaultMessage= "is greater than" />},
-            {value: '-3', label: <FormattedMessage id= "wizard.notGreaterThan" defaultMessage= "is not greater than" />},
-            {value: '4', label: <FormattedMessage id= "wizard.smallerThan" defaultMessage= "is smaller than" />},
-            {value: '-4', label: <FormattedMessage id= "wizard.notSmallerThan" defaultMessage= "is not smaller than" />},
-            {value: '5', label: <FormattedMessage id= "wizard.present" defaultMessage= "is present" />},
-            {value: '-5', label: <FormattedMessage id= "wizard.notPresent" defaultMessage= "is not present" />},
-            {value: '6', label: <FormattedMessage id= "wizard.contains" defaultMessage= "contains" />},
-            {value: '-6', label: <FormattedMessage id= "wizard.notContain" defaultMessage= "does not contain" />},
-            {value: '7', label: <FormattedMessage id= "wizard.listpresent" defaultMessage= "is present in list" />},
-            {value: '-7', label: <FormattedMessage id= "wizard.listnotpresent" defaultMessage= "is not present in list" />},
-        ];
-    },
 
     _updateConfig(field, value) {
         const update = ObjectUtils.clone(this.state.config);
@@ -198,9 +180,6 @@ const ManageSettings = createReactClass({
     },
     _onTimeTypeSelect(value) {
         this._updateConfig('time_type', parseInt(value))
-    },
-    _onRuleTypeSelect(value) {
-        this._updateConfig('field_type', parseInt(value));
     },
     _onCheckboxClick(event) {
         this._updateConfig(event.target.name, event.target.checked);
@@ -345,21 +324,6 @@ const ManageSettings = createReactClass({
                         options={this._availableTimeTypes()}
                         matchProp="value"
                         onChange={this._onTimeTypeSelect}
-                        clearable={false}
-                    />
-                </Input>
-
-                <Input ref="field" id="field" name="field" type="text" 
-                       label={<FormattedMessage id="wizard.field" defaultMessage="Field" />}
-                       onChange={this._onValueChanged("field")} value={this.state.config.default_values.field}/>
-                <Input ref="typefield_type" id="field_type" name="field_type" 
-                       label={<FormattedMessage id="wizard.fieldType" defaultMessage="Field type" />}>
-                    <Select placeholder={<FormattedMessage id= "wizard.select" defaultMessage= "Select..." />}
-                        autosize={true}
-                        value={this.state.config.default_values.field_type ? this.state.config.default_values.field_type.toString() : ''}
-                        options={this._availableRuleType()}
-                        matchProp="value"
-                        onChange={this._onRuleTypeSelect}
                         clearable={false}
                     />
                 </Input>

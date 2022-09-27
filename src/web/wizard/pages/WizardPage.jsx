@@ -92,9 +92,6 @@ const WizardPage = createReactClass({
                 threshold: 0,
                 time: 1,
                 time_type: 0,
-                field: "",
-                field_type: 0,
-                field_value: "",
                 grace: 1,
                 backlog: 500
             },
@@ -103,7 +100,7 @@ const WizardPage = createReactClass({
     },
     
     render() {
-        if(!this.state.plugins && this.state.nodes){
+        if (!this.state.plugins && this.state.nodes) {
             this._getPlugins();
         }
         const configWizard = this._getConfig();
