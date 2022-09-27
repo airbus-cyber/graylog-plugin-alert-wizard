@@ -132,7 +132,7 @@ const WizardPage = createReactClass({
                     <Row className="content">
                       <Col md={12}>
                         <IfPermitted permissions="wizard_alerts_rules:read">
-                          <AlertRuleList config={configWizard}/>
+                          <AlertRuleList config={configWizard.field_order} />
                         </IfPermitted>
                       </Col>
                     </Row>
