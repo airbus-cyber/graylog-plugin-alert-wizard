@@ -55,7 +55,7 @@ const WizardPage = createReactClass({
     componentDidMount() {
         WizardConfigurationsActions.list();
         NodesActions.list().then(nodes => {
-            if(nodes.nodes[0]) {
+            if (nodes.nodes[0]) {
                 PluginsStore.list(nodes.nodes[0].node_id).then((plugins) => {
                     for (let i = 0; i < plugins.length; i++) {
                         if (plugins[i].unique_id === "com.airbus-cyber-security.graylog.AlertWizardPlugin") {
