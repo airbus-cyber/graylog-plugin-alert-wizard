@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 * Creation a rule with the same name as a previously created rule does not raise an exception anymore ([issue #96](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues96))
 ### Changes
 * When getting rest resources plugins/com.airbus_cyber_security.graylog.wizard/alerts/data and plugins/com.airbus_cyber_security.graylog.wizard/alerts/{title}: field title_condition is removed
+* Removed the possibility to configure field, field type and field value ([issue #94](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/94))
 
 ## [4.3.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/4.2.2...4.3.0)
 ### Features
