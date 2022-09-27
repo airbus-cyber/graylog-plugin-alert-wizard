@@ -57,18 +57,7 @@ public abstract class DefaultValues {
     
     @JsonProperty("time_type")
     public abstract int getTimeType();
-    
-    @JsonProperty("field")
-    @Nullable
-    public abstract String getField();
 
-    @JsonProperty("field_type")
-    public abstract int getFieldType();
-
-    @JsonProperty("field_value")
-    @Nullable
-    public abstract String getFieldValue();
-    
     @JsonProperty("grace")
     public abstract int getGrace();
     
@@ -83,12 +72,9 @@ public abstract class DefaultValues {
     		@JsonProperty("threshold") int threshold,
     		@JsonProperty("time") int time,
     		@JsonProperty("time_type") int timeType,
-			@JsonProperty("field") String field,
-            @JsonProperty("field_type") int fieldType,
-            @JsonProperty("field_value") String fieldValue,
             @JsonProperty("grace") int grace,
             @JsonProperty("backlog") int backlog){
-        return new AutoValue_DefaultValues(title, severity, matchingType, thresholdType, threshold, time, timeType, 
-        		field, fieldType, fieldValue, grace, backlog);
+        return new AutoValue_DefaultValues(title, severity, matchingType, thresholdType, threshold, time, timeType,
+                grace, backlog);
     }
 }

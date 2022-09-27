@@ -72,9 +72,6 @@ public abstract class AlertWizardConfig {
 						0,
 						1,
 						1,
-						"",
-						0,
-						"",
 						1,
 						500))
 				.accessImportPolicy(ImportPolicyType.DONOTHING)
