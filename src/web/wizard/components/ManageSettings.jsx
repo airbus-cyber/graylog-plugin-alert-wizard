@@ -363,10 +363,6 @@ const ManageSettings = createReactClass({
                         clearable={false}
                     />
                 </Input>
-                <Input ref="field_value" id="field_value" name="field_value" type="text" 
-                       label={<FormattedMessage id= "wizard.fieldValue" defaultMessage= "Field value" />}
-                       onChange={this._onValueChanged("field_value")}
-                       value={this.state.config.default_values.field_value}/>
               </fieldset>
               <h3><FormattedMessage id= "wizard.conditionDefaultValues" defaultMessage= "Default values of the event" /></h3>
               <p><FormattedMessage id= "wizard.changeDefaultValues" defaultMessage= "Change the default values." /></p>
