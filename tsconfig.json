@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": false,
+    "downlevelIteration": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react",
+    "baseUrl": ".",
+    "paths": {
+      "*": [
+        "*",
+        "./src/web/*",
+        "./test/web/*",
+        "../graylog2-server/graylog2-web-interface/src/*",
+        "../graylog2-server/graylog2-web-interface/test/*",
+      ]
+    }
+  },
+  "include": [
+    "src",
+    "../graylog2-server/graylog2-web-interface/src/@types/**/*",
+    "../graylog2-server/graylog2-web-interface/src/**/*.d.ts"
+  ]
+}
