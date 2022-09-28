@@ -23,6 +23,7 @@ const jestConfig = {
     '^react-dom$': `${webSrcPrefix}/node_modules/react-dom/index.js`,
     '^styled-components$': `${webSrcPrefix}/node_modules/styled-components`,
     '^translations/(.+)$': 'web/translations/$1',
+    '^wizard/(.+)$': 'web/wizard/$1',
   }
 };
 module.exports = jestConfig;

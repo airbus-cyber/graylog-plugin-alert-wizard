@@ -19,6 +19,8 @@ import React from 'react';
 import { render } from 'wrappedTestingLibrary';
 
 import messages_fr from 'translations/fr.json';
+// TODO
+//import CreateListFormInput from 'wizard/components/lists/CreateListFormInput';
 //import NewAlertListPage from './NewAlertListPage';
 
 
