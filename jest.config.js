@@ -12,15 +12,17 @@ const jestConfig = {
   transform: {
     '^.+\\.[tj]sx?$': 'babel-jest'
   },
-  moduleDirectories: [].concat([
+  moduleDirectories: [
     'src',
     'src/test',
-    'node_modules'
-  ], [`${webSrcPrefix}/src`, `${webSrcPrefix}/test`]),
+    'node_modules',
+    `${webSrcPrefix}/src`, `${webSrcPrefix}/test`
+  ],
   moduleNameMapper: {
     '^react$': `${webSrcPrefix}/node_modules/react/index.js`,
     '^react-dom$': `${webSrcPrefix}/node_modules/react-dom/index.js`,
     '^styled-components$': `${webSrcPrefix}/node_modules/styled-components`,
-  },
+    '^translations/(.+)$': 'web/translations/$1',
+  }
 };
 module.exports = jestConfig;
