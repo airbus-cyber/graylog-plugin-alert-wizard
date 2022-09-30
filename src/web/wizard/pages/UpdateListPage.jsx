@@ -29,7 +29,6 @@ import { addLocaleData, FormattedMessage, IntlProvider } from 'react-intl';
 import messages_fr from 'translations/fr.json';
 import withParams from 'routing/withParams';
 import { CurrentUserStore } from 'stores/users/CurrentUserStore';
-import { NodesStore } from 'stores/nodes/NodesStore';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
@@ -42,7 +41,7 @@ const messages = {
 const UpdateListPage = createReactClass({
     displayName: 'UpdateListPage',
 
-    mixins: [Reflux.connect(CurrentUserStore), Reflux.connect(NodesStore, 'nodes')],
+    mixins: [Reflux.connect(CurrentUserStore)],
     propTypes: {
         params: PropTypes.object.isRequired,
     },
@@ -84,7 +83,7 @@ const UpdateListPage = createReactClass({
                         </PageHeader>
                         <Row className="content">
                             <Col md={12}>
-                                <CreateListFormInput create={false} list={this.state.list} nodes={this.state.nodes}/>
+                                <CreateListFormInput create={false} list={this.state.list}/>
                             </Col>
                         </Row>
                     </div>

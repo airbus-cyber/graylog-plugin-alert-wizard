@@ -31,7 +31,6 @@ import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
 import messages_fr from 'translations/fr.json';
 import CreateListFormInput from 'wizard/components/lists/CreateListFormInput';
 import { CurrentUserStore } from 'stores/users/CurrentUserStore';
-import { NodesStore } from 'stores/nodes/NodesStore';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
@@ -43,8 +42,6 @@ const messages = {
 
 const NewAlertListPage = createReactClass({
     displayName: 'NewAlertListPage',
-
-    mixins: [Reflux.connect(NodesStore, 'nodes')],
 
     propTypes: {
         location: PropTypes.object.isRequired,
@@ -75,7 +72,7 @@ const NewAlertListPage = createReactClass({
                         </PageHeader>
                         <Row className="content">
                             <Col md={12}>
-                               <CreateListFormInput create={true} nodes={this.state.nodes}/>
+                               <CreateListFormInput create={true}/>
                             </Col>
                         </Row>
                     </div>

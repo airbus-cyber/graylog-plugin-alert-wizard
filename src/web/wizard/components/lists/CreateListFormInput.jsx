@@ -110,36 +110,28 @@ const CreateListFormInput = createReactClass({
 
     render: function() {
 
-        let actions;
-
         const buttonCancel = (
             <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
                 <Button><FormattedMessage id= "wizard.cancel" defaultMessage="Cancel" /></Button>
             </LinkContainer>
         );
 
-        let buttonSave;
+        let onSave;
         if (this.props.create) {
-            buttonSave = (
-                <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
-                    <Button onClick={this._save} disabled={this.state.list.title === '' || this.state.list.lists === ''} className="btn btn-md btn-primary">
-                        <FormattedMessage id="wizard.save" defaultMessage="Save"/>
-                    </Button>
-                </LinkContainer>
-            );
+            onSave = this._save;
         }
         else {
-            buttonSave = (
-                <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
-                    <Button onClick={this._update}
-                            className="btn btn-md btn-primary">
-                        <FormattedMessage id= "wizard.save" defaultMessage="Save" />
-                    </Button>
-                </LinkContainer>
-            );
+            onSave = this._update;
         }
+        const buttonSave = (
+            <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
+                <Button onClick={onSave} disabled={this.state.list.title === '' || this.state.list.lists === ''} className="btn btn-md btn-primary">
+                    <FormattedMessage id="wizard.save" defaultMessage="Save"/>
+                </Button>
+            </LinkContainer>
+        );
 
-        actions = (
+        const actions = (
             <div className="alert-actions pull-left">
                 {buttonCancel}{' '}
                 {buttonSave}{' '}

@@ -20,8 +20,7 @@ import { render } from 'wrappedTestingLibrary';
 
 import messages_fr from 'translations/fr.json';
 
-// TODO
-//import NewAlertListPage from './NewAlertListPage';
+import NewAlertListPage from './NewAlertListPage';
 
 
 describe('<NewAlertListPage>', () => {
