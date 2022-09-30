@@ -36,7 +36,7 @@ describe('<CreateListFormInput>', () => {
   it('should not fail when rendering', () => {
     render(<IntlProvider locale="en" >
              <Router history={history}>
-               <CreateListFormInput create={true} />
+               <CreateListFormInput onSave={jest.fn()} />
              </Router>
            </IntlProvider>);
   });

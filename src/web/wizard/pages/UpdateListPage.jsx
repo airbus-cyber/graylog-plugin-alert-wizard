@@ -42,16 +42,23 @@ const UpdateListPage = createReactClass({
     displayName: 'UpdateListPage',
 
     mixins: [Reflux.connect(CurrentUserStore)],
+
     propTypes: {
         params: PropTypes.object.isRequired,
     },
+
     componentDidMount() {
         AlertListActions.get(this.props.params.alertListTitle).then(list => {
             this.setState({list: list});
         });
     },
+
     _isLoading() {
         return !this.state.list;
+    },
+
+    _update(list) {
+        AlertListActions.update(this.state.list.title, list);
     },
 
     render() {
@@ -83,7 +90,7 @@ const UpdateListPage = createReactClass({
                         </PageHeader>
                         <Row className="content">
                             <Col md={12}>
-                                <CreateListFormInput create={false} list={this.state.list}/>
+                                <CreateListFormInput list={this.state.list} onSave={this._update}/>
                             </Col>
                         </Row>
                     </div>

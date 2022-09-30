@@ -26,8 +26,7 @@ import Routes from 'routing/Routes';
 import { LinkContainer } from 'react-router-bootstrap';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import { Input, Button, Col, Row } from 'components/bootstrap';
-import AlertListActions from 'wizard/actions/AlertListActions';
-import AlertListStore from 'wizard/stores/AlertListStore';
+
 
 const INIT_LIST = {
     title: '',
@@ -40,7 +39,7 @@ const CreateListFormInput = createReactClass({
 
     propTypes: {
         list: PropTypes.object,
-        create: PropTypes.bool.isRequired,
+        onSave: PropTypes.func.isRequired,
     },
 
     contextTypes: {
@@ -58,43 +57,9 @@ const CreateListFormInput = createReactClass({
 
         return {
             list: list,
-            isModified: false,
             contentComponent: <Spinner/>,
         };
     },
-
-    _save() {
-        AlertListActions.create(this.state.list).then((response) => {
-            if (response === true) {
-                this.setState({list: list});
-            }
-        });
-        this.setState({isModified: false});
-    },
-
-    _update() {
-        AlertListActions.update(this.props.list.title, this.state.list).then((response) => {
-            if (response === true) {
-                this.setState({list: list});
-            }
-        });
-        this.setState({isModified: false});
-    },
-
-    // TODO add a button to import a file into the list field 
-    /*onSubmitUploadFile(submitEvent) {
-        submitEvent.preventDefault();
-        if (!this.refs.uploadedFile.files || !this.refs.uploadedFile.files[0]) {
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-            this.setState({alertLists: JSON.parse(evt.target.result)});
-        };
-
-        reader.readAsText(this.refs.uploadedFile.files[0]);
-    },*/
 
     _updateConfigField(field, value) {
         const update = ObjectUtils.clone(this.state.list);
@@ -116,16 +81,11 @@ const CreateListFormInput = createReactClass({
             </LinkContainer>
         );
 
-        let onSave;
-        if (this.props.create) {
-            onSave = this._save;
-        }
-        else {
-            onSave = this._update;
-        }
         const buttonSave = (
             <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
-                <Button onClick={onSave} disabled={this.state.list.title === '' || this.state.list.lists === ''} className="btn btn-md btn-primary">
+                <Button onClick={() => this.props.onSave(this.state.list)} 
+                        disabled={this.state.list.title === '' || this.state.list.lists === ''} 
+                        className="btn btn-md btn-primary">
                     <FormattedMessage id="wizard.save" defaultMessage="Save"/>
                 </Button>
             </LinkContainer>

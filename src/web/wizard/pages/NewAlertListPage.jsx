@@ -31,6 +31,7 @@ import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
 import messages_fr from 'translations/fr.json';
 import CreateListFormInput from 'wizard/components/lists/CreateListFormInput';
 import { CurrentUserStore } from 'stores/users/CurrentUserStore';
+import AlertListActions from 'wizard/actions/AlertListActions';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
@@ -47,6 +48,10 @@ const NewAlertListPage = createReactClass({
         location: PropTypes.object.isRequired,
         params: PropTypes.object.isRequired,
         children: PropTypes.element,
+    },
+
+    _save(list) {
+        AlertListActions.create(list);
     },
 
     render() {
@@ -72,7 +77,7 @@ const NewAlertListPage = createReactClass({
                         </PageHeader>
                         <Row className="content">
                             <Col md={12}>
-                               <CreateListFormInput create={true}/>
+                               <CreateListFormInput onSave={this._save}/>
                             </Col>
                         </Row>
                     </div>
