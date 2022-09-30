@@ -45,7 +45,7 @@ const messages = {
 const NewAlertListPage = createReactClass({
     displayName: 'NewAlertListPage',
 
-    mixins: [Reflux.connect(CurrentUserStore), Reflux.connect(ConfigurationsStore), Reflux.connect(NodesStore, 'nodes')],
+    mixins: [Reflux.connect(ConfigurationsStore), Reflux.connect(NodesStore, 'nodes')],
 
     WIZARD_CLUSTER_CONFIG: 'com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig',
 
