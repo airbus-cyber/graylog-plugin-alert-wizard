@@ -31,7 +31,6 @@ import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
 import messages_fr from 'translations/fr.json';
 import CreateListFormInput from 'wizard/components/lists/CreateListFormInput';
 import { CurrentUserStore } from 'stores/users/CurrentUserStore';
-import { ConfigurationsActions, ConfigurationsStore } from 'stores/configurations/ConfigurationsStore';
 import { NodesStore } from 'stores/nodes/NodesStore';
 
 let frLocaleData = require('react-intl/locale-data/fr');
@@ -45,9 +44,7 @@ const messages = {
 const NewAlertListPage = createReactClass({
     displayName: 'NewAlertListPage',
 
-    mixins: [Reflux.connect(ConfigurationsStore), Reflux.connect(NodesStore, 'nodes')],
-
-    WIZARD_CLUSTER_CONFIG: 'com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig',
+    mixins: [Reflux.connect(NodesStore, 'nodes')],
 
     propTypes: {
         location: PropTypes.object.isRequired,
@@ -55,35 +52,7 @@ const NewAlertListPage = createReactClass({
         children: PropTypes.element,
     },
 
-    componentDidMount() {
-        // TODO try to write a test which protects against ConfigurationsActions being spelled ConfigurationActions
-        ConfigurationsActions.list(this.WIZARD_CLUSTER_CONFIG);
-    },
-
-     _getConfig() {
-       if (this.state.configuration && this.state.configuration[this.WIZARD_CLUSTER_CONFIG]) {
-            return this.state.configuration[this.WIZARD_CLUSTER_CONFIG]
-        }
-        return {
-            default_values: {
-                title: '',
-                description: '',
-                lists: '',
-            },
-        };
-    },
-
-    _isLoading() {
-        return !this.state.configuration;
-    },
-
     render() {
-
-        if (this._isLoading()) {
-            return <Spinner/>;
-        }
-
-        const configWizard = this._getConfig();
 
         return (
             <IntlProvider locale={language} messages={messages[language]}>
@@ -106,7 +75,7 @@ const NewAlertListPage = createReactClass({
                         </PageHeader>
                         <Row className="content">
                             <Col md={12}>
-                               <CreateListFormInput create={true} default_values={configWizard.default_values} nodes={this.state.nodes}/>
+                               <CreateListFormInput create={true} nodes={this.state.nodes}/>
                             </Col>
                         </Row>
                     </div>

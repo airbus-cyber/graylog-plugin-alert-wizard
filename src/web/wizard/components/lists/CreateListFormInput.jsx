@@ -42,30 +42,19 @@ const CreateListFormInput = createReactClass({
         list: PropTypes.object,
         create: PropTypes.bool.isRequired,
     },
+
     contextTypes: {
         intl: PropTypes.object.isRequired,
     },
 
-
     getDefaultProps() {
         return {
-            list: INIT_LIST,
-            default_values: {
-                title: '',
-                description: '',
-                lists: '',
-            },
+            list: INIT_LIST
         };
     },
 
     getInitialState() {
         let list = ObjectUtils.clone(this.props.list);
-
-        if (this.props.create) {
-            list.title = this.props.default_values.title;
-            list.description = this.props.default_values.description;
-            list.lists = this.props.default_values.lists;
-        }
 
         return {
             list: list,
@@ -125,7 +114,7 @@ const CreateListFormInput = createReactClass({
 
         const buttonCancel = (
             <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
-                <Button><FormattedMessage id= "wizard.cancel" defaultMessage= "Cancel" /></Button>
+                <Button><FormattedMessage id= "wizard.cancel" defaultMessage="Cancel" /></Button>
             </LinkContainer>
         );
 
@@ -144,7 +133,7 @@ const CreateListFormInput = createReactClass({
                 <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
                     <Button onClick={this._update}
                             className="btn btn-md btn-primary">
-                        <FormattedMessage id= "wizard.save" defaultMessage= "Save" />
+                        <FormattedMessage id= "wizard.save" defaultMessage="Save" />
                     </Button>
                 </LinkContainer>
             );
@@ -164,16 +153,16 @@ const CreateListFormInput = createReactClass({
                     <Col md={4}>
                         <Input id="title" type="text" required label={<FormattedMessage id ="wizard.title" defaultMessage="Title" />}
                                onChange={this._onUpdate('title')} defaultValue={this.state.list.title} name="title" disabled={this.state.list.usage}/>
-                        <Input id="description" type="text" label={<FormattedMessage id= "wizard.fieldOptionalDescription" defaultMessage= "Description (optional)" />}
+                        <Input id="description" type="text" label={<FormattedMessage id= "wizard.fieldOptionalDescription" defaultMessage="Description (optional)" />}
                                onChange={this._onUpdate('description')}
-                               defaultValue = {this.state.list.description}
+                               defaultValue={this.state.list.description}
                                name="description"/>
                     </Col>
                 </Row>
                 <Row style={style}>
                     <Col md={5}>
                     <Input style={{minWidth: 600}} ref="lists" id="lists" name="lists" type="textarea" rows="10"
-                           label={<FormattedMessage id ="wizard.fieldListwithexemple" defaultMessage="List (example : 172.10.0.1; 192.168.1.4; ...)" />}
+                           label={<FormattedMessage id="wizard.fieldListwithexemple" defaultMessage="List (example : 172.10.0.1; 192.168.1.4; ...)" />}
                            onChange={this._onUpdate('lists')} defaultValue={this.state.list.lists} />
                         {actions}
                     </Col>
