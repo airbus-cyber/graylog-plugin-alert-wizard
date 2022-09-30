@@ -19,14 +19,8 @@
     "graylog-web-plugin": "file:../graylog2-server/graylog2-web-interface/packages/graylog-web-plugin"
   },
   "devDependencies": {
-    "prop-types": "^15.7.2",
-    "react": "^16.8.6",
     "react-confirm-alert": "^2.4.1",
-    "react-dom": "^16.8.6",
     "react-intl": "^2.9.0",
-    "reflux": "^6.4.1",
-    "react-bootstrap": "^1.0.1",
-    "react-router-bootstrap": "^0.25.0",
     "react-addons-linked-state-mixin": "^15.6.2",
     "@babel/preset-react": "^7.16.7",
     "@babel/plugin-transform-runtime": "^7.17.0"
