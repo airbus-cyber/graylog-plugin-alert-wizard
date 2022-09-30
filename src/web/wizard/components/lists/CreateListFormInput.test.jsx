@@ -25,7 +25,6 @@ import { asMock } from 'helpers/mocking';
 import { Router } from 'react-router-dom';
 import history from 'util/History';
 
-import Routes from 'routing/Routes';
 import { IntlProvider } from 'react-intl';
 import CreateListFormInput from 'wizard/components/lists/CreateListFormInput';
 

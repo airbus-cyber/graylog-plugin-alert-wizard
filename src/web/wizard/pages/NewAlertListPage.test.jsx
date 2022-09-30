@@ -17,15 +17,17 @@
 
 import React from 'react';
 import { render } from 'wrappedTestingLibrary';
-
-import messages_fr from 'translations/fr.json';
+import { Router } from 'react-router-dom';
+import history from 'util/History';
 
 import NewAlertListPage from './NewAlertListPage';
 
+jest.mock('routing/Routes', () => ({ pluginRoute: () => '/route' }));
 
 describe('<NewAlertListPage>', () => {
-    it('should not fail on mount', () => {
-        // TODO
-        //render(<NewAlertListPage />);
+    it('should not fail', () => {
+        render(<Router history={history}>
+                 <NewAlertListPage />
+               </Router>);
     });
 });

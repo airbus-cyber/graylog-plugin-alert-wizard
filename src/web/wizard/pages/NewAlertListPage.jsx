@@ -21,16 +21,13 @@
 // * pages/NodesPage.jsx
 import PropTypes from 'prop-types';
 import React from 'react';
-import Reflux from 'reflux';
-import createReactClass from 'create-react-class';
 import { Button, Col, Row } from 'components/bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import { DocumentTitle, PageHeader, Spinner } from 'components/common';
+import { DocumentTitle, PageHeader } from 'components/common';
 import Routes from 'routing/Routes';
 import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
 import messages_fr from 'translations/fr.json';
 import CreateListFormInput from 'wizard/components/lists/CreateListFormInput';
-import { CurrentUserStore } from 'stores/users/CurrentUserStore';
 import AlertListActions from 'wizard/actions/AlertListActions';
 
 let frLocaleData = require('react-intl/locale-data/fr');
@@ -41,50 +38,39 @@ const messages = {
     'fr': messages_fr
 };
 
-const NewAlertListPage = createReactClass({
-    displayName: 'NewAlertListPage',
+function _save(list) {
+    AlertListActions.create(list);
+}
 
-    propTypes: {
-        location: PropTypes.object.isRequired,
-        params: PropTypes.object.isRequired,
-        children: PropTypes.element,
-    },
-
-    _save(list) {
-        AlertListActions.create(list);
-    },
-
-    render() {
-
-        return (
-            <IntlProvider locale={language} messages={messages[language]}>
-                <DocumentTitle title="New list">
-                    <div>
-                        <PageHeader title={<FormattedMessage id="wizard.newList" defaultMessage="Wizard: New list" />}>
+const NewAlertListPage = () => {
+    return (
+        <IntlProvider locale={language} messages={messages[language]}>
+            <DocumentTitle title="New list">
+                <div>
+                    <PageHeader title={<FormattedMessage id="wizard.newList" defaultMessage="Wizard: New list" />}>
                         <span>
                             <FormattedMessage id="wizard.definelist" defaultMessage="You can define a list." />
                         </span>
-                            <span>
+                        <span>
                             <FormattedMessage id="wizard.documentationlist"
                                               defaultMessage= "Read more about Wizard list in the documentation." />
                         </span>
-                            <span>
+                        <span>
                             <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
                                 <Button bsStyle="info"><FormattedMessage id= "wizard.backlist" defaultMessage= "Back to lists" /></Button>
                             </LinkContainer>
-                                &nbsp;
+                            &nbsp;
                         </span>
-                        </PageHeader>
-                        <Row className="content">
-                            <Col md={12}>
-                               <CreateListFormInput onSave={this._save}/>
-                            </Col>
-                        </Row>
-                    </div>
-                </DocumentTitle>
-            </IntlProvider>
-        );
-    },
-});
+                    </PageHeader>
+                    <Row className="content">
+                        <Col md={12}>
+                           <CreateListFormInput onSave={_save}/>
+                        </Col>
+                    </Row>
+                </div>
+            </DocumentTitle>
+        </IntlProvider>
+    );
+};
 
 export default NewAlertListPage;
