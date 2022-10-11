@@ -41,9 +41,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
 public class AlertRuleService {
 
-	private final JacksonDBCollection<AlertRule, String> coll;
+	private final JacksonDBCollection<AlertRule, String> alertRules;
 	private final Validator validator;
 	private static final Logger LOG = LoggerFactory.getLogger(AlertRuleService.class);
 	private static final String TITLE = "title";
@@ -59,14 +60,14 @@ public class AlertRuleService {
 		this.validator = validator;
 		String collectionName = AlertRule.class.getAnnotation(CollectionName.class).value();
 		DBCollection dbCollection = mongoConnection.getDatabase().getCollection(collectionName);
-		this.coll = JacksonDBCollection.wrap(dbCollection, AlertRule.class, String.class, mapperProvider.get());
-		this.coll.createIndex(new BasicDBObject(TITLE, 1), new BasicDBObject("unique", true));
+		this.alertRules = JacksonDBCollection.wrap(dbCollection, AlertRule.class, String.class, mapperProvider.get());
+		this.alertRules.createIndex(new BasicDBObject(TITLE, 1), new BasicDBObject("unique", true));
 	}
 
 	public AlertRule create(AlertRule alert) {
 		final Set<ConstraintViolation<AlertRule>> violations = validator.validate(alert);
 		if (violations.isEmpty()) {
-			return coll.insert(alert).getSavedObject();
+			return this.alertRules.insert(alert).getSavedObject();
 		} else {
 			throw new IllegalArgumentException("Specified object failed validation: " + violations);
 		}
@@ -77,7 +78,7 @@ public class AlertRuleService {
 
 		final Set<ConstraintViolation<AlertRule>> violations = validator.validate(alert);
 		if (violations.isEmpty()) {
-			return coll.findAndModify(DBQuery.is(TITLE, title), new BasicDBObject(), new BasicDBObject(),
+			return this.alertRules.findAndModify(DBQuery.is(TITLE, title), new BasicDBObject(), new BasicDBObject(),
 					false, alert, true, false);
 		} else {
 			throw new IllegalArgumentException("Specified object failed validation: " + violations);
@@ -85,19 +86,19 @@ public class AlertRuleService {
 	}
 
 	public List<AlertRule> all() {
-		return toAbstractListType(coll.find());
+		return toAbstractListType(this.alertRules.find());
 	}
 
 	public void destroy(String alertTitle) {
-		coll.remove(DBQuery.is(TITLE, alertTitle)).getN();
+		this.alertRules.remove(DBQuery.is(TITLE, alertTitle)).getN();
 	}
 	
 	public AlertRule load(String alertTitle) throws NotFoundException {
-		return coll.findOne(DBQuery.is(TITLE, alertTitle));
+		return this.alertRules.findOne(DBQuery.is(TITLE, alertTitle));
 	}
 	
 	public boolean isPresent(String title) {
-		return (coll.getCount(DBQuery.is(TITLE, title)) > 0);
+		return (this.alertRules.getCount(DBQuery.is(TITLE, title)) > 0);
 	}
 
 	private List<AlertRule> toAbstractListType(DBCursor<AlertRule> alerts) {
