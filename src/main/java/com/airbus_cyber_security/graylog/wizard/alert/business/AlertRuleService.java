@@ -105,7 +105,7 @@ public class AlertRuleService {
 	}
 
 	private List<AlertRule> toAbstractListType(List<AlertRule> alerts) {
-		final List<AlertRule> result = Lists.newArrayListWithCapacity(alerts.size());
+		List<AlertRule> result = Lists.newArrayListWithCapacity(alerts.size());
 		result.addAll(alerts);
 
 		return result;
