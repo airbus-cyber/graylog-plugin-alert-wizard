@@ -1,28 +1,15 @@
-target/
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
-release.properties
-dependency-reduced-pom.xml
-buildNumber.properties
-.mvn/timing.properties
+/dependency-reduced-pom.xml
 
-# Avoid ignoring Maven wrapper jar file (.jar files are usually ignored)
-!/.mvn/wrapper/maven-wrapper.jar
-
-node_modules/
-node/
-build/
-cache/
+/target/
+/node/
+/node_modules/
 
 # Location for built plugin
-runtime/graylog/plugin/
+/runtime/graylog/plugin/
 
-# For backend tests
-__pycache__/
+# For backend tests in python
+/validation/__pycache__/
 /validation/venv/
 
-#IDE
-.idea/
-
+# IDE
+.idea
