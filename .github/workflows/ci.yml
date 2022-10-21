@@ -1,0 +1,126 @@
+name: Continuous Integration
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+        with:
+          path: plugin
+      - name: Setup Java JDK 8
+        uses: actions/setup-java@v2
+        with:
+          java-version: 8
+          distribution: temurin
+          cache: maven
+      - name: Retrieve variables from pom
+        id: requestPom
+        working-directory: plugin
+        run: |
+          echo ::set-output name=graylogVersion::$(mvn help:evaluate -Dexpression=project.parent.version -q -DforceStdout)
+
+          NAME=$(mvn help:evaluate -Dexpression=project.name -q -DforceStdout)
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo ::set-output name=jarPath::target/${NAME}-${VERSION}.jar
+          echo ::set-output name=rpmPath::target/rpm/${NAME}/RPMS/noarch/${NAME}-${VERSION}-1.noarch.rpm
+          echo ::set-output name=debPath::target/${NAME}-${VERSION}.deb
+      - name: Cache Graylog
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: graylog2-server
+          key: ${{ steps.requestPom.outputs.graylogVersion }}
+      - name: Check out Graylog
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: actions/checkout@v2
+        with:
+          repository: Graylog2/graylog2-server
+          ref: ${{ steps.requestPom.outputs.graylogVersion }}
+          path: graylog2-server
+      - name: Build Graylog
+        if: steps.cache.outputs.cache-hit != 'true'
+        working-directory: graylog2-server
+        run: |
+          mvn compile -DskipTests=true --batch-mode
+      - name: Cache node_modules
+        uses: actions/cache@v2
+        with:
+          path: plugin/node_modules
+          key: ${{ hashFiles('plugin/yarn.lock') }}
+      - name: Build plugin
+        working-directory: plugin
+        run: |
+          mvn package --batch-mode
+      - name: Copy jar to backend tests runtime
+        working-directory: plugin
+        run: |
+          mkdir runtime/graylog/plugin
+          cp ${{ steps.requestPom.outputs.jarPath }} runtime/graylog/plugin
+      - name: Execute backend tests
+        working-directory: plugin/validation
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+          python -m unittest --verbose
+      - name: Package signed .rpm
+        working-directory: plugin
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          mvn rpm:rpm
+          echo -n "$GPG_PRIVATE_KEY" | gpg2 --batch --allow-secret-key-import --import
+          rpm --define "_gpg_name Airbus CyberSecurity" --define "_gpg_sign_cmd_extra_args --pinentry-mode loopback --passphrase $PASSPHRASE" --addsign "${{ steps.requestPom.outputs.rpmPath }}"
+      - name: Package signed .deb
+        working-directory: plugin
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          echo -n "$GPG_PRIVATE_KEY" | gpg2 --batch --allow-secret-key-import --import
+          gpg2 --export-secret-keys --batch --pinentry-mode loopback --passphrase "$PASSPHRASE" > $HOME/.gnupg/secring.gpg
+          mvn jdeb:jdeb --settings deployment/settings.xml
+      - name: Check license headers
+        working-directory: plugin
+        run: |
+          mvn license:check
+      - name: Archive .jar
+        uses: actions/upload-artifact@v2
+        with:
+          name: jar
+          path: plugin/${{ steps.requestPom.outputs.jarPath }}
+          if-no-files-found: error
+      - name: Archive .rpm
+        uses: actions/upload-artifact@v2
+        with:
+          name: rpm
+          path: plugin/${{ steps.requestPom.outputs.rpmPath }}
+          if-no-files-found: error
+      - name: Archive .deb
+        uses: actions/upload-artifact@v2
+        with:
+          name: deb
+          path: plugin/${{ steps.requestPom.outputs.debPath }}
+          if-no-files-found: error
+      - name: Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            plugin/${{ steps.requestPom.outputs.jarPath }}
+            plugin/${{ steps.requestPom.outputs.rpmPath }}
+            plugin/${{ steps.requestPom.outputs.debPath }}
+          fail_on_unmatched_files: true
+      - name: Deploy to Maven Central
+        if: startsWith(github.ref, 'refs/tags/')
+        working-directory: plugin
+        env:
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          echo -n "$GPG_PRIVATE_KEY" | gpg2 --batch --allow-secret-key-import --import
+          mvn clean deploy -DskipTests=true --settings deployment/settings.xml
