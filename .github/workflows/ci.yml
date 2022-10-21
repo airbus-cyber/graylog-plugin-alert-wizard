@@ -18,13 +18,13 @@ jobs:
         id: requestPom
         working-directory: plugin
         run: |
-          echo ::set-output name=graylogVersion::$(mvn help:evaluate -Dexpression=project.parent.version -q -DforceStdout)
+          echo "graylogVersion=$(mvn help:evaluate -Dexpression=project.parent.version -q -DforceStdout)" >> $GITHUB_OUTPUT
 
           NAME=$(mvn help:evaluate -Dexpression=project.name -q -DforceStdout)
           VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          echo ::set-output name=jarPath::target/${NAME}-${VERSION}.jar
-          echo ::set-output name=rpmPath::target/rpm/${NAME}/RPMS/noarch/${NAME}-${VERSION}-1.noarch.rpm
-          echo ::set-output name=debPath::target/${NAME}-${VERSION}.deb
+          echo "jarPath=target/${NAME}-${VERSION}.jar" >> $GITHUB_OUTPUT
+          echo "rpmPath=target/rpm/${NAME}/RPMS/noarch/${NAME}-${VERSION}-1.noarch.rpm" >> $GITHUB_OUTPUT
+          echo "debPath=target/${NAME}-${VERSION}.deb" >> $GITHUB_OUTPUT
       - name: Cache Graylog
         uses: actions/cache@v3
         id: cache
