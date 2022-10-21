@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [3.3.1](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/3.3.0...3.3.1)
 ### Bug Fixes
+* Updated graylog-plugin-aggregation-count dependency to [2.2.1](https://github.com/airbus-cyber/graylog-plugin-aggregation-count/blob/2.2.1/CHANGELOG.md)
 
 ## [3.3.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/3.2.5...3.3.0)
 ### Features
