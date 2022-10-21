@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: plugin
       - name: Setup Java JDK 8
@@ -33,7 +33,7 @@ jobs:
           key: ${{ steps.requestPom.outputs.graylogVersion }}
       - name: Check out Graylog
         if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: Graylog2/graylog2-server
           ref: ${{ steps.requestPom.outputs.graylogVersion }}
