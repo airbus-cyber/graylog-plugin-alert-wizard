@@ -87,19 +87,19 @@ jobs:
         run: |
           mvn license:check
       - name: Archive .jar
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: jar
           path: plugin/${{ steps.requestPom.outputs.jarPath }}
           if-no-files-found: error
       - name: Archive .rpm
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: rpm
           path: plugin/${{ steps.requestPom.outputs.rpmPath }}
           if-no-files-found: error
       - name: Archive .deb
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: deb
           path: plugin/${{ steps.requestPom.outputs.debPath }}
