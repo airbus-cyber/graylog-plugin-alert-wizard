@@ -26,7 +26,7 @@ jobs:
           echo ::set-output name=rpmPath::target/rpm/${NAME}/RPMS/noarch/${NAME}-${VERSION}-1.noarch.rpm
           echo ::set-output name=debPath::target/${NAME}-${VERSION}.deb
       - name: Cache Graylog
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: cache
         with:
           path: graylog2-server
@@ -44,7 +44,7 @@ jobs:
         run: |
           mvn compile -DskipTests=true --batch-mode
       - name: Cache node_modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: plugin/node_modules
           key: ${{ hashFiles('plugin/yarn.lock') }}
