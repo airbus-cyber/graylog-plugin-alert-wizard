@@ -18,7 +18,7 @@ import URI from 'urijs';
 
 import AppConfig from 'util/AppConfig';
 
-// This is the identifier defined in the PluginMetaData (com.airbus_cyber_security.graylog.LoggingAlertMetaData)
+// This is the identifier defined in the PluginMetaData (com.airbus_cyber_security.graylog.AlertWizardtMetaData)
 const pluginUniqueIdentifier = 'com.airbus-cyber-security.graylog.AlertWizardPlugin';
 
 // The webpack-dev-server serves the assets from "/"
