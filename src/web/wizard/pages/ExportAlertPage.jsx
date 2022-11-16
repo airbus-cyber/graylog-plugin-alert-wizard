@@ -30,7 +30,7 @@ import IconDownload from 'wizard/components/icons/Download';
 import Navigation from 'wizard/routing/Navigation';
 import AlertRuleSelectionList from 'wizard/components/AlertRuleSelectionList'
 import RulesImportExport from 'wizard/logic/RulesImportExport'
-import CombinedProvider from 'injection/CombinedProvider';
+import { EventNotificationsActions } from 'stores/event-notifications/EventNotificationsStore';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
@@ -39,8 +39,6 @@ addLocaleData(frLocaleData);
 const messages = {
     'fr': messages_fr
 };
-
-const { EventNotificationsActions } = CombinedProvider.get('EventNotifications');
 
 const ExportAlertPage = createReactClass({
     displayName: 'ExportAlertPage',

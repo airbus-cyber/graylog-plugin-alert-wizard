@@ -27,13 +27,11 @@ import AlertRuleActions from 'wizard/actions/AlertRuleActions';
 import Navigation from 'wizard/routing/Navigation';
 import AlertRuleSelectionList from 'wizard/components/AlertRuleSelectionList'
 import RulesImportExport from 'wizard/logic/RulesImportExport'
-import CombinedProvider from 'injection/CombinedProvider';
+import { EventNotificationsActions } from 'stores/event-notifications/EventNotificationsStore';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
 addLocaleData(frLocaleData);
-
-const { EventNotificationsActions } = CombinedProvider.get('EventNotifications');
 
 const messages = {
     'fr': messages_fr
