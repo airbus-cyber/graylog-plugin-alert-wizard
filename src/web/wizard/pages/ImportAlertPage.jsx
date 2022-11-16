@@ -15,6 +15,7 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
+// sources of inspiration for this page: components/event-notifications/event-notification-form/EventNotificationFormContainer.jsx
 import React from 'react';
 import createReactClass from 'create-react-class';
 import { LinkContainer } from 'react-router-bootstrap';
@@ -27,10 +28,13 @@ import AlertRuleActions from 'wizard/actions/AlertRuleActions';
 import Navigation from 'wizard/routing/Navigation';
 import AlertRuleSelectionList from 'wizard/components/AlertRuleSelectionList'
 import RulesImportExport from 'wizard/logic/RulesImportExport'
+import CombinedProvider from 'injection/CombinedProvider';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
 addLocaleData(frLocaleData);
+
+const { EventNotificationsActions } = CombinedProvider.get('EventNotifications');
 
 const messages = {
     'fr': messages_fr
@@ -74,10 +78,27 @@ const ImportAlertPage = createReactClass({
         evt.preventDefault();
         
         const { alertRules, selectedAlertTitles } = this.state;
-        const rules = alertRules.filter(alertRule => selectedAlertTitles.has(alertRule.title))
+        const rules = alertRules.filter(alertRule => selectedAlertTitles.has(alertRule.title));
 
         for (const rule of rules) {
-            AlertRuleActions.create(rule);
+            // TODO should try to add a non-regression test for this quite involved import code
+            //      import a rule which has notification with a split fields and check the split fields are present in the system
+            //      => set up selenium tests ? :(
+            AlertRuleActions.create(rule).then(() => {
+                // TODO should not need to perform this get: create should return the information of the alert
+                AlertRuleActions.get(rule.title).then(alert => {
+                    const notification = {
+                        'config': {
+                            ...rule.notification_parameters,
+                            'type': 'logging-alert-notification'
+                        },
+                        'description': '',
+                        'id': alert.notification,
+                        'title': rule.title
+                    }
+                    EventNotificationsActions.update(alert.notification, notification);
+                })
+            });
         }
     },
     
