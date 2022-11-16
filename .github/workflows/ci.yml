@@ -5,11 +5,11 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: plugin
       - name: Setup Java JDK 8
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           java-version: 8
           distribution: temurin
@@ -18,22 +18,22 @@ jobs:
         id: requestPom
         working-directory: plugin
         run: |
-          echo ::set-output name=graylogVersion::$(mvn help:evaluate -Dexpression=project.parent.version -q -DforceStdout)
+          echo "graylogVersion=$(mvn help:evaluate -Dexpression=project.parent.version -q -DforceStdout)" >> $GITHUB_OUTPUT
 
           NAME=$(mvn help:evaluate -Dexpression=project.name -q -DforceStdout)
           VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          echo ::set-output name=jarPath::target/${NAME}-${VERSION}.jar
-          echo ::set-output name=rpmPath::target/rpm/${NAME}/RPMS/noarch/${NAME}-${VERSION}-1.noarch.rpm
-          echo ::set-output name=debPath::target/${NAME}-${VERSION}.deb
+          echo "jarPath=target/${NAME}-${VERSION}.jar" >> $GITHUB_OUTPUT
+          echo "rpmPath=target/rpm/${NAME}/RPMS/noarch/${NAME}-${VERSION}-1.noarch.rpm" >> $GITHUB_OUTPUT
+          echo "debPath=target/${NAME}-${VERSION}.deb" >> $GITHUB_OUTPUT
       - name: Cache Graylog
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: cache
         with:
           path: graylog2-server
           key: ${{ steps.requestPom.outputs.graylogVersion }}
       - name: Check out Graylog
         if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: Graylog2/graylog2-server
           ref: ${{ steps.requestPom.outputs.graylogVersion }}
@@ -44,7 +44,7 @@ jobs:
         run: |
           mvn compile -DskipTests=true --batch-mode
       - name: Cache node_modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: plugin/node_modules
           key: ${{ hashFiles('plugin/yarn.lock') }}
@@ -87,19 +87,19 @@ jobs:
         run: |
           mvn license:check
       - name: Archive .jar
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: jar
           path: plugin/${{ steps.requestPom.outputs.jarPath }}
           if-no-files-found: error
       - name: Archive .rpm
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: rpm
           path: plugin/${{ steps.requestPom.outputs.rpmPath }}
           if-no-files-found: error
       - name: Archive .deb
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: deb
           path: plugin/${{ steps.requestPom.outputs.debPath }}
