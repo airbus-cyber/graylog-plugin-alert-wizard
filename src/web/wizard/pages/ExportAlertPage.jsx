@@ -30,6 +30,7 @@ import IconDownload from 'wizard/components/icons/Download';
 import Navigation from 'wizard/routing/Navigation';
 import AlertRuleSelectionList from 'wizard/components/AlertRuleSelectionList'
 import RulesImportExport from 'wizard/logic/RulesImportExport'
+import CombinedProvider from 'injection/CombinedProvider';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
@@ -38,6 +39,8 @@ addLocaleData(frLocaleData);
 const messages = {
     'fr': messages_fr
 };
+
+const { EventNotificationsActions } = CombinedProvider.get('EventNotifications');
 
 const ExportAlertPage = createReactClass({
     displayName: 'ExportAlertPage',
@@ -61,10 +64,13 @@ const ExportAlertPage = createReactClass({
     async onSubmit(evt) {
         evt.preventDefault();
 
-        const alerts = []
+        const alerts = [];
         for (const title of this.state.selectedAlertTitles) {
-            const alert = await AlertRuleActions.get(title)
-            alerts.push(alert)
+            const alert = await AlertRuleActions.get(title);
+            const notification = await EventNotificationsActions.get(alert.notification);
+            // TODO write a test that checks that the notification_parameters are present in the result (using mswjs or selenium?)
+            alert.notification_parameters = notification.config;
+            alerts.push(alert);
         }
 
         UserNotification.success('Successfully export alert rules. Starting download...', 'Success!');

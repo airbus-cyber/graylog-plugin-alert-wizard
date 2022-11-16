@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [4.3.1](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/4.3.0...4.3.1)
 ### Bug Fixes
+* Rules export was not exporting field notification_parameters anymore ([issue #97](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/97))
 * Rules import was not restoring notification split fields ([issue #97](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/97))
 
 ## [4.3.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/4.2.1...4.3.0)
