@@ -74,7 +74,7 @@ const ImportAlertPage = createReactClass({
         this.setState({ selectedAlertTitles: selection })
     },
 
-    onSubmitApplyAlertRules(evt) {
+    async onSubmitApplyAlertRules(evt) {
         evt.preventDefault();
         
         const { alertRules, selectedAlertTitles } = this.state;
@@ -84,21 +84,19 @@ const ImportAlertPage = createReactClass({
             // TODO should try to add a non-regression test for this quite involved import code
             //      import a rule which has notification with a split fields and check the split fields are present in the system
             //      => set up selenium tests ? :(
-            AlertRuleActions.create(rule).then(() => {
+            await AlertRuleActions.create(rule);
                 // TODO should not need to perform this get: create should return the information of the alert
-                AlertRuleActions.get(rule.title).then(alert => {
-                    const notification = {
-                        'config': {
-                            ...rule.notification_parameters,
-                            'type': 'logging-alert-notification'
-                        },
-                        'description': '',
-                        'id': alert.notification,
-                        'title': rule.title
-                    }
-                    EventNotificationsActions.update(alert.notification, notification);
-                })
-            });
+            const alert = await AlertRuleActions.get(rule.title);
+            const notification = {
+                'config': {
+                    ...rule.notification_parameters,
+                    'type': 'logging-alert-notification'
+                },
+                'description': '',
+                'id': alert.notification,
+                'title': rule.title
+            }
+            EventNotificationsActions.update(alert.notification, notification);
         }
     },
     
