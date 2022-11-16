@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.3.1](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/4.3.0...4.3.1)
+### Bug Fixes
+
 ## [4.3.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/4.2.1...4.3.0)
 ### Features
 * Native aggregation is used instead of [graylog-plugin-aggregation-count](https://github.com/airbus-cyber/graylog-plugin-aggregation-count) ([issue #71](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/71))
