@@ -15,6 +15,7 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
+// TODO should rename package rest into resources
 package com.airbus_cyber_security.graylog.wizard.alert.rest;
 
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRule;
