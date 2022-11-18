@@ -30,7 +30,14 @@ import fetch from 'logic/rest/FetchProvider';
 // TODO: this is not totally satisfactory as there will be nodes (to retrieve the plugin's version).
 //       It just shows the code is complex and not testable
 const mockListNodes = jest.fn(() => Promise.resolve({}));
-jest.mock('logic/rest/FetchProvider', () => jest.fn(() => Promise.resolve()));
+//jest.mock('logic/rest/FetchProvider', () => jest.fn(() => Promise.resolve()));
+jest.mock('logic/rest/FetchProvider', () => jest.fn((method, url) => {
+    if (url === 'http://localhost/system/locales') {
+        // TODO should check the value that is returned by /system/locales in real life
+        return Promise.resolve({ 'locales': '' })
+    }
+    return Promise.resolve()
+}));
 jest.mock('stores/users/CurrentUserStore', () => ({ CurrentUserStore: MockStore('get') }));
 jest.mock('stores/nodes/NodesStore', () => ({
   NodesActions: { list: (...args) => mockListNodes(...args) },
