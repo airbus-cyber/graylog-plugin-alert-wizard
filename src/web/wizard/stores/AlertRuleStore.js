@@ -114,8 +114,6 @@ const AlertRuleStore = Reflux.createStore({
         const promise = fetch('POST', url, request)
             .then(() => {
                 UserNotification.success('Stream successfully created, Alert condition successfully created, Alert notification successfully created');
-                // TODO is this necessary? Try to remove
-                this.list();
                 return true;
             }, error => {
                 UserNotification.error(`Creating alert rule failed with status: ${error.message}`,
