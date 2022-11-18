@@ -27,9 +27,6 @@ import WizardPage from './WizardPage';
 
 import fetch from 'logic/rest/FetchProvider';
 
-// TODO: this is not totally satisfactory as there will be nodes (to retrieve the plugin's version).
-//       It just shows the code is complex and not testable
-const mockListNodes = jest.fn(() => Promise.resolve({}));
 //jest.mock('logic/rest/FetchProvider', () => jest.fn(() => Promise.resolve()));
 jest.mock('logic/rest/FetchProvider', () => jest.fn((method, url) => {
     if (url === 'http://localhost/system/locales') {
@@ -39,8 +36,10 @@ jest.mock('logic/rest/FetchProvider', () => jest.fn((method, url) => {
     return Promise.resolve()
 }));
 jest.mock('stores/users/CurrentUserStore', () => ({ CurrentUserStore: MockStore('get') }));
+// TODO: this is not totally satisfactory as there will be nodes (to retrieve the plugin's version).
+//       It just shows the code is complex and not testable
 jest.mock('stores/nodes/NodesStore', () => ({
-  NodesActions: { list: (...args) => mockListNodes(...args) },
+  NodesActions: { list: (...args) => Promise.resolve({ nodes: [] }) },
   NodesStore: MockStore(),
 }));
 
