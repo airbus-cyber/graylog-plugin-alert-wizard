@@ -43,14 +43,14 @@ const WizardPage = createReactClass({
 
     getInitialState() {
         return {
-            configurations: null,
+            configuration: null,
             version: '',
         };
     },
 
     componentDidMount() {
-        WizardConfigurationResource.get().then(configurations => {
-            this.setState({configurations: configurations});
+        WizardConfigurationResource.get().then(configuration => {
+            this.setState({configuration: configuration});
         });
         NodesActions.list().then(nodes => {
             if (nodes.nodes[0]) {
@@ -70,14 +70,14 @@ const WizardPage = createReactClass({
     },
 
     render() {
-        const configuration = this.state.configurations;
+        const configuration = this.state.configuration;
         if (!configuration) {
             return <Spinner text="Loading, please wait..." />;
         }
 
-        // TODO write a test if <AlertRuleList config={configuration.field_order} /> instead of field_order
+        // TODO write a test if <AlertRuleList config={configuration.field_order} /> instead of <AlertRuleList field_order={configuration.field_order} />
         return (
-        <IntlProvider locale={language} messages={messages[language]}>         
+        <IntlProvider locale={language} messages={messages[language]}>
             <DocumentTitle title="Alert Rules">
                 <div>
                     <PageHeader title={<FormattedMessage id="wizard.alertsRule" defaultMessage= "Alert Rules" />}>
