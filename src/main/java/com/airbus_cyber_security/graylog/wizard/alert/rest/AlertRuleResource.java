@@ -88,7 +88,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private static final String ENCODING = "UTF-8";
     private static final String TITLE = "title";
 
-
     private final StreamService streamService;
     private final ClusterEventBus clusterEventBus;
     private final AlertWizardConfigurationService configurationService;

@@ -17,19 +17,25 @@ class GraylogRestApi:
     def _get(self, path):
         url = self._build_url(path)
         response = requests.get(url, auth=_AUTH, headers=_HEADERS)
-        self._print('GET {} => {}'.format(url, response.status_code))
+        self._print(f'GET {url} => {response.status_code}')
         return response
 
     def _put(self, path, payload):
         url = self._build_url(path)
         response = requests.put(url, json=payload, auth=_AUTH, headers=_HEADERS)
-        self._print('PUT {} {} => {}'.format(url, payload, response.status_code))
+        self._print(f'PUT {url} {payload} => {response.status_code}')
         return response
 
     def _post(self, path, payload=None):
         url = self._build_url(path)
         response = requests.post(url, json=payload, auth=_AUTH, headers=_HEADERS)
-        self._print('POST {} {} => {}'.format(url, payload, response.status_code))
+        self._print(f'POST {url} {payload} => {response.status_code}')
+        return response
+
+    def _delete(self, path):
+        url = self._build_url(path)
+        response = requests.delete(url, auth=_AUTH, headers=_HEADERS)
+        self._print(f'DEL {url}')
         return response
 
     def default_deflector_is_up(self):
@@ -165,7 +171,7 @@ class GraylogRestApi:
         return self._create_alert_rule(title, rule, 'AND', time, additional_threshold_type='<', additional_threshold=additional_threshold, second_stream=second_stream)
 
     def get_alert_rule(self, name):
-        response = self._get('plugins/com.airbus_cyber_security.graylog.wizard/alerts/' + name)
+        response = self._get(f'plugins/com.airbus_cyber_security.graylog.wizard/alerts/{name}')
         return response.json()
 
     def get_alert_rules(self):
@@ -216,9 +222,19 @@ class GraylogRestApi:
                 return notification
         raise ValueError('Notification not found')
 
+    def get_stream_by_title(self, title):
+        response = self._get('streams')
+        body = response.json()
+        for stream in body['streams']:
+            if stream['title'] == title:
+                return stream['id']
+        raise ValueError('Stream not found')
+
+    def delete_stream(self, identifier):
+        self._delete(f'streams/{identifier}')
+
     def get_events_count(self):
         response = self._post('events/search', {})
         body = response.json()
 
         return body['total_events']
-

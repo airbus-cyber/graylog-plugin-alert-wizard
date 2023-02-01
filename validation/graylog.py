@@ -57,8 +57,8 @@ class Graylog:
     def get_alert_rules(self):
         return self._api.get_alert_rules()
 
-    def create_alert_rule_count(self, *args):
-        return self._api.create_alert_rule_count(*args)
+    def create_alert_rule_count(self, title, rule, time):
+        return self._api.create_alert_rule_count(title, rule, time)
 
     def create_alert_rule_group_distinct(self, *args):
         return self._api.create_alert_rule_group_distinct(*args)
@@ -78,6 +78,11 @@ class Graylog:
     def get_notification_with_title(self, title):
         return self._api.get_notification_with_title(title)
 
+    def get_stream_by_title(self, title):
+        return self._api.get_stream_by_title(title)
+
+    def delete_stream(self, identifier):
+        self._api.delete_stream(identifier)
     def get_events_count(self):
         return self._api.get_events_count()
 
