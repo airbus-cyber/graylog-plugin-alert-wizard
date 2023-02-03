@@ -102,8 +102,8 @@ public abstract class GetDataAlertRule {
                                           @JsonProperty("condition_parameters") Map<String, Object> conditionParameters,
                                           @JsonProperty("stream") AlertRuleStream stream,
                                           @JsonProperty("second_stream") AlertRuleStream stream2) {
-		return new AutoValue_GetDataAlertRule(title, severity, conditionID, notificationID, createdAt, creatorUserId,
-                lastModified, isDisabled, description, alertCount, conditionType, conditionParameters, stream, stream2);
+		return new AutoValue_GetDataAlertRule(title, severity, description, conditionType, conditionParameters, stream, stream2,
+				conditionID, notificationID, createdAt, creatorUserId, lastModified, isDisabled, alertCount);
 	}
 
 }
