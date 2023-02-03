@@ -194,3 +194,16 @@ class Test(TestCase):
         self._graylog.create_alert_rule_count(title, rule, _PERIOD)
         logs = self._graylog.extract_logs()
         self.assertNotIn('ERROR', logs)
+
+    def test_get_all_rules_should_not_fail_when_a_stream_is_deleted_issue105(self):
+        title = 'aaa'
+        rule = {
+            'field': 'source',
+            'type': 1,
+            'value': 'toto'
+        }
+        self._graylog.create_alert_rule_count(title, rule, _PERIOD)
+        stream_identifier = self._graylog.get_stream_by_title(title)
+        self._graylog.delete_stream(stream_identifier)
+        status_code = self._graylog.get_alert_rules()
+        self.assertEqual(200, status_code)

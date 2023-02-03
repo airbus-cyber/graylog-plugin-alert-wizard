@@ -38,7 +38,8 @@ public abstract class AlertRule {
     @JsonProperty("title")
     @NotNull
     public abstract String getTitle();
-    
+
+    // TODO can't this field be NotNull?
     @JsonProperty("stream")
     @Nullable
     public abstract String getStreamID();
@@ -70,7 +71,8 @@ public abstract class AlertRule {
     @JsonProperty("condition_type")
     @Nullable
     public abstract String getConditionType();
-    
+
+    // TODO can't this field be NotNull?
     @JsonProperty("stream2")
     @Nullable
     public abstract String getSecondStreamID();

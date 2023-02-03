@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.Set;
 
 
+// TODO extract class that accesses to database and move into com.airbus_cyber_security.graylog.wizard.alert.database
 public class AlertRuleService {
 
 	private final JacksonDBCollection<AlertRule, String> alertRules;

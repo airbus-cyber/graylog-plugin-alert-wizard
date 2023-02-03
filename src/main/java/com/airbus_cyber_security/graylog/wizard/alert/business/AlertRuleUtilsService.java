@@ -100,10 +100,9 @@ public class AlertRuleUtilsService {
 
     public GetDataAlertRule constructDataAlertRule(AlertRule alert) throws NotFoundException {
         LOG.debug("Get data alert: " + alert.getTitle());
-        try {
-            String streamID = alert.getStreamID();
-            Stream stream = this.streamService.load(streamID);
+        String streamIdentifier = alert.getStreamID();
 
+        try {
             // Get the event
             Map<String, Object> parametersCondition = null;
             if (alert.getEventID() != null && !alert.getEventID().isEmpty()) {
@@ -112,20 +111,13 @@ public class AlertRuleUtilsService {
             } else {
                 LOG.error("Alert " + alert.getTitle() + " is broken event id is null");
             }
-            List<FieldRule> fieldRules = new ArrayList<>();
-            Optional.ofNullable(alert.getPipelineFieldRules()).ifPresent(fieldRules::addAll);
-            Optional.ofNullable(this.alertRuleUtils.getListFieldRule(stream.getStreamRules())).ifPresent(fieldRules::addAll);
-            AlertRuleStream alertRuleStream = AlertRuleStream.create(streamID, stream.getMatchingType().toString(), fieldRules);
-            AlertRuleStream alertRuleStream2 = null;
-            if (alert.getSecondStreamID() != null && !alert.getSecondStreamID().isEmpty()) {
-                Stream stream2 = this.streamService.load(alert.getSecondStreamID());
-                List<FieldRule> fieldRules2 = new ArrayList<>();
-                Optional.ofNullable(alert.getSecondPipelineFieldRules()).ifPresent(fieldRules2::addAll);
-                Optional.ofNullable(this.alertRuleUtils.getListFieldRule(stream2.getStreamRules())).ifPresent(fieldRules2::addAll);
-                alertRuleStream2 = AlertRuleStream.create(alert.getSecondStreamID(), stream2.getMatchingType().toString(), fieldRules2);
-            }
+            Stream stream = this.loadStream(streamIdentifier);
+            AlertRuleStream alertRuleStream = constructAlertRuleStream(alert, stream, alert.getPipelineFieldRules());
+            AlertRuleStream alertRuleStream2 = constructSecondAlertRuleStream(alert);
             LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) this.eventNotificationsResource.get(alert.getNotificationID()).config();
-            LOG.debug("Severity: " + loggingNotificationConfig.severity().getType());
+            long alertCount = countAlerts(streamIdentifier, alert.getLastModified());
+
+            boolean isDisabled = streamIsDisabled(stream);
 
             return GetDataAlertRule.create(alert.getTitle(),
                     loggingNotificationConfig.severity().getType(),
@@ -134,9 +126,9 @@ public class AlertRuleUtilsService {
                     alert.getCreatedAt(),
                     alert.getCreatorUserId(),
                     alert.getLastModified(),
-                    stream.getDisabled(),
+                    isDisabled,
                     alert.getDescription(),
-                    countAlerts(streamID, alert.getLastModified()),
+                    alertCount,
                     alert.getConditionType(),
                     parametersCondition,
                     alertRuleStream,
@@ -144,6 +136,46 @@ public class AlertRuleUtilsService {
 
         } catch (Exception e) {
             throw new NotFoundException(e);
+        }
+    }
+
+    private static boolean streamIsDisabled(Stream stream) {
+        boolean isDisabled = false;
+        if (stream != null) {
+            isDisabled = stream.getDisabled();
+        }
+        return isDisabled;
+    }
+
+    private AlertRuleStream constructSecondAlertRuleStream(AlertRule alert) {
+        String streamIdentifier = alert.getSecondStreamID();
+        // TODO are these two checks really necessary? (Isn't it either one or the other?)
+        if (streamIdentifier == null) {
+            return null;
+        }
+        if (streamIdentifier.isEmpty()) {
+            return null;
+        }
+        Stream stream = this.loadStream(streamIdentifier);
+        return this.constructAlertRuleStream(alert, stream, alert.getSecondPipelineFieldRules());
+    }
+
+    private AlertRuleStream constructAlertRuleStream(AlertRule alert, Stream stream, List<FieldRule> pipelineFieldRules) {
+        if (stream == null) {
+            return null;
+        }
+
+        List<FieldRule> fieldRules = new ArrayList<>();
+        Optional.ofNullable(pipelineFieldRules).ifPresent(fieldRules::addAll);
+        Optional.ofNullable(this.alertRuleUtils.getListFieldRule(stream.getStreamRules())).ifPresent(fieldRules::addAll);
+        return AlertRuleStream.create(stream.getId(), stream.getMatchingType().toString(), fieldRules);
+    }
+
+    private Stream loadStream(String streamIdentifier) {
+        try {
+            return this.streamService.load(streamIdentifier);
+        } catch (NotFoundException e) {
+            return null;
         }
     }
 
