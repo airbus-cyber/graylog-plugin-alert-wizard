@@ -442,11 +442,11 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         try {
             AlertRule alertRule = this.alertRuleService.load(alertTitle);
-            this.streamPipelineService.deleteStreamFromID(alertRule.getStreamIdentifier());
+            this.streamPipelineService.deleteStreamFromIdentifier(alertRule.getStreamIdentifier());
 
             //Delete second Stream
             if (alertRule.getSecondStreamID() != null && !alertRule.getSecondStreamID().isEmpty()) {
-                this.streamPipelineService.deleteStreamFromID(alertRule.getSecondStreamID());
+                this.streamPipelineService.deleteStreamFromIdentifier(alertRule.getSecondStreamID());
             }
 
             // Delete Event

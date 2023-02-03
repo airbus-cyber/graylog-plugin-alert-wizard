@@ -210,7 +210,7 @@ public class StreamPipelineService {
             }
             //Delete old stream if one
         } else if (oldAlert.getSecondStreamID() != null && !oldAlert.getSecondStreamID().isEmpty()) {
-            deleteStreamFromID(oldAlert.getSecondStreamID());
+            deleteStreamFromIdentifier(oldAlert.getSecondStreamID());
         }
         return null;
     }
@@ -239,23 +239,14 @@ public class StreamPipelineService {
         this.clusterEventBus.post(StreamsChangedEvent.create(stream.getId()));
     }
 
-    private void deleteStream(Stream stream){
+    public void deleteStreamFromIdentifier(String streamIdentifier){
         try {
-            if (stream != null) {
-                this.streamService.destroy(stream);
-                this.clusterEventBus.post(StreamsChangedEvent.create(stream.getId()));
-                this.clusterEventBus.post(StreamDeletedEvent.create(stream.getId()));
-            }
-        } catch (NotFoundException e) {
-            LOG.error("Cannot find the stream ", e);
-        }
-    }
-
-    public void deleteStreamFromID(String streamID){
-        try {
-            deleteStream(this.streamService.load(streamID));
+            Stream stream = this.streamService.load(streamIdentifier);
+            this.streamService.destroy(stream);
+            this.clusterEventBus.post(StreamsChangedEvent.create(stream.getId()));
+            this.clusterEventBus.post(StreamDeletedEvent.create(stream.getId()));
         } catch(NotFoundException e) {
-            LOG.error("Cannot find the stream ", e);
+            LOG.debug("Couldn't find the stream when deleting", e);
         }
     }
 
