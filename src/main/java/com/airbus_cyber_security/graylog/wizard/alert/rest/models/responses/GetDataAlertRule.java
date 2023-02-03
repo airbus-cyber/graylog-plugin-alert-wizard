@@ -28,6 +28,7 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 import java.util.Map;
 
+// TODO either inherit or reuse AlertRuleRequest to avoid duplication in this class
 @AutoValue
 @JsonAutoDetect
 public abstract class GetDataAlertRule {
