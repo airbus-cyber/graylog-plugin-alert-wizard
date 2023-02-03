@@ -104,13 +104,7 @@ public class AlertRuleUtilsService {
 
         try {
             // Get the event
-            Map<String, Object> parametersCondition = null;
-            if (alert.getEventID() != null && !alert.getEventID().isEmpty()) {
-                EventDefinitionDto event = this.eventDefinitionsResource.get(alert.getEventID());
-                parametersCondition = this.alertRuleUtils.getConditionParameters(event.config());
-            } else {
-                LOG.error("Alert " + alert.getTitle() + " is broken event id is null");
-            }
+            Map<String, Object> parametersCondition = convertEventDefinitionToParametersCondition(alert.getEventID());
             Stream stream = this.loadStream(streamIdentifier);
             AlertRuleStream alertRuleStream = constructAlertRuleStream(alert, stream, alert.getPipelineFieldRules());
             AlertRuleStream alertRuleStream2 = constructSecondAlertRuleStream(alert);
@@ -137,6 +131,16 @@ public class AlertRuleUtilsService {
         } catch (Exception e) {
             throw new NotFoundException(e);
         }
+    }
+
+    private Map<String, Object> convertEventDefinitionToParametersCondition(String eventIdentifier) {
+        // TODO should try to remove this condition...
+        if (eventIdentifier == null || eventIdentifier.isEmpty()) {
+            LOG.error("Alert is broken event id is null");
+            return null;
+        }
+        EventDefinitionDto event = this.eventDefinitionsResource.get(eventIdentifier);
+        return this.alertRuleUtils.getConditionParameters(event.config());
     }
 
     private static boolean streamIsDisabled(Stream stream) {
