@@ -37,7 +37,7 @@ public abstract class GetDataAlertRule {
 	public abstract String getTitle();
 	
 	@JsonProperty("severity")
-	@Nullable
+	@NotNull
 	public abstract String getSeverity();
 
 	@JsonProperty("condition")
