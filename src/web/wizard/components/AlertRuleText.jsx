@@ -55,7 +55,7 @@ const AlertRuleText = createReactClass({
     _getThresholdType(type) {
         return this._availableThresholdTypes().filter((t) => t.value === type)[0].label;
     },
-    
+    // TODO: try to factor, this seems to be a duplicate of code in components/conditions/StatisticalCondition.jsx
     _availableAggregationTypes() {
         return [
             {value: 'AVG', label: <FormattedMessage id= "wizard.meanValue" defaultMessage= "average value" />},
