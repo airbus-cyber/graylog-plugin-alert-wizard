@@ -39,9 +39,8 @@ public abstract class AlertRule {
     @NotNull
     public abstract String getTitle();
 
-    // TODO can't this field be NotNull?
     @JsonProperty("stream")
-    @Nullable
+    @NotNull
     public abstract String getStreamID();
 
     // TODO can't this be always NotNull?
