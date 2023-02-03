@@ -40,6 +40,26 @@ public abstract class GetDataAlertRule {
 	@NotNull
 	public abstract String getSeverity();
 
+    @JsonProperty("description")
+    @Nullable
+    public abstract String getDescription();
+
+    @JsonProperty("condition_type")
+    @Nullable
+    public abstract String getConditionType();
+
+    @JsonProperty("condition_parameters")
+    @Nullable
+    public abstract Map<String, Object> conditionParameters();
+
+    @JsonProperty("stream")
+    @Nullable
+    public abstract AlertRuleStream getStream();
+
+    @JsonProperty("second_stream")
+    @Nullable
+    public abstract AlertRuleStream getSecondStream();
+
 	@JsonProperty("condition")
 	@Nullable
 	public abstract String getConditionID();
@@ -60,32 +80,12 @@ public abstract class GetDataAlertRule {
 	@Nullable
 	public abstract DateTime getLastModified();
 
-    @JsonProperty("disabled")
-    public abstract boolean getIsDisabled();
+	@JsonProperty("disabled")
+	public abstract boolean getIsDisabled();
 
-    @JsonProperty("description")
-    @Nullable
-    public abstract String getDescription();
+	@JsonProperty("alert_count")
+	public abstract long getAlertCount();
 
-    @JsonProperty("alert_count")
-    public abstract long getAlertCount();
-
-    @JsonProperty("condition_type")
-    @Nullable
-    public abstract String getConditionType();
-    
-    @JsonProperty("condition_parameters")
-    @Nullable
-    public abstract Map<String, Object> conditionParameters();
-    
-    @JsonProperty("stream")
-    @Nullable
-    public abstract AlertRuleStream getStream();
-    
-    @JsonProperty("second_stream")
-    @Nullable
-    public abstract AlertRuleStream getSecondStream();
-    
 	@JsonCreator
 	public static GetDataAlertRule create(@JsonProperty("title") String title,
                                           @JsonProperty("severity") String severity,
