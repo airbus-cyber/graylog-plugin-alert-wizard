@@ -82,7 +82,7 @@ public abstract class GetDataAlertRule {
 	public abstract DateTime getLastModified();
 
 	@JsonProperty("disabled")
-	public abstract boolean getIsDisabled();
+	public abstract boolean isDisabled();
 
 	@JsonProperty("alert_count")
 	public abstract long getAlertCount();
