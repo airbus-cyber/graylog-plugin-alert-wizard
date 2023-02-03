@@ -25,6 +25,7 @@ import com.google.auto.value.AutoValue;
 
 import java.util.List;
 
+// TODO maybe it is possible to remove this class (and simply use of List<AlertRule>)...
 @AutoValue
 @JsonAutoDetect
 public abstract class GetListAlertRule {

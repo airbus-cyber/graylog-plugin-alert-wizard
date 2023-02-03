@@ -241,7 +241,7 @@ public class StreamPipelineService {
 
     private void deleteStream(Stream stream){
         try {
-            if(stream != null) {
+            if (stream != null) {
                 this.streamService.destroy(stream);
                 this.clusterEventBus.post(StreamsChangedEvent.create(stream.getId()));
                 this.clusterEventBus.post(StreamDeletedEvent.create(stream.getId()));

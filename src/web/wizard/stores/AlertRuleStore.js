@@ -52,16 +52,18 @@ const SOURCE_URL = RestUtils.buildSourceURL('alerts')
 
 const AlertRuleStore = Reflux.createStore({
     listenables: [AlertRuleActions],
+    // TODO try to remove this field (carefull with update and deleteByName
     alerts: undefined,
 
     init() {
+        // TODO try to remove
         this.trigger({alerts: this.alerts});
     },
     list() {
         const promise = fetch('GET', URLUtils.qualifyUrl(SOURCE_URL))
             .then(
                 response => {
-                    this.alerts = response.alerts;
+                    this.alerts = response;
                     this.trigger({alerts: this.alerts});
                     return this.alerts;
                 },
@@ -75,7 +77,7 @@ const AlertRuleStore = Reflux.createStore({
         const promise = fetch('GET', URLUtils.qualifyUrl(SOURCE_URL + '/data'))
             .then(
                 response => {
-                    this.alerts = response.alerts_data;
+                    this.alerts = response;
                     this.trigger({alerts: this.alerts});
                     return this.alerts;
                 },
@@ -139,6 +141,7 @@ const AlertRuleStore = Reflux.createStore({
         const promise = fetch(method, url, request)
             .then(() => {
                 UserNotification.success('Alert rule successfully updated');
+                // TODO try to remove
                 this.list();
                 return true;
             }, (error) => {
@@ -156,6 +159,7 @@ const AlertRuleStore = Reflux.createStore({
         const promise = fetch(method, url)
             .then(() => {
                 UserNotification.success('Alert rule successfully deleted');
+                // TODO try to remove
                 this.listWithData();
                 return null;
             }, (error) => {

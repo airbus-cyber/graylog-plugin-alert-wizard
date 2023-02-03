@@ -24,8 +24,6 @@ import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetDataAlertRule;
-import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetListAlertRule;
-import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetListDataAlertRule;
 import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleUtils;
 import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleUtilsService;
 import com.airbus_cyber_security.graylog.wizard.alert.business.Pipeline;
@@ -151,9 +149,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     @ApiOperation(value = "Lists all existing alerts")
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_READ)
-    public GetListAlertRule list() {
-        final List<AlertRule> alerts = this.alertRuleService.all();
-        return GetListAlertRule.create(alerts);
+    public List<AlertRule> list() {
+        return this.alertRuleService.all();
     }
 
     @GET
@@ -182,7 +179,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     @ApiOperation(value = "Lists all existing alerts with additional data")
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_READ)
-    public GetListDataAlertRule listWithData() {
+    public List<GetDataAlertRule> listWithData() {
         List<AlertRule> alerts = this.alertRuleService.all();
 
         List<GetDataAlertRule> alertsData = new ArrayList<>();
@@ -190,7 +187,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             alertsData.add(this.alertRuleUtilsService.constructDataAlertRule(alert));
         }
 
-        return GetListDataAlertRule.create(alertsData);
+        return alertsData;
     }
 
     private String checkImportPolicyAndGetTitle(String title) {

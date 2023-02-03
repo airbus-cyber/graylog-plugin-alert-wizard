@@ -29,6 +29,7 @@ const AlertListStore = Reflux.createStore({
     lists: undefined,
 
     init() {
+      // TODO: is this really needed? Try to remove
       this.trigger({lists: this.lists});
     },
 
