@@ -44,7 +44,7 @@ public abstract class AlertRule {
     @Nullable
     public abstract String getStreamID();
 
-    // TODO couldn't this be always NotNull?
+    // TODO can't this be always NotNull?
     @JsonProperty("event")
     @Nullable
     public abstract String getEventID();
@@ -73,7 +73,6 @@ public abstract class AlertRule {
     @Nullable
     public abstract String getConditionType();
 
-    // TODO can't this field be NotNull?
     @JsonProperty("stream2")
     @Nullable
     public abstract String getSecondStreamID();
