@@ -98,39 +98,33 @@ public class AlertRuleUtilsService {
         return alerts.size();
     }
 
-    public GetDataAlertRule constructDataAlertRule(AlertRule alert) throws NotFoundException {
+    public GetDataAlertRule constructDataAlertRule(AlertRule alert) {
         LOG.debug("Get data alert: " + alert.getTitle());
         String streamIdentifier = alert.getStreamID();
 
-        try {
-            // Get the event
-            Map<String, Object> parametersCondition = convertEventDefinitionToParametersCondition(alert.getEventID());
-            Stream stream = this.loadStream(streamIdentifier);
-            AlertRuleStream alertRuleStream = constructAlertRuleStream(alert, stream, alert.getPipelineFieldRules());
-            AlertRuleStream alertRuleStream2 = constructSecondAlertRuleStream(alert);
-            LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) this.eventNotificationsResource.get(alert.getNotificationID()).config();
-            long alertCount = countAlerts(streamIdentifier, alert.getLastModified());
+        Map<String, Object> parametersCondition = convertEventDefinitionToParametersCondition(alert.getEventID());
+        Stream stream = this.loadStream(streamIdentifier);
+        AlertRuleStream alertRuleStream = constructAlertRuleStream(alert, stream, alert.getPipelineFieldRules());
+        AlertRuleStream alertRuleStream2 = constructSecondAlertRuleStream(alert);
+        LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) this.eventNotificationsResource.get(alert.getNotificationID()).config();
+        long alertCount = countAlerts(streamIdentifier, alert.getLastModified());
 
-            boolean isDisabled = streamIsDisabled(stream);
+        boolean isDisabled = streamIsDisabled(stream);
 
-            return GetDataAlertRule.create(alert.getTitle(),
-                    loggingNotificationConfig.severity().getType(),
-                    alert.getEventID(),
-                    alert.getNotificationID(),
-                    alert.getCreatedAt(),
-                    alert.getCreatorUserId(),
-                    alert.getLastModified(),
-                    isDisabled,
-                    alert.getDescription(),
-                    alertCount,
-                    alert.getConditionType(),
-                    parametersCondition,
-                    alertRuleStream,
-                    alertRuleStream2);
-
-        } catch (Exception e) {
-            throw new NotFoundException(e);
-        }
+        return GetDataAlertRule.create(alert.getTitle(),
+                loggingNotificationConfig.severity().getType(),
+                alert.getEventID(),
+                alert.getNotificationID(),
+                alert.getCreatedAt(),
+                alert.getCreatorUserId(),
+                alert.getLastModified(),
+                isDisabled,
+                alert.getDescription(),
+                alertCount,
+                alert.getConditionType(),
+                parametersCondition,
+                alertRuleStream,
+                alertRuleStream2);
     }
 
     private Map<String, Object> convertEventDefinitionToParametersCondition(String eventIdentifier) {

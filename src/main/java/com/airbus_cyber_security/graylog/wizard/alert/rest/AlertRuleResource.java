@@ -183,7 +183,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     @ApiOperation(value = "Lists all existing alerts with additional data")
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_READ)
-    public GetListDataAlertRule listWithData() throws NotFoundException {
+    public GetListDataAlertRule listWithData() {
         List<AlertRule> alerts = this.alertRuleService.all();
 
         List<GetDataAlertRule> alertsData = new ArrayList<>();
