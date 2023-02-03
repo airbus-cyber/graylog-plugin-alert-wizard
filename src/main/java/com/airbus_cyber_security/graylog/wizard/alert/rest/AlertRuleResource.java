@@ -50,7 +50,6 @@ import org.graylog.plugins.pipelineprocessor.db.*;
 import org.graylog.security.UserContext;
 import org.graylog2.alerts.AlertService;
 import org.graylog2.audit.jersey.AuditEvent;
-import org.graylog2.cluster.ClusterConfig;
 import org.graylog2.database.NotFoundException;
 import org.graylog2.events.ClusterEventBus;
 import org.graylog2.indexer.IndexSetRegistry;
@@ -344,7 +343,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String userName = getCurrentUser().getName();
 
         // Update stream.
-        Stream stream = this.streamService.load(oldAlert.getStreamID());
+        Stream stream = this.streamService.load(oldAlert.getStreamIdentifier());
         this.streamPipelineService.updateStream(stream, request.getStream(), alertTitle);
 
         //update pipeline
@@ -393,7 +392,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         AlertRule alertRule = AlertRule.create(
                 alertTitle,
-                oldAlert.getStreamID(),
+                oldAlert.getStreamIdentifier(),
                 oldAlert.getEventID(),
                 oldAlert.getNotificationID(),
                 oldAlert.getCreatedAt(),
@@ -446,7 +445,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         try {
             AlertRule alertRule = this.alertRuleService.load(alertTitle);
-            this.streamPipelineService.deleteStreamFromID(alertRule.getStreamID());
+            this.streamPipelineService.deleteStreamFromID(alertRule.getStreamIdentifier());
 
             //Delete second Stream
             if (alertRule.getSecondStreamID() != null && !alertRule.getSecondStreamID().isEmpty()) {

@@ -100,7 +100,7 @@ public class AlertRuleUtilsService {
 
     public GetDataAlertRule constructDataAlertRule(AlertRule alert) {
         LOG.debug("Get data alert: " + alert.getTitle());
-        String streamIdentifier = alert.getStreamID();
+        String streamIdentifier = alert.getStreamIdentifier();
 
         Map<String, Object> parametersCondition = convertEventDefinitionToParametersCondition(alert.getEventID());
         Stream stream = this.loadStream(streamIdentifier);
