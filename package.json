@@ -14,7 +14,7 @@
     "graylog"
   ],
   "author": "Airbus CyberSecurity",
-  "license": "GPL-3.0",
+  "license": "SSPL-1.0",
   "dependencies": {
     "graylog-web-plugin": "file:../graylog2-server/graylog2-web-interface/packages/graylog-web-plugin"
   },
