@@ -234,12 +234,12 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return this.alertRuleUtilsService.createEvent(alertTitle, notificationIdentifier, configuration, userContext);
     }
 
-    private String createSecondEvent(String alertTitle, String notificationID, String conditionType, Map<String, Object> conditionParameters, UserContext userContext, String streamIdentifier2) {
+    private String createSecondEvent(String alertTitle, String notificationIdentifier, String conditionType, Map<String, Object> conditionParameters, UserContext userContext, String streamIdentifier2) {
         if (!conditionType.equals("OR")) {
             return null;
         }
         EventProcessorConfig configuration2 = this.alertRuleUtilsService.createAggregationCondition(streamIdentifier2, conditionParameters);
-        return this.alertRuleUtilsService.createEvent(alertTitle + "#2", notificationID, configuration2, userContext);
+        return this.alertRuleUtilsService.createEvent(alertTitle + "#2", notificationIdentifier, configuration2, userContext);
     }
 
     @POST
