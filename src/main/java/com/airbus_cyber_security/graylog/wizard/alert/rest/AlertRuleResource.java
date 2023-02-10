@@ -40,6 +40,8 @@ import com.mongodb.MongoException;
 import io.swagger.annotations.*;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.graylog.events.processor.DBEventDefinitionService;
+import org.graylog.events.processor.EventDefinitionHandler;
 import org.graylog.events.processor.EventProcessorConfig;
 import org.graylog.events.rest.EventDefinitionsResource;
 import org.graylog.events.rest.EventNotificationsResource;
@@ -85,6 +87,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private final StreamService streamService;
     private final ClusterEventBus clusterEventBus;
     private final AlertWizardConfigurationService configurationService;
+
+    // TODO try to remove this field => Use AlertRuleUtilsService
     private final EventDefinitionsResource eventDefinitionsResource;
     private final EventNotificationsResource eventNotificationsResource;
 
@@ -109,6 +113,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                              PipelineStreamConnectionsService pipelineStreamConnectionsService,
                              AlertListService alertListService,
                              EventDefinitionsResource eventDefinitionsResource,
+                             EventDefinitionHandler eventDefinitionHandler,
+                             DBEventDefinitionService eventDefinitionService,
                              EventNotificationsResource eventNotificationsResource) {
         this.alertRuleService = alertRuleService;
         this.streamService = streamService;
@@ -123,7 +129,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 alertRuleService,
                 streamService,
                 alertService,
-                eventDefinitionsResource,
+                eventDefinitionHandler,
+                eventDefinitionService,
                 eventNotificationsResource,
                 clusterConfigService);
         // TODO should probably inject StreamPipelineService instead of instanciating it

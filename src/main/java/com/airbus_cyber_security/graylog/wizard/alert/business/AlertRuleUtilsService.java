@@ -34,13 +34,14 @@ import org.graylog.events.conditions.Expression;
 import org.graylog.events.notifications.EventNotificationHandler;
 import org.graylog.events.notifications.EventNotificationSettings;
 import org.graylog.events.notifications.NotificationDto;
+import org.graylog.events.processor.DBEventDefinitionService;
 import org.graylog.events.processor.EventDefinitionDto;
+import org.graylog.events.processor.EventDefinitionHandler;
 import org.graylog.events.processor.EventProcessorConfig;
 import org.graylog.events.processor.aggregation.AggregationConditions;
 import org.graylog.events.processor.aggregation.AggregationEventProcessorConfig;
 import org.graylog.events.processor.aggregation.AggregationFunction;
 import org.graylog.events.processor.aggregation.AggregationSeries;
-import org.graylog.events.rest.EventDefinitionsResource;
 import org.graylog.events.rest.EventNotificationsResource;
 import org.graylog.security.UserContext;
 import org.graylog2.alerts.Alert;
@@ -58,6 +59,7 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.Response;
 import java.util.*;
 
+// TODO split this class according => extract everything which is related to EventsDefinition CRUD into a EventsDefinitionUtils/Service?
 public class AlertRuleUtilsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(AlertRuleUtilsService.class);
@@ -66,21 +68,25 @@ public class AlertRuleUtilsService {
     private final StreamService streamService;
     private final AlertService alertService;
     private final AlertRuleUtils alertRuleUtils;
-    private final EventDefinitionsResource eventDefinitionsResource;
+    private final EventDefinitionHandler eventDefinitionHandler;
+
+    private final DBEventDefinitionService eventDefinitionService;
     private final EventNotificationsResource eventNotificationsResource;
     private final ClusterConfigService clusterConfigService;
 
     public AlertRuleUtilsService(AlertRuleService alertRuleService,
                                  StreamService streamService,
                                  AlertService alertService,
-                                 EventDefinitionsResource eventDefinitionsResource,
+                                 EventDefinitionHandler eventDefinitionHandler,
+                                 DBEventDefinitionService eventDefinitionService,
                                  EventNotificationsResource eventNotificationsResource,
                                  ClusterConfigService clusterConfigService) {
         this.alertRuleUtils = new AlertRuleUtils();
         this.alertRuleService = alertRuleService;
         this.streamService = streamService;
         this.alertService = alertService;
-        this.eventDefinitionsResource = eventDefinitionsResource;
+        this.eventDefinitionHandler = eventDefinitionHandler;
+        this.eventDefinitionService = eventDefinitionService;
         this.eventNotificationsResource = eventNotificationsResource;
         this.clusterConfigService = clusterConfigService;
     }
@@ -126,13 +132,18 @@ public class AlertRuleUtilsService {
                 alertRuleStream2);
     }
 
+    private EventDefinitionDto getEventDefinition(String eventDefinitionIdentifier) {
+        return this.eventDefinitionService.get(eventDefinitionIdentifier)
+                .orElseThrow(() -> new javax.ws.rs.NotFoundException("Event definition <" + eventDefinitionIdentifier + "> doesn't exist"));
+    }
+
     private Map<String, Object> convertEventDefinitionToParametersCondition(String eventIdentifier) {
         // TODO should try to remove this condition...
         if (eventIdentifier == null || eventIdentifier.isEmpty()) {
             LOG.error("Alert is broken event id is null");
             return null;
         }
-        EventDefinitionDto event = this.eventDefinitionsResource.get(eventIdentifier);
+        EventDefinitionDto event = this.getEventDefinition(eventIdentifier);
         return this.alertRuleUtils.getConditionParameters(event.config());
     }
 
@@ -435,27 +446,13 @@ public class AlertRuleUtilsService {
     }
 
     private String createEventFromDto(EventDefinitionDto eventDefinition, UserContext userContext) {
-        Response response = this.eventDefinitionsResource.create(true, eventDefinition, userContext);
-        if (Response.Status.Family.familyOf(response.getStatus()) == Response.Status.Family.SUCCESSFUL) {
-            eventDefinition = (EventDefinitionDto) response.getEntity();
-            return eventDefinition.id();
-        } else {
-            ValidationResult validationResult = (ValidationResult) response.getEntity();
-            LOG.error("Failed to create Event for alert: " + eventDefinition.title() + " Errors: " + validationResult.getErrors());
-            return null;
-        }
+        EventDefinitionDto result = this.eventDefinitionHandler.create(eventDefinition, Optional.of(userContext.getUser()));
+        return result.id();
     }
 
-    private String updateEventFromDto(String definitionID, EventDefinitionDto eventDefinition) {
-        Response response = this.eventDefinitionsResource.update(definitionID, true, eventDefinition);
-        if (Response.Status.Family.familyOf(response.getStatus()) == Response.Status.Family.SUCCESSFUL) {
-            eventDefinition = (EventDefinitionDto) response.getEntity();
-            return eventDefinition.id();
-        } else {
-            ValidationResult validationResult = (ValidationResult) response.getEntity();
-            LOG.error("Failed to create Event for alert: " + eventDefinition.title() + " Errors: " + validationResult.getErrors());
-            return null;
-        }
+    private String updateEventFromDto(EventDefinitionDto eventDefinition) {
+        EventDefinitionDto result = this.eventDefinitionHandler.update(eventDefinition, true);
+        return result.id();
     }
 
     public String createEvent(String alertTitle, String notificationIdentifier, EventProcessorConfig configuration, UserContext userContext) {
@@ -482,9 +479,9 @@ public class AlertRuleUtilsService {
     }
 
     public void updateEvent(String alertTitle, String eventID, EventProcessorConfig configuration) {
-        LOG.debug("Update Event: " + alertTitle + " ID: " + eventID);
-        EventDefinitionDto event = this.eventDefinitionsResource.get(eventID);
-        event = EventDefinitionDto.builder()
+        LOG.debug("Update event: {}, identifier: {}", alertTitle, eventID);
+        EventDefinitionDto event = this.getEventDefinition(eventID);
+        EventDefinitionDto updatedEvent = EventDefinitionDto.builder()
                 .id(event.id())
                 .title(alertTitle)
                 .description(event.description())
@@ -497,7 +494,6 @@ public class AlertRuleUtilsService {
                 .notifications(event.notifications())
                 .storage(event.storage())
                 .build();
-        this.updateEventFromDto(eventID, event);
+        this.updateEventFromDto(updatedEvent);
     }
-
 }
