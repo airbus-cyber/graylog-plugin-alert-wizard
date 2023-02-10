@@ -24,7 +24,6 @@ import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetDataAlertRule;
-import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleUtils;
 import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleUtilsService;
 import com.airbus_cyber_security.graylog.wizard.alert.business.Pipeline;
 import com.airbus_cyber_security.graylog.wizard.alert.business.StreamPipelineService;
@@ -124,7 +123,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 alertRuleService,
                 streamService,
                 alertService,
-                new AlertRuleUtils(),
                 eventDefinitionsResource,
                 eventNotificationsResource,
                 clusterConfigService);

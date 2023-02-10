@@ -73,14 +73,13 @@ public class AlertRuleUtilsService {
     public AlertRuleUtilsService(AlertRuleService alertRuleService,
                                  StreamService streamService,
                                  AlertService alertService,
-                                 AlertRuleUtils alertRuleUtils,
                                  EventDefinitionsResource eventDefinitionsResource,
                                  EventNotificationsResource eventNotificationsResource,
                                  ClusterConfigService clusterConfigService) {
+        this.alertRuleUtils = new AlertRuleUtils();
         this.alertRuleService = alertRuleService;
         this.streamService = streamService;
         this.alertService = alertService;
-        this.alertRuleUtils = alertRuleUtils;
         this.eventDefinitionsResource = eventDefinitionsResource;
         this.eventNotificationsResource = eventNotificationsResource;
         this.clusterConfigService = clusterConfigService;
