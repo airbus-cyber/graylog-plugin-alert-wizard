@@ -459,10 +459,10 @@ public class AlertRuleUtilsService {
         }
     }
 
-    public String createEvent(String alertTitle, String notificationID, EventProcessorConfig configuration, UserContext userContext) {
+    public String createEvent(String alertTitle, String notificationIdentifier, EventProcessorConfig configuration, UserContext userContext) {
         LOG.debug("Create Event: " + alertTitle);
         EventNotificationHandler.Config notificationConfiguration = EventNotificationHandler.Config.builder()
-                .notificationId(notificationID)
+                .notificationId(notificationIdentifier)
                 .build();
 
         EventDefinitionDto eventDefinition = EventDefinitionDto.builder()
