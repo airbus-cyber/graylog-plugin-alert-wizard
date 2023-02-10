@@ -264,7 +264,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String description = request.getDescription();
         Map<String, Object> conditionParameters = request.conditionParameters();
 
-        String notificationID = this.alertRuleUtilsService.createNotification(alertTitle, severity, userContext);
+        String notificationIdentifier = this.alertRuleUtilsService.createNotification(alertTitle, severity, userContext);
 
         // Create stream and pipeline
         Stream stream = this.streamPipelineService.createStream(streamConfiguration, alertTitle, userName);
@@ -284,15 +284,15 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
 
         //Create Events
-        String eventIdentifier = createEvent(alertTitle, notificationID, conditionType, conditionParameters, userContext, streamIdentifier, streamIdentifier2);
-        String eventIdentifier2 = createSecondEvent(alertTitle, notificationID, conditionType, conditionParameters, userContext, streamIdentifier2);
+        String eventIdentifier = createEvent(alertTitle, notificationIdentifier, conditionType, conditionParameters, userContext, streamIdentifier, streamIdentifier2);
+        String eventIdentifier2 = createSecondEvent(alertTitle, notificationIdentifier, conditionType, conditionParameters, userContext, streamIdentifier2);
 
         this.clusterEventBus.post(StreamsChangedEvent.create(streamIdentifier));
         AlertRule alertRule = AlertRule.create(
                 alertTitle,
                 streamIdentifier,
                 eventIdentifier,
-                notificationID,
+                notificationIdentifier,
                 DateTime.now(),
                 userName,
                 DateTime.now(),
