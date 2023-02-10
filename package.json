@@ -15,19 +15,15 @@
   ],
   "author": "Airbus CyberSecurity",
   "license": "SSPL-1.0",
-  "dependencies": {
-    "graylog-web-plugin": "file:../graylog2-server/graylog2-web-interface/packages/graylog-web-plugin"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "graylog-web-plugin": "file:../graylog2-server/graylog2-web-interface/packages/graylog-web-plugin",
     "react-confirm-alert": "^2.4.1",
     "react-intl": "^2.9.0",
     "react-addons-linked-state-mixin": "^15.6.2",
     "@babel/preset-react": "^7.16.7",
     "@babel/plugin-transform-runtime": "^7.17.0",
     "babel-plugin-dynamic-import-node": "^2.3.3"
-  },
-  "resolutions": {
-    "upath": "1.1.2"
   },
   "private": true
 }
