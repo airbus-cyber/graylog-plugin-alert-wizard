@@ -51,6 +51,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import java.util.*;
 
@@ -73,6 +74,7 @@ public class AlertRuleUtilsService {
     private final NotificationResourceHandler notificationHandler;
     private final ClusterConfigService clusterConfigService;
 
+    @Inject
     public AlertRuleUtilsService(AlertRuleService alertRuleService,
                                  StreamService streamService,
                                  AlertService alertService,

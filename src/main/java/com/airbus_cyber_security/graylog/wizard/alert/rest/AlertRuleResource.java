@@ -40,21 +40,15 @@ import com.mongodb.MongoException;
 import io.swagger.annotations.*;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.graylog.events.notifications.DBNotificationService;
-import org.graylog.events.notifications.NotificationResourceHandler;
-import org.graylog.events.processor.DBEventDefinitionService;
-import org.graylog.events.processor.EventDefinitionHandler;
 import org.graylog.events.processor.EventProcessorConfig;
 import org.graylog.events.rest.EventDefinitionsResource;
 import org.graylog.events.rest.EventNotificationsResource;
 import org.graylog.plugins.pipelineprocessor.db.*;
 import org.graylog.security.UserContext;
-import org.graylog2.alerts.AlertService;
 import org.graylog2.audit.jersey.AuditEvent;
 import org.graylog2.database.NotFoundException;
 import org.graylog2.events.ClusterEventBus;
 import org.graylog2.indexer.IndexSetRegistry;
-import org.graylog2.plugin.cluster.ClusterConfigService;
 import org.graylog2.plugin.database.ValidationException;
 import org.graylog2.plugin.rest.PluginRestResource;
 import org.graylog2.plugin.streams.Stream;
@@ -100,7 +94,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private final StreamPipelineService streamPipelineService;
     private final AlertListUtilsService alertListUtilsService;
 
-
     @Inject
     public AlertRuleResource(AlertRuleService alertRuleService,
                              LookupService lookupService,
@@ -110,17 +103,12 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                              StreamRuleService streamRuleService,
                              ClusterEventBus clusterEventBus,
                              IndexSetRegistry indexSetRegistry,
-                             AlertService alertService,
                              AlertWizardConfigurationService configurationService,
-                             ClusterConfigService clusterConfigService,
                              PipelineStreamConnectionsService pipelineStreamConnectionsService,
                              AlertListService alertListService,
                              EventDefinitionsResource eventDefinitionsResource,
-                             NotificationResourceHandler notificationHandler,
-                             DBNotificationService notificationService,
-                             EventDefinitionHandler eventDefinitionHandler,
-                             DBEventDefinitionService eventDefinitionService,
-                             EventNotificationsResource eventNotificationsResource) {
+                             EventNotificationsResource eventNotificationsResource,
+                             AlertRuleUtilsService alertRuleUtilsService) {
         this.alertRuleService = alertRuleService;
         this.streamService = streamService;
         this.clusterEventBus = clusterEventBus;
@@ -130,16 +118,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         // TODO should probably inject AlertListUtilsService instead of instantiating it
         this.alertListUtilsService = new AlertListUtilsService(alertListService);
-        // TODO should probably inject AlertRuleUtilsService instead of instantiating it
-        this.alertRuleUtilsService = new AlertRuleUtilsService(
-                alertRuleService,
-                streamService,
-                alertService,
-                eventDefinitionHandler,
-                eventDefinitionService,
-                notificationHandler,
-                notificationService,
-                clusterConfigService);
+        this.alertRuleUtilsService = alertRuleUtilsService;
         // TODO should probably inject StreamPipelineService instead of instanciating it
         this.streamPipelineService = new StreamPipelineService(
                 streamService,
