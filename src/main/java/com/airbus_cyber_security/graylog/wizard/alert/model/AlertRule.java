@@ -49,6 +49,7 @@ public abstract class AlertRule {
     @Nullable
     public abstract String getEventID();
 
+    // TODO rename into getNotificationIdentifier
     @JsonProperty("notification")
     @Nullable
     public abstract String getNotificationID();
@@ -57,6 +58,7 @@ public abstract class AlertRule {
     @Nullable
     public abstract DateTime getCreatedAt();
 
+    // TODO rename int getCreatorUserIdentifier
     @JsonProperty("creator_user_id")
     @Nullable
     public abstract String getCreatorUserId();

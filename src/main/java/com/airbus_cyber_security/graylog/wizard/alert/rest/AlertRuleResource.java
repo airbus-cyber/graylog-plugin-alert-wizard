@@ -40,6 +40,7 @@ import com.mongodb.MongoException;
 import io.swagger.annotations.*;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.graylog.events.notifications.DBNotificationService;
 import org.graylog.events.processor.DBEventDefinitionService;
 import org.graylog.events.processor.EventDefinitionHandler;
 import org.graylog.events.processor.EventProcessorConfig;
@@ -113,6 +114,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                              PipelineStreamConnectionsService pipelineStreamConnectionsService,
                              AlertListService alertListService,
                              EventDefinitionsResource eventDefinitionsResource,
+                             DBNotificationService notificationService,
                              EventDefinitionHandler eventDefinitionHandler,
                              DBEventDefinitionService eventDefinitionService,
                              EventNotificationsResource eventNotificationsResource) {
@@ -133,6 +135,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 eventDefinitionHandler,
                 eventDefinitionService,
                 eventNotificationsResource,
+                notificationService,
                 clusterConfigService);
         // TODO should probably inject StreamPipelineService instead of instanciating it
         this.streamPipelineService = new StreamPipelineService(

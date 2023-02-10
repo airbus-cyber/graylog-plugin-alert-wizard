@@ -31,6 +31,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.graylog.events.conditions.Expr;
 import org.graylog.events.conditions.Expression;
+import org.graylog.events.notifications.DBNotificationService;
 import org.graylog.events.notifications.EventNotificationHandler;
 import org.graylog.events.notifications.EventNotificationSettings;
 import org.graylog.events.notifications.NotificationDto;
@@ -59,7 +60,9 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.Response;
 import java.util.*;
 
-// TODO split this class according => extract everything which is related to EventsDefinition CRUD into a EventsDefinitionUtils/Service?
+// TODO split this class according
+//  => extract everything which is related to EventsDefinition CRUD into a EventsDefinitionUtils/Service?
+//  => extract everything which is related to Notification CRUD into a NotificationUtils/Service?
 public class AlertRuleUtilsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(AlertRuleUtilsService.class);
@@ -72,6 +75,8 @@ public class AlertRuleUtilsService {
 
     private final DBEventDefinitionService eventDefinitionService;
     private final EventNotificationsResource eventNotificationsResource;
+
+    private final DBNotificationService notificationService;
     private final ClusterConfigService clusterConfigService;
 
     // TODO should try to remove the use of EventNotificationsResource
@@ -81,6 +86,7 @@ public class AlertRuleUtilsService {
                                  EventDefinitionHandler eventDefinitionHandler,
                                  DBEventDefinitionService eventDefinitionService,
                                  EventNotificationsResource eventNotificationsResource,
+                                 DBNotificationService notificationService,
                                  ClusterConfigService clusterConfigService) {
         this.alertRuleUtils = new AlertRuleUtils();
         this.alertRuleService = alertRuleService;
@@ -89,6 +95,7 @@ public class AlertRuleUtilsService {
         this.eventDefinitionHandler = eventDefinitionHandler;
         this.eventDefinitionService = eventDefinitionService;
         this.eventNotificationsResource = eventNotificationsResource;
+        this.notificationService = notificationService;
         this.clusterConfigService = clusterConfigService;
     }
 
@@ -112,7 +119,8 @@ public class AlertRuleUtilsService {
         Stream stream = this.loadStream(streamIdentifier);
         AlertRuleStream alertRuleStream = constructAlertRuleStream(alert, stream, alert.getPipelineFieldRules());
         AlertRuleStream alertRuleStream2 = constructSecondAlertRuleStream(alert);
-        LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) this.eventNotificationsResource.get(alert.getNotificationID()).config();
+        NotificationDto notification = this.getNotification(alert.getNotificationID());
+        LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) notification.config();
         long alertCount = countAlerts(streamIdentifier, alert.getLastModified());
 
         boolean isDisabled = streamIsDisabled(stream);
@@ -131,6 +139,11 @@ public class AlertRuleUtilsService {
                 parametersCondition,
                 alertRuleStream,
                 alertRuleStream2);
+    }
+
+    private NotificationDto getNotification(String notificationIdentifier) {
+        return this.notificationService.get(notificationIdentifier)
+                .orElseThrow(() -> new javax.ws.rs.NotFoundException("Notification " + notificationIdentifier + " doesn't exist"));
     }
 
     private EventDefinitionDto getEventDefinition(String eventDefinitionIdentifier) {
@@ -409,7 +422,7 @@ public class AlertRuleUtilsService {
     }
 
     public void updateNotification(String title, String notificationID, String severity) {
-        NotificationDto notification = this.eventNotificationsResource.get(notificationID);
+        NotificationDto notification = this.getNotification(notificationID);
         LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) notification.config();
         if (!loggingNotificationConfig.severity().getType().equals(severity) || !notification.title().equals(title)) {
             LOG.debug("Update Notification " + title);
