@@ -92,6 +92,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
     // TODO try to remove this field => Use AlertRuleUtilsService
     private final EventDefinitionsResource eventDefinitionsResource;
+    // TODO try to remove this field => Use AlertRuleUtilsService
     private final EventNotificationsResource eventNotificationsResource;
 
     private final AlertRuleService alertRuleService;
@@ -136,7 +137,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 alertService,
                 eventDefinitionHandler,
                 eventDefinitionService,
-                eventNotificationsResource,
                 notificationHandler,
                 notificationService,
                 clusterConfigService);
@@ -462,6 +462,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 this.eventDefinitionsResource.delete(alertRule.getEventID());
             }
             if (alertRule.getNotificationID() != null && !alertRule.getNotificationID().isEmpty()) {
+                // TODO move this down into AlertRuleUtilsService and remove the use for eventNotificationsResource
                 this.eventNotificationsResource.delete(alertRule.getNotificationID());
             }
             if (alertRule.getSecondEventID() != null && !alertRule.getSecondEventID().isEmpty()) {

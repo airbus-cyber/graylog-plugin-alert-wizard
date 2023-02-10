@@ -40,13 +40,11 @@ import org.graylog.events.processor.aggregation.AggregationConditions;
 import org.graylog.events.processor.aggregation.AggregationEventProcessorConfig;
 import org.graylog.events.processor.aggregation.AggregationFunction;
 import org.graylog.events.processor.aggregation.AggregationSeries;
-import org.graylog.events.rest.EventNotificationsResource;
 import org.graylog.security.UserContext;
 import org.graylog2.alerts.Alert;
 import org.graylog2.alerts.AlertService;
 import org.graylog2.database.NotFoundException;
 import org.graylog2.plugin.cluster.ClusterConfigService;
-import org.graylog2.plugin.rest.ValidationResult;
 import org.graylog2.plugin.streams.Stream;
 import org.graylog2.streams.StreamService;
 import org.joda.time.DateTime;
@@ -54,7 +52,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.BadRequestException;
-import javax.ws.rs.core.Response;
 import java.util.*;
 
 // TODO split this class according
@@ -71,19 +68,16 @@ public class AlertRuleUtilsService {
     private final EventDefinitionHandler eventDefinitionHandler;
 
     private final DBEventDefinitionService eventDefinitionService;
-    private final EventNotificationsResource eventNotificationsResource;
     private final DBNotificationService notificationService;
 
     private final NotificationResourceHandler notificationHandler;
     private final ClusterConfigService clusterConfigService;
 
-    // TODO should try to remove the use of EventNotificationsResource
     public AlertRuleUtilsService(AlertRuleService alertRuleService,
                                  StreamService streamService,
                                  AlertService alertService,
                                  EventDefinitionHandler eventDefinitionHandler,
                                  DBEventDefinitionService eventDefinitionService,
-                                 EventNotificationsResource eventNotificationsResource,
                                  NotificationResourceHandler notificationHandler,
                                  DBNotificationService notificationService,
                                  ClusterConfigService clusterConfigService) {
@@ -93,7 +87,6 @@ public class AlertRuleUtilsService {
         this.alertService = alertService;
         this.eventDefinitionHandler = eventDefinitionHandler;
         this.eventDefinitionService = eventDefinitionService;
-        this.eventNotificationsResource = eventNotificationsResource;
         this.notificationHandler = notificationHandler;
         this.notificationService = notificationService;
         this.clusterConfigService = clusterConfigService;
@@ -375,16 +368,9 @@ public class AlertRuleUtilsService {
         return result.id();
     }
 
-    private String updateNotificationFromDto(String notificationID, NotificationDto notification) {
-        Response response = this.eventNotificationsResource.update(notificationID, notification);
-        if (Response.Status.Family.familyOf(response.getStatus()) == Response.Status.Family.SUCCESSFUL) {
-            notification = (NotificationDto) response.getEntity();
-            return notification.id();
-        } else {
-            ValidationResult validationResult = (ValidationResult) response.getEntity();
-            LOG.error("Failed to update Notification for alert: " + notification.title() + " Errors: " + validationResult.getErrors());
-            return null;
-        }
+    private String updateNotificationFromDto(NotificationDto notification) {
+        NotificationDto result = this.notificationHandler.update(notification);
+        return result.id();
     }
 
     private String getDefaultLogBody() {
@@ -436,7 +422,7 @@ public class AlertRuleUtilsService {
                     .title(title)
                     .description(notification.description())
                     .build();
-            updateNotificationFromDto(notificationID, notification);
+            updateNotificationFromDto(notification);
         }
     }
 
