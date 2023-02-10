@@ -203,8 +203,8 @@ class Test(TestCase):
             'value': 'toto'
         }
         self._graylog.create_alert_rule_count(title, rule, _PERIOD)
-        stream_identifier = self._graylog.get_stream_by_title(title)
-        self._graylog.delete_stream(stream_identifier)
+        alert_rule = self._graylog.get_alert_rule(title)
+        self._graylog.delete_stream(alert_rule['stream']['id'])
         status_code = self._graylog.get_alert_rules()
         self.assertEqual(200, status_code)
 

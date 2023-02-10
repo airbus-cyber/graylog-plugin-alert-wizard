@@ -81,9 +81,6 @@ class Graylog:
     def get_notification_with_title(self, title):
         return self._api.get_notification_with_title(title)
 
-    def get_stream_by_title(self, title):
-        return self._api.get_stream_by_title(title)
-
     def delete_stream(self, identifier):
         self._api.delete_stream(identifier)
     def get_events_count(self):

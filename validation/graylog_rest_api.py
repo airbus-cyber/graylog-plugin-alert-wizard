@@ -227,15 +227,6 @@ class GraylogRestApi:
                 return notification
         raise ValueError('Notification not found')
 
-    # TODO try to remove this method, should not be necessary (use the stream or second_stream field on the alert rule to retrieve the notification)
-    def get_stream_by_title(self, title):
-        response = self._get('streams')
-        body = response.json()
-        for stream in body['streams']:
-            if stream['title'] == title:
-                return stream['id']
-        raise ValueError('Stream not found')
-
     def get_event_definition(self, identifier):
         response = self._get(f'events/definitions/{identifier}')
         return response.json()
