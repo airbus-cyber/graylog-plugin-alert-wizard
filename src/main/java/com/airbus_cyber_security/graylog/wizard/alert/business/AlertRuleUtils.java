@@ -149,10 +149,4 @@ public class AlertRuleUtils {
          }
          return listFieldRule;
     }
-
-	// TODO remove this method => should have a more regular code (empty lists instead of null)!!!
-	public <T> Collection<T> nullSafe(Collection<T> c) {
-		return (c == null) ? Collections.<T>emptyList() : c;
-	}
-
 }

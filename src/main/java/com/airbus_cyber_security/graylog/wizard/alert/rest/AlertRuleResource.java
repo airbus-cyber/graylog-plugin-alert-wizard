@@ -71,9 +71,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Api(value = "Wizard/Alerts", description = "Management of Wizard alerts rules.")
 @Path("/alerts")
@@ -92,7 +90,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private final EventNotificationsResource eventNotificationsResource;
 
     private final AlertRuleService alertRuleService;
-    private final AlertRuleUtils alertRuleUtils;
     private final AlertRuleUtilsService alertRuleUtilsService;
     private final StreamPipelineService streamPipelineService;
     private final AlertListUtilsService alertListUtilsService;
@@ -121,14 +118,13 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.eventDefinitionsResource = eventDefinitionsResource;
         this.eventNotificationsResource = eventNotificationsResource;
 
-        this.alertRuleUtils = new AlertRuleUtils();
         this.alertListUtilsService = new AlertListUtilsService(alertListService);
         // TODO should probably inject AlertRuleUtilsService instead of instanciating it
         this.alertRuleUtilsService = new AlertRuleUtilsService(
                 alertRuleService,
                 streamService,
                 alertService,
-                this.alertRuleUtils,
+                new AlertRuleUtils(),
                 eventDefinitionsResource,
                 eventNotificationsResource,
                 clusterConfigService);
@@ -309,10 +305,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.alertRuleService.create(alertRule);
 
         //Update list usage
-        for (FieldRule fieldRule: this.alertRuleUtils.nullSafe(fieldRules)) {
+        for (FieldRule fieldRule: this.nullSafe(fieldRules)) {
             this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
-        for (FieldRule fieldRule: this.alertRuleUtils.nullSafe(fieldRules2)) {
+        for (FieldRule fieldRule: this.nullSafe(fieldRules2)) {
             this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
 
@@ -408,17 +404,17 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.alertRuleService.update(java.net.URLDecoder.decode(title, ENCODING), alertRule);
 
         // Decrement list usage
-        for (FieldRule fieldRule: this.alertRuleUtils.nullSafe(oldAlert.getPipelineFieldRules())) {
+        for (FieldRule fieldRule: this.nullSafe(oldAlert.getPipelineFieldRules())) {
             this.alertListUtilsService.decrementUsage(fieldRule.getValue());
         }
-        for (FieldRule fieldRule: this.alertRuleUtils.nullSafe(oldAlert.getSecondPipelineFieldRules())) {
+        for (FieldRule fieldRule: this.nullSafe(oldAlert.getSecondPipelineFieldRules())) {
             this.alertListUtilsService.decrementUsage(fieldRule.getValue());
         }
         // Increment list usage
-        for (FieldRule fieldRule: this.alertRuleUtils.nullSafe(fieldRules)) {
+        for (FieldRule fieldRule: this.nullSafe(fieldRules)) {
             this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
-        for (FieldRule fieldRule: this.alertRuleUtils.nullSafe(fieldRules2)) {
+        for (FieldRule fieldRule: this.nullSafe(fieldRules2)) {
             this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
 
@@ -470,10 +466,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             }
 
             //Update list usage
-            for (FieldRule fieldRule : this.alertRuleUtils.nullSafe(alertRule.getPipelineFieldRules())) {
+            for (FieldRule fieldRule : this.nullSafe(alertRule.getPipelineFieldRules())) {
                 this.alertListUtilsService.decrementUsage(fieldRule.getValue());
             }
-            for (FieldRule fieldRule : this.alertRuleUtils.nullSafe(alertRule.getSecondPipelineFieldRules())) {
+            for (FieldRule fieldRule : this.nullSafe(alertRule.getSecondPipelineFieldRules())) {
                 this.alertListUtilsService.decrementUsage(fieldRule.getValue());
             }
         } catch (NotFoundException e) {
@@ -481,5 +477,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
 
         this.alertRuleService.destroy(alertTitle);
+    }
+
+    // TODO remove this method => should have a more regular code (empty lists instead of null)!!!
+    private <T> Collection<T> nullSafe(Collection<T> c) {
+        return (c == null) ? Collections.<T>emptyList() : c;
     }
 }
