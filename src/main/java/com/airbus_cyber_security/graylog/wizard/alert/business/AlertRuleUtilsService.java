@@ -31,10 +31,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.graylog.events.conditions.Expr;
 import org.graylog.events.conditions.Expression;
-import org.graylog.events.notifications.DBNotificationService;
-import org.graylog.events.notifications.EventNotificationHandler;
-import org.graylog.events.notifications.EventNotificationSettings;
-import org.graylog.events.notifications.NotificationDto;
+import org.graylog.events.notifications.*;
 import org.graylog.events.processor.DBEventDefinitionService;
 import org.graylog.events.processor.EventDefinitionDto;
 import org.graylog.events.processor.EventDefinitionHandler;
@@ -75,8 +72,9 @@ public class AlertRuleUtilsService {
 
     private final DBEventDefinitionService eventDefinitionService;
     private final EventNotificationsResource eventNotificationsResource;
-
     private final DBNotificationService notificationService;
+
+    private final NotificationResourceHandler notificationHandler;
     private final ClusterConfigService clusterConfigService;
 
     // TODO should try to remove the use of EventNotificationsResource
@@ -86,6 +84,7 @@ public class AlertRuleUtilsService {
                                  EventDefinitionHandler eventDefinitionHandler,
                                  DBEventDefinitionService eventDefinitionService,
                                  EventNotificationsResource eventNotificationsResource,
+                                 NotificationResourceHandler notificationHandler,
                                  DBNotificationService notificationService,
                                  ClusterConfigService clusterConfigService) {
         this.alertRuleUtils = new AlertRuleUtils();
@@ -95,6 +94,7 @@ public class AlertRuleUtilsService {
         this.eventDefinitionHandler = eventDefinitionHandler;
         this.eventDefinitionService = eventDefinitionService;
         this.eventNotificationsResource = eventNotificationsResource;
+        this.notificationHandler = notificationHandler;
         this.notificationService = notificationService;
         this.clusterConfigService = clusterConfigService;
     }
@@ -371,15 +371,8 @@ public class AlertRuleUtilsService {
     }
 
     private String createNotificationFromDto(NotificationDto notification, UserContext userContext) {
-        Response response = this.eventNotificationsResource.create(notification, userContext);
-        if (Response.Status.Family.familyOf(response.getStatus()) == Response.Status.Family.SUCCESSFUL) {
-            notification = (NotificationDto) response.getEntity();
-            return notification.id();
-        } else {
-            ValidationResult validationResult = (ValidationResult) response.getEntity();
-            LOG.error("Failed to create Notification for alert: " + notification.title() + " Errors: " + validationResult.getErrors());
-            return null;
-        }
+        NotificationDto result = this.notificationHandler.create(notification, Optional.ofNullable(userContext.getUser()));
+        return result.id();
     }
 
     private String updateNotificationFromDto(String notificationID, NotificationDto notification) {
