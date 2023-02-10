@@ -123,8 +123,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.eventDefinitionsResource = eventDefinitionsResource;
         this.eventNotificationsResource = eventNotificationsResource;
 
+        // TODO should probably inject AlertListUtilsService instead of instantiating it
         this.alertListUtilsService = new AlertListUtilsService(alertListService);
-        // TODO should probably inject AlertRuleUtilsService instead of instanciating it
+        // TODO should probably inject AlertRuleUtilsService instead of instantiating it
         this.alertRuleUtilsService = new AlertRuleUtilsService(
                 alertRuleService,
                 streamService,

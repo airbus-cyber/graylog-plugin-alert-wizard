@@ -74,6 +74,7 @@ public class AlertRuleUtilsService {
     private final EventNotificationsResource eventNotificationsResource;
     private final ClusterConfigService clusterConfigService;
 
+    // TODO should try to remove the use of EventNotificationsResource
     public AlertRuleUtilsService(AlertRuleService alertRuleService,
                                  StreamService streamService,
                                  AlertService alertService,
