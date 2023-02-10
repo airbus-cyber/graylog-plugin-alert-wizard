@@ -195,8 +195,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         if (this.alertRuleService.isPresent(alertTitle)) {
             // TODO should be get or default here: it will return null when starting with a fresh instance of graylog
             // Idem in AlertListRessource. Add a test that creates two alerts with same title
-            AlertWizardConfig configGeneral = this.configurationService.getConfiguration();
-            ImportPolicyType importPolicy = configGeneral.accessImportPolicy();
+            AlertWizardConfig configuration = this.configurationService.getConfiguration();
+            ImportPolicyType importPolicy = configuration.accessImportPolicy();
             if (importPolicy != null && importPolicy.equals(ImportPolicyType.RENAME)) {
                 String newAlertTitle;
                 int i = 1;
