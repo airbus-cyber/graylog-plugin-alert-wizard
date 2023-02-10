@@ -229,9 +229,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return new Pipeline(pipeline.id(), pipelineRule.id());
     }
 
-    private String createEvent(String alertTitle, String notificationID, String conditionType, Map<String, Object> conditionParameters, UserContext userContext, String streamIdentifier, String streamIdentifier2) {
+    private String createEvent(String alertTitle, String notificationIdentifier, String conditionType, Map<String, Object> conditionParameters, UserContext userContext, String streamIdentifier, String streamIdentifier2) {
         EventProcessorConfig configuration = this.alertRuleUtilsService.createCondition(conditionType, conditionParameters, streamIdentifier, streamIdentifier2);
-        return this.alertRuleUtilsService.createEvent(alertTitle, notificationID, configuration, userContext);
+        return this.alertRuleUtilsService.createEvent(alertTitle, notificationIdentifier, configuration, userContext);
     }
 
     private String createSecondEvent(String alertTitle, String notificationID, String conditionType, Map<String, Object> conditionParameters, UserContext userContext, String streamIdentifier2) {
