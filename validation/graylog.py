@@ -45,8 +45,8 @@ class Graylog:
     def update_logging_alert_plugin_configuration(self):
         return self._api.update_logging_alert_plugin_configuration()
     
-    def update_alert_rules_settings(self, default_time):
-        return self._api.update_alert_rules_settings(default_time)
+    def update_alert_wizard_plugin_configuration(self, default_time=1, backlog_size=500):
+        return self._api.update_alert_wizard_plugin_configuration(default_time=default_time, backlog_size=backlog_size)
     
     def get_alert_wizard_plugin_configuration(self):
         return self._api.get_alert_wizard_plugin_configuration()
@@ -74,6 +74,9 @@ class Graylog:
 
     def create_list(self, *args):
         self._api.create_list(*args)
+
+    def get_event_definition(self, identifier):
+        return self._api.get_event_definition(identifier)
 
     def get_notification_with_title(self, title):
         return self._api.get_notification_with_title(title)

@@ -83,6 +83,7 @@ class GraylogRestApi:
         response = self._post('system/inputs', payload)
         return response.json()['id']
 
+    # TODO have rule creation return information about the rule
     def _create_alert_rule(self, title, rule, condition_type, time,
                            threshold_type='>', additional_threshold_type='', additional_threshold=0, second_stream=None,
                            group_by_fields=None, distinct_by='', field='', statistics_function=''):
@@ -119,6 +120,7 @@ class GraylogRestApi:
         response = self._post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
         return response.status_code
 
+    # TODO have a default value for rule
     def create_alert_rule_count(self, title, rule, time):
         return self._create_alert_rule(title, rule, 'COUNT', time)
 
@@ -195,12 +197,13 @@ class GraylogRestApi:
         response = self._get('plugins/com.airbus_cyber_security.graylog.wizard/config')
         return response.json()
 
-    def update_alert_rules_settings(self, default_time):
+    def update_alert_wizard_plugin_configuration(self, default_time=1, backlog_size=500):
         configuration = {
             'default_values': {
                 'matching_type': '',
                 'threshold_type': '',
-                'time': default_time
+                'time': default_time,
+                'backlog': backlog_size
             },
             'field_order': []
         }
@@ -215,6 +218,8 @@ class GraylogRestApi:
         }
         self._post('plugins/com.airbus_cyber_security.graylog.wizard/lists', payload)
 
+    # TODO rename into get_notification_by_title
+    # TODO try to remove this method, should not be necessary (use the notification field on the alert rule to retrieve the notification)
     def get_notification_with_title(self, title):
         notifications = self._get('events/notifications')
         for notification in notifications.json()['notifications']:
@@ -222,6 +227,7 @@ class GraylogRestApi:
                 return notification
         raise ValueError('Notification not found')
 
+    # TODO try to remove this method, should not be necessary (use the stream or second_stream field on the alert rule to retrieve the notification)
     def get_stream_by_title(self, title):
         response = self._get('streams')
         body = response.json()
@@ -229,6 +235,10 @@ class GraylogRestApi:
             if stream['title'] == title:
                 return stream['id']
         raise ValueError('Stream not found')
+
+    def get_event_definition(self, identifier):
+        response = self._get(f'events/definitions/{identifier}')
+        return response.json()
 
     def delete_stream(self, identifier):
         self._delete(f'streams/{identifier}')

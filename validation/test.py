@@ -10,7 +10,7 @@
 # To execute only one test, suffix with the fully qualified test name. Example:
 #   python -m unittest test.Test.test_create_alert_rule_with_list_should_generate_event_when_message_field_is_in_list
 
-from unittest import TestCase
+from unittest import TestCase, skip
 import time
 from graylog import Graylog
 
@@ -35,7 +35,7 @@ class Test(TestCase):
 
     def test_put_config_with_time_default_value_should_modify_time_default_value(self):
         default_time = 1441
-        self._graylog.update_alert_rules_settings(default_time)
+        self._graylog.update_alert_wizard_plugin_configuration(default_time=default_time)
         configuration = self._graylog.get_alert_wizard_plugin_configuration()
         self.assertEqual(default_time, configuration['default_values']['time'])
 
@@ -207,3 +207,19 @@ class Test(TestCase):
         self._graylog.delete_stream(stream_identifier)
         status_code = self._graylog.get_alert_rules()
         self.assertEqual(200, status_code)
+
+    @skip
+    def test_set_default_backlog_value_should_change_newly_created_event_definition_backlog_value_issue40(self):
+        self._graylog.update_alert_wizard_plugin_configuration(backlog_size=1000)
+        title = 'aaa'
+        rule = {
+            'field': 'source',
+            'type': 1,
+            'value': 'toto'
+        }
+        self._graylog.create_alert_rule_count(title, rule, _PERIOD)
+        alert_rule = self._graylog.get_alert_rule(title)
+        event_definition_identifier = alert_rule['condition']
+        event_definition = self._graylog.get_event_definition(event_definition_identifier)
+        backlog_size = event_definition['notification_settings']['backlog_size']
+        self.assertEqual(1000, backlog_size)
