@@ -61,10 +61,12 @@ public abstract class GetDataAlertRule {
     @Nullable
     public abstract AlertRuleStream getSecondStream();
 
+	// TODO should be named EventDefinitionIdentifier rather than ConditionID
 	@JsonProperty("condition")
 	@Nullable
 	public abstract String getConditionID();
 
+	// TODO rename into getNotificationIdentifier
 	@JsonProperty("notification")
 	@Nullable
 	public abstract String getNotificationID();
