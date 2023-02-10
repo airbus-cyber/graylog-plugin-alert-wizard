@@ -468,7 +468,6 @@ public class AlertRuleUtilsService {
         EventDefinitionDto eventDefinition = EventDefinitionDto.builder()
                 .title(alertTitle)
                 .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
-                //.description(request.getDescription())
                 .config(configuration)
                 .alert(true)
                 .priority(2)
