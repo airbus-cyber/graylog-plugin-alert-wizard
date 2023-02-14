@@ -33,7 +33,6 @@ public class EventDefinitionService {
                                   DBEventDefinitionService eventDefinitionService,
                                   AlertWizardConfigurationService configurationService) {
         this.eventDefinitionHandler = eventDefinitionHandler;
-        // TODO try to remove => use eventDefinitionHandler
         this.eventDefinitionService = eventDefinitionService;
         this.configurationService = configurationService;
     }
