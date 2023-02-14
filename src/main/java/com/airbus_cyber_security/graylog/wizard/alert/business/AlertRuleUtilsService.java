@@ -59,7 +59,6 @@ import javax.ws.rs.BadRequestException;
 import java.util.*;
 
 // TODO split this class according
-//  => extract everything which is related to EventsDefinition CRUD into a EventsDefinitionUtils/Service?
 //  => extract everything which is related to Notification CRUD into a NotificationUtils/Service?
 public class AlertRuleUtilsService {
 
@@ -69,35 +68,28 @@ public class AlertRuleUtilsService {
     private final StreamService streamService;
     private final AlertService alertService;
     private final AlertRuleUtils alertRuleUtils;
-    private final EventDefinitionHandler eventDefinitionHandler;
-
-    private final DBEventDefinitionService eventDefinitionService;
+    private final EventDefinitionService eventDefinitionService;
     private final DBNotificationService notificationService;
 
     private final NotificationResourceHandler notificationHandler;
     private final ClusterConfigService clusterConfigService;
-    private final AlertWizardConfigurationService configurationService;
 
     @Inject
     public AlertRuleUtilsService(AlertRuleService alertRuleService,
                                  StreamService streamService,
                                  AlertService alertService,
-                                 EventDefinitionHandler eventDefinitionHandler,
-                                 DBEventDefinitionService eventDefinitionService,
+                                 EventDefinitionService eventDefinitionService,
                                  NotificationResourceHandler notificationHandler,
                                  DBNotificationService notificationService,
-                                 ClusterConfigService clusterConfigService,
-                                 AlertWizardConfigurationService configurationService) {
+                                 ClusterConfigService clusterConfigService) {
         this.alertRuleUtils = new AlertRuleUtils();
         this.alertRuleService = alertRuleService;
         this.streamService = streamService;
         this.alertService = alertService;
-        this.eventDefinitionHandler = eventDefinitionHandler;
         this.eventDefinitionService = eventDefinitionService;
         this.notificationHandler = notificationHandler;
         this.notificationService = notificationService;
         this.clusterConfigService = clusterConfigService;
-        this.configurationService = configurationService;
     }
 
     public void checkIsValidRequest(AlertRuleRequest request) {
@@ -147,18 +139,13 @@ public class AlertRuleUtilsService {
                 .orElseThrow(() -> new javax.ws.rs.NotFoundException("Notification " + notificationIdentifier + " doesn't exist"));
     }
 
-    private EventDefinitionDto getEventDefinition(String eventDefinitionIdentifier) {
-        return this.eventDefinitionService.get(eventDefinitionIdentifier)
-                .orElseThrow(() -> new javax.ws.rs.NotFoundException("Event definition <" + eventDefinitionIdentifier + "> doesn't exist"));
-    }
-
     private Map<String, Object> convertEventDefinitionToParametersCondition(String eventIdentifier) {
         // TODO should try to remove this condition...
         if (eventIdentifier == null || eventIdentifier.isEmpty()) {
             LOG.error("Alert is broken event id is null");
             return null;
         }
-        EventDefinitionDto event = this.getEventDefinition(eventIdentifier);
+        EventDefinitionDto event = this.eventDefinitionService.getEventDefinition(eventIdentifier);
         return this.alertRuleUtils.getConditionParameters(event.config());
     }
 
@@ -444,59 +431,5 @@ public class AlertRuleUtilsService {
         } else {
             return createAggregationCondition(streamID, conditionParameter);
         }
-    }
-
-    private String createEventFromDto(EventDefinitionDto eventDefinition, UserContext userContext) {
-        EventDefinitionDto result = this.eventDefinitionHandler.create(eventDefinition, Optional.of(userContext.getUser()));
-        return result.id();
-    }
-
-    private String updateEventFromDto(EventDefinitionDto eventDefinition) {
-        EventDefinitionDto result = this.eventDefinitionHandler.update(eventDefinition, true);
-        return result.id();
-    }
-
-    public String createEvent(String alertTitle, String notificationIdentifier, EventProcessorConfig configuration, UserContext userContext) {
-        LOG.debug("Create Event: " + alertTitle);
-        EventNotificationHandler.Config notificationConfiguration = EventNotificationHandler.Config.builder()
-                .notificationId(notificationIdentifier)
-                .build();
-
-        AlertWizardConfig pluginConfiguration = this.configurationService.getConfiguration();
-        DefaultValues defaultValues = pluginConfiguration.accessDefaultValues();
-        EventDefinitionDto eventDefinition = EventDefinitionDto.builder()
-                .title(alertTitle)
-                .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
-                .config(configuration)
-                .alert(true)
-                .priority(2)
-                .keySpec(ImmutableList.of())
-                .notifications(ImmutableList.<EventNotificationHandler.Config>builder().add(notificationConfiguration).build())
-                .notificationSettings(EventNotificationSettings.builder()
-                        .gracePeriodMs(0L)
-                        .backlogSize(defaultValues.getBacklog())
-                        .build())
-                .build();
-
-        return this.createEventFromDto(eventDefinition, userContext);
-    }
-
-    public void updateEvent(String alertTitle, String eventID, EventProcessorConfig configuration) {
-        LOG.debug("Update event: {}, identifier: {}", alertTitle, eventID);
-        EventDefinitionDto event = this.getEventDefinition(eventID);
-        EventDefinitionDto updatedEvent = EventDefinitionDto.builder()
-                .id(event.id())
-                .title(alertTitle)
-                .description(event.description())
-                .priority(event.priority())
-                .alert(event.alert())
-                .config(configuration)
-                .fieldSpec(event.fieldSpec())
-                .keySpec(event.keySpec())
-                .notificationSettings(event.notificationSettings())
-                .notifications(event.notifications())
-                .storage(event.storage())
-                .build();
-        this.updateEventFromDto(updatedEvent);
     }
 }

@@ -18,15 +18,12 @@
 // TODO should rename package rest into resources
 package com.airbus_cyber_security.graylog.wizard.alert.rest;
 
+import com.airbus_cyber_security.graylog.wizard.alert.business.*;
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRule;
-import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleService;
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetDataAlertRule;
-import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleUtilsService;
-import com.airbus_cyber_security.graylog.wizard.alert.business.Pipeline;
-import com.airbus_cyber_security.graylog.wizard.alert.business.StreamPipelineService;
 import com.airbus_cyber_security.graylog.wizard.audit.AlertWizardAuditEventTypes;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfigurationService;
@@ -89,6 +86,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private final EventDefinitionsResource eventDefinitionsResource;
     // TODO try to remove this field => Use AlertRuleUtilsService
     private final EventNotificationsResource eventNotificationsResource;
+    private final EventDefinitionService eventDefinitionService;
 
     private final AlertRuleService alertRuleService;
     private final AlertRuleUtilsService alertRuleUtilsService;
@@ -109,13 +107,15 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                              AlertListService alertListService,
                              EventDefinitionsResource eventDefinitionsResource,
                              EventNotificationsResource eventNotificationsResource,
-                             AlertRuleUtilsService alertRuleUtilsService) {
+                             AlertRuleUtilsService alertRuleUtilsService,
+                             EventDefinitionService eventDefinitionService) {
         this.alertRuleService = alertRuleService;
         this.streamService = streamService;
         this.clusterEventBus = clusterEventBus;
         this.configurationService = configurationService;
         this.eventDefinitionsResource = eventDefinitionsResource;
         this.eventNotificationsResource = eventNotificationsResource;
+        this.eventDefinitionService = eventDefinitionService;
 
         // TODO should probably inject AlertListUtilsService instead of instantiating it
         this.alertListUtilsService = new AlertListUtilsService(alertListService);
@@ -219,7 +219,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
     private String createEvent(String alertTitle, String notificationIdentifier, String conditionType, Map<String, Object> conditionParameters, UserContext userContext, String streamIdentifier, String streamIdentifier2) {
         EventProcessorConfig configuration = this.alertRuleUtilsService.createCondition(conditionType, conditionParameters, streamIdentifier, streamIdentifier2);
-        return this.alertRuleUtilsService.createEvent(alertTitle, notificationIdentifier, configuration, userContext);
+        return this.eventDefinitionService.createEvent(alertTitle, notificationIdentifier, configuration, userContext);
     }
 
     private String createSecondEvent(String alertTitle, String notificationIdentifier, String conditionType, Map<String, Object> conditionParameters, UserContext userContext, String streamIdentifier2) {
@@ -227,7 +227,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             return null;
         }
         EventProcessorConfig configuration2 = this.alertRuleUtilsService.createAggregationCondition(streamIdentifier2, conditionParameters);
-        return this.alertRuleUtilsService.createEvent(alertTitle + "#2", notificationIdentifier, configuration2, userContext);
+        return this.eventDefinitionService.createEvent(alertTitle + "#2", notificationIdentifier, configuration2, userContext);
     }
 
     @POST
@@ -357,7 +357,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         EventProcessorConfig configuration = this.alertRuleUtilsService.createCondition(request.getConditionType(), request.conditionParameters(), stream.getId(), streamID2);
 
         // Update Event
-        this.alertRuleUtilsService.updateEvent(alertTitle, oldAlert.getEventID(), configuration);
+        this.eventDefinitionService.updateEvent(alertTitle, oldAlert.getEventID(), configuration);
 
         String eventID2 = oldAlert.getSecondEventID();
         //Or Condition for Second Stream
@@ -365,10 +365,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             EventProcessorConfig configuration2 = this.alertRuleUtilsService.createAggregationCondition(stream2.getId(), request.conditionParameters());
             if (oldAlert.getConditionType().equals("OR")) {
                 // Update Event
-                this.alertRuleUtilsService.updateEvent(alertTitle + "#2", eventID2, configuration2);
+                this.eventDefinitionService.updateEvent(alertTitle + "#2", eventID2, configuration2);
             } else {
                 //Create Event
-                eventID2 = this.alertRuleUtilsService.createEvent(alertTitle + "#2", oldAlert.getNotificationID(), configuration2, userContext);
+                eventID2 = this.eventDefinitionService.createEvent(alertTitle + "#2", oldAlert.getNotificationID(), configuration2, userContext);
             }
         } else if (oldAlert.getConditionType().equals("OR")) {
             //Delete Event
