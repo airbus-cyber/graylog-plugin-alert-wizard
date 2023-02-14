@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.util.Optional;
 
+// TODO I am not sure to like this name EventDefinitionHandler? EventDefinitionBusiness? EventDefinitionOperations?
 public class EventDefinitionService {
 
     private static final Logger LOG = LoggerFactory.getLogger(EventDefinitionService.class);
