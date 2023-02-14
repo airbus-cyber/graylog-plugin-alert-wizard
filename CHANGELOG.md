@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [4.4.2](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/4.4.1...4.4.2)
 ### Bug Fixes
 * After deleting the stream associated with a rule, the list of rules would not load anymore ([issue #105](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/105))
+* The backlog size value set in the configuration is now taken into account in the event definition ([issue #40](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/40))
 
 ## [4.4.1](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/4.4.0...4.4.1)
 ### Bug Fixes
