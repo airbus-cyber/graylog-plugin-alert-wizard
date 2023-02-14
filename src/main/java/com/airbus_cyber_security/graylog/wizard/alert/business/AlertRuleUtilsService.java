@@ -27,6 +27,9 @@ import com.airbus_cyber_security.graylog.events.config.SeverityType;
 import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
 import com.airbus_cyber_security.graylog.events.processor.correlation.CorrelationCountProcessorConfig;
 import com.airbus_cyber_security.graylog.events.processor.correlation.checks.OrderType;
+import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
+import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfigurationService;
+import com.airbus_cyber_security.graylog.wizard.config.rest.DefaultValues;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.graylog.events.conditions.Expr;
@@ -73,6 +76,7 @@ public class AlertRuleUtilsService {
 
     private final NotificationResourceHandler notificationHandler;
     private final ClusterConfigService clusterConfigService;
+    private final AlertWizardConfigurationService configurationService;
 
     @Inject
     public AlertRuleUtilsService(AlertRuleService alertRuleService,
@@ -82,7 +86,8 @@ public class AlertRuleUtilsService {
                                  DBEventDefinitionService eventDefinitionService,
                                  NotificationResourceHandler notificationHandler,
                                  DBNotificationService notificationService,
-                                 ClusterConfigService clusterConfigService) {
+                                 ClusterConfigService clusterConfigService,
+                                 AlertWizardConfigurationService configurationService) {
         this.alertRuleUtils = new AlertRuleUtils();
         this.alertRuleService = alertRuleService;
         this.streamService = streamService;
@@ -92,6 +97,7 @@ public class AlertRuleUtilsService {
         this.notificationHandler = notificationHandler;
         this.notificationService = notificationService;
         this.clusterConfigService = clusterConfigService;
+        this.configurationService = configurationService;
     }
 
     public void checkIsValidRequest(AlertRuleRequest request) {
@@ -456,6 +462,8 @@ public class AlertRuleUtilsService {
                 .notificationId(notificationIdentifier)
                 .build();
 
+        AlertWizardConfig pluginConfiguration = this.configurationService.getConfiguration();
+        DefaultValues defaultValues = pluginConfiguration.accessDefaultValues();
         EventDefinitionDto eventDefinition = EventDefinitionDto.builder()
                 .title(alertTitle)
                 .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
@@ -466,7 +474,7 @@ public class AlertRuleUtilsService {
                 .notifications(ImmutableList.<EventNotificationHandler.Config>builder().add(notificationConfiguration).build())
                 .notificationSettings(EventNotificationSettings.builder()
                         .gracePeriodMs(0L)
-                        .backlogSize(500)
+                        .backlogSize(defaultValues.getBacklog())
                         .build())
                 .build();
 

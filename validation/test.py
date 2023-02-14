@@ -208,7 +208,6 @@ class Test(TestCase):
         status_code = self._graylog.get_alert_rules()
         self.assertEqual(200, status_code)
 
-    @skip
     def test_set_default_backlog_value_should_change_newly_created_event_definition_backlog_value_issue40(self):
         self._graylog.update_alert_wizard_plugin_configuration(backlog_size=1000)
         title = 'aaa'

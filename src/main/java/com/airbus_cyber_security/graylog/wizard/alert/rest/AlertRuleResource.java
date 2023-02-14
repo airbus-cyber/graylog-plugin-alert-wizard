@@ -82,6 +82,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
     private final StreamService streamService;
     private final ClusterEventBus clusterEventBus;
+    // TODO try to remove this field => move it down in business
     private final AlertWizardConfigurationService configurationService;
 
     // TODO try to remove this field => Use AlertRuleUtilsService
