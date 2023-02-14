@@ -32,6 +32,7 @@ public class EventDefinitionService {
                                   DBEventDefinitionService eventDefinitionService,
                                   AlertWizardConfigurationService configurationService) {
         this.eventDefinitionHandler = eventDefinitionHandler;
+        // TODO try to remove => use eventDefinitionHandler
         this.eventDefinitionService = eventDefinitionService;
         this.configurationService = configurationService;
     }
@@ -93,5 +94,9 @@ public class EventDefinitionService {
                 .storage(event.storage())
                 .build();
         this.updateEventFromDto(updatedEvent);
+    }
+
+    public void delete(String identifier) {
+        this.eventDefinitionHandler.delete(identifier);
     }
 }

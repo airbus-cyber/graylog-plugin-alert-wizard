@@ -29,7 +29,6 @@ import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfigurationService;
 import com.airbus_cyber_security.graylog.wizard.config.rest.ImportPolicyType;
 import com.airbus_cyber_security.graylog.wizard.database.LookupService;
-import com.airbus_cyber_security.graylog.wizard.list.AlertListService;
 import com.airbus_cyber_security.graylog.wizard.list.utilities.AlertListUtilsService;
 import com.airbus_cyber_security.graylog.wizard.permissions.AlertRuleRestPermissions;
 import com.codahale.metrics.annotation.Timed;
@@ -83,8 +82,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private final AlertWizardConfigurationService configurationService;
 
     // TODO try to remove this field => Use AlertRuleUtilsService
-    private final EventDefinitionsResource eventDefinitionsResource;
-    // TODO try to remove this field => Use AlertRuleUtilsService
     private final EventNotificationsResource eventNotificationsResource;
     private final EventDefinitionService eventDefinitionService;
 
@@ -105,7 +102,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                              AlertWizardConfigurationService configurationService,
                              PipelineStreamConnectionsService pipelineStreamConnectionsService,
                              AlertListUtilsService alertListUtilsService,
-                             EventDefinitionsResource eventDefinitionsResource,
                              EventNotificationsResource eventNotificationsResource,
                              AlertRuleUtilsService alertRuleUtilsService,
                              EventDefinitionService eventDefinitionService) {
@@ -113,7 +109,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.streamService = streamService;
         this.clusterEventBus = clusterEventBus;
         this.configurationService = configurationService;
-        this.eventDefinitionsResource = eventDefinitionsResource;
         this.eventNotificationsResource = eventNotificationsResource;
         this.eventDefinitionService = eventDefinitionService;
 
@@ -371,7 +366,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             }
         } else if (oldAlert.getConditionType().equals("OR")) {
             //Delete Event
-            this.eventDefinitionsResource.delete(eventID2);
+            this.eventDefinitionService.delete(eventID2);
         }
 
         AlertRule alertRule = AlertRule.create(
@@ -438,14 +433,14 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
             // Delete Event
             if (alertRule.getEventID() != null && !alertRule.getEventID().isEmpty()) {
-                this.eventDefinitionsResource.delete(alertRule.getEventID());
+                this.eventDefinitionService.delete(alertRule.getEventID());
             }
             if (alertRule.getNotificationID() != null && !alertRule.getNotificationID().isEmpty()) {
                 // TODO move this down into AlertRuleUtilsService and remove the use for eventNotificationsResource
                 this.eventNotificationsResource.delete(alertRule.getNotificationID());
             }
             if (alertRule.getSecondEventID() != null && !alertRule.getSecondEventID().isEmpty()) {
-                this.eventDefinitionsResource.delete(alertRule.getSecondEventID());
+                this.eventDefinitionService.delete(alertRule.getSecondEventID());
             }
 
             // Delete Pipeline
