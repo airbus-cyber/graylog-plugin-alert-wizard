@@ -104,7 +104,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                              IndexSetRegistry indexSetRegistry,
                              AlertWizardConfigurationService configurationService,
                              PipelineStreamConnectionsService pipelineStreamConnectionsService,
-                             AlertListService alertListService,
+                             AlertListUtilsService alertListUtilsService,
                              EventDefinitionsResource eventDefinitionsResource,
                              EventNotificationsResource eventNotificationsResource,
                              AlertRuleUtilsService alertRuleUtilsService,
@@ -117,8 +117,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.eventNotificationsResource = eventNotificationsResource;
         this.eventDefinitionService = eventDefinitionService;
 
-        // TODO should probably inject AlertListUtilsService instead of instantiating it
-        this.alertListUtilsService = new AlertListUtilsService(alertListService);
+        this.alertListUtilsService = alertListUtilsService;
         this.alertRuleUtilsService = alertRuleUtilsService;
         // TODO should probably inject StreamPipelineService instead of instanciating it
         this.streamPipelineService = new StreamPipelineService(
