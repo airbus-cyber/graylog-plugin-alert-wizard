@@ -28,7 +28,6 @@ import com.airbus_cyber_security.graylog.wizard.audit.AlertWizardAuditEventTypes
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfigurationService;
 import com.airbus_cyber_security.graylog.wizard.config.rest.ImportPolicyType;
-import com.airbus_cyber_security.graylog.wizard.database.LookupService;
 import com.airbus_cyber_security.graylog.wizard.list.utilities.AlertListUtilsService;
 import com.airbus_cyber_security.graylog.wizard.permissions.AlertRuleRestPermissions;
 import com.codahale.metrics.annotation.Timed;
@@ -37,19 +36,16 @@ import io.swagger.annotations.*;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.graylog.events.processor.EventProcessorConfig;
-import org.graylog.events.rest.EventDefinitionsResource;
 import org.graylog.events.rest.EventNotificationsResource;
 import org.graylog.plugins.pipelineprocessor.db.*;
 import org.graylog.security.UserContext;
 import org.graylog2.audit.jersey.AuditEvent;
 import org.graylog2.database.NotFoundException;
 import org.graylog2.events.ClusterEventBus;
-import org.graylog2.indexer.IndexSetRegistry;
 import org.graylog2.plugin.database.ValidationException;
 import org.graylog2.plugin.rest.PluginRestResource;
 import org.graylog2.plugin.streams.Stream;
 import org.graylog2.shared.rest.resources.RestResource;
-import org.graylog2.streams.StreamRuleService;
 import org.graylog2.streams.StreamService;
 import org.graylog2.streams.events.StreamsChangedEvent;
 import org.joda.time.DateTime;
@@ -92,19 +88,15 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
     @Inject
     public AlertRuleResource(AlertRuleService alertRuleService,
-                             LookupService lookupService,
-                             RuleService ruleService,
-                             PipelineService pipelineService,
                              StreamService streamService,
-                             StreamRuleService streamRuleService,
+                             StreamPipelineService streamPipelineService,
                              ClusterEventBus clusterEventBus,
-                             IndexSetRegistry indexSetRegistry,
                              AlertWizardConfigurationService configurationService,
-                             PipelineStreamConnectionsService pipelineStreamConnectionsService,
                              AlertListUtilsService alertListUtilsService,
                              EventNotificationsResource eventNotificationsResource,
                              AlertRuleUtilsService alertRuleUtilsService,
                              EventDefinitionService eventDefinitionService) {
+        // TODO should probably move these fields down into the business namespace
         this.alertRuleService = alertRuleService;
         this.streamService = streamService;
         this.clusterEventBus = clusterEventBus;
@@ -114,16 +106,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         this.alertListUtilsService = alertListUtilsService;
         this.alertRuleUtilsService = alertRuleUtilsService;
-        // TODO should probably inject StreamPipelineService instead of instanciating it
-        this.streamPipelineService = new StreamPipelineService(
-                streamService,
-                streamRuleService,
-                clusterEventBus,
-                indexSetRegistry.getDefault().getConfig().id(),
-                ruleService,
-                pipelineService,
-                lookupService,
-                pipelineStreamConnectionsService);
+        this.streamPipelineService = streamPipelineService;
     }
 
     @GET

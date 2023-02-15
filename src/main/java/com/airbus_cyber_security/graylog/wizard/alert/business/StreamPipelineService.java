@@ -28,6 +28,7 @@ import org.graylog.plugins.pipelineprocessor.db.*;
 import org.graylog.plugins.pipelineprocessor.rest.PipelineConnections;
 import org.graylog2.database.NotFoundException;
 import org.graylog2.events.ClusterEventBus;
+import org.graylog2.indexer.IndexSetRegistry;
 import org.graylog2.plugin.database.ValidationException;
 import org.graylog2.plugin.streams.Stream;
 import org.graylog2.plugin.streams.StreamRule;
@@ -42,6 +43,7 @@ import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import java.util.*;
 
@@ -60,10 +62,11 @@ public class StreamPipelineService {
     private final LookupService lookupService;
     private final PipelineStreamConnectionsService pipelineStreamConnectionsService;
 
+    @Inject
     public StreamPipelineService(StreamService streamService,
                                  StreamRuleService streamRuleService,
                                  ClusterEventBus clusterEventBus,
-                                 String indexSetID,
+                                 IndexSetRegistry indexSetRegistry,
                                  RuleService ruleService,
                                  PipelineService pipelineService,
                                  LookupService lookupService,
@@ -71,7 +74,7 @@ public class StreamPipelineService {
         this.streamService = streamService;
         this.streamRuleService = streamRuleService;
         this.clusterEventBus = clusterEventBus;
-        this.indexSetID = indexSetID;
+        this.indexSetID = indexSetRegistry.getDefault().getConfig().id();
         this.ruleService = ruleService;
         this.pipelineService = pipelineService;
         this.pipelineStreamConnectionsService = pipelineStreamConnectionsService;
