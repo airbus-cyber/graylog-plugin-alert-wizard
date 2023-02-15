@@ -68,6 +68,7 @@ public abstract class AlertRule {
     @Nullable
     public abstract DateTime getLastModified();
 
+    // TODO should remove this field!!!
     @JsonProperty("description")
     @Nullable
     public abstract String getDescription();

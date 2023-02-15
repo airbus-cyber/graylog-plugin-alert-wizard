@@ -261,3 +261,15 @@ class Test(TestCase):
         event_definition = self._graylog.get_event_definition(alert_rule['condition'])
         alert_rule = self._graylog.get_alert_rule(title)
         self.assertEqual('new_description', alert_rule['description'])
+
+    def test_update_alert_should_change_the_alert_description_issue102(self):
+        title = 'aaa'
+        rule = {
+            'field': 'source',
+            'type': 1,
+            'value': 'toto'
+        }
+        self._graylog.create_alert_rule_count(title, rule, _PERIOD)
+        self._graylog.update_alert_rule(title, 'new_description')
+        alert_rule = self._graylog.get_alert_rule(title)
+        self.assertEqual('new_description', alert_rule['description'])

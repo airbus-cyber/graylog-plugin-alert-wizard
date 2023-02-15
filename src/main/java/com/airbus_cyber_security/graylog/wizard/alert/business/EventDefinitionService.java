@@ -64,11 +64,6 @@ public class EventDefinitionService {
         return result.id();
     }
 
-    private String updateEventFromDto(EventDefinitionDto eventDefinition) {
-        EventDefinitionDto result = this.eventDefinitionHandler.update(eventDefinition, true);
-        return result.id();
-    }
-
     public String createEvent(String alertTitle, String description, String notificationIdentifier, EventProcessorConfig configuration, UserContext userContext) {
         LOG.debug("Create Event: " + alertTitle);
         EventNotificationHandler.Config notificationConfiguration = EventNotificationHandler.Config.builder()
@@ -94,13 +89,23 @@ public class EventDefinitionService {
         return this.createEventFromDto(eventDefinition, userContext);
     }
 
-    public void updateEvent(String alertTitle, String eventID, EventProcessorConfig configuration) {
-        LOG.debug("Update event: {}, identifier: {}", alertTitle, eventID);
-        EventDefinitionDto event = this.getEventDefinition(eventID);
+    public void updateEvent(String alertTitle, String eventIdentifier, EventProcessorConfig configuration) {
+        LOG.debug("Update event: {}, identifier: {}", alertTitle, eventIdentifier);
+        EventDefinitionDto event = this.getEventDefinition(eventIdentifier);
+        this.updateEvent(alertTitle, event.description(), event, configuration);
+    }
+
+    public void updateEvent(String alertTitle, String description, String eventIdentifier, EventProcessorConfig configuration) {
+        LOG.debug("Update event: {}, identifier: {}", alertTitle, eventIdentifier);
+        EventDefinitionDto event = this.getEventDefinition(eventIdentifier);
+        this.updateEvent(alertTitle, description, event, configuration);
+    }
+
+    private void updateEvent(String title, String description, EventDefinitionDto event, EventProcessorConfig configuration) {
         EventDefinitionDto updatedEvent = EventDefinitionDto.builder()
                 .id(event.id())
-                .title(alertTitle)
-                .description(event.description())
+                .title(title)
+                .description(description)
                 .priority(event.priority())
                 .alert(event.alert())
                 .config(configuration)
@@ -110,7 +115,7 @@ public class EventDefinitionService {
                 .notifications(event.notifications())
                 .storage(event.storage())
                 .build();
-        this.updateEventFromDto(updatedEvent);
+        this.eventDefinitionHandler.update(updatedEvent, true);
     }
 
     public void delete(String identifier) {

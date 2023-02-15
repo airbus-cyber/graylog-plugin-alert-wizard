@@ -72,6 +72,9 @@ class Graylog:
     def create_alert_rule_and(self, *args, **kwargs):
         return self._api.create_alert_rule_and(*args, **kwargs)
 
+    def update_alert_rule(self, title, description):
+        self._api.update_alert_rule(title, description)
+
     def create_list(self, *args):
         self._api.create_list(*args)
 

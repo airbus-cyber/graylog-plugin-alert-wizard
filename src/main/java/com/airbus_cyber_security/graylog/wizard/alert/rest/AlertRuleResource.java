@@ -336,22 +336,22 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         EventProcessorConfig configuration = this.alertRuleUtilsService.createCondition(request.getConditionType(), request.conditionParameters(), stream.getId(), streamID2);
 
         // Update Event
-        this.eventDefinitionService.updateEvent(alertTitle, oldAlert.getEventID(), configuration);
+        this.eventDefinitionService.updateEvent(alertTitle, request.getDescription(), oldAlert.getEventID(), configuration);
 
-        String eventID2 = oldAlert.getSecondEventID();
+        String eventIdentifier2 = oldAlert.getSecondEventID();
         //Or Condition for Second Stream
         if (request.getConditionType().equals("OR") && stream2 != null) {
             EventProcessorConfig configuration2 = this.alertRuleUtilsService.createAggregationCondition(stream2.getId(), request.conditionParameters());
             if (oldAlert.getConditionType().equals("OR")) {
                 // Update Event
-                this.eventDefinitionService.updateEvent(alertTitle + "#2", eventID2, configuration2);
+                this.eventDefinitionService.updateEvent(alertTitle + "#2", eventIdentifier2, configuration2);
             } else {
                 //Create Event
-                eventID2 = this.eventDefinitionService.createEvent(alertTitle + "#2", AlertRuleUtils.COMMENT_ALERT_WIZARD, oldAlert.getNotificationID(), configuration2, userContext);
+                eventIdentifier2 = this.eventDefinitionService.createEvent(alertTitle + "#2", AlertRuleUtils.COMMENT_ALERT_WIZARD, oldAlert.getNotificationID(), configuration2, userContext);
             }
         } else if (oldAlert.getConditionType().equals("OR")) {
             //Delete Event
-            this.eventDefinitionService.delete(eventID2);
+            this.eventDefinitionService.delete(eventIdentifier2);
         }
 
         AlertRule alertRule = AlertRule.create(
@@ -365,7 +365,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 request.getDescription(),
                 request.getConditionType(),
                 streamID2,
-                eventID2,
+                eventIdentifier2,
                 pipeline.getPipelineID(),
                 pipeline.getPipelineRuleID(),
                 fieldRules,
