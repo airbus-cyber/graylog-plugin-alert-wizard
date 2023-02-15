@@ -31,6 +31,10 @@ jest.mock('stores/nodes/NodesStore', () => ({
   NodesStore: MockStore(),
 }));
 jest.mock('logic/rest/FetchProvider', () => jest.fn((method, url) => {
+    if (url === 'http://localhost/system/locales') {
+        // TODO should check the value that is returned by /system/locales in real life
+        return Promise.resolve({ 'locales': '' })
+    }
     if (url === 'http://localhost/plugins/com.airbus_cyber_security.graylog.wizard/config') {
         // TODO should check the value that is returned by /system/locales in real life
         return Promise.resolve()

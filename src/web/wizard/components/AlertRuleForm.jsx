@@ -39,36 +39,11 @@ import { PluginsStore } from 'stores/plugins/PluginsStore';
 import { NodesActions } from 'stores/nodes/NodesStore';
 
 
-const INIT_ALERT = {
-        title: '',
-        severity: '',
-        condition_type: 'COUNT',
-        condition_parameters: {
-            time: 1,
-            threshold_type: '',
-            threshold: 0,
-            additional_threshold_type: '',
-            additional_threshold: 0,
-            grouping_fields: [],
-            distinct_by: '',
-            field: '',
-            type: ''
-        },
-        stream: {
-            matching_type: '',
-            field_rule: [{field: '', type: '', value: ''}],
-        },
-        second_stream: {
-            matching_type: '',
-            field_rule: [{field: '', type: '', value: ''}],
-        },
-    };
-
 const AlertRuleForm = createReactClass({
     displayName: 'AlertRuleForm',
 
     propTypes: {
-        alert: PropTypes.object,
+        alert: PropTypes.object.isRequired,
         navigationToRuleComponents: PropTypes.element,
         onSave: PropTypes.func.isRequired
     },
@@ -95,11 +70,6 @@ const AlertRuleForm = createReactClass({
     },
     componentDidMount() {
         this._isPluginsPresent();
-    },
-    getDefaultProps() {
-        return {
-            alert: INIT_ALERT
-        };
     },
     getInitialState() {
         let alert = ObjectUtils.clone(this.props.alert);

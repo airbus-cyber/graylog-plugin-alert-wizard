@@ -75,6 +75,7 @@ const NewAlertPage = createReactClass({
             const time_type = default_values.time_type;
             const alert = {
                 title: default_values.title,
+                description: '',
                 severity: default_values.severity,
                 condition_type: 'COUNT',
                 condition_parameters: {
