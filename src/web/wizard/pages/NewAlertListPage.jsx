@@ -57,7 +57,7 @@ const NewAlertListPage = () => {
                         </span>
                         <span>
                             <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
-                                <Button bsStyle="info"><FormattedMessage id= "wizard.backlist" defaultMessage= "Back to lists" /></Button>
+                                <Button bsStyle="info"><FormattedMessage id="wizard.backlist" defaultMessage= "Back to lists" /></Button>
                             </LinkContainer>
                             &nbsp;
                         </span>

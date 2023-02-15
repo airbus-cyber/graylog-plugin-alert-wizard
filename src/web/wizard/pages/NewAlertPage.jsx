@@ -44,11 +44,6 @@ const NewAlertPage = createReactClass({
             configurations: null,
         };
     },
-    propTypes: {
-        location: PropTypes.object.isRequired,
-        params: PropTypes.object.isRequired,
-        children: PropTypes.element,
-    },
 
     componentDidMount() {
         WizardConfigurationResource.get().then(configurations => {

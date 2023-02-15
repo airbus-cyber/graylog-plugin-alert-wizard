@@ -15,37 +15,33 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-// sources of inspiration for this code:
-// * views/components/searchbar/queryvalidation/validateQuery.test.ts
-// * views/components/searchbar/completions/FieldValueCompletion.test.ts
-// * routing/AppRouter.test.tsx
-// * pages/ShowMessagePage.test.tsx
 import React from 'react';
 import { render } from 'wrappedTestingLibrary';
 import { StoreMock as MockStore } from 'helpers/mocking';
-import WizardPage from './WizardPage';
-
+import { Router } from 'react-router-dom';
+import history from 'util/History';
 import fetch from 'logic/rest/FetchProvider';
 
-//jest.mock('logic/rest/FetchProvider', () => jest.fn(() => Promise.resolve()));
-jest.mock('logic/rest/FetchProvider', () => jest.fn((method, url) => {
-    if (url === 'http://localhost/system/locales') {
-        // TODO should check the value that is returned by /system/locales in real life
-        return Promise.resolve({ 'locales': '' })
-    }
-    return Promise.resolve()
-}));
+import NewAlertPage from './NewAlertPage';
+
+jest.mock('routing/Routes', () => ({ pluginRoute: () => '/route' }));
 jest.mock('stores/users/CurrentUserStore', () => ({ CurrentUserStore: MockStore('get') }));
-// TODO: this is not totally satisfactory as there will be nodes (to retrieve the plugin's version).
-//       It just shows the code is complex and not testable
 jest.mock('stores/nodes/NodesStore', () => ({
   NodesActions: { list: (...args) => Promise.resolve({ nodes: [] }) },
   NodesStore: MockStore(),
 }));
+jest.mock('logic/rest/FetchProvider', () => jest.fn((method, url) => {
+    if (url === 'http://localhost/plugins/com.airbus_cyber_security.graylog.wizard/config') {
+        // TODO should check the value that is returned by /system/locales in real life
+        return Promise.resolve()
+    }
+    return Promise.resolve()
+}));
 
-describe('<WizardPage>', () => {
+describe('<NewAlertPage>', () => {
     it('should not fail', () => {
-        fetch.mockReturnValueOnce(Promise.resolve({ field_order: [] }))
-        render(<WizardPage />);
+        render(<Router history={history}>
+                 <NewAlertPage />
+               </Router>);
     });
 });
