@@ -46,7 +46,12 @@ class Test(TestCase):
             'value': 'toto'
         }
         alert_rule = self._graylog.create_alert_rule_count('alert_rule_title', rule, _PERIOD)
-        self.assertIsNotNone(alert_rule['id'])
+        self.assertIsNotNone(alert_rule)
+
+    def test_create_alert_rule_statistics_should_not_fail(self):
+        title = 'statistics'
+        alert_rule = self._graylog.create_alert_rule_statistics(title, _PERIOD)
+        self.assertIsNotNone(alert_rule)
 
     def test_set_logging_alert_configuration_should_not_fail(self):
         status_code = self._graylog.update_logging_alert_plugin_configuration()
@@ -176,11 +181,6 @@ class Test(TestCase):
         self._graylog.create_alert_rule_then(title, '>', _PERIOD)
         alert_rule = self._graylog.get_alert_rule(title)
         self.assertEqual('>', alert_rule['condition_parameters']['threshold_type'])
-
-    def test_create_alert_rule_statistics_should_not_fail(self):
-        title = 'statistics'
-        status_code = self._graylog.create_alert_rule_statistics(title, _PERIOD)
-        self.assertEqual(200, status_code)
 
     def test_create_alert_rule_with_same_name_should_not_fail(self):
         title = 'aaa'
