@@ -119,7 +119,8 @@ class GraylogRestApi:
                 'second_stream': second_stream
             })
         response = self._post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
-        return response.status_code
+        print(response.content)
+        return response.json()
 
     # TODO have a default value for rule
     def create_alert_rule_count(self, title, rule, time, description):

@@ -45,8 +45,8 @@ class Test(TestCase):
             'type': 1,
             'value': 'toto'
         }
-        status_code = self._graylog.create_alert_rule_count('alert_rule_title', rule, _PERIOD)
-        self.assertEqual(200, status_code)
+        alert_rule = self._graylog.create_alert_rule_count('alert_rule_title', rule, _PERIOD)
+        self.assertIsNotNone(alert_rule['id'])
 
     def test_set_logging_alert_configuration_should_not_fail(self):
         status_code = self._graylog.update_logging_alert_plugin_configuration()
@@ -202,8 +202,7 @@ class Test(TestCase):
             'type': 1,
             'value': 'toto'
         }
-        self._graylog.create_alert_rule_count(title, rule, _PERIOD)
-        alert_rule = self._graylog.get_alert_rule(title)
+        alert_rule = self._graylog.create_alert_rule_count(title, rule, _PERIOD)
         self._graylog.delete_stream(alert_rule['stream']['id'])
         status_code = self._graylog.get_alert_rules()
         self.assertEqual(200, status_code)
@@ -216,8 +215,7 @@ class Test(TestCase):
             'type': 1,
             'value': 'toto'
         }
-        self._graylog.create_alert_rule_count(title, rule, _PERIOD)
-        alert_rule = self._graylog.get_alert_rule(title)
+        alert_rule = self._graylog.create_alert_rule_count(title, rule, _PERIOD)
         event_definition_identifier = alert_rule['condition']
         event_definition = self._graylog.get_event_definition(event_definition_identifier)
         backlog_size = event_definition['notification_settings']['backlog_size']
@@ -230,8 +228,7 @@ class Test(TestCase):
             'type': 1,
             'value': 'toto'
         }
-        self._graylog.create_alert_rule_count(title, rule, _PERIOD, description='rule_description')
-        alert_rule = self._graylog.get_alert_rule(title)
+        alert_rule = self._graylog.create_alert_rule_count(title, rule, _PERIOD, description='rule_description')
         event_definition_identifier = alert_rule['condition']
         event_definition = self._graylog.get_event_definition(event_definition_identifier)
         self.assertEqual('rule_description', event_definition['description'])

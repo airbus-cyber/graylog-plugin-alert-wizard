@@ -185,7 +185,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return alertTitle;
     }
 
-    public Pipeline createPipelineAndRule(Stream stream, String alertTitle, List<FieldRule> pipelineFieldRules, String matchingType){
+    public Pipeline createPipelineAndRule(Stream stream, String alertTitle, List<FieldRule> pipelineFieldRules, String matchingType) {
         if (pipelineFieldRules.isEmpty()) {
             return new Pipeline(null, null);
         }
@@ -208,6 +208,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     }
 
     @POST
+    // TODO is this necessary? What is it for? Remove?
     @Timed
     @ApiOperation(value = "Create an alert")
     @RequiresAuthentication
@@ -271,7 +272,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 pipeline2.getPipelineID(),
                 pipeline2.getPipelineRuleID(),
                 fieldRules2);
-        this.alertRuleService.create(alertRule);
+        alertRule = this.alertRuleService.create(alertRule);
 
         //Update list usage
         for (FieldRule fieldRule: this.nullSafe(fieldRules)) {
@@ -281,7 +282,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
 
-        return Response.ok().build();
+        GetDataAlertRule result = this.alertRuleUtilsService.constructDataAlertRule(alertRule);
+        return Response.ok().entity(result).build();
     }
 
     @PUT
