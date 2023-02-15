@@ -69,7 +69,7 @@ public class EventDefinitionService {
         return result.id();
     }
 
-    public String createEvent(String alertTitle, String notificationIdentifier, EventProcessorConfig configuration, UserContext userContext) {
+    public String createEvent(String alertTitle, String description, String notificationIdentifier, EventProcessorConfig configuration, UserContext userContext) {
         LOG.debug("Create Event: " + alertTitle);
         EventNotificationHandler.Config notificationConfiguration = EventNotificationHandler.Config.builder()
                 .notificationId(notificationIdentifier)
@@ -79,7 +79,7 @@ public class EventDefinitionService {
         DefaultValues defaultValues = pluginConfiguration.accessDefaultValues();
         EventDefinitionDto eventDefinition = EventDefinitionDto.builder()
                 .title(alertTitle)
-                .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
+                .description(description)
                 .config(configuration)
                 .alert(true)
                 .priority(2)

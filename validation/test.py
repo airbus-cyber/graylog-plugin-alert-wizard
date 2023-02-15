@@ -222,3 +222,16 @@ class Test(TestCase):
         event_definition = self._graylog.get_event_definition(event_definition_identifier)
         backlog_size = event_definition['notification_settings']['backlog_size']
         self.assertEqual(1000, backlog_size)
+
+    def test_create_alert_rule_should_set_event_definition_description_issue102(self):
+        title = 'aaa'
+        rule = {
+            'field': 'source',
+            'type': 1,
+            'value': 'toto'
+        }
+        self._graylog.create_alert_rule_count(title, rule, _PERIOD, description='rule_description')
+        alert_rule = self._graylog.get_alert_rule(title)
+        event_definition_identifier = alert_rule['condition']
+        event_definition = self._graylog.get_event_definition(event_definition_identifier)
+        self.assertEqual('rule_description', event_definition['description'])

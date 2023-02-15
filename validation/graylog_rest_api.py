@@ -86,7 +86,7 @@ class GraylogRestApi:
     # TODO have rule creation return information about the rule
     def _create_alert_rule(self, title, rule, condition_type, time,
                            threshold_type='>', additional_threshold_type='', additional_threshold=0, second_stream=None,
-                           group_by_fields=None, distinct_by='', field='', statistics_function=''):
+                           group_by_fields=None, distinct_by='', field='', statistics_function='', description=''):
         if group_by_fields is None:
             group_by_fields = []
         alert_rule = {
@@ -104,6 +104,7 @@ class GraylogRestApi:
                 'type': statistics_function
             },
             'condition_type': condition_type,
+            'description': description,
             'severity': 'info',
             'stream': {
                 'field_rule': [
@@ -121,8 +122,8 @@ class GraylogRestApi:
         return response.status_code
 
     # TODO have a default value for rule
-    def create_alert_rule_count(self, title, rule, time):
-        return self._create_alert_rule(title, rule, 'COUNT', time)
+    def create_alert_rule_count(self, title, rule, time, description):
+        return self._create_alert_rule(title, rule, 'COUNT', time, description=description)
 
     def create_alert_rule_group_distinct(self, title, rule, group_by_fields, distinct_by, time):
         return self._create_alert_rule(title, rule, 'GROUP_DISTINCT', time, group_by_fields=group_by_fields, distinct_by=distinct_by)

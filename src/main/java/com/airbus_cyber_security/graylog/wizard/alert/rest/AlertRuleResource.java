@@ -194,9 +194,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return new Pipeline(pipeline.id(), pipelineRule.id());
     }
 
-    private String createEvent(String alertTitle, String notificationIdentifier, String conditionType, Map<String, Object> conditionParameters, UserContext userContext, String streamIdentifier, String streamIdentifier2) {
+    private String createEvent(String alertTitle, String description, String notificationIdentifier, String conditionType, Map<String, Object> conditionParameters, UserContext userContext, String streamIdentifier, String streamIdentifier2) {
         EventProcessorConfig configuration = this.alertRuleUtilsService.createCondition(conditionType, conditionParameters, streamIdentifier, streamIdentifier2);
-        return this.eventDefinitionService.createEvent(alertTitle, notificationIdentifier, configuration, userContext);
+        return this.eventDefinitionService.createEvent(alertTitle, description, notificationIdentifier, configuration, userContext);
     }
 
     private String createSecondEvent(String alertTitle, String notificationIdentifier, String conditionType, Map<String, Object> conditionParameters, UserContext userContext, String streamIdentifier2) {
@@ -204,7 +204,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             return null;
         }
         EventProcessorConfig configuration2 = this.alertRuleUtilsService.createAggregationCondition(streamIdentifier2, conditionParameters);
-        return this.eventDefinitionService.createEvent(alertTitle + "#2", notificationIdentifier, configuration2, userContext);
+        return this.eventDefinitionService.createEvent(alertTitle + "#2", AlertRuleUtils.COMMENT_ALERT_WIZARD, notificationIdentifier, configuration2, userContext);
     }
 
     @POST
@@ -249,7 +249,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
 
         //Create Events
-        String eventIdentifier = createEvent(alertTitle, notificationIdentifier, conditionType, conditionParameters, userContext, streamIdentifier, streamIdentifier2);
+        String eventIdentifier = createEvent(alertTitle, description, notificationIdentifier, conditionType, conditionParameters, userContext, streamIdentifier, streamIdentifier2);
         String eventIdentifier2 = createSecondEvent(alertTitle, notificationIdentifier, conditionType, conditionParameters, userContext, streamIdentifier2);
 
         this.clusterEventBus.post(StreamsChangedEvent.create(streamIdentifier));
@@ -345,7 +345,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 this.eventDefinitionService.updateEvent(alertTitle + "#2", eventID2, configuration2);
             } else {
                 //Create Event
-                eventID2 = this.eventDefinitionService.createEvent(alertTitle + "#2", oldAlert.getNotificationID(), configuration2, userContext);
+                eventID2 = this.eventDefinitionService.createEvent(alertTitle + "#2", AlertRuleUtils.COMMENT_ALERT_WIZARD, oldAlert.getNotificationID(), configuration2, userContext);
             }
         } else if (oldAlert.getConditionType().equals("OR")) {
             //Delete Event
