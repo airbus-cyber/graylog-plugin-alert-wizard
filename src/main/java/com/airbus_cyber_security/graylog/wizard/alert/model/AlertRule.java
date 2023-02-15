@@ -44,6 +44,7 @@ public abstract class AlertRule {
     @NotNull
     public abstract String getStreamIdentifier();
 
+    // TODO rename to getEventIdentifier
     // TODO can't this be always NotNull?
     @JsonProperty("event")
     @Nullable

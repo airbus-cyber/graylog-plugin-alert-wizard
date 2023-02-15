@@ -119,7 +119,6 @@ class GraylogRestApi:
                 'second_stream': second_stream
             })
         response = self._post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
-        print(response.content)
         return response.json()
 
     # TODO have a default value for rule
@@ -232,6 +231,10 @@ class GraylogRestApi:
     def get_event_definition(self, identifier):
         response = self._get(f'events/definitions/{identifier}')
         return response.json()
+
+    def update_event_definition(self, event_definition):
+        identifier = event_definition['id']
+        self._put(f'events/definitions/{identifier}', event_definition)
 
     def delete_stream(self, identifier):
         self._delete(f'streams/{identifier}')

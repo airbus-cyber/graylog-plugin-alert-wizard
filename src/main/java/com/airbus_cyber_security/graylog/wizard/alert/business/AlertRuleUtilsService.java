@@ -101,9 +101,11 @@ public class AlertRuleUtilsService {
 
     public GetDataAlertRule constructDataAlertRule(AlertRule alert) {
         LOG.debug("Get data alert: " + alert.getTitle());
+        String eventIdentifier = alert.getEventID();
         String streamIdentifier = alert.getStreamIdentifier();
 
-        Map<String, Object> parametersCondition = convertEventDefinitionToParametersCondition(alert.getEventID());
+        EventDefinitionDto event = this.eventDefinitionService.getEventDefinition(eventIdentifier);
+        Map<String, Object> parametersCondition = this.alertRuleUtils.getConditionParameters(event.config());
         Stream stream = this.loadStream(streamIdentifier);
         AlertRuleStream alertRuleStream = constructAlertRuleStream(alert, stream, alert.getPipelineFieldRules());
         AlertRuleStream alertRuleStream2 = constructSecondAlertRuleStream(alert);
@@ -115,13 +117,13 @@ public class AlertRuleUtilsService {
 
         return GetDataAlertRule.create(alert.getTitle(),
                 loggingNotificationConfig.severity().getType(),
-                alert.getEventID(),
+                eventIdentifier,
                 alert.getNotificationID(),
                 alert.getCreatedAt(),
                 alert.getCreatorUserId(),
                 alert.getLastModified(),
                 isDisabled,
-                alert.getDescription(),
+                event.description(),
                 alertCount,
                 alert.getConditionType(),
                 parametersCondition,
@@ -132,16 +134,6 @@ public class AlertRuleUtilsService {
     private NotificationDto getNotification(String notificationIdentifier) {
         return this.notificationService.get(notificationIdentifier)
                 .orElseThrow(() -> new javax.ws.rs.NotFoundException("Notification " + notificationIdentifier + " doesn't exist"));
-    }
-
-    private Map<String, Object> convertEventDefinitionToParametersCondition(String eventIdentifier) {
-        // TODO should try to remove this condition...
-        if (eventIdentifier == null || eventIdentifier.isEmpty()) {
-            LOG.error("Alert is broken event id is null");
-            return null;
-        }
-        EventDefinitionDto event = this.eventDefinitionService.getEventDefinition(eventIdentifier);
-        return this.alertRuleUtils.getConditionParameters(event.config());
     }
 
     private static boolean streamIsDisabled(Stream stream) {

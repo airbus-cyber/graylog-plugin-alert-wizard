@@ -46,12 +46,11 @@ class Test(TestCase):
             'value': 'toto'
         }
         alert_rule = self._graylog.create_alert_rule_count('alert_rule_title', rule, _PERIOD)
-        self.assertIsNotNone(alert_rule)
+        self.assertEqual('alert_rule_title', alert_rule['title'])
 
     def test_create_alert_rule_statistics_should_not_fail(self):
-        title = 'statistics'
-        alert_rule = self._graylog.create_alert_rule_statistics(title, _PERIOD)
-        self.assertIsNotNone(alert_rule)
+        alert_rule = self._graylog.create_alert_rule_statistics('statistics', _PERIOD)
+        self.assertEqual('statistics', alert_rule['title'])
 
     def test_set_logging_alert_configuration_should_not_fail(self):
         status_code = self._graylog.update_logging_alert_plugin_configuration()
@@ -232,3 +231,33 @@ class Test(TestCase):
         event_definition_identifier = alert_rule['condition']
         event_definition = self._graylog.get_event_definition(event_definition_identifier)
         self.assertEqual('rule_description', event_definition['description'])
+
+    @skip
+    def test_get_alert_should_not_fail_when_event_definition_is_corrupted(self):
+        title = 'aaa'
+        rule = {
+            'field': 'source',
+            'type': 1,
+            'value': 'toto'
+        }
+        alert_rule = self._graylog.create_alert_rule_count(title, rule, _PERIOD)
+        event_definition = self._graylog.get_event_definition(alert_rule['condition'])
+        print(event_definition)
+        self._graylog.update_event_definition(alert_rule['condition'], 'new_description')
+        # TODO should not return 500 here
+        alert_rule = self._graylog.get_alert_rule(title)
+
+    def test_get_alert_should_return_the_description_of_the_event_definition_issue102(self):
+        title = 'aaa'
+        rule = {
+            'field': 'source',
+            'type': 1,
+            'value': 'toto'
+        }
+        alert_rule = self._graylog.create_alert_rule_count(title, rule, _PERIOD)
+        event_definition = self._graylog.get_event_definition(alert_rule['condition'])
+        event_definition['description'] = 'new_description'
+        self._graylog.update_event_definition(event_definition)
+        event_definition = self._graylog.get_event_definition(alert_rule['condition'])
+        alert_rule = self._graylog.get_alert_rule(title)
+        self.assertEqual('new_description', alert_rule['description'])
