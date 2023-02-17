@@ -273,3 +273,7 @@ class Test(TestCase):
         self._graylog.update_alert_rule(title, 'new_description')
         alert_rule = self._graylog.get_alert_rule(title)
         self.assertEqual('new_description', alert_rule['description'])
+
+    def test_create_alert_should_return_the_second_event_definition_identifier(self):
+        alert_rule = self._graylog.create_alert_rule_or('aaa', _PERIOD)
+        self.assertIn('second_event_definition', alert_rule)

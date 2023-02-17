@@ -118,6 +118,7 @@ public class AlertRuleUtilsService {
         return GetDataAlertRule.create(alert.getTitle(),
                 loggingNotificationConfig.severity().getType(),
                 eventIdentifier,
+                alert.getSecondEventID(),
                 alert.getNotificationID(),
                 alert.getCreatedAt(),
                 alert.getCreatorUserId(),

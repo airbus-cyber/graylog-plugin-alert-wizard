@@ -66,6 +66,10 @@ public abstract class GetDataAlertRule {
 	@Nullable
 	public abstract String getConditionID();
 
+	@JsonProperty("second_event_definition")
+	@Nullable
+	public abstract String secondEventDefinitionIdentifier();
+
 	// TODO rename into getNotificationIdentifier
 	@JsonProperty("notification")
 	@Nullable
@@ -92,10 +96,11 @@ public abstract class GetDataAlertRule {
 	@JsonCreator
 	public static GetDataAlertRule create(@JsonProperty("title") String title,
                                           @JsonProperty("severity") String severity,
-                                          @JsonProperty("condition") String conditionID,
-                                          @JsonProperty("notification") String notificationID,
+                                          @JsonProperty("condition") String eventDefinitionIdentifier,
+										  @JsonProperty("second_event_definition") String secondEventDefinitionIdentifier,
+                                          @JsonProperty("notification") String notificationIdentifier,
                                           @JsonProperty("created_at") DateTime createdAt,
-                                          @JsonProperty("creator_user_id") String creatorUserId,
+                                          @JsonProperty("creator_user_id") String creatorUserIdentifier,
                                           @JsonProperty("created_at") DateTime lastModified,
                                           @JsonProperty("disabled") boolean isDisabled,
                                           @JsonProperty("description") String description,
@@ -105,7 +110,8 @@ public abstract class GetDataAlertRule {
                                           @JsonProperty("stream") AlertRuleStream stream,
                                           @JsonProperty("second_stream") AlertRuleStream stream2) {
 		return new AutoValue_GetDataAlertRule(title, severity, description, conditionType, conditionParameters, stream, stream2,
-				conditionID, notificationID, createdAt, creatorUserId, lastModified, isDisabled, alertCount);
+				eventDefinitionIdentifier, secondEventDefinitionIdentifier, notificationIdentifier, createdAt, creatorUserIdentifier,
+				lastModified, isDisabled, alertCount);
 	}
 
 }

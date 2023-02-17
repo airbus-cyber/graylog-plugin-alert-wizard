@@ -77,18 +77,22 @@ public abstract class AlertRule {
     @Nullable
     public abstract String getConditionType();
 
+    // TODO rename into getSecondStreamIdentifier
     @JsonProperty("stream2")
     @Nullable
     public abstract String getSecondStreamID();
 
+    // TODO rename into getSecondEventIdentifier
     @JsonProperty("event2")
     @Nullable
     public abstract String getSecondEventID();
 
+    // TODO rename into getPipelineIdentifier
     @JsonProperty("pipeline")
     @Nullable
     public abstract String getPipelineID();
 
+    // TODO rename into getPipelineRuleIdentifier
     @JsonProperty("pipeline_rule")
     @Nullable
     public abstract String getPipelineRuleID();
@@ -97,10 +101,12 @@ public abstract class AlertRule {
     @Nullable
     public abstract List<FieldRule> getPipelineFieldRules();
 
+    // TODO rename into getSecondPipelineIdentifier
     @JsonProperty("second pipeline")
     @Nullable
     public abstract String getSecondPipelineID();
 
+    // TODO rename into getSecondPipelineRuleIdentifier
     @JsonProperty("second pipeline_rule")
     @Nullable
     public abstract String getSecondPipelineRuleID();
@@ -142,15 +148,15 @@ public abstract class AlertRule {
             DateTime lastModified,
             String description,
             String conditionType,
-            String streamID2,
-            String eventID2,
-            String pipelineID,
-            String pipelineRuleID,
+            String streamIdentifier2,
+            String eventIdentifier2,
+            String pipelineIdentifier,
+            String pipelineRuleIdentifier,
             List<FieldRule> pipelineFieldRules,
-            String pipelineID2,
-            String pipelineRuleID2,
+            String pipelineIdentifier2,
+            String pipelineRuleIdentifier2,
             List<FieldRule> pipelineFieldRules2) {
 		return new AutoValue_AlertRule(title, streamID, eventID, notificationID, createdAt, creatorUserId, lastModified, description,
-                conditionType, streamID2, eventID2, pipelineID, pipelineRuleID, pipelineFieldRules, pipelineID2, pipelineRuleID2, pipelineFieldRules2);
+                conditionType, streamIdentifier2, eventIdentifier2, pipelineIdentifier, pipelineRuleIdentifier, pipelineFieldRules, pipelineIdentifier2, pipelineRuleIdentifier2, pipelineFieldRules2);
 	}
 }
