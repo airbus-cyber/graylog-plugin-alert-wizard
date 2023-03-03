@@ -344,7 +344,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             EventProcessorConfig configuration2 = this.alertRuleUtilsService.createAggregationCondition(stream2.getId(), request.conditionParameters());
             if (oldAlert.getConditionType().equals("OR")) {
                 // Update Event
-                this.eventDefinitionService.updateEvent(alertTitle + "#2", eventIdentifier2, configuration2);
+                this.eventDefinitionService.updateEvent(alertTitle + "#2", request.getDescription(), eventIdentifier2, configuration2);
             } else {
                 //Create Event
                 eventIdentifier2 = this.eventDefinitionService.createEvent(alertTitle + "#2", AlertRuleUtils.COMMENT_ALERT_WIZARD, oldAlert.getNotificationID(), configuration2, userContext);

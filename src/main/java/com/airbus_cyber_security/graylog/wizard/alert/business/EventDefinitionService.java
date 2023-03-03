@@ -89,12 +89,6 @@ public class EventDefinitionService {
         return this.createEventFromDto(eventDefinition, userContext);
     }
 
-    public void updateEvent(String alertTitle, String eventIdentifier, EventProcessorConfig configuration) {
-        LOG.debug("Update event: {}, identifier: {}", alertTitle, eventIdentifier);
-        EventDefinitionDto event = this.getEventDefinition(eventIdentifier);
-        this.updateEvent(alertTitle, event.description(), event, configuration);
-    }
-
     public void updateEvent(String alertTitle, String description, String eventIdentifier, EventProcessorConfig configuration) {
         LOG.debug("Update event: {}, identifier: {}", alertTitle, eventIdentifier);
         EventDefinitionDto event = this.getEventDefinition(eventIdentifier);

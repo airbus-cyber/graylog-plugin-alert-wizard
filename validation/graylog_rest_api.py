@@ -121,32 +121,9 @@ class GraylogRestApi:
         response = self._post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
         return response.json()
 
-    def update_alert_rule(self, title, description=''):
-        alert_rule = {
-            'condition_parameters': {
-                'additional_threshold': '',
-                'additional_threshold_type': '',
-                'backlog': 500,
-                'distinct_by': '',
-                'field': '',
-                'grace': 1,
-                'grouping_fields': [],
-                'threshold': 0,
-                'threshold_type': '>',
-                'time': 1,
-                'type': ''
-            },
-            'condition_type': 'COUNT',
-            'description': description,
-            'severity': 'info',
-            'stream': {
-                'field_rule': [
-                ],
-                'matching_type': 'AND'
-            },
-            'title': title
-        }
-        self._put(f'plugins/com.airbus_cyber_security.graylog.wizard/alerts/{title}', alert_rule)
+    def update_alert_rule(self, rule):
+        title = rule['title']
+        self._put(f'plugins/com.airbus_cyber_security.graylog.wizard/alerts/{title}', rule)
 
     # TODO have a default value for rule
     def create_alert_rule_count(self, title, rule, time, description):

@@ -81,8 +81,19 @@ class Graylog:
     def create_alert_rule_or(self, title, time, description=''):
         return self._api.create_alert_rule_or(title, time, description)
 
-    def update_alert_rule(self, title, description):
-        self._api.update_alert_rule(title, description)
+    def update_alert_rule(self, rule, new_description):
+        updated_rule = {
+            'title': rule['title'],
+            'severity': rule['severity'],
+            'description': new_description,
+            'condition_type': rule['condition_type'],
+            'condition_parameters': rule['condition_parameters'],
+            'stream': rule['stream'],
+            'second_stream': rule['second_stream']
+        }
+        # TODO should remove this
+        updated_rule['condition_parameters']['threshold'] = int(updated_rule['condition_parameters']['threshold'])
+        self._api.update_alert_rule(updated_rule)
 
     def create_list(self, *args):
         self._api.create_list(*args)
