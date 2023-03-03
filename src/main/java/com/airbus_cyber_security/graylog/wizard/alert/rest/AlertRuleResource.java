@@ -199,12 +199,12 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return this.eventDefinitionService.createEvent(alertTitle, description, notificationIdentifier, configuration, userContext);
     }
 
-    private String createSecondEvent(String alertTitle, String notificationIdentifier, String conditionType, Map<String, Object> conditionParameters, UserContext userContext, String streamIdentifier2) {
+    private String createSecondEvent(String alertTitle, String description, String notificationIdentifier, String conditionType, Map<String, Object> conditionParameters, UserContext userContext, String streamIdentifier2) {
         if (!conditionType.equals("OR")) {
             return null;
         }
         EventProcessorConfig configuration2 = this.alertRuleUtilsService.createAggregationCondition(streamIdentifier2, conditionParameters);
-        return this.eventDefinitionService.createEvent(alertTitle + "#2", AlertRuleUtils.COMMENT_ALERT_WIZARD, notificationIdentifier, configuration2, userContext);
+        return this.eventDefinitionService.createEvent(alertTitle + "#2", description, notificationIdentifier, configuration2, userContext);
     }
 
     @POST
@@ -251,7 +251,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         //Create Events
         String eventIdentifier = createEvent(alertTitle, description, notificationIdentifier, conditionType, conditionParameters, userContext, streamIdentifier, streamIdentifier2);
-        String eventIdentifier2 = createSecondEvent(alertTitle, notificationIdentifier, conditionType, conditionParameters, userContext, streamIdentifier2);
+        String eventIdentifier2 = createSecondEvent(alertTitle, description, notificationIdentifier, conditionType, conditionParameters, userContext, streamIdentifier2);
 
         this.clusterEventBus.post(StreamsChangedEvent.create(streamIdentifier));
         AlertRule alertRule = AlertRule.create(

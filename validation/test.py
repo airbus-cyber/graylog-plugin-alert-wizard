@@ -258,7 +258,6 @@ class Test(TestCase):
         event_definition = self._graylog.get_event_definition(alert_rule['condition'])
         event_definition['description'] = 'new_description'
         self._graylog.update_event_definition(event_definition)
-        event_definition = self._graylog.get_event_definition(alert_rule['condition'])
         alert_rule = self._graylog.get_alert_rule(title)
         self.assertEqual('new_description', alert_rule['description'])
 
@@ -269,6 +268,7 @@ class Test(TestCase):
             'type': 1,
             'value': 'toto'
         }
+        # TODO make parameter rule optional
         self._graylog.create_alert_rule_count(title, rule, _PERIOD)
         self._graylog.update_alert_rule(title, 'new_description')
         alert_rule = self._graylog.get_alert_rule(title)
@@ -277,3 +277,10 @@ class Test(TestCase):
     def test_create_alert_should_return_the_second_event_definition_identifier(self):
         alert_rule = self._graylog.create_alert_rule_or('aaa', _PERIOD)
         self.assertIn('second_event_definition', alert_rule)
+
+    def test_create_alert_rule_or_should_set_second_event_definition_description_issue102(self):
+        title = 'aaa'
+        alert_rule = self._graylog.create_alert_rule_or(title, _PERIOD, description='second rule description')
+        second_event_definition_identifier = alert_rule['second_event_definition']
+        second_event_definition = self._graylog.get_event_definition(second_event_definition_identifier)
+        self.assertEqual('second rule description', second_event_definition['description'])

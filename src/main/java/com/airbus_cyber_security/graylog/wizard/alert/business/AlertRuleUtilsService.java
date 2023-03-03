@@ -409,15 +409,15 @@ public class AlertRuleUtilsService {
         }
     }
 
-    public EventProcessorConfig createCondition(String conditionType, Map<String, Object> conditionParameter, String streamID, String streamID2) {
+    public EventProcessorConfig createCondition(String conditionType, Map<String, Object> conditionParameter, String streamIdentifier, String streamIdentifier2) {
         LOG.debug("Create condition type: {}", conditionType);
 
         if (conditionType.equals("THEN") || conditionType.equals("AND")) {
-            return createCorrelationCondition(conditionType, streamID, streamID2, conditionParameter);
+            return createCorrelationCondition(conditionType, streamIdentifier, streamIdentifier2, conditionParameter);
         } else if (conditionType.equals("STATISTICAL")) {
-            return createStatisticalCondition(streamID, conditionParameter);
+            return createStatisticalCondition(streamIdentifier, conditionParameter);
         } else {
-            return createAggregationCondition(streamID, conditionParameter);
+            return createAggregationCondition(streamIdentifier, conditionParameter);
         }
     }
 }
