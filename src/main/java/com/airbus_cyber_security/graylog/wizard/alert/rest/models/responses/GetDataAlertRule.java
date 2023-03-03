@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 import java.util.Map;
 
-// TODO either inherit or reuse AlertRuleRequest to avoid duplication in this class
+// TODO either inherit or reuse AlertRuleRequest to avoid duplication in this class => I believe it should be the same object, with optional fields maybe...
 @AutoValue
 @JsonAutoDetect
 public abstract class GetDataAlertRule {
