@@ -89,11 +89,11 @@ public class AlertRuleUtils {
 
 	// TODO should introduce constants for MORE and LESS
 	private String convertCorrelationCountThresholdType(String thresholdType) {
-            if (thresholdType.equals("MORE")) {
-                return AlertRuleService.THRESHOLD_TYPE_MORE;
-            } else {
-                return AlertRuleService.THRESHOLD_TYPE_LESS;
-            }
+		if (thresholdType.equals("MORE")) {
+			return AlertRuleService.THRESHOLD_TYPE_MORE;
+		} else {
+			return AlertRuleService.THRESHOLD_TYPE_LESS;
+		}
 	}
 
 	public Map<String, Object> getConditionParameters(EventProcessorConfig eventConfig){
