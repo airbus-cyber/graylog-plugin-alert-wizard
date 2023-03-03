@@ -91,8 +91,6 @@ class Graylog:
             'stream': rule['stream'],
             'second_stream': rule['second_stream']
         }
-        # TODO should remove this
-        updated_rule['condition_parameters']['threshold'] = int(updated_rule['condition_parameters']['threshold'])
         self._api.update_alert_rule(updated_rule)
 
     def create_list(self, *args):
