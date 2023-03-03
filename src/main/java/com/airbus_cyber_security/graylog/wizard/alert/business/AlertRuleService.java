@@ -77,13 +77,12 @@ public class AlertRuleService {
 	public AlertRule update(String title, AlertRule alert) {
 		LOG.debug("Alert to be updated [{}]", alert);
 
-		final Set<ConstraintViolation<AlertRule>> violations = validator.validate(alert);
-		if (violations.isEmpty()) {
-			return this.alertRules.findAndModify(DBQuery.is(TITLE, title), new BasicDBObject(), new BasicDBObject(),
-					false, alert, true, false);
-		} else {
+		Set<ConstraintViolation<AlertRule>> violations = validator.validate(alert);
+		if (!violations.isEmpty()) {
 			throw new IllegalArgumentException("Specified object failed validation: " + violations);
 		}
+		return this.alertRules.findAndModify(DBQuery.is(TITLE, title), new BasicDBObject(), new BasicDBObject(),
+				false, alert, true, false);
 	}
 
 	public List<AlertRule> all() {
@@ -118,8 +117,8 @@ public class AlertRuleService {
 	}
 	
 	private boolean isValidStream(AlertRuleStream stream) {
-		if(stream.getMatchingType().equals("AND") || stream.getMatchingType().equals("OR")){
-			for (FieldRule fieldRule : stream.getFieldRules()) {
+		if (stream.getMatchingType().equals("AND") || stream.getMatchingType().equals("OR")) {
+			for (FieldRule fieldRule: stream.getFieldRules()) {
 				if (fieldRule.getField() == null || fieldRule.getField().isEmpty() ||
 						fieldRule.getType() < -7 || fieldRule.getType() > 7) {
 					return false;

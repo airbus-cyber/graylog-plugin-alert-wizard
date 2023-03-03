@@ -246,3 +246,22 @@ class Test(TestCase):
         title = 'aaa'
         rule = self._graylog.create_alert_rule_count(title, _PERIOD)
         self.assertIsInstance(rule['condition_parameters']['threshold'], int)
+
+    def test_update_alert_rule_count_to_or_should_update_second_event_definition_description_issue102(self):
+        title = 'aaa'
+        alert_rule = self._graylog.create_alert_rule_count(title, _PERIOD, description='description')
+        alert_rule['condition_type'] = 'OR'
+        alert_rule['second_stream'] = {
+            'field_rule': [
+                {
+                    'field': 'b',
+                    'type': 1,
+                    'value': 'titi'
+                }
+            ],
+            'matching_type': 'AND'
+        }
+        alert_rule = self._graylog.update_alert_rule(alert_rule, 'new description')
+        second_event_definition_identifier = alert_rule['second_event_definition']
+        second_event_definition = self._graylog.get_event_definition(second_event_definition_identifier)
+        self.assertEqual('new description', second_event_definition['description'])

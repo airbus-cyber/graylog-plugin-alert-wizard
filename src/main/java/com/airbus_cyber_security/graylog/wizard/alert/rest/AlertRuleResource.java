@@ -347,7 +347,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 this.eventDefinitionService.updateEvent(alertTitle + "#2", request.getDescription(), eventIdentifier2, configuration2);
             } else {
                 //Create Event
-                eventIdentifier2 = this.eventDefinitionService.createEvent(alertTitle + "#2", AlertRuleUtils.COMMENT_ALERT_WIZARD, oldAlert.getNotificationID(), configuration2, userContext);
+                eventIdentifier2 = this.eventDefinitionService.createEvent(alertTitle + "#2", request.getDescription(), oldAlert.getNotificationID(), configuration2, userContext);
             }
         } else if (oldAlert.getConditionType().equals("OR")) {
             //Delete Event
@@ -372,7 +372,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 pipeline2.getPipelineID(),
                 pipeline2.getPipelineRuleID(),
                 fieldRules2);
-        this.alertRuleService.update(java.net.URLDecoder.decode(title, ENCODING), alertRule);
+        alertRule = this.alertRuleService.update(java.net.URLDecoder.decode(title, ENCODING), alertRule);
 
         // Decrement list usage
         for (FieldRule fieldRule: this.nullSafe(oldAlert.getPipelineFieldRules())) {
@@ -389,7 +389,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
 
-        return Response.accepted().build();
+        GetDataAlertRule result = this.alertRuleUtilsService.constructDataAlertRule(alertRule);
+        return Response.accepted().entity(result).build();
     }
 
     @DELETE

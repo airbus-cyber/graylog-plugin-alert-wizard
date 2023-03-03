@@ -91,7 +91,7 @@ class Graylog:
             'stream': rule['stream'],
             'second_stream': rule['second_stream']
         }
-        self._api.update_alert_rule(updated_rule)
+        return self._api.update_alert_rule(updated_rule)
 
     def create_list(self, *args):
         self._api.create_list(*args)
