@@ -40,12 +40,7 @@ class Test(TestCase):
         self.assertEqual(default_time, configuration['default_values']['time'])
 
     def test_create_alert_rule_should_not_fail(self):
-        rule = {
-            'field': 'source',
-            'type': 1,
-            'value': 'toto'
-        }
-        alert_rule = self._graylog.create_alert_rule_count('alert_rule_title', rule, _PERIOD)
+        alert_rule = self._graylog.create_alert_rule_count('alert_rule_title', _PERIOD)
         self.assertEqual('alert_rule_title', alert_rule['title'])
 
     def test_create_alert_rule_statistics_should_not_fail(self):
@@ -60,12 +55,7 @@ class Test(TestCase):
     def test_default_time_range_in_configuration_should_propagate_into_notification_time_range__issue47(self):
         self._graylog.update_logging_alert_plugin_configuration()
         title = 'alert_rule_title'
-        rule = {
-            'field': 'source',
-            'type': 1,
-            'value': 'toto'
-        }
-        self._graylog.create_alert_rule_count(title, rule, _PERIOD)
+        self._graylog.create_alert_rule_count(title, _PERIOD)
         notification = self._graylog.get_notification_with_title(title)
         self.assertEqual(1441, notification['config']['aggregation_time'])
 
@@ -90,7 +80,7 @@ class Test(TestCase):
             'type': 7,
             'value': title
         }
-        self._graylog.create_alert_rule_count(title, rule, _PERIOD)
+        self._graylog.create_alert_rule_count(title, _PERIOD, rule=rule)
         with self._graylog.create_gelf_input() as inputs:
             inputs.send({'_x': value})
             # wait for the period (which is, unfortunately expressed in minutes, so it's quite long a wait)
@@ -115,7 +105,7 @@ class Test(TestCase):
             'type': 7,
             'value': list_title
         }
-        self._graylog.create_alert_rule_count(list_title, rule, _PERIOD)
+        self._graylog.create_alert_rule_count(list_title, _PERIOD, rule=rule)
 
         with self._graylog.create_gelf_input() as inputs:
             inputs.send({'_x': 'admin'})
@@ -160,12 +150,7 @@ class Test(TestCase):
 
     def test_get_alert_with_no_distinct_by_should_contain_an_empty_distinct_by_field(self):
         title = 'rule_count'
-        rule = {
-            'field': 'source',
-            'type': 1,
-            'value': 'toto'
-        }
-        self._graylog.create_alert_rule_count(title, rule, _PERIOD)
+        self._graylog.create_alert_rule_count(title, _PERIOD)
         alert_rule = self._graylog.get_alert_rule(title)
         self.assertEqual('', alert_rule['condition_parameters']['distinct_by'])
    
@@ -183,25 +168,15 @@ class Test(TestCase):
 
     def test_create_alert_rule_with_same_name_should_not_fail(self):
         title = 'aaa'
-        rule = {
-            'field': 'source',
-            'type': 1,
-            'value': 'toto'
-        }
-        self._graylog.create_alert_rule_count(title, rule, _PERIOD)
+        self._graylog.create_alert_rule_count(title, _PERIOD)
         self._graylog.start_logs_capture()
-        self._graylog.create_alert_rule_count(title, rule, _PERIOD)
+        self._graylog.create_alert_rule_count(title, _PERIOD)
         logs = self._graylog.extract_logs()
         self.assertNotIn('ERROR', logs)
 
     def test_get_all_rules_should_not_fail_when_a_stream_is_deleted_issue105(self):
         title = 'aaa'
-        rule = {
-            'field': 'source',
-            'type': 1,
-            'value': 'toto'
-        }
-        alert_rule = self._graylog.create_alert_rule_count(title, rule, _PERIOD)
+        alert_rule = self._graylog.create_alert_rule_count(title, _PERIOD)
         self._graylog.delete_stream(alert_rule['stream']['id'])
         status_code = self._graylog.get_alert_rules()
         self.assertEqual(200, status_code)
@@ -209,12 +184,7 @@ class Test(TestCase):
     def test_set_default_backlog_value_should_change_newly_created_event_definition_backlog_value_issue40(self):
         self._graylog.update_alert_wizard_plugin_configuration(backlog_size=1000)
         title = 'aaa'
-        rule = {
-            'field': 'source',
-            'type': 1,
-            'value': 'toto'
-        }
-        alert_rule = self._graylog.create_alert_rule_count(title, rule, _PERIOD)
+        alert_rule = self._graylog.create_alert_rule_count(title, _PERIOD)
         event_definition_identifier = alert_rule['condition']
         event_definition = self._graylog.get_event_definition(event_definition_identifier)
         backlog_size = event_definition['notification_settings']['backlog_size']
@@ -222,12 +192,7 @@ class Test(TestCase):
 
     def test_create_alert_rule_should_set_event_definition_description_issue102(self):
         title = 'aaa'
-        rule = {
-            'field': 'source',
-            'type': 1,
-            'value': 'toto'
-        }
-        alert_rule = self._graylog.create_alert_rule_count(title, rule, _PERIOD, description='rule_description')
+        alert_rule = self._graylog.create_alert_rule_count(title, _PERIOD, description='rule_description')
         event_definition_identifier = alert_rule['condition']
         event_definition = self._graylog.get_event_definition(event_definition_identifier)
         self.assertEqual('rule_description', event_definition['description'])
@@ -235,12 +200,7 @@ class Test(TestCase):
     @skip
     def test_get_alert_should_not_fail_when_event_definition_is_corrupted(self):
         title = 'aaa'
-        rule = {
-            'field': 'source',
-            'type': 1,
-            'value': 'toto'
-        }
-        alert_rule = self._graylog.create_alert_rule_count(title, rule, _PERIOD)
+        alert_rule = self._graylog.create_alert_rule_count(title, _PERIOD)
         event_definition = self._graylog.get_event_definition(alert_rule['condition'])
         print(event_definition)
         self._graylog.update_event_definition(alert_rule['condition'], 'new_description')
@@ -249,12 +209,7 @@ class Test(TestCase):
 
     def test_get_alert_should_return_the_description_of_the_event_definition_issue102(self):
         title = 'aaa'
-        rule = {
-            'field': 'source',
-            'type': 1,
-            'value': 'toto'
-        }
-        alert_rule = self._graylog.create_alert_rule_count(title, rule, _PERIOD)
+        alert_rule = self._graylog.create_alert_rule_count(title, _PERIOD)
         event_definition = self._graylog.get_event_definition(alert_rule['condition'])
         event_definition['description'] = 'new_description'
         self._graylog.update_event_definition(event_definition)
@@ -263,13 +218,7 @@ class Test(TestCase):
 
     def test_update_alert_should_change_the_alert_description_issue102(self):
         title = 'aaa'
-        rule = {
-            'field': 'source',
-            'type': 1,
-            'value': 'toto'
-        }
-        # TODO make parameter rule optional
-        self._graylog.create_alert_rule_count(title, rule, _PERIOD)
+        self._graylog.create_alert_rule_count(title, _PERIOD)
         self._graylog.update_alert_rule(title, 'new_description')
         alert_rule = self._graylog.get_alert_rule(title)
         self.assertEqual('new_description', alert_rule['description'])

@@ -3,6 +3,12 @@ from graylog_server import GraylogServer
 from graylog_rest_api import GraylogRestApi
 from graylog_inputs import GraylogInputs
 
+_DEFAULT_RULE = {
+    'field': 'source',
+    'type': 1,
+    'value': 'toto'
+}
+
 
 class Graylog:
 
@@ -57,7 +63,7 @@ class Graylog:
     def get_alert_rules(self):
         return self._api.get_alert_rules()
 
-    def create_alert_rule_count(self, title, rule, time, description=''):
+    def create_alert_rule_count(self, title, time, rule=_DEFAULT_RULE, description=''):
         return self._api.create_alert_rule_count(title, rule, time, description)
 
     def create_alert_rule_group_distinct(self, *args):
