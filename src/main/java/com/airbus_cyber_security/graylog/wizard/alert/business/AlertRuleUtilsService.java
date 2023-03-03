@@ -195,7 +195,9 @@ public class AlertRuleUtilsService {
             messageOrder = OrderType.ANY;
         }
         String thresholdType = convertThresholdTypeToCorrelation((String) conditionParameter.get(AlertRuleUtils.THRESHOLD_TYPE));
-        String additionalThresholdType = convertThresholdTypeToCorrelation((String) conditionParameter.get(AlertRuleUtils.ADDITIONAL_THRESHOLD_TYPE));       
+        String additionalThresholdType = convertThresholdTypeToCorrelation((String) conditionParameter.get(AlertRuleUtils.ADDITIONAL_THRESHOLD_TYPE));
+
+        int threshold = this.alertRuleUtils.accessThreshold(conditionParameter);
 
         long searchWithinMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(AlertRuleUtils.TIME).toString()));
         long executeEveryMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(AlertRuleUtils.GRACE).toString()));
@@ -203,7 +205,7 @@ public class AlertRuleUtilsService {
         return CorrelationCountProcessorConfig.builder()
                 .stream(streamID)
                 .thresholdType(thresholdType)
-                .threshold((int) conditionParameter.get(AlertRuleUtils.THRESHOLD))
+                .threshold(threshold)
                 .additionalStream(streamID2)
                 .additionalThresholdType(additionalThresholdType)
                 .additionalThreshold((int) conditionParameter.get(AlertRuleUtils.ADDITIONAL_THRESHOLD))
@@ -241,7 +243,7 @@ public class AlertRuleUtilsService {
         long executeEveryMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(AlertRuleUtils.GRACE).toString()));
 
         String thresholdType = (String) conditionParameter.get(AlertRuleUtils.THRESHOLD_TYPE);
-        int threshold = (int) conditionParameter.get(AlertRuleUtils.THRESHOLD);
+        int threshold = this.alertRuleUtils.accessThreshold(conditionParameter);
 
         String identifier = UUID.randomUUID().toString();
         AggregationSeries.Builder seriesBuilder = AggregationSeries.builder().id(identifier);
@@ -322,6 +324,8 @@ public class AlertRuleUtilsService {
         // TODO extract method to parse executeEveryMs
         long executeEveryMs = this.alertRuleUtils.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(AlertRuleUtils.GRACE).toString()));
 
+        int threshold = this.alertRuleUtils.accessThreshold(conditionParameter);
+
         String identifier = UUID.randomUUID().toString();
         AggregationSeries serie = AggregationSeries.builder()
                 .id(identifier)
@@ -331,7 +335,7 @@ public class AlertRuleUtilsService {
 
         Expression<Boolean> expression = createExpressionFromThreshold(identifier,
                 conditionParameter.get(AlertRuleUtils.THRESHOLD_TYPE).toString(),
-                (int) conditionParameter.get(AlertRuleUtils.THRESHOLD));
+                threshold);
 
         return AggregationEventProcessorConfig.builder()
                 .query("")

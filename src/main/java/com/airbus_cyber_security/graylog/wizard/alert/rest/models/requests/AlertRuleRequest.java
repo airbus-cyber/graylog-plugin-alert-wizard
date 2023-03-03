@@ -50,6 +50,7 @@ public abstract class AlertRuleRequest {
     public abstract String getConditionType();
 
     // TODO this should be typed (its an union of 3 possibilities)...
+    //      maybe see how it is done with graylog notifications org.graylog.events.notifications.EventNotificationConfig
     @JsonProperty("condition_parameters")
     public abstract Map<String, Object> conditionParameters();
     
