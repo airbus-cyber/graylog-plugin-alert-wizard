@@ -68,11 +68,6 @@ public abstract class AlertRule {
     @Nullable
     public abstract DateTime getLastModified();
 
-    // TODO should remove this field!!!
-    @JsonProperty("description")
-    @Nullable
-    public abstract String getDescription();
-    
     @JsonProperty("condition_type")
     @Nullable
     public abstract String getConditionType();
@@ -124,7 +119,6 @@ public abstract class AlertRule {
                                    @JsonProperty("created_at") DateTime createdAt,
                                    @JsonProperty("creator_user_id") String creatorUserId,
                                    @JsonProperty("last_modified") DateTime lastModified,
-                                   @JsonProperty("description") String description,
                                    @JsonProperty("condition_type") String conditionType,
                                    @JsonProperty("stream2") String streamID2,
                                    @JsonProperty("event2") String eventID2,
@@ -134,7 +128,7 @@ public abstract class AlertRule {
                                    @JsonProperty("second pipeline") String pipelineID2,
                                    @JsonProperty("second pipeline_rule") String pipelineRuleID2,
                                    @JsonProperty("second_pipeline_field_rules") List<FieldRule> pipelineFieldRules2){
-        return new AutoValue_AlertRule(title, streamID, eventID, notificationID, createdAt, creatorUserId, lastModified, description,
+        return new AutoValue_AlertRule(title, streamID, eventID, notificationID, createdAt, creatorUserId, lastModified,
                 conditionType, streamID2, eventID2, pipelineID, pipelineRuleID, pipelineFieldRules, pipelineID2, pipelineRuleID2, pipelineFieldRules2);
     }
 	
@@ -146,7 +140,6 @@ public abstract class AlertRule {
             DateTime createdAt,
             String creatorUserId,
             DateTime lastModified,
-            String description,
             String conditionType,
             String streamIdentifier2,
             String eventIdentifier2,
@@ -156,7 +149,7 @@ public abstract class AlertRule {
             String pipelineIdentifier2,
             String pipelineRuleIdentifier2,
             List<FieldRule> pipelineFieldRules2) {
-		return new AutoValue_AlertRule(title, streamID, eventID, notificationID, createdAt, creatorUserId, lastModified, description,
+		return new AutoValue_AlertRule(title, streamID, eventID, notificationID, createdAt, creatorUserId, lastModified,
                 conditionType, streamIdentifier2, eventIdentifier2, pipelineIdentifier, pipelineRuleIdentifier, pipelineFieldRules, pipelineIdentifier2, pipelineRuleIdentifier2, pipelineFieldRules2);
 	}
 }
