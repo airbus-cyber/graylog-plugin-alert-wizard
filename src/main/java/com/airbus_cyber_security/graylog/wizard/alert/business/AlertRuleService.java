@@ -18,10 +18,6 @@
 package com.airbus_cyber_security.graylog.wizard.alert.business;
 
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRule;
-import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRuleStream;
-import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
-import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
-import com.google.common.collect.Lists;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import org.graylog2.bindings.providers.MongoJackObjectMapperProvider;
@@ -38,7 +34,6 @@ import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 
@@ -81,7 +76,9 @@ public class AlertRuleService {
 	}
 
 	public List<AlertRule> all() {
-		return toAbstractListType(this.alertRules.find());
+		try (DBCursor<AlertRule> cursor = this.alertRules.find()) {
+			return cursor.toArray();
+		}
 	}
 
 	public void destroy(String alertTitle) {
@@ -96,14 +93,4 @@ public class AlertRuleService {
 		return (this.alertRules.getCount(DBQuery.is(TITLE, title)) > 0);
 	}
 
-	private List<AlertRule> toAbstractListType(DBCursor<AlertRule> alerts) {
-		return toAbstractListType(alerts.toArray());
-	}
-
-	private List<AlertRule> toAbstractListType(List<AlertRule> alerts) {
-		List<AlertRule> result = Lists.newArrayListWithCapacity(alerts.size());
-		result.addAll(alerts);
-
-		return result;
-	}
 }
