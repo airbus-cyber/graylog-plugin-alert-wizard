@@ -19,7 +19,7 @@
 package com.airbus_cyber_security.graylog.wizard.alert.rest;
 
 import com.airbus_cyber_security.graylog.wizard.alert.business.*;
-import com.airbus_cyber_security.graylog.wizard.alert.database.AlertRuleService;
+import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleService;
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRule;
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
