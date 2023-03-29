@@ -66,7 +66,7 @@ public class AlertRuleService {
 	}
 
 	public AlertRule create(AlertRule alert) {
-		final Set<ConstraintViolation<AlertRule>> violations = validator.validate(alert);
+		Set<ConstraintViolation<AlertRule>> violations = validator.validate(alert);
 		if (violations.isEmpty()) {
 			return this.alertRules.insert(alert).getSavedObject();
 		} else {
