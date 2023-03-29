@@ -134,7 +134,20 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         Stream stream = this.loadStream(streamIdentifier);
         DateTime lastModified = alert.getLastModified();
         long alertCount = this.alertService.countAlerts(streamIdentifier, alert.getLastModified());
-        return this.alertRuleUtilsService.constructDataAlertRule(alert, stream, event, notification, alertCount, lastModified);
+        return this.alertRuleUtilsService.constructDataAlertRule(
+                alert.getTitle(),
+                stream,
+                event,
+                notification,
+                alert.getCreatedAt(),
+                alert.getCreatorUserId(),
+                lastModified,
+                alert.getConditionType(),
+                alert.getSecondStreamID(),
+                alert.getSecondEventID(),
+                alert.getPipelineFieldRules(),
+                alert.getSecondPipelineFieldRules(),
+                alertCount);
     }
 
     @GET

@@ -70,31 +70,38 @@ public class AlertRuleUtilsService {
         }
     }
 
-    public GetDataAlertRule constructDataAlertRule(AlertRule alert,
+    public GetDataAlertRule constructDataAlertRule(String title,
                                                    Stream stream,
                                                    EventDefinitionDto event,
                                                    NotificationDto notification,
-                                                   long alertCount,
-                                                   DateTime lastModified) {
+                                                   DateTime createdAt,
+                                                   String creatorUserIdentifier,
+                                                   DateTime lastModified,
+                                                   String conditionType,
+                                                   String secondStreamIdentifier,
+                                                   String secondEventIdentifier,
+                                                   List<FieldRule> pipelineFieldRules,
+                                                   List<FieldRule> secondPipelineFieldRules,
+                                                   long alertCount) {
         Map<String, Object> parametersCondition = this.alertRuleUtils.getConditionParameters(event.config());
-        AlertRuleStream alertRuleStream = constructAlertRuleStream(stream, alert.getPipelineFieldRules());
-        AlertRuleStream alertRuleStream2 = constructSecondAlertRuleStream(alert);
+        AlertRuleStream alertRuleStream = constructAlertRuleStream(stream, pipelineFieldRules);
+        AlertRuleStream alertRuleStream2 = constructSecondAlertRuleStream(secondStreamIdentifier, secondPipelineFieldRules);
         LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) notification.config();
 
         boolean isDisabled = streamIsDisabled(stream);
 
-        return GetDataAlertRule.create(alert.getTitle(),
+        return GetDataAlertRule.create(title,
                 loggingNotificationConfig.severity().getType(),
                 event.id(),
-                alert.getSecondEventID(),
-                alert.getNotificationID(),
-                alert.getCreatedAt(),
-                alert.getCreatorUserId(),
+                secondEventIdentifier,
+                notification.id(),
+                createdAt,
+                creatorUserIdentifier,
                 lastModified,
                 isDisabled,
                 event.description(),
                 alertCount,
-                alert.getConditionType(),
+                conditionType,
                 parametersCondition,
                 alertRuleStream,
                 alertRuleStream2);
@@ -108,8 +115,7 @@ public class AlertRuleUtilsService {
         return isDisabled;
     }
 
-    private AlertRuleStream constructSecondAlertRuleStream(AlertRule alert) {
-        String streamIdentifier = alert.getSecondStreamID();
+    private AlertRuleStream constructSecondAlertRuleStream(String streamIdentifier, List<FieldRule> secondPipelineFieldRules) {
         // TODO are these two checks really necessary? (Isn't it either one or the other?)
         if (streamIdentifier == null) {
             return null;
@@ -118,7 +124,7 @@ public class AlertRuleUtilsService {
             return null;
         }
         Stream stream = this.loadStream(streamIdentifier);
-        return this.constructAlertRuleStream(stream, alert.getSecondPipelineFieldRules());
+        return this.constructAlertRuleStream(stream, secondPipelineFieldRules);
     }
 
     private AlertRuleStream constructAlertRuleStream(Stream stream, List<FieldRule> pipelineFieldRules) {
