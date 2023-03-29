@@ -104,7 +104,7 @@ public class AlertRuleUtilsService {
         EventDefinitionDto event = this.eventDefinitionService.getEventDefinition(eventIdentifier);
         Map<String, Object> parametersCondition = this.alertRuleUtils.getConditionParameters(event.config());
         Stream stream = this.loadStream(streamIdentifier);
-        AlertRuleStream alertRuleStream = constructAlertRuleStream(alert, stream, alert.getPipelineFieldRules());
+        AlertRuleStream alertRuleStream = constructAlertRuleStream(stream, alert.getPipelineFieldRules());
         AlertRuleStream alertRuleStream2 = constructSecondAlertRuleStream(alert);
         NotificationDto notification = this.getNotification(alert.getNotificationID());
         LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) notification.config();
@@ -152,10 +152,10 @@ public class AlertRuleUtilsService {
             return null;
         }
         Stream stream = this.loadStream(streamIdentifier);
-        return this.constructAlertRuleStream(alert, stream, alert.getSecondPipelineFieldRules());
+        return this.constructAlertRuleStream(stream, alert.getSecondPipelineFieldRules());
     }
 
-    private AlertRuleStream constructAlertRuleStream(AlertRule alert, Stream stream, List<FieldRule> pipelineFieldRules) {
+    private AlertRuleStream constructAlertRuleStream(Stream stream, List<FieldRule> pipelineFieldRules) {
         if (stream == null) {
             return null;
         }
