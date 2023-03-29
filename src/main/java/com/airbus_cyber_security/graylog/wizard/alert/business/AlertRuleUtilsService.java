@@ -115,11 +115,7 @@ public class AlertRuleUtilsService {
     }
 
     private AlertRuleStream constructSecondAlertRuleStream(String streamIdentifier, List<FieldRule> secondPipelineFieldRules) {
-        // TODO are these two checks really necessary? (Isn't it either one or the other?)
         if (streamIdentifier == null) {
-            return null;
-        }
-        if (streamIdentifier.isEmpty()) {
             return null;
         }
         Stream stream = this.loadStream(streamIdentifier);
