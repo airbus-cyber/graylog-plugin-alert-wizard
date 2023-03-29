@@ -15,7 +15,7 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-package com.airbus_cyber_security.graylog.wizard.alert.business;
+package com.airbus_cyber_security.graylog.wizard.alert.database;
 
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRule;
 import com.mongodb.BasicDBObject;
@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Set;
 
 
-// TODO extract class that accesses to database and move into com.airbus_cyber_security.graylog.wizard.alert.database
 public class AlertRuleService {
 
 	private final JacksonDBCollection<AlertRule, String> alertRules;
