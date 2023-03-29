@@ -17,7 +17,6 @@
 
 package com.airbus_cyber_security.graylog.wizard.database;
 
-import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.graylog2.lookup.LookupDefaultMultiValue;
 import org.graylog2.lookup.LookupDefaultSingleValue;
