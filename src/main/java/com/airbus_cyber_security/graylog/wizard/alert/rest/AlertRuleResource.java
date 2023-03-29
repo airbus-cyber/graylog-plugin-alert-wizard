@@ -118,22 +118,22 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.alertService = alertService;
     }
 
-    private Stream loadStream(String streamIdentifier) {
-        try {
-            return this.streamService.load(streamIdentifier);
-        } catch (NotFoundException e) {
+    private Stream loadSecondStream(String streamIdentifier) throws NotFoundException {
+        if (streamIdentifier == null) {
             return null;
         }
+        return this.streamService.load(streamIdentifier);
     }
 
-    private GetDataAlertRule constructDataAlertRule(AlertRule alert) {
+    private GetDataAlertRule constructDataAlertRule(AlertRule alert) throws NotFoundException {
         String eventIdentifier = alert.getEventID();
         EventDefinitionDto event = this.eventDefinitionService.getEventDefinition(eventIdentifier);
         NotificationDto notification = this.notificationService.get(alert.getNotificationID());
         String streamIdentifier = alert.getStreamIdentifier();
-        Stream stream = this.loadStream(streamIdentifier);
+        Stream stream = this.streamService.load(streamIdentifier);
         DateTime lastModified = alert.getLastModified();
         long alertCount = this.alertService.countAlerts(streamIdentifier, alert.getLastModified());
+        Stream secondStream = this.loadSecondStream(alert.getSecondStreamID());
         return this.alertRuleUtilsService.constructDataAlertRule(
                 alert.getTitle(),
                 stream,
@@ -143,7 +143,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 alert.getCreatorUserId(),
                 lastModified,
                 alert.getConditionType(),
-                alert.getSecondStreamID(),
+                secondStream,
                 alert.getSecondEventID(),
                 alert.getPipelineFieldRules(),
                 alert.getSecondPipelineFieldRules(),
@@ -185,7 +185,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     @ApiOperation(value = "Lists all existing alerts with additional data")
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_READ)
-    public List<GetDataAlertRule> listWithData() {
+    public List<GetDataAlertRule> listWithData() throws NotFoundException {
         List<AlertRule> alerts = this.alertRuleService.all();
 
         List<GetDataAlertRule> alertsData = new ArrayList<>();
@@ -257,7 +257,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     @ApiResponses(value = {@ApiResponse(code = 400, message = "The supplied request is not valid.")})
     @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_CREATE)
     public Response create(@ApiParam(name = "JSON body", required = true) @Valid @NotNull AlertRuleRequest request, @Context UserContext userContext)
-            throws ValidationException, BadRequestException {
+            throws ValidationException, BadRequestException, NotFoundException {
 
         this.alertRuleUtilsService.checkIsValidRequest(request);
 

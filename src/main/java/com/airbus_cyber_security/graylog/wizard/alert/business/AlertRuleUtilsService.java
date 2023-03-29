@@ -36,9 +36,7 @@ import org.graylog.events.processor.aggregation.AggregationConditions;
 import org.graylog.events.processor.aggregation.AggregationEventProcessorConfig;
 import org.graylog.events.processor.aggregation.AggregationFunction;
 import org.graylog.events.processor.aggregation.AggregationSeries;
-import org.graylog2.database.NotFoundException;
 import org.graylog2.plugin.streams.Stream;
-import org.graylog2.streams.StreamService;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,14 +50,11 @@ public class AlertRuleUtilsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(AlertRuleUtilsService.class);
 
-    // TODO try to remove this field
-    private final StreamService streamService;
     private final AlertRuleUtils alertRuleUtils;
 
     @Inject
-    public AlertRuleUtilsService(StreamService streamService) {
+    public AlertRuleUtilsService() {
         this.alertRuleUtils = new AlertRuleUtils();
-        this.streamService = streamService;
     }
 
     public void checkIsValidRequest(AlertRuleRequest request) {
@@ -77,14 +72,14 @@ public class AlertRuleUtilsService {
                                                    String creatorUserIdentifier,
                                                    DateTime lastModified,
                                                    String conditionType,
-                                                   String secondStreamIdentifier,
+                                                   Stream secondStream,
                                                    String secondEventIdentifier,
                                                    List<FieldRule> pipelineFieldRules,
                                                    List<FieldRule> secondPipelineFieldRules,
                                                    long alertCount) {
         Map<String, Object> parametersCondition = this.alertRuleUtils.getConditionParameters(event.config());
         AlertRuleStream alertRuleStream = constructAlertRuleStream(stream, pipelineFieldRules);
-        AlertRuleStream alertRuleStream2 = constructSecondAlertRuleStream(secondStreamIdentifier, secondPipelineFieldRules);
+        AlertRuleStream alertRuleStream2 = constructSecondAlertRuleStream(secondStream, secondPipelineFieldRules);
         LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) notification.config();
 
         boolean isDisabled = streamIsDisabled(stream);
@@ -114,11 +109,10 @@ public class AlertRuleUtilsService {
         return isDisabled;
     }
 
-    private AlertRuleStream constructSecondAlertRuleStream(String streamIdentifier, List<FieldRule> secondPipelineFieldRules) {
-        if (streamIdentifier == null) {
+    private AlertRuleStream constructSecondAlertRuleStream(Stream stream, List<FieldRule> secondPipelineFieldRules) {
+        if (stream == null) {
             return null;
         }
-        Stream stream = this.loadStream(streamIdentifier);
         return this.constructAlertRuleStream(stream, secondPipelineFieldRules);
     }
 
@@ -131,14 +125,6 @@ public class AlertRuleUtilsService {
         Optional.ofNullable(pipelineFieldRules).ifPresent(fieldRules::addAll);
         Optional.ofNullable(this.alertRuleUtils.getListFieldRule(stream.getStreamRules())).ifPresent(fieldRules::addAll);
         return AlertRuleStream.create(stream.getId(), stream.getMatchingType().toString(), fieldRules);
-    }
-
-    private Stream loadStream(String streamIdentifier) {
-        try {
-            return this.streamService.load(streamIdentifier);
-        } catch (NotFoundException e) {
-            return null;
-        }
     }
 
     private String convertThresholdTypeToCorrelation(String thresholdType) {
