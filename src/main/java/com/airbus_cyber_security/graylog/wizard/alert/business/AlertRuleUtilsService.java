@@ -59,7 +59,6 @@ public class AlertRuleUtilsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(AlertRuleUtilsService.class);
 
-    private final AlertRuleService alertRuleService;
     private final StreamService streamService;
     private final AlertService alertService;
     private final AlertRuleUtils alertRuleUtils;
@@ -70,15 +69,13 @@ public class AlertRuleUtilsService {
     private final ClusterConfigService clusterConfigService;
 
     @Inject
-    public AlertRuleUtilsService(AlertRuleService alertRuleService,
-                                 StreamService streamService,
+    public AlertRuleUtilsService(StreamService streamService,
                                  AlertService alertService,
                                  EventDefinitionService eventDefinitionService,
                                  NotificationResourceHandler notificationHandler,
                                  DBNotificationService notificationService,
                                  ClusterConfigService clusterConfigService) {
         this.alertRuleUtils = new AlertRuleUtils();
-        this.alertRuleService = alertRuleService;
         this.streamService = streamService;
         this.alertService = alertService;
         this.eventDefinitionService = eventDefinitionService;
