@@ -88,7 +88,7 @@ public class AlertRuleUtilsService {
     }
 
     public void checkIsValidRequest(AlertRuleRequest request) {
-        if (!this.alertRuleService.isValidRequest(request)) {
+        if (!this.alertRuleUtils.isValidRequest(request)) {
             LOG.error("Invalid alert rule request");
             throw new BadRequestException("Invalid alert rule request.");
         }
@@ -178,7 +178,7 @@ public class AlertRuleUtilsService {
     }
 
     private String convertThresholdTypeToCorrelation(String thresholdType) {
-        if (thresholdType.equals(AlertRuleService.THRESHOLD_TYPE_MORE)) {
+        if (thresholdType.equals(AlertRuleUtils.THRESHOLD_TYPE_MORE)) {
             return "MORE";
         } else {
             return "LESS";
@@ -223,9 +223,9 @@ public class AlertRuleUtilsService {
         Expr.NumberReference left = Expr.NumberReference.create(identifier);
         Expr.NumberValue right = Expr.NumberValue.create(threshold);
         switch (thresholdType) {
-            case AlertRuleService.THRESHOLD_TYPE_MORE:
+            case AlertRuleUtils.THRESHOLD_TYPE_MORE:
                 return Expr.Greater.create(left, right);
-            case AlertRuleService.THRESHOLD_TYPE_LESS:
+            case AlertRuleUtils.THRESHOLD_TYPE_LESS:
                 return Expr.Lesser.create(left, right);
             default:
                 throw new BadRequestException("createExpressionFromNumberThreshold: unexpected threshold type " + thresholdType);

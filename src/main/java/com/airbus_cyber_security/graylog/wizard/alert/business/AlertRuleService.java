@@ -50,11 +50,6 @@ public class AlertRuleService {
 	private static final Logger LOG = LoggerFactory.getLogger(AlertRuleService.class);
 	private static final String TITLE = "title";
 
-	// TODO should try to make these constants private and group the code (more compact)
-	public static final String THRESHOLD_TYPE_MORE = ">";
-
-	public static final String THRESHOLD_TYPE_LESS = "<";
-
 	@Inject
 	public AlertRuleService(MongoConnection mongoConnection, MongoJackObjectMapperProvider mapperProvider,
 							Validator validator) {
@@ -111,89 +106,4 @@ public class AlertRuleService {
 
 		return result;
 	}
-
-	private boolean isValidTitle(String title) {
-		return !(title == null || title.isEmpty());
-	}
-	
-	private boolean isValidStream(AlertRuleStream stream) {
-		if (stream.getMatchingType().equals("AND") || stream.getMatchingType().equals("OR")) {
-			for (FieldRule fieldRule: stream.getFieldRules()) {
-				if (fieldRule.getField() == null || fieldRule.getField().isEmpty() ||
-						fieldRule.getType() < -7 || fieldRule.getType() > 7) {
-					return false;
-				}
-			}
-			return true;
-		}
-		return false;
-	}
-	
-    private boolean isValidCondStatistical(Map<String, Object> conditionParameters) {
-        if (!conditionParameters.containsKey(AlertRuleUtils.TYPE)) {
-            LOG.debug("Missing condition parameter {}", AlertRuleUtils.TYPE);
-            return false;
-        }
-        if (!conditionParameters.containsKey(AlertRuleUtils.FIELD)) {
-            LOG.debug("Missing condition parameter {}", AlertRuleUtils.FIELD);
-            return false;
-        }
-        String thresholdType = conditionParameters.get(AlertRuleUtils.THRESHOLD_TYPE).toString();
-        if (!isValidStatThresholdType(thresholdType)) {
-            LOG.debug("Invalid condition parameter {}, {}", AlertRuleUtils.THRESHOLD_TYPE, thresholdType);
-            return false;
-        }
-        return true;
-    }
-	
-	private boolean isValidCondCorrelation(Map<String, Object> conditionParameters, AlertRuleStream secondStream) {
-		return (conditionParameters.containsKey(AlertRuleUtils.ADDITIONAL_THRESHOLD) &&
-				conditionParameters.containsKey(AlertRuleUtils.ADDITIONAL_THRESHOLD_TYPE) &&
-				isValidThresholdType(conditionParameters.get(AlertRuleUtils.THRESHOLD_TYPE).toString()) &&
-				isValidThresholdType(conditionParameters.get(AlertRuleUtils.ADDITIONAL_THRESHOLD_TYPE).toString()) &&
-				isValidStream(secondStream));
-	}
-	
-	private boolean isValidCondOr(Map<String, Object> conditionParameters, AlertRuleStream secondStream) {
-		return (isValidThresholdType(conditionParameters.get(AlertRuleUtils.THRESHOLD_TYPE).toString()) &&
-				isValidStream(secondStream));
-	}
-	
-	private boolean isValidThresholdType(String thresholdType) {
-		return (thresholdType.equals(THRESHOLD_TYPE_MORE) || thresholdType.equals(THRESHOLD_TYPE_LESS));
-	}
-	
-	private boolean isValidStatThresholdType(String thresholdType) {
-		return (thresholdType.equals("<") || thresholdType.equals("<=") ||
-				thresholdType.equals(">") || thresholdType.equals(">=") || thresholdType.equals("=="));
-	}
-	
-    private boolean isValidCondition(String conditionType, Map<String, Object> conditionParameters, AlertRuleStream secondStream) {
-        if (!conditionParameters.containsKey(AlertRuleUtils.TIME)) {
-            LOG.debug("Missing condition parameter: {}", AlertRuleUtils.TIME);
-            return false;
-        }
-        if (!conditionParameters.containsKey(AlertRuleUtils.THRESHOLD)) {
-            LOG.debug("Missing condition parameter: {}", AlertRuleUtils.THRESHOLD);
-            return false;
-        }
-        if (!conditionParameters.containsKey(AlertRuleUtils.THRESHOLD_TYPE)) {
-            LOG.debug("Missing condition parameter: {}", AlertRuleUtils.THRESHOLD_TYPE);
-            return false;
-        }
-        if (conditionType.equals("STATISTICAL")) {
-            return isValidCondStatistical(conditionParameters);
-        } else if (conditionType.equals("THEN") || conditionType.equals("AND")) {
-            return isValidCondCorrelation(conditionParameters, secondStream);
-        } else if (conditionType.equals("OR")) {
-            return isValidCondOr(conditionParameters, secondStream);
-        }
-        return true;
-    }
-
-	public boolean isValidRequest(AlertRuleRequest request){
-		return (isValidTitle(request.getTitle()) && 
-				isValidStream(request.getStream()) &&
-				isValidCondition(request.getConditionType(), request.conditionParameters(), request.getSecondStream()));
-    }
 }
