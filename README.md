@@ -44,7 +44,7 @@ To avoid losing the content of the description field when upgrading, you may fol
 1. Export rules from the preceding version,
 2. Delete all rules,
 3. Install version 4.5.0,
-4. Import rules and lists.
+4. Import rules.
 
 Alternatively, for each alert rule, you may, before the upgrade, set the description field of its corresponding
 Event Definition with the value of the rule's description. This may be done manually or automatically via the REST API.
