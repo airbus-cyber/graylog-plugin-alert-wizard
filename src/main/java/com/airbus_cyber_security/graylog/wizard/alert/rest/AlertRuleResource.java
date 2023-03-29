@@ -36,6 +36,7 @@ import com.mongodb.MongoException;
 import io.swagger.annotations.*;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.graylog.events.notifications.NotificationDto;
 import org.graylog.events.processor.EventDefinitionDto;
 import org.graylog.events.processor.EventProcessorConfig;
 import org.graylog.events.rest.EventNotificationsResource;
@@ -117,7 +118,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private GetDataAlertRule constructDataAlertRule(AlertRule alert) {
         String eventIdentifier = alert.getEventID();
         EventDefinitionDto event = this.eventDefinitionService.getEventDefinition(eventIdentifier);
-        return this.alertRuleUtilsService.constructDataAlertRule(alert, event);
+        NotificationDto notification = this.notificationService.get(alert.getNotificationID());
+        return this.alertRuleUtilsService.constructDataAlertRule(alert, event, notification);
     }
 
     @GET

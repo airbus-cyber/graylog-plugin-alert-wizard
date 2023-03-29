@@ -57,16 +57,13 @@ public class AlertRuleUtilsService {
     private final StreamService streamService;
     private final AlertService alertService;
     private final AlertRuleUtils alertRuleUtils;
-    private final NotificationService notificationService;
 
     @Inject
     public AlertRuleUtilsService(StreamService streamService,
-                                 AlertService alertService,
-                                 NotificationService notificationService) {
+                                 AlertService alertService) {
         this.alertRuleUtils = new AlertRuleUtils();
         this.streamService = streamService;
         this.alertService = alertService;
-        this.notificationService = notificationService;
     }
 
     public void checkIsValidRequest(AlertRuleRequest request) {
@@ -81,14 +78,13 @@ public class AlertRuleUtilsService {
         return alerts.size();
     }
 
-    public GetDataAlertRule constructDataAlertRule(AlertRule alert, EventDefinitionDto event) {
+    public GetDataAlertRule constructDataAlertRule(AlertRule alert, EventDefinitionDto event, NotificationDto notification) {
         String streamIdentifier = alert.getStreamIdentifier();
 
         Map<String, Object> parametersCondition = this.alertRuleUtils.getConditionParameters(event.config());
         Stream stream = this.loadStream(streamIdentifier);
         AlertRuleStream alertRuleStream = constructAlertRuleStream(stream, alert.getPipelineFieldRules());
         AlertRuleStream alertRuleStream2 = constructSecondAlertRuleStream(alert);
-        NotificationDto notification = this.notificationService.get(alert.getNotificationID());
         LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) notification.config();
         long alertCount = countAlerts(streamIdentifier, alert.getLastModified());
 
