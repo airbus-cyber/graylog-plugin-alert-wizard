@@ -52,7 +52,7 @@ public class AlertRuleUtils {
 	public static final String ADDITIONAL_THRESHOLD = "additional_threshold";
 	public static final String ADDITIONAL_THRESHOLD_TYPE = "additional_threshold_type";
     public static final String THRESHOLD_TYPE = "threshold_type";
-    public static final String THRESHOLD = "threshold";
+    private static final String THRESHOLD = "threshold";
 
 	// TODO should try to make these constants private and group the code (more compact)
 	public static final String THRESHOLD_TYPE_MORE = ">";
