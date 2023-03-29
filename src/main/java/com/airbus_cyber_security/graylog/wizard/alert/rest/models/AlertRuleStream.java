@@ -15,7 +15,7 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-package com.airbus_cyber_security.graylog.wizard.alert.model;
+package com.airbus_cyber_security.graylog.wizard.alert.rest.models;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -26,34 +26,33 @@ import org.graylog2.database.CollectionName;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @AutoValue
 @JsonAutoDetect
 @JsonIgnoreProperties(ignoreUnknown = true)
-@CollectionName("field_rule")
-public abstract class FieldRule {
+@CollectionName("stream")
+public abstract class AlertRuleStream {
 
-	@JsonProperty("id")
+    // TODO rename into getIdentifier
+    @JsonProperty("id")
     @Nullable
     public abstract String getID();
-	
-    @JsonProperty("field")
+    
+    @JsonProperty("matching_type")
     @NotNull
-    public abstract String getField();
-
-    @JsonProperty("type")
-    public abstract int getType();
-
-    @JsonProperty("value")
+    public abstract String getMatchingType();
+    
+    @JsonProperty("field_rule")
     @Nullable
-    public abstract String getValue();
+    // TODO should be NotNull (empty list)!!!
+    public abstract List<FieldRule> getFieldRules();
 
     @JsonCreator
-    public static FieldRule create(@JsonProperty("id") String id,
-                                   @JsonProperty("field") String field,
-                                   @JsonProperty("type") int type,
-                                   @JsonProperty("value") String value){
-        return new AutoValue_FieldRule(id, field, type, value);
+    public static AlertRuleStream create(@JsonProperty("id") String id,
+                                         @JsonProperty("matching_type") String matchingType,
+                                         @JsonProperty("field_rule") List<FieldRule> fieldRules){
+        return new AutoValue_AlertRuleStream(id, matchingType, fieldRules);
     }
 
 }
