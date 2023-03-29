@@ -89,6 +89,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private final StreamPipelineService streamPipelineService;
     private final AlertListUtilsService alertListUtilsService;
     private final NotificationService notificationService;
+    private final AlertService alertService;
 
     @Inject
     public AlertRuleResource(AlertRuleService alertRuleService,
@@ -100,7 +101,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                              EventNotificationsResource eventNotificationsResource,
                              AlertRuleUtilsService alertRuleUtilsService,
                              EventDefinitionService eventDefinitionService,
-                             NotificationService notificationService) {
+                             NotificationService notificationService,
+                             AlertService alertService) {
         // TODO should probably move these fields down into the business namespace
         this.alertRuleService = alertRuleService;
         this.streamService = streamService;
@@ -113,13 +115,26 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.alertRuleUtilsService = alertRuleUtilsService;
         this.streamPipelineService = streamPipelineService;
         this.notificationService = notificationService;
+        this.alertService = alertService;
+    }
+
+    private Stream loadStream(String streamIdentifier) {
+        try {
+            return this.streamService.load(streamIdentifier);
+        } catch (NotFoundException e) {
+            return null;
+        }
     }
 
     private GetDataAlertRule constructDataAlertRule(AlertRule alert) {
         String eventIdentifier = alert.getEventID();
         EventDefinitionDto event = this.eventDefinitionService.getEventDefinition(eventIdentifier);
         NotificationDto notification = this.notificationService.get(alert.getNotificationID());
-        return this.alertRuleUtilsService.constructDataAlertRule(alert, event, notification);
+        String streamIdentifier = alert.getStreamIdentifier();
+        Stream stream = this.loadStream(streamIdentifier);
+        DateTime lastModified = alert.getLastModified();
+        long alertCount = this.alertService.countAlerts(streamIdentifier, alert.getLastModified());
+        return this.alertRuleUtilsService.constructDataAlertRule(alert, stream, event, notification, alertCount, lastModified);
     }
 
     @GET

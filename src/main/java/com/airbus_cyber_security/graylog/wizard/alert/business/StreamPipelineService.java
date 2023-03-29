@@ -48,6 +48,7 @@ import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import java.util.*;
 
+// TODO split into StreamService and PipelineService
 public class StreamPipelineService {
 
     private static final Logger LOG = LoggerFactory.getLogger(StreamPipelineService.class);

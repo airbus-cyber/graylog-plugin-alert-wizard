@@ -37,8 +37,6 @@ import org.graylog.events.processor.aggregation.AggregationConditions;
 import org.graylog.events.processor.aggregation.AggregationEventProcessorConfig;
 import org.graylog.events.processor.aggregation.AggregationFunction;
 import org.graylog.events.processor.aggregation.AggregationSeries;
-import org.graylog2.alerts.Alert;
-import org.graylog2.alerts.AlertService;
 import org.graylog2.database.NotFoundException;
 import org.graylog2.plugin.streams.Stream;
 import org.graylog2.streams.StreamService;
@@ -50,20 +48,19 @@ import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import java.util.*;
 
+// TODO merge with AlertRuleUtils, move into rest and rename into something like Conversions?
 public class AlertRuleUtilsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(AlertRuleUtilsService.class);
 
+    // TODO try to remove this field
     private final StreamService streamService;
-    private final AlertService alertService;
     private final AlertRuleUtils alertRuleUtils;
 
     @Inject
-    public AlertRuleUtilsService(StreamService streamService,
-                                 AlertService alertService) {
+    public AlertRuleUtilsService(StreamService streamService) {
         this.alertRuleUtils = new AlertRuleUtils();
         this.streamService = streamService;
-        this.alertService = alertService;
     }
 
     public void checkIsValidRequest(AlertRuleRequest request) {
@@ -73,20 +70,16 @@ public class AlertRuleUtilsService {
         }
     }
 
-    private int countAlerts(String streamID, DateTime since) {
-        List<Alert> alerts = this.alertService.loadRecentOfStream(streamID, since, 999);
-        return alerts.size();
-    }
-
-    public GetDataAlertRule constructDataAlertRule(AlertRule alert, EventDefinitionDto event, NotificationDto notification) {
-        String streamIdentifier = alert.getStreamIdentifier();
-
+    public GetDataAlertRule constructDataAlertRule(AlertRule alert,
+                                                   Stream stream,
+                                                   EventDefinitionDto event,
+                                                   NotificationDto notification,
+                                                   long alertCount,
+                                                   DateTime lastModified) {
         Map<String, Object> parametersCondition = this.alertRuleUtils.getConditionParameters(event.config());
-        Stream stream = this.loadStream(streamIdentifier);
         AlertRuleStream alertRuleStream = constructAlertRuleStream(stream, alert.getPipelineFieldRules());
         AlertRuleStream alertRuleStream2 = constructSecondAlertRuleStream(alert);
         LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) notification.config();
-        long alertCount = countAlerts(streamIdentifier, alert.getLastModified());
 
         boolean isDisabled = streamIsDisabled(stream);
 
@@ -97,7 +90,7 @@ public class AlertRuleUtilsService {
                 alert.getNotificationID(),
                 alert.getCreatedAt(),
                 alert.getCreatorUserId(),
-                alert.getLastModified(),
+                lastModified,
                 isDisabled,
                 event.description(),
                 alertCount,
