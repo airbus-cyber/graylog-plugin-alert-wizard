@@ -186,7 +186,7 @@ public class StreamPipelineService {
 
     public Stream createStream(AlertRuleStream alertRuleStream, String title, String userName) throws ValidationException {
         LOG.debug("Create Stream: " + title);
-        final CreateStreamRequest cr = CreateStreamRequest.create(title, AlertRuleUtils.COMMENT_ALERT_WIZARD,
+        CreateStreamRequest cr = CreateStreamRequest.create(title, AlertRuleUtils.COMMENT_ALERT_WIZARD,
                 Collections.emptyList(), "", alertRuleStream.getMatchingType(), false, indexSetID);
         Stream stream = this.streamService.create(cr, userName);
         stream.setDisabled(false);
@@ -194,7 +194,7 @@ public class StreamPipelineService {
         if (!stream.getIndexSet().getConfig().isWritable()) {
             throw new BadRequestException("Assigned index set must be writable!");
         }
-        final String streamID = this.streamService.save(stream);
+        String streamID = this.streamService.save(stream);
 
         // Create stream rules.
         createStreamRule(alertRuleStream.getFieldRules(), streamID);
