@@ -19,7 +19,8 @@ Perfect for example to configure together and at the same time a stream, an aler
 ## Graylog Version Compatibility
 
 | Wizard Plugin Version | Graylog Version |
-| --------------------- | --------------- |
+|-----------------------|-----------------|
+| 4.5.x                 | 4.3.x           |
 | 4.4.x                 | 4.3.x           |
 | 4.3.x                 | 4.2.x           |
 | 4.2.x                 | 4.2.x           |
@@ -35,6 +36,18 @@ Perfect for example to configure together and at the same time a stream, an aler
 
 
 ## Upgrading
+
+### Upgrading to 4.5.0
+
+The alert rule description field is now mapped to the Event Definition description field.
+To avoid losing the content of the description field when upgrading, you may follow the migration procedure:
+1. Export rules from the preceding version,
+2. Delete all rules,
+3. Install version 4.5.0,
+4. Import rules and lists.
+
+Alternatively, for each alert rule, you may, before the upgrade, set the description field of its corresponding
+Event Definition with the value of the rule's description. This may be done manually or automatically via the REST API.
 
 ### Upgrading to 4.3.0
 
