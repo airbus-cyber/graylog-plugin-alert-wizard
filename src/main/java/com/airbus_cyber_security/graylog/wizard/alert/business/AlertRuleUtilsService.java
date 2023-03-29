@@ -53,8 +53,6 @@ import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import java.util.*;
 
-// TODO split this class according
-//  => extract everything which is related to Notification CRUD into a NotificationUtils/Service?
 public class AlertRuleUtilsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(AlertRuleUtilsService.class);
@@ -64,20 +62,17 @@ public class AlertRuleUtilsService {
     private final AlertRuleUtils alertRuleUtils;
     private final EventDefinitionService eventDefinitionService;
     private final NotificationService notificationService;
-    private final ClusterConfigService clusterConfigService;
 
     @Inject
     public AlertRuleUtilsService(StreamService streamService,
                                  AlertService alertService,
                                  EventDefinitionService eventDefinitionService,
-                                 NotificationService notificationService,
-                                 ClusterConfigService clusterConfigService) {
+                                 NotificationService notificationService) {
         this.alertRuleUtils = new AlertRuleUtils();
         this.streamService = streamService;
         this.alertService = alertService;
         this.eventDefinitionService = eventDefinitionService;
         this.notificationService = notificationService;
-        this.clusterConfigService = clusterConfigService;
     }
 
     public void checkIsValidRequest(AlertRuleRequest request) {
@@ -336,59 +331,6 @@ public class AlertRuleUtilsService {
                 .searchWithinMs(searchWithinMs)
                 .executeEveryMs(executeEveryMs)
                 .build();
-    }
-
-    private String getDefaultLogBody() {
-        LoggingAlertConfig generalConfig = this.clusterConfigService.getOrDefault(LoggingAlertConfig.class,
-                LoggingAlertConfig.createDefault());
-        return generalConfig.accessLogBody();
-    }
-
-    private int getDefaultTime() {
-        LoggingAlertConfig configuration = this.clusterConfigService.getOrDefault(LoggingAlertConfig.class,
-                LoggingAlertConfig.createDefault());
-        return configuration.accessAggregationTime();
-    }
-
-    public String createNotification(String alertTitle, String severity, UserContext userContext) {
-        LoggingNotificationConfig loggingNotificationConfig = LoggingNotificationConfig.builder()
-                .singleMessage(false)
-                .severity(SeverityType.valueOf(severity.toUpperCase()))
-                .logBody(this.getDefaultLogBody())
-                .aggregationTime(this.getDefaultTime())
-                .build();
-        NotificationDto notification = NotificationDto.builder()
-                .config(loggingNotificationConfig)
-                .title(alertTitle)
-                .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
-                .build();
-        return this.notificationService.create(notification, userContext);
-    }
-
-    public void updateNotification(String title, String notificationID, String severity) {
-        NotificationDto notification = this.notificationService.get(notificationID);
-        LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) notification.config();
-        if (!loggingNotificationConfig.severity().getType().equals(severity) || !notification.title().equals(title)) {
-            LOG.debug("Update Notification " + title);
-            if (!loggingNotificationConfig.severity().getType().equals(severity)) {
-                LOG.debug("Update severity, old one: " + loggingNotificationConfig.severity().getType() + " New one: " + severity);
-                loggingNotificationConfig = LoggingNotificationConfig.builder()
-                        .severity(SeverityType.valueOf(severity.toUpperCase()))
-                        .logBody(loggingNotificationConfig.logBody())
-                        .splitFields(loggingNotificationConfig.splitFields())
-                        .aggregationTime(loggingNotificationConfig.aggregationTime())
-                        .alertTag(loggingNotificationConfig.alertTag())
-                        .singleMessage(loggingNotificationConfig.singleMessage())
-                        .build();
-            }
-            notification = NotificationDto.builder()
-                    .id(notification.id())
-                    .config(loggingNotificationConfig)
-                    .title(title)
-                    .description(notification.description())
-                    .build();
-            this.notificationService.update(notification);
-        }
     }
 
     public EventProcessorConfig createCondition(String conditionType, Map<String, Object> conditionParameter, String streamIdentifier, String streamIdentifier2) {

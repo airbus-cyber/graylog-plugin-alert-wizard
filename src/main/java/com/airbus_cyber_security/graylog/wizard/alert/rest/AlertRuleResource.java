@@ -86,6 +86,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private final AlertRuleUtilsService alertRuleUtilsService;
     private final StreamPipelineService streamPipelineService;
     private final AlertListUtilsService alertListUtilsService;
+    private final NotificationService notificationService;
 
     @Inject
     public AlertRuleResource(AlertRuleService alertRuleService,
@@ -96,7 +97,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                              AlertListUtilsService alertListUtilsService,
                              EventNotificationsResource eventNotificationsResource,
                              AlertRuleUtilsService alertRuleUtilsService,
-                             EventDefinitionService eventDefinitionService) {
+                             EventDefinitionService eventDefinitionService,
+                             NotificationService notificationService) {
         // TODO should probably move these fields down into the business namespace
         this.alertRuleService = alertRuleService;
         this.streamService = streamService;
@@ -108,6 +110,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.alertListUtilsService = alertListUtilsService;
         this.alertRuleUtilsService = alertRuleUtilsService;
         this.streamPipelineService = streamPipelineService;
+        this.notificationService = notificationService;
     }
 
     @GET
@@ -231,7 +234,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String description = request.getDescription();
         Map<String, Object> conditionParameters = request.conditionParameters();
 
-        String notificationIdentifier = this.alertRuleUtilsService.createNotification(alertTitle, severity, userContext);
+        String notificationIdentifier = this.notificationService.createNotification(alertTitle, severity, userContext);
 
         // Create stream and pipeline
         Stream stream = this.streamPipelineService.createStream(streamConfiguration, alertTitle, userName);
@@ -330,7 +333,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
 
         //update Notification
-        this.alertRuleUtilsService.updateNotification(alertTitle, oldAlert.getNotificationID(), request.getSeverity());
+        this.notificationService.updateNotification(alertTitle, oldAlert.getNotificationID(), request.getSeverity());
 
         //Create Condition
         EventProcessorConfig configuration = this.alertRuleUtilsService.createCondition(request.getConditionType(), request.conditionParameters(), stream.getId(), streamID2);
