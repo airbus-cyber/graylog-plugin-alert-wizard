@@ -118,19 +118,30 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.alertService = alertService;
     }
 
-    private Stream loadSecondStream(String streamIdentifier) throws NotFoundException {
+    private Stream loadStream(String streamIdentifier) {
+        try {
+            return this.streamService.load(streamIdentifier);
+        } catch (NotFoundException e) {
+            // this may happen if the underlying stream was deleted
+            // see test test_get_all_rules_should_not_fail_when_a_stream_is_deleted_issue105 and related issue
+            // TODO in this case, maybe the rule should rather be converted into a corrupted rule than this aspect being handled by the interface?
+            return null;
+        }
+    }
+
+    private Stream loadSecondStream(String streamIdentifier)  {
         if (streamIdentifier == null) {
             return null;
         }
-        return this.streamService.load(streamIdentifier);
+        return this.loadStream(streamIdentifier);
     }
 
-    private GetDataAlertRule constructDataAlertRule(AlertRule alert) throws NotFoundException {
+    private GetDataAlertRule constructDataAlertRule(AlertRule alert) {
         String eventIdentifier = alert.getEventID();
         EventDefinitionDto event = this.eventDefinitionService.getEventDefinition(eventIdentifier);
         NotificationDto notification = this.notificationService.get(alert.getNotificationID());
         String streamIdentifier = alert.getStreamIdentifier();
-        Stream stream = this.streamService.load(streamIdentifier);
+        Stream stream = this.loadStream(streamIdentifier);
         DateTime lastModified = alert.getLastModified();
         long alertCount = this.alertService.countAlerts(streamIdentifier, alert.getLastModified());
         Stream secondStream = this.loadSecondStream(alert.getSecondStreamID());
@@ -185,7 +196,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     @ApiOperation(value = "Lists all existing alerts with additional data")
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_READ)
-    public List<GetDataAlertRule> listWithData() throws NotFoundException {
+    public List<GetDataAlertRule> listWithData() {
         List<AlertRule> alerts = this.alertRuleService.all();
 
         List<GetDataAlertRule> alertsData = new ArrayList<>();
@@ -257,7 +268,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     @ApiResponses(value = {@ApiResponse(code = 400, message = "The supplied request is not valid.")})
     @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_CREATE)
     public Response create(@ApiParam(name = "JSON body", required = true) @Valid @NotNull AlertRuleRequest request, @Context UserContext userContext)
-            throws ValidationException, BadRequestException, NotFoundException {
+            throws ValidationException, BadRequestException {
 
         this.conversions.checkIsValidRequest(request);
 
@@ -347,7 +358,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String userName = getCurrentUser().getName();
 
         // Update stream.
-        Stream stream = this.streamService.load(oldAlert.getStreamIdentifier());
+        Stream stream = this.loadStream(oldAlert.getStreamIdentifier());
         this.streamPipelineService.updateStream(stream, request.getStream(), alertTitle);
 
         //update pipeline

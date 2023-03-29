@@ -33,7 +33,8 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @CollectionName("stream")
 public abstract class AlertRuleStream {
-    
+
+    // TODO rename into getIdentifier
     @JsonProperty("id")
     @Nullable
     public abstract String getID();
