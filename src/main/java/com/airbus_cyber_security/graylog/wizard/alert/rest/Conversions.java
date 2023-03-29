@@ -15,8 +15,9 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-package com.airbus_cyber_security.graylog.wizard.alert.business;
+package com.airbus_cyber_security.graylog.wizard.alert.rest;
 
+import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleUtils;
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
@@ -45,15 +46,18 @@ import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import java.util.*;
 
-// TODO merge with AlertRuleUtils, move into rest and rename into something like Conversions?
-public class AlertRuleUtilsService {
+/**
+ * Converts from business model to rest model and vice versa
+ */
+// TODO should try to find a way to split this class. Too long
+public class Conversions {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AlertRuleUtilsService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Conversions.class);
 
     private final AlertRuleUtils alertRuleUtils;
 
     @Inject
-    public AlertRuleUtilsService() {
+    public Conversions() {
         this.alertRuleUtils = new AlertRuleUtils();
     }
 

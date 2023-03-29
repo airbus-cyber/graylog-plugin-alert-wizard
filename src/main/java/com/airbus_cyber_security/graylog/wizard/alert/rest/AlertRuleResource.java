@@ -85,7 +85,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private final EventDefinitionService eventDefinitionService;
 
     private final AlertRuleService alertRuleService;
-    private final AlertRuleUtilsService alertRuleUtilsService;
+    private final Conversions conversions;
     private final StreamPipelineService streamPipelineService;
     private final AlertListUtilsService alertListUtilsService;
     private final NotificationService notificationService;
@@ -99,7 +99,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                              AlertWizardConfigurationService configurationService,
                              AlertListUtilsService alertListUtilsService,
                              EventNotificationsResource eventNotificationsResource,
-                             AlertRuleUtilsService alertRuleUtilsService,
+                             Conversions conversions,
                              EventDefinitionService eventDefinitionService,
                              NotificationService notificationService,
                              AlertService alertService) {
@@ -112,7 +112,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.eventDefinitionService = eventDefinitionService;
 
         this.alertListUtilsService = alertListUtilsService;
-        this.alertRuleUtilsService = alertRuleUtilsService;
+        this.conversions = conversions;
         this.streamPipelineService = streamPipelineService;
         this.notificationService = notificationService;
         this.alertService = alertService;
@@ -134,7 +134,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         DateTime lastModified = alert.getLastModified();
         long alertCount = this.alertService.countAlerts(streamIdentifier, alert.getLastModified());
         Stream secondStream = this.loadSecondStream(alert.getSecondStreamID());
-        return this.alertRuleUtilsService.constructDataAlertRule(
+        return this.conversions.constructDataAlertRule(
                 alert.getTitle(),
                 stream,
                 event,
@@ -236,7 +236,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     }
 
     private String createEvent(String alertTitle, String description, String notificationIdentifier, String conditionType, Map<String, Object> conditionParameters, UserContext userContext, String streamIdentifier, String streamIdentifier2) {
-        EventProcessorConfig configuration = this.alertRuleUtilsService.createCondition(conditionType, conditionParameters, streamIdentifier, streamIdentifier2);
+        EventProcessorConfig configuration = this.conversions.createCondition(conditionType, conditionParameters, streamIdentifier, streamIdentifier2);
         return this.eventDefinitionService.createEvent(alertTitle, description, notificationIdentifier, configuration, userContext);
     }
 
@@ -244,7 +244,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         if (!conditionType.equals("OR")) {
             return null;
         }
-        EventProcessorConfig configuration2 = this.alertRuleUtilsService.createAggregationCondition(streamIdentifier2, conditionParameters);
+        EventProcessorConfig configuration2 = this.conversions.createAggregationCondition(streamIdentifier2, conditionParameters);
         return this.eventDefinitionService.createEvent(alertTitle + "#2", description, notificationIdentifier, configuration2, userContext);
     }
 
@@ -259,7 +259,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     public Response create(@ApiParam(name = "JSON body", required = true) @Valid @NotNull AlertRuleRequest request, @Context UserContext userContext)
             throws ValidationException, BadRequestException, NotFoundException {
 
-        this.alertRuleUtilsService.checkIsValidRequest(request);
+        this.conversions.checkIsValidRequest(request);
 
         String userName = getCurrentUser().getName();
         String title = request.getTitle();
@@ -340,7 +340,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                            @Context UserContext userContext
     ) throws UnsupportedEncodingException, NotFoundException, ValidationException {
 
-        this.alertRuleUtilsService.checkIsValidRequest(request);
+        this.conversions.checkIsValidRequest(request);
 
         AlertRule oldAlert = this.alertRuleService.load(title);
         String alertTitle = request.getTitle();
@@ -373,7 +373,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.notificationService.updateNotification(alertTitle, oldAlert.getNotificationID(), request.getSeverity());
 
         //Create Condition
-        EventProcessorConfig configuration = this.alertRuleUtilsService.createCondition(request.getConditionType(), request.conditionParameters(), stream.getId(), streamID2);
+        EventProcessorConfig configuration = this.conversions.createCondition(request.getConditionType(), request.conditionParameters(), stream.getId(), streamID2);
 
         // Update Event
         this.eventDefinitionService.updateEvent(alertTitle, request.getDescription(), oldAlert.getEventID(), configuration);
@@ -381,7 +381,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String eventIdentifier2 = oldAlert.getSecondEventID();
         //Or Condition for Second Stream
         if (request.getConditionType().equals("OR") && stream2 != null) {
-            EventProcessorConfig configuration2 = this.alertRuleUtilsService.createAggregationCondition(stream2.getId(), request.conditionParameters());
+            EventProcessorConfig configuration2 = this.conversions.createAggregationCondition(stream2.getId(), request.conditionParameters());
             if (oldAlert.getConditionType().equals("OR")) {
                 // Update Event
                 this.eventDefinitionService.updateEvent(alertTitle + "#2", request.getDescription(), eventIdentifier2, configuration2);
