@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+// TODO try to remove this class? What's its point? Part of it should be in rest? Only doing conversion...
 public class AlertRuleUtils {
 
 	private static final int MILLISECONDS_IN_A_MINUTE = 60 * 1000;

@@ -18,6 +18,7 @@
 package com.airbus_cyber_security.graylog.wizard.alert.business;
 
 
+// TODO try to remove this class...
 public class Pipeline {
 
     public String getPipelineID() {

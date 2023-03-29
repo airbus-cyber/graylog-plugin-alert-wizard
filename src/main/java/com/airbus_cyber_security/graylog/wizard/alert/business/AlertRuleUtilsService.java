@@ -63,23 +63,19 @@ public class AlertRuleUtilsService {
     private final AlertService alertService;
     private final AlertRuleUtils alertRuleUtils;
     private final EventDefinitionService eventDefinitionService;
-    private final DBNotificationService notificationService;
-
-    private final NotificationResourceHandler notificationHandler;
+    private final NotificationService notificationService;
     private final ClusterConfigService clusterConfigService;
 
     @Inject
     public AlertRuleUtilsService(StreamService streamService,
                                  AlertService alertService,
                                  EventDefinitionService eventDefinitionService,
-                                 NotificationResourceHandler notificationHandler,
-                                 DBNotificationService notificationService,
+                                 NotificationService notificationService,
                                  ClusterConfigService clusterConfigService) {
         this.alertRuleUtils = new AlertRuleUtils();
         this.streamService = streamService;
         this.alertService = alertService;
         this.eventDefinitionService = eventDefinitionService;
-        this.notificationHandler = notificationHandler;
         this.notificationService = notificationService;
         this.clusterConfigService = clusterConfigService;
     }
@@ -106,7 +102,7 @@ public class AlertRuleUtilsService {
         Stream stream = this.loadStream(streamIdentifier);
         AlertRuleStream alertRuleStream = constructAlertRuleStream(stream, alert.getPipelineFieldRules());
         AlertRuleStream alertRuleStream2 = constructSecondAlertRuleStream(alert);
-        NotificationDto notification = this.getNotification(alert.getNotificationID());
+        NotificationDto notification = this.notificationService.get(alert.getNotificationID());
         LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) notification.config();
         long alertCount = countAlerts(streamIdentifier, alert.getLastModified());
 
@@ -127,11 +123,6 @@ public class AlertRuleUtilsService {
                 parametersCondition,
                 alertRuleStream,
                 alertRuleStream2);
-    }
-
-    private NotificationDto getNotification(String notificationIdentifier) {
-        return this.notificationService.get(notificationIdentifier)
-                .orElseThrow(() -> new javax.ws.rs.NotFoundException("Notification " + notificationIdentifier + " doesn't exist"));
     }
 
     private static boolean streamIsDisabled(Stream stream) {
@@ -347,16 +338,6 @@ public class AlertRuleUtilsService {
                 .build();
     }
 
-    private String createNotificationFromDto(NotificationDto notification, UserContext userContext) {
-        NotificationDto result = this.notificationHandler.create(notification, Optional.ofNullable(userContext.getUser()));
-        return result.id();
-    }
-
-    private String updateNotificationFromDto(NotificationDto notification) {
-        NotificationDto result = this.notificationHandler.update(notification);
-        return result.id();
-    }
-
     private String getDefaultLogBody() {
         LoggingAlertConfig generalConfig = this.clusterConfigService.getOrDefault(LoggingAlertConfig.class,
                 LoggingAlertConfig.createDefault());
@@ -381,11 +362,11 @@ public class AlertRuleUtilsService {
                 .title(alertTitle)
                 .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
                 .build();
-        return this.createNotificationFromDto(notification, userContext);
+        return this.notificationService.create(notification, userContext);
     }
 
     public void updateNotification(String title, String notificationID, String severity) {
-        NotificationDto notification = this.getNotification(notificationID);
+        NotificationDto notification = this.notificationService.get(notificationID);
         LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) notification.config();
         if (!loggingNotificationConfig.severity().getType().equals(severity) || !notification.title().equals(title)) {
             LOG.debug("Update Notification " + title);
@@ -406,7 +387,7 @@ public class AlertRuleUtilsService {
                     .title(title)
                     .description(notification.description())
                     .build();
-            updateNotificationFromDto(notification);
+            this.notificationService.update(notification);
         }
     }
 
