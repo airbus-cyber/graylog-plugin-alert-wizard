@@ -57,7 +57,7 @@ public class AlertRuleUtils {
 	// TODO should try to make these constants private and group the code (more compact)
 	public static final String THRESHOLD_TYPE_MORE = ">";
 	public static final String THRESHOLD_TYPE_LESS = "<";
-	
+
     private int convertThreshold(Expression<Boolean> expression) {
 		Expression<Double> expressionRight;
 		if (expression instanceof Expr.Greater) {
