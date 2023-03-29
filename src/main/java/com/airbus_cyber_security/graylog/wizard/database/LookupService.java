@@ -56,7 +56,7 @@ public class LookupService {
         DataAdapterDto dto = DataAdapterDto.builder()
                 .id(identifier)
                 .title("Alert wizard data adapter for list " + title)
-                .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
+                .description(Description.COMMENT_ALERT_WIZARD)
                 .name(name)
                 .contentPack(null)
                 .config(configuration)
@@ -83,7 +83,7 @@ public class LookupService {
         CacheDto dto = CacheDto.builder()
                 .id(cacheID)
                 .name("wizard-cache")
-                .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
+                .description(Description.COMMENT_ALERT_WIZARD)
                 .title("wizard cache")
                 .config(config)
                 .build();
@@ -106,7 +106,7 @@ public class LookupService {
 
         LookupTableDto dto = LookupTableDto.builder()
                 .title("Alert wizard lookup table for list " + title)
-                .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
+                .description(Description.COMMENT_ALERT_WIZARD)
                 .name(name)
                 .cacheId(cacheIdentifier)
                 .dataAdapterId(adapterIdentifier)

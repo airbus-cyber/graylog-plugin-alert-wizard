@@ -3,6 +3,7 @@ package com.airbus_cyber_security.graylog.wizard.alert.business;
 import com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig;
 import com.airbus_cyber_security.graylog.events.config.SeverityType;
 import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
+import com.airbus_cyber_security.graylog.wizard.database.Description;
 import org.graylog.events.notifications.DBNotificationService;
 import org.graylog.events.notifications.NotificationDto;
 import org.graylog.events.notifications.NotificationResourceHandler;
@@ -68,7 +69,7 @@ public class NotificationService {
         NotificationDto notification = NotificationDto.builder()
                 .config(loggingNotificationConfig)
                 .title(alertTitle)
-                .description(AlertRuleUtils.COMMENT_ALERT_WIZARD)
+                .description(Description.COMMENT_ALERT_WIZARD)
                 .build();
         return this.create(notification, userContext);
     }

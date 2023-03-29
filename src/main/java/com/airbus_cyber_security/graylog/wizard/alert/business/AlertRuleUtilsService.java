@@ -27,6 +27,7 @@ import com.airbus_cyber_security.graylog.events.config.SeverityType;
 import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
 import com.airbus_cyber_security.graylog.events.processor.correlation.CorrelationCountProcessorConfig;
 import com.airbus_cyber_security.graylog.events.processor.correlation.checks.OrderType;
+import com.airbus_cyber_security.graylog.wizard.database.Description;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.graylog.events.conditions.Expr;
@@ -197,7 +198,7 @@ public class AlertRuleUtilsService {
                 .executeEveryMs(executeEveryMs)
                 // TODO CorrelationCountProcessorConfig.groupingFields should be of type List (or better just Collection/Iterable) rather than Set
                 .groupingFields((List<String>) conditionParameter.get(AlertRuleUtils.GROUPING_FIELDS))
-                .comment(AlertRuleUtils.COMMENT_ALERT_WIZARD)
+                .comment(Description.COMMENT_ALERT_WIZARD)
                 .searchQuery("*")
                 .build();
     }

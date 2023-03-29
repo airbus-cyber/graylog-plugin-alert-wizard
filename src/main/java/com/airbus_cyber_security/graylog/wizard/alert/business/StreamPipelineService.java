@@ -20,6 +20,7 @@ package com.airbus_cyber_security.graylog.wizard.alert.business;
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRule;
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
+import com.airbus_cyber_security.graylog.wizard.database.Description;
 import com.airbus_cyber_security.graylog.wizard.database.LookupService;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -96,7 +97,7 @@ public class StreamPipelineService {
                 streamRuleData.put(StreamRuleImpl.FIELD_FIELD, fieldRule.getField());
                 streamRuleData.put(StreamRuleImpl.FIELD_VALUE, fieldRule.getValue());
                 streamRuleData.put(StreamRuleImpl.FIELD_STREAM_ID, new ObjectId(streamID));
-                streamRuleData.put(StreamRuleImpl.FIELD_DESCRIPTION, AlertRuleUtils.COMMENT_ALERT_WIZARD);
+                streamRuleData.put(StreamRuleImpl.FIELD_DESCRIPTION, Description.COMMENT_ALERT_WIZARD);
 
                 StreamRule newStreamRule = this.streamRuleService.create(streamRuleData);
                 this.streamRuleService.save(newStreamRule);
@@ -140,7 +141,7 @@ public class StreamPipelineService {
 
         String ruleID = RandomStringUtils.random(RANDOM_COUNT, RANDOM_CHARS);
         String ruleSource = createRuleSource(alertTitle, listfieldRule, stream);
-        RuleDao cr = RuleDao.create(ruleID, "function " + alertTitle, AlertRuleUtils.COMMENT_ALERT_WIZARD, ruleSource, now, now);
+        RuleDao cr = RuleDao.create(ruleID, "function " + alertTitle, Description.COMMENT_ALERT_WIZARD, ruleSource, now, now);
 
         return ruleService.save(cr);
     }
@@ -159,7 +160,7 @@ public class StreamPipelineService {
         DateTime now = DateTime.now(DateTimeZone.UTC);
 
         String pipelineID = RandomStringUtils.random(RANDOM_COUNT, RANDOM_CHARS);
-        PipelineDao cr = PipelineDao.create(pipelineID, alertTitle, AlertRuleUtils.COMMENT_ALERT_WIZARD, createPipelineStringSource(alertTitle, matchingType), now, now);
+        PipelineDao cr = PipelineDao.create(pipelineID, alertTitle, Description.COMMENT_ALERT_WIZARD, createPipelineStringSource(alertTitle, matchingType), now, now);
         PipelineDao save = pipelineService.save(cr);
 
         Set<String> pipelineIds;
@@ -186,7 +187,7 @@ public class StreamPipelineService {
 
     public Stream createStream(AlertRuleStream alertRuleStream, String title, String userName) throws ValidationException {
         LOG.debug("Create Stream: " + title);
-        CreateStreamRequest cr = CreateStreamRequest.create(title, AlertRuleUtils.COMMENT_ALERT_WIZARD,
+        CreateStreamRequest cr = CreateStreamRequest.create(title, Description.COMMENT_ALERT_WIZARD,
                 Collections.emptyList(), "", alertRuleStream.getMatchingType(), false, indexSetID);
         Stream stream = this.streamService.create(cr, userName);
         stream.setDisabled(false);
