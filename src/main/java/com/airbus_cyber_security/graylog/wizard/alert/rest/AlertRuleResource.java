@@ -36,6 +36,7 @@ import com.mongodb.MongoException;
 import io.swagger.annotations.*;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.graylog.events.processor.EventDefinitionDto;
 import org.graylog.events.processor.EventProcessorConfig;
 import org.graylog.events.rest.EventNotificationsResource;
 import org.graylog.plugins.pipelineprocessor.db.*;
@@ -113,6 +114,12 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.notificationService = notificationService;
     }
 
+    private GetDataAlertRule constructDataAlertRule(AlertRule alert) {
+        String eventIdentifier = alert.getEventID();
+        EventDefinitionDto event = this.eventDefinitionService.getEventDefinition(eventIdentifier);
+        return this.alertRuleUtilsService.constructDataAlertRule(alert, event);
+    }
+
     @GET
     @Timed
     @ApiOperation(value = "Lists all existing alerts")
@@ -138,7 +145,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         if (alert == null) {
             throw new NotFoundException("Alert <" + alertTitle + "> not found!");
         }
-        return this.alertRuleUtilsService.constructDataAlertRule(alert);
+        return this.constructDataAlertRule(alert);
     }
 
     // TODO is this really necessary? Should either be just the GET, or the GET with a formatting option (if performance are really an issue)
@@ -153,7 +160,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         List<GetDataAlertRule> alertsData = new ArrayList<>();
         for (AlertRule alert: alerts) {
-            alertsData.add(this.alertRuleUtilsService.constructDataAlertRule(alert));
+            alertsData.add(this.constructDataAlertRule(alert));
         }
 
         return alertsData;
@@ -285,7 +292,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
 
-        GetDataAlertRule result = this.alertRuleUtilsService.constructDataAlertRule(alertRule);
+        GetDataAlertRule result = this.constructDataAlertRule(alertRule);
         return Response.ok().entity(result).build();
     }
 
@@ -391,7 +398,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
 
-        GetDataAlertRule result = this.alertRuleUtilsService.constructDataAlertRule(alertRule);
+        GetDataAlertRule result = this.constructDataAlertRule(alertRule);
         return Response.accepted().entity(result).build();
     }
 

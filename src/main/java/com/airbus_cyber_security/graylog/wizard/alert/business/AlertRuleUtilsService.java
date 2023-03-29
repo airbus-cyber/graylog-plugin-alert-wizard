@@ -57,18 +57,15 @@ public class AlertRuleUtilsService {
     private final StreamService streamService;
     private final AlertService alertService;
     private final AlertRuleUtils alertRuleUtils;
-    private final EventDefinitionService eventDefinitionService;
     private final NotificationService notificationService;
 
     @Inject
     public AlertRuleUtilsService(StreamService streamService,
                                  AlertService alertService,
-                                 EventDefinitionService eventDefinitionService,
                                  NotificationService notificationService) {
         this.alertRuleUtils = new AlertRuleUtils();
         this.streamService = streamService;
         this.alertService = alertService;
-        this.eventDefinitionService = eventDefinitionService;
         this.notificationService = notificationService;
     }
 
@@ -84,12 +81,9 @@ public class AlertRuleUtilsService {
         return alerts.size();
     }
 
-    public GetDataAlertRule constructDataAlertRule(AlertRule alert) {
-        LOG.debug("Get data alert: " + alert.getTitle());
-        String eventIdentifier = alert.getEventID();
+    public GetDataAlertRule constructDataAlertRule(AlertRule alert, EventDefinitionDto event) {
         String streamIdentifier = alert.getStreamIdentifier();
 
-        EventDefinitionDto event = this.eventDefinitionService.getEventDefinition(eventIdentifier);
         Map<String, Object> parametersCondition = this.alertRuleUtils.getConditionParameters(event.config());
         Stream stream = this.loadStream(streamIdentifier);
         AlertRuleStream alertRuleStream = constructAlertRuleStream(stream, alert.getPipelineFieldRules());
@@ -102,7 +96,7 @@ public class AlertRuleUtilsService {
 
         return GetDataAlertRule.create(alert.getTitle(),
                 loggingNotificationConfig.severity().getType(),
-                eventIdentifier,
+                event.id(),
                 alert.getSecondEventID(),
                 alert.getNotificationID(),
                 alert.getCreatedAt(),
