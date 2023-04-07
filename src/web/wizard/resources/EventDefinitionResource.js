@@ -18,12 +18,12 @@
 import URLUtils from 'util/URLUtils';
 import UserNotification from 'util/UserNotification';
 import fetch from 'logic/rest/FetchProvider';
-import RestUtils from 'wizard/stores/RestUtils';
 
-const SOURCE_URL = URLUtils.qualifyUrl('/events/definitions');
+const SOURCE_URL = '/events/definitions';
 
 function enable(eventDefinitionIdentifier) {
-    return fetch('PUT', `${SOURCE_URL}/${eventDefinitionIdentifier}/schedule`)
+    const url = URLUtils.qualifyUrl(`${SOURCE_URL}/${eventDefinitionIdentifier}/schedule`);
+    return fetch('PUT', url)
         .catch(error => {
             UserNotification.error(`Enabling Event Definition "${eventDefinitionIdentifier}" failed with status: ${error}`,
                 'Could not enable Event Definition');
@@ -31,7 +31,8 @@ function enable(eventDefinitionIdentifier) {
 }
 
 function disable(eventDefinitionIdentifier) {
-    return fetch('PUT', `${SOURCE_URL}/${eventDefinitionIdentifier}/unschedule`)
+    const url = URLUtils.qualifyUrl(`${SOURCE_URL}/${eventDefinitionIdentifier}/unschedule`);
+    return fetch('PUT', url)
         .catch(error => {
             UserNotification.error(`Disabling Event Definition "${eventDefinitionIdentifier}" failed with status: ${error}`,
                 'Could not disable Event Definition');

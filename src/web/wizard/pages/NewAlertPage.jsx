@@ -24,9 +24,9 @@ import { DocumentTitle, PageHeader, Spinner } from 'components/common';
 import AlertRuleForm from 'wizard/components/AlertRuleForm';
 import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
 import messages_fr from 'translations/fr.json';
+import AlertRuleResource from 'wizard/resources/AlertRuleResource';
 import WizardConfigurationResource from 'wizard/resources/WizardConfigurationResource';
 import Navigation from 'wizard/routing/Navigation';
-import AlertRuleActions from 'wizard/actions/AlertRuleActions';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
@@ -56,7 +56,7 @@ const NewAlertPage = createReactClass({
     },
 
     _save(alert) {
-        AlertRuleActions.create.triggerPromise(alert).then((response) => {
+        AlertRuleResource.create(alert).then(response => {
             if (response !== true) {
                 return;
             }

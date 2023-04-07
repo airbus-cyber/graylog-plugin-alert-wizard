@@ -20,34 +20,29 @@ import UserNotification from 'util/UserNotification';
 import fetch from 'logic/rest/FetchProvider';
 import RestUtils from 'wizard/stores/RestUtils';
 
-const SOURCE_URL = URLUtils.qualifyUrl(RestUtils.buildSourceURL('config'));
+const SOURCE_URL = RestUtils.buildSourceURL('alerts');
 
-function get() {
-    return fetch('GET', SOURCE_URL)
-        .catch(error => {
-            UserNotification.error(`Fetching wizard configurations failed with status: ${error}`,
-                'Could not retrieve configurations');
-        });
-}
-
-function update(configuration) {
+function create(newAlert) {
+    const url = URLUtils.qualifyUrl(SOURCE_URL);
     const request = {
-        field_order: configuration.field_order,
-        default_values: configuration.default_values,
-        import_policy: configuration.import_policy,
+        title: newAlert.title,
+        severity: newAlert.severity,
+        description: newAlert.description,
+        condition_type: newAlert.condition_type,
+        condition_parameters: newAlert.condition_parameters,
+        stream: newAlert.stream,
+        second_stream: newAlert.second_stream,
     };
-
-    return fetch('PUT', SOURCE_URL, request)
-        .then(response => {
-            UserNotification.success('Wizard configurations successfully updated');
-            return response;
+    return fetch('POST', url, request)
+        .then(() => {
+            UserNotification.success('Stream successfully created, Alert condition successfully created, Alert notification successfully created');
+            return true;
         }).catch(error => {
-            UserNotification.error(`Updating wizard configurations failed with status: ${error.message}`,
-                'Could not update configurations');
+            UserNotification.error(`Creating alert rule failed with status: ${error.message}`,
+                'Could not create alert rule');
         });
 }
 
 export default {
-    get,
-    update
-};
+    create: create
+}

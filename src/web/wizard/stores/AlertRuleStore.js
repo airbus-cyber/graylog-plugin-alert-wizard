@@ -15,7 +15,7 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-// TODO should remove Reflux and AlertRuleActions (use store directly), see the code below
+// TODO should remove Reflux and AlertRuleActions (use store directly), see the code below and AlertRuleResource
 /*
 import URLUtils from 'util/URLUtils';
 import UserNotification from 'util/UserNotification';
