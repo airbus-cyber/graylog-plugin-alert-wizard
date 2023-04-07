@@ -21,6 +21,7 @@
 // * routing/AppRouter.test.tsx
 // * pages/ShowMessagePage.test.tsx
 import React from 'react';
+import { act } from 'react-dom/test-utils';
 import { render } from 'wrappedTestingLibrary';
 import { StoreMock as MockStore } from 'helpers/mocking';
 import WizardPage from './WizardPage';
@@ -44,8 +45,11 @@ jest.mock('stores/nodes/NodesStore', () => ({
 }));
 
 describe('<WizardPage>', () => {
-    it('should not fail', () => {
+    it('should not fail', async () => {
         fetch.mockReturnValueOnce(Promise.resolve({ field_order: [] }))
-        render(<WizardPage />);
+        // TODO I do not like this await act thing very much, simple syntax? (see: https://kentcdodds.com/blog/fix-the-not-wrapped-in-act-warning)
+        await act(async () => {
+            render(<WizardPage />)
+        });
     });
 });

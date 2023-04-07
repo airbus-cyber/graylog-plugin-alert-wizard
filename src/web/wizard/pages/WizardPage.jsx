@@ -19,7 +19,7 @@
 // * pages/ShowNodePage.jsx
 // * pages/ShowMessagePage.tsx
 import React from 'react';
-import createReactClass from 'create-react-class';
+import { useState, useEffect } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import { IfPermitted, PageHeader, DocumentTitle, Spinner } from 'components/common';
 import AlertRuleList from 'wizard/components/AlertRuleList';
@@ -38,68 +38,63 @@ const messages = {
     'fr': messages_fr
 };
 
-const WizardPage = createReactClass({
-    displayName: 'WizardPage',
+const WizardPage = () => {
+    const [configuration, setConfiguration] = useState(null);
+    const [version, setVersion] = useState('');
 
-    getInitialState() {
-        return {
-            configuration: null,
-            version: '',
-        };
-    },
+    const _saveConfiguration = configuration => {
+        WizardConfigurationResource.update(configuration).then(() => setConfiguration(configuration));
+    };
 
-    componentDidMount() {
+    useEffect(() => {
         WizardConfigurationResource.get().then(configuration => {
-            this.setState({configuration: configuration});
+            setConfiguration(configuration);
         });
+
+        // TODO this is an inefficient way to get the plugin version => would be better to inject it at build-time by retrieving it from package.json
         NodesActions.list().then(nodes => {
-            if (nodes.nodes[0]) {
-                PluginsStore.list(nodes.nodes[0].node_id).then((plugins) => {
-                    for (let i = 0; i < plugins.length; i++) {
-                        if (plugins[i].unique_id === "com.airbus-cyber-security.graylog.AlertWizardPlugin") {
-                            this.setState({version: plugins[i].version});
-                        }
-                    }
-                });
+            if (!nodes.nodes[0]) {
+                return
             }
+            PluginsStore.list(nodes.nodes[0].node_id).then((plugins) => {
+                for (let i = 0; i < plugins.length; i++) {
+                    if (plugins[i].unique_id === "com.airbus-cyber-security.graylog.AlertWizardPlugin") {
+                        setVersion(plugins[i].version);
+                    }
+                }
+            });
         });
-    },
+    }, []);
 
-    _saveConfig(config) {
-        WizardConfigurationResource.update(config);
-    },
+    if (!configuration) {
+        return <Spinner text="Loading, please wait..." />;
+    }
 
-    render() {
-        const configuration = this.state.configuration;
-        if (!configuration) {
-            return <Spinner text="Loading, please wait..." />;
-        }
-
-        // TODO write a test if <AlertRuleList config={configuration.field_order} /> instead of <AlertRuleList field_order={configuration.field_order} />
-        return (
+    // TODO write a test if <AlertRuleList config={configuration.field_order} /> instead of <AlertRuleList field_order={configuration.field_order} />
+    return (
         <IntlProvider locale={language} messages={messages[language]}>
             <DocumentTitle title="Alert Rules">
                 <div>
                     <PageHeader title={<FormattedMessage id="wizard.alertsRule" defaultMessage= "Alert Rules" />}>
-                      <span><FormattedMessage id ="wizard.description" 
-                            defaultMessage="With the wizard, you can manage the alert rules. An alert rule consists of one or more streams with rules, an alert condition and an alert notification." 
+                      <span><FormattedMessage id ="wizard.description"
+                            defaultMessage="With the wizard, you can manage the alert rules. An alert rule consists of one or more streams with rules, an alert condition and an alert notification."
                             />
                       </span>
                       <span>
                           <FormattedMessage id ="wizard.documentation"
                             defaultMessage="Read more about Wizard alert rules in the documentation" />
-                          {this.state.version &&
+                          {version &&
                           <FormattedMessage id="wizard.version" defaultMessage=" (wizard version : {version})."
-                                            values={{version: this.state.version}}/>
+                                            values={{version: version}}/>
                           }
                       </span>
                       <span>
                         <IfPermitted permissions="wizard_alerts_rules:read">
-                          <ManageSettings config={configuration} onSave={this._saveConfig}/>
+                          <ManageSettings config={configuration} onSave={_saveConfiguration}/>
                         </IfPermitted>
                       </span>
                     </PageHeader>
-                    
+
                     <Row className="content">
                       <Col md={12}>
                         <IfPermitted permissions="wizard_alerts_rules:read">
@@ -110,8 +105,9 @@ const WizardPage = createReactClass({
                 </div>
             </DocumentTitle>
         </IntlProvider>
-        );
-    },
-});
+    );
+
+
+}
 
 export default WizardPage;
