@@ -4,9 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [4.5.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/4.4.1...4.5.0)
 ### Features
-* the rule description is now mapped to the event definition description ([issue #102](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/102))
+* The rule description is now mapped to the event definition description ([issue #102](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/102))
 * POST plugins/com.airbus_cyber_security.graylog.wizard/alerts now returns data about the newly created alert rule
-* resource plugins/com.airbus_cyber_security.graylog.wizard/alerts returns the second event definition identifier (if any) as field `second_event_definition`
+* Resource plugins/com.airbus_cyber_security.graylog.wizard/alerts returns the second event definition identifier (if any) as field `second_event_definition`
+* Disabling a wizard rule now disables the associated event definitions ([issue #58](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/58))
 ### Bug Fixes
 * After deleting the stream associated with a rule, the list of rules would not load anymore ([issue #105](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/105))
 * The backlog size value set in the configuration is now taken into account in the event definition ([issue #40](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/40))
