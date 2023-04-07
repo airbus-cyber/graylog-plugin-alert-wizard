@@ -35,6 +35,7 @@ import AlertRuleText from './AlertRuleText'
 import ButtonToEventDefinition from './buttons/ButtonToEventDefinition';
 import ButtonToNotification from './buttons/ButtonToNotification';
 import StreamsStore from 'stores/streams/StreamsStore';
+import EventDefinitionResources from 'wizard/resources/EventDefinitionResource';
 
 
 const AlertRuleList = createReactClass({
@@ -95,22 +96,31 @@ const AlertRuleList = createReactClass({
             }
         };
     },
-    _onResume(stream, stream2) {
-        return () => {
+    _onResume(eventDefinitionIdentifier, stream, secondEventDefinitionIdentifier, stream2) {
+        return async () => {
+            const promises = [];
+            promises.push(EventDefinitionResources.enable(eventDefinitionIdentifier));
             StreamsStore.resume(stream, response => response).finally(() => this.list());
-            if (stream2 !== null && stream2 !== '') {
-                StreamsStore.resume(stream2, response => response).finally(() => this.list()); 
+            if (stream2 !== null) {
+                promises.push(EventDefinitionResources.enable(secondEventDefinitionIdentifier));
+                StreamsStore.resume(stream2, response => response).finally(() => this.list());
             }
+            await Promise.all(promises);
         }
     },
-    _onPause(name, stream, stream2) {
-        return () => {
-            if (window.confirm(`${this.state.messages.confirmDisable} "${name}" ?`)) {
-                StreamsStore.pause(stream, response => response).finally(() => this.list());
-                if (stream2 !== null && stream2 !== '') {
-                    StreamsStore.pause(stream2, response => response);
-                }
+    _onPause(name, eventDefinitionIdentifier, stream, secondEventDefinitionIdentifier, secondStream) {
+        return async () => {
+            if (!window.confirm(`${this.state.messages.confirmDisable} "${name}" ?`)) {
+                return;
             }
+            const promises = [];
+            promises.push(EventDefinitionResources.disable(eventDefinitionIdentifier));
+            StreamsStore.pause(stream, response => response).finally(() => this.list());
+            if (secondStream !== null) {
+                promises.push(EventDefinitionResources.disable(secondEventDefinitionIdentifier));
+                StreamsStore.pause(secondStream, response => response);
+            }
+            await Promise.all(promises);
         }
     },
     _headerCellFormatter(header) {
@@ -180,9 +190,9 @@ const AlertRuleList = createReactClass({
     },
 
     _alertInfoFormatter(alert) {
-
         let alertValid;
         let colorValid;
+        // TODO rename ID into Identifier
         let streamID;
         if (alert.condition_parameters === null || alert.stream === null) {
             alertValid = false;
@@ -224,14 +234,14 @@ const AlertRuleList = createReactClass({
         let toggleStreamLink;
         if (alert.disabled) {
             toggleStreamLink = (
-                <Button bsStyle="success" onClick={this._onResume(streamID, streamId2)} disabled={!alertValid}
+                <Button bsStyle="success" onClick={this._onResume(alert.condition, streamID, alert.second_event_definition, streamId2)} disabled={!alertValid}
                         title={this.state.messages.infoEnable} style={{whiteSpace: 'pre'}} >
                     <FormattedMessage id ="wizard.enable" defaultMessage="Enable " />
                 </Button>
             );
         } else {
             toggleStreamLink = (
-                <Button bsStyle="primary" onClick={this._onPause(alert.title, streamID, streamId2)} disabled={!alertValid}
+                <Button bsStyle="primary" onClick={this._onPause(alert.title, alert.condition, streamID, alert.second_event_definition, streamId2)} disabled={!alertValid}
                         title={this.state.messages.infoDisable} >
                     <FormattedMessage id ="wizard.disable" defaultMessage="Disable" />
                 </Button>
