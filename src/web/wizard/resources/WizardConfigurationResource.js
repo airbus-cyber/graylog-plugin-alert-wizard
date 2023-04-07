@@ -25,9 +25,6 @@ const SOURCE_URL = URLUtils.qualifyUrl(RestUtils.buildSourceURL('config'));
 
 function get() {
     return fetch('GET', SOURCE_URL)
-        .then(response => {
-            return response;
-        })
         .catch(error => {
             UserNotification.error(`Fetching wizard configurations failed with status: ${error}`,
                 'Could not retrieve configurations');
@@ -45,7 +42,7 @@ function update(configuration) {
         .then(response => {
             UserNotification.success('Wizard configurations successfully updated');
             return response;
-        }).catch((error) => {
+        }).catch(error => {
             UserNotification.error(`Updating wizard configurations failed with status: ${error.message}`,
                 'Could not update configurations');
         });
