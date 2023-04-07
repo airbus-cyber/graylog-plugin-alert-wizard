@@ -17,7 +17,7 @@
 
 const RestUtils = {
     buildSourceURL(path) {
-        return '/plugins/com.airbus_cyber_security.graylog.wizard/' + path;
+        return `/plugins/com.airbus_cyber_security.graylog.wizard/${path}`;
     },
 };
 
