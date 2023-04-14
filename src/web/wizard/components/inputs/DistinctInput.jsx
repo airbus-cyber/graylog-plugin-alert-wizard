@@ -24,8 +24,8 @@ import { FormattedMessage } from 'react-intl';
 
 import withFormattedFields from './withFormattedFields';
 
-const DistinctCondition = createReactClass({
-    displayName: 'DistinctCondition',
+const DistinctInput = createReactClass({
+    displayName: 'DistinctInput',
 
     propTypes: {
         onUpdate: PropTypes.func,
@@ -67,4 +67,4 @@ const DistinctCondition = createReactClass({
     },
 });
 
-export default withFormattedFields(DistinctCondition);
+export default withFormattedFields(DistinctInput);
