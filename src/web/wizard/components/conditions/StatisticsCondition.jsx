@@ -22,7 +22,7 @@ import createReactClass from 'create-react-class';
 import ObjectUtils from 'util/ObjectUtils';
 import TitleSeverity from 'wizard/components/TitleSeverity';
 import FieldsInput from 'wizard/components/inputs/FieldsInput';
-import TimeRangeCondition from 'wizard/components/inputs/TimeRangeCondition';
+import TimeRangeInput from 'wizard/components/inputs/TimeRangeInput';
 import StatisticalInput from 'wizard/components/inputs/StatisticalInput';
 import Description from 'wizard/components/Description';
 
@@ -74,7 +74,7 @@ const StatisticsCondition = createReactClass({
                 <FieldsInput stream={this.props.alert.stream} onSaveStream={this._handleChangeStream} message={this.props.message}
                             matchData={this.props.matchData} />
                 <br/>
-                <TimeRangeCondition onUpdate={this._handleChangeCondition} time={time.toString()} time_type={time_type.toString()} />
+                <TimeRangeInput onUpdate={this._handleChangeCondition} time={time.toString()} time_type={time_type.toString()} />
                 <br/>
                 <StatisticalInput onUpdate={this._handleChangeCondition} type={this.props.alert.condition_parameters.type}
                             field={this.props.alert.condition_parameters.field} threshold={this.props.alert.condition_parameters.threshold} 

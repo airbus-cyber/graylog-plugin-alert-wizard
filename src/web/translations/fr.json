@@ -31,7 +31,7 @@
   "wizard.fieldsCondition": "Condition sur les champs",
   "wizard.messagesMatch": "Les messages doivent correspondre à",
   "wizard.followingRules": "règles suivantes :",
-  "wizard.timeRangeCondition": "Condition d'intervalle de temps",
+  "wizard.timeRangeInput": "Condition d'intervalle de temps",
   "wizard.messagesCome": "Les messages doivent apparaitre dans les",
   "wizard.countCondition": "Comptage",
   "wizard.NumberInput": "Condition sur le nombre",

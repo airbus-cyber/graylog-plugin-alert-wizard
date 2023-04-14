@@ -23,7 +23,7 @@ import ObjectUtils from 'util/ObjectUtils';
 import TitleSeverity from 'wizard/components/TitleSeverity';
 import FieldsInput from 'wizard/components/inputs/FieldsInput';
 import NumberInput from 'wizard/components/inputs/NumberInput';
-import TimeRangeCondition from 'wizard/components/inputs/TimeRangeCondition';
+import TimeRangeInput from 'wizard/components/inputs/TimeRangeInput';
 import GroupByInput from 'wizard/components/inputs/GroupByInput';
 import DistinctInput from 'wizard/components/inputs/DistinctInput';
 import Description from 'wizard/components/Description';
@@ -79,7 +79,7 @@ const GroupDistinctCondition = createReactClass({
                 <NumberInput onUpdate={this._handleChangeCondition} threshold={this.props.alert.condition_parameters.threshold}
                                 threshold_type={this.props.alert.condition_parameters.threshold_type} />
                 <br/>
-                <TimeRangeCondition onUpdate={this._handleChangeCondition} time={time.toString()} time_type={time_type.toString()} />
+                <TimeRangeInput onUpdate={this._handleChangeCondition} time={time.toString()} time_type={time_type.toString()} />
                 <br/>
                 <GroupByInput onUpdate={this._handleChangeCondition} grouping_fields={this.props.alert.condition_parameters.grouping_fields} />
                 <br/>

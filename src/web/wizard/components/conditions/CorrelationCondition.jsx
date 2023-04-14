@@ -25,7 +25,7 @@ import { Button } from 'react-bootstrap';
 import { FormattedMessage } from 'react-intl';
 import FieldsInput from 'wizard/components/inputs/FieldsInput';
 import NumberInput from 'wizard/components/inputs/NumberInput';
-import TimeRangeCondition from 'wizard/components/inputs/TimeRangeCondition';
+import TimeRangeInput from 'wizard/components/inputs/TimeRangeInput';
 import Description from 'wizard/components/Description';
 import GroupByInput from 'wizard/components/inputs/GroupByInput';
 import { Row, Col } from 'components/bootstrap';
@@ -146,7 +146,7 @@ const CorrelationCondition = createReactClass({
                                     threshold_type={this.state.alert.condition_parameters.additional_threshold_type} />
                 </div>
                 <br/>
-                <TimeRangeCondition onUpdate={this._handleChangeCondition} time={time.toString()} time_type={time_type.toString()} />
+                <TimeRangeInput onUpdate={this._handleChangeCondition} time={time.toString()} time_type={time_type.toString()} />
                 <br/>
                 <GroupByInput onUpdate={this._handleChangeCondition} grouping_fields={this.state.alert.condition_parameters.grouping_fields} />
                 <br/>

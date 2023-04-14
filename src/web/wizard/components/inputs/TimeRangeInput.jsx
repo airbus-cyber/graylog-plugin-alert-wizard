@@ -15,7 +15,6 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-// TODO rename into TimeRangeInput
 
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -24,8 +23,8 @@ import { FormattedMessage } from 'react-intl';
 import { Input, Row, Col } from 'components/bootstrap';
 import { Select } from 'components/common';
 
-const TimeRangeCondition = createReactClass({
-    displayName: 'TimeRangeCondition',
+const TimeRangeInput = createReactClass({
+    displayName: 'TimeRangeInput',
 
     propTypes: {
         onUpdate: PropTypes.func,
@@ -65,7 +64,7 @@ const TimeRangeCondition = createReactClass({
         return (
             <Row>
                 <Col md={2} style={{ marginTop: 5, marginBottom: 0 }}>
-                    <label className="pull-right"><FormattedMessage id= "wizard.timeRangeCondition" defaultMessage= "Time Range Condition" /></label>
+                    <label className="pull-right"><FormattedMessage id= "wizard.timeRangeInput" defaultMessage= "Time Range Condition" /></label>
                 </Col>
                 <Col md={10}>
                     <label><FormattedMessage id= "wizard.messagesCome" defaultMessage= "Messages must come in the last" /></label>
@@ -91,4 +90,4 @@ const TimeRangeCondition = createReactClass({
     },
 });
 
-export default TimeRangeCondition;
+export default TimeRangeInput;
