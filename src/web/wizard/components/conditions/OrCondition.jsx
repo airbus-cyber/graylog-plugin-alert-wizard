@@ -22,7 +22,7 @@ import createReactClass from 'create-react-class';
 import ObjectUtils from 'util/ObjectUtils';
 import { FormattedMessage } from 'react-intl';
 import TitleSeverity from 'wizard/components/TitleSeverity';
-import FieldsCondition from 'wizard/components/inputs/FieldsCondition';
+import FieldsInput from 'wizard/components/inputs/FieldsInput';
 import NumberCondition from 'wizard/components/inputs/NumberCondition';
 import TimeRangeCondition from 'wizard/components/inputs/TimeRangeCondition';
 import Description from 'wizard/components/Description';
@@ -88,14 +88,14 @@ const OrCondition = createReactClass({
         return (
             <>
                 <div style={{ backgroundColor: '#f6f6f6', padding: '10px' }}>
-                    <FieldsCondition stream={this.props.alert.stream} onSaveStream={this._handleChangeStream} message={this.props.message} 
+                    <FieldsInput stream={this.props.alert.stream} onSaveStream={this._handleChangeStream} message={this.props.message}
                                     matchData={this.props.matchData} />
                 </div>
                 <br/>
                 <Row style={{ marginBottom: '0px' }}><Col md={2} /><Col md={10}><label><FormattedMessage id= "wizard.or" defaultMessage= "OR" /></label></Col></Row>
                 <br/>
                 <div style={{ backgroundColor: '#f6f6f6', padding: '10px' }}>
-                    <FieldsCondition stream={this.props.alert.second_stream} onSaveStream={this._handleChangeSecondStream} message={this.props.message} />
+                    <FieldsInput stream={this.props.alert.second_stream} onSaveStream={this._handleChangeSecondStream} message={this.props.message} />
                 </div>
                 <br/>
                 <NumberCondition onUpdate={this._handleChangeCondition} threshold={this.props.alert.condition_parameters.threshold} 

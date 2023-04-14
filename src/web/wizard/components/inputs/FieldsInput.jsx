@@ -15,6 +15,7 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
+
 // sources of inspiration for this code: 
 // * pages/ShowMessagePage.tsx
 // * pages/IndexSetPage.tsx
@@ -38,8 +39,8 @@ const STREAM = {
     field_rule: [{field: '', type: '', value: ''}],
 };
 
-const FieldsCondition = createReactClass({
-    displayName: 'FieldsCondition',
+const FieldsInput = createReactClass({
+    displayName: 'FieldsInput',
 
     mixins: [Reflux.connect(IndexSetsStore)],
 
@@ -267,4 +268,4 @@ const FieldsCondition = createReactClass({
     },
 });
 
-export default FieldsCondition;
+export default FieldsInput;

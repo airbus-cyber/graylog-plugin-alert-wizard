@@ -23,7 +23,7 @@ import ObjectUtils from 'util/ObjectUtils';
 // TODO why are we not using the Button from components/bootstrap like elsewhere?
 import { Button } from 'react-bootstrap';
 import { FormattedMessage } from 'react-intl';
-import FieldsCondition from 'wizard/components/inputs/FieldsCondition';
+import FieldsInput from 'wizard/components/inputs/FieldsInput';
 import NumberCondition from 'wizard/components/inputs/NumberCondition';
 import TimeRangeCondition from 'wizard/components/inputs/TimeRangeCondition';
 import Description from 'wizard/components/Description';
@@ -130,7 +130,7 @@ const CorrelationCondition = createReactClass({
         return (
             <>
                 <div style={{ backgroundColor: '#f6f6f6', padding: '10px' }}>
-                    <FieldsCondition stream={this.state.alert.stream} onSaveStream={this._handleChangeStream} message={this.props.message} 
+                    <FieldsInput stream={this.state.alert.stream} onSaveStream={this._handleChangeStream} message={this.props.message}
                                     matchData={this.props.matchData} />
                     <br/>
                     <NumberCondition onUpdate={this._handleChangeCondition} threshold={this.state.alert.condition_parameters.threshold} 
@@ -140,7 +140,7 @@ const CorrelationCondition = createReactClass({
                 {label}
                 <br/>
                 <div style={{ backgroundColor: '#f6f6f6', padding: '10px' }}>
-                    <FieldsCondition stream={this.state.alert.second_stream} onSaveStream={this._handleChangeSecondStream} message={this.props.message} />
+                    <FieldsInput stream={this.state.alert.second_stream} onSaveStream={this._handleChangeSecondStream} message={this.props.message} />
                     <br/>
                     <NumberCondition onUpdate={this._handleChangeAdditionalNbrCond} threshold={this.state.alert.condition_parameters.additional_threshold} 
                                     threshold_type={this.state.alert.condition_parameters.additional_threshold_type} />

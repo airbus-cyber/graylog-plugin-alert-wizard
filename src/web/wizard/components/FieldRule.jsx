@@ -15,7 +15,7 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-// TODO move this class somewhere down... Used only in ./inputs/FieldsCondition
+// TODO move this class somewhere down... Used only in ./inputs/FieldsInput
 
 import PropTypes from 'prop-types';
 import React from 'react';
