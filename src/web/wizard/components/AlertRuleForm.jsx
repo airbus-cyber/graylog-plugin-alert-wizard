@@ -104,7 +104,7 @@ const AlertRuleForm = createReactClass({
             time_type: 1
         }
     },
-    _isPluginsPresent(){
+    _isPluginsPresent() {
         NodesActions.list().then(nodes => {
             if (nodes.nodes[0]) {
                 PluginsStore.list(nodes.nodes[0].node_id).then(plugins => {
