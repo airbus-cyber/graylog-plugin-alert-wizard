@@ -29,11 +29,11 @@ import 'react-confirm-alert/src/react-confirm-alert.css';
 import { FormattedMessage } from 'react-intl';
 import LoaderTabs from 'components/messageloaders/LoaderTabs';
 import styles from './WizardStyle.css';
-import StatisticsCondition from './ruletype/StatisticsCondition'
-import GroupDistinctCondition from './ruletype/GroupDistinctCondition'
-import CorrelationCondition from './ruletype/CorrelationCondition'
-import OrCondition from './ruletype/OrCondition'
-import CountCondition from './ruletype/CountCondition'
+import StatisticsCondition from './ruletypes/StatisticsCondition'
+import GroupDistinctCondition from './ruletypes/GroupDistinctCondition'
+import CorrelationCondition from './ruletypes/CorrelationCondition'
+import OrCondition from './ruletypes/OrCondition'
+import CountCondition from './ruletypes/CountCondition'
 import TitleSeverity from "./TitleSeverity";
 import StreamsStore from 'stores/streams/StreamsStore';
 
