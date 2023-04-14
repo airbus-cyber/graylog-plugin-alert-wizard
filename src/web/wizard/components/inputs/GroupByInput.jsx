@@ -26,8 +26,8 @@ import { MultiSelect } from 'components/common';
 
 import withFormattedFields from './withFormattedFields';
 
-const GroupByCondition = createReactClass({
-    displayName: 'GroupByCondition',
+const GroupByInput = createReactClass({
+    displayName: 'GroupByInput',
 
     propTypes: {
         onUpdate: PropTypes.func,
@@ -70,4 +70,4 @@ const GroupByCondition = createReactClass({
     },
 });
 
-export default withFormattedFields(GroupByCondition);
+export default withFormattedFields(GroupByInput);

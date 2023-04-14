@@ -27,7 +27,7 @@ import FieldsInput from 'wizard/components/inputs/FieldsInput';
 import NumberCondition from 'wizard/components/inputs/NumberCondition';
 import TimeRangeCondition from 'wizard/components/inputs/TimeRangeCondition';
 import Description from 'wizard/components/Description';
-import GroupByCondition from 'wizard/components/inputs/GroupByCondition';
+import GroupByInput from 'wizard/components/inputs/GroupByInput';
 import { Row, Col } from 'components/bootstrap';
 import IconArrowsV from "wizard/components/icons/ArrowsV";
 
@@ -148,7 +148,7 @@ const CorrelationCondition = createReactClass({
                 <br/>
                 <TimeRangeCondition onUpdate={this._handleChangeCondition} time={time.toString()} time_type={time_type.toString()} />
                 <br/>
-                <GroupByCondition onUpdate={this._handleChangeCondition} grouping_fields={this.state.alert.condition_parameters.grouping_fields} />
+                <GroupByInput onUpdate={this._handleChangeCondition} grouping_fields={this.state.alert.condition_parameters.grouping_fields} />
                 <br/>
                 <Description onUpdate={this.props.onUpdate} description={this.state.alert.description}/>
                 <br/>
