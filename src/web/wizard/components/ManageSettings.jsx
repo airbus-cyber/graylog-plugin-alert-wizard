@@ -71,14 +71,14 @@ const ManageSettings = createReactClass({
 
     _availableFieldName() {
         return [
-            {value: 'Severity', label: <FormattedMessage id= "wizard.severity" defaultMessage= "Severity" />},
-            {value: 'Description', label: <FormattedMessage id= "wizard.fieldDescription" defaultMessage= "Description" />},
-            {value: 'Created', label: <FormattedMessage id= "wizard.created" defaultMessage= "Created" />},
-            {value: 'Last Modified', label: <FormattedMessage id= "wizard.lastModified" defaultMessage= "Last Modified" />},
-            {value: 'User', label: <FormattedMessage id= "wizard.user" defaultMessage= "User" />},
-            {value: 'Alerts', label: <FormattedMessage id= "wizard.alerts" defaultMessage= "Alerts" />},
-            {value: 'Status', label: <FormattedMessage id= "wizard.status" defaultMessage= "Status" />},
-            {value: 'Rule', label: <FormattedMessage id= "wizard.rule" defaultMessage= "Rule" />},
+            {value: 'Severity', label: <FormattedMessage id="wizard.severity" defaultMessage="Severity" />},
+            {value: 'Description', label: <FormattedMessage id="wizard.fieldDescription" defaultMessage="Description" />},
+            {value: 'Created', label: <FormattedMessage id="wizard.created" defaultMessage="Created" />},
+            {value: 'Last Modified', label: <FormattedMessage id="wizard.lastModified" defaultMessage="Last Modified" />},
+            {value: 'User', label: <FormattedMessage id="wizard.user" defaultMessage="User" />},
+            {value: 'Alerts', label: <FormattedMessage id="wizard.alerts" defaultMessage="Alerts" />},
+            {value: 'Status', label: <FormattedMessage id="wizard.status" defaultMessage="Status" />},
+            {value: 'Rule', label: <FormattedMessage id="wizard.rule" defaultMessage="Rule" />},
         ];
     },
     
@@ -132,30 +132,30 @@ const ManageSettings = createReactClass({
 
     _availableSeverityTypes() {
         return [
-            {value: 'info', label: <FormattedMessage id= "wizard.info" defaultMessage= "Info" />},
-            {value: 'low', label: <FormattedMessage id= "wizard.low" defaultMessage= "Low" />},
-            {value: 'medium', label: <FormattedMessage id= "wizard.medium" defaultMessage= "Medium" />},
-            {value: 'high', label: <FormattedMessage id= "wizard.high" defaultMessage= "High" />},
+            {value: 'info', label: <FormattedMessage id="wizard.info" defaultMessage="Info" />},
+            {value: 'low', label: <FormattedMessage id="wizard.low" defaultMessage="Low" />},
+            {value: 'medium', label: <FormattedMessage id="wizard.medium" defaultMessage="Medium" />},
+            {value: 'high', label: <FormattedMessage id="wizard.high" defaultMessage="High" />},
         ];
     },
     _availableMatchingType() {
         return [
-            {value: 'AND', label: <FormattedMessage id= "wizard.all" defaultMessage= "all" />},
-            {value: 'OR', label: <FormattedMessage id= "wizard.atLeastOne" defaultMessage= "at least one" />},
+            {value: 'AND', label: <FormattedMessage id="wizard.all" defaultMessage="all" />},
+            {value: 'OR', label: <FormattedMessage id="wizard.atLeastOne" defaultMessage="at least one" />},
         ];
     },
     // TODO should factor constant with AlertRuleText.jsx?
     _availableThresholdTypes() {
         return [
-            {value: '>', label: <FormattedMessage id= "wizard.more" defaultMessage= "more than" />},
-            {value: '<', label: <FormattedMessage id= "wizard.less" defaultMessage= "less than" />},
+            {value: '>', label: <FormattedMessage id="wizard.more" defaultMessage="more than" />},
+            {value: '<', label: <FormattedMessage id="wizard.less" defaultMessage="less than" />},
         ];
     },
     _availableTimeTypes() {
         return [
-            {value: '1', label: <FormattedMessage id= "wizard.minutes" defaultMessage= "minutes" />},
-            {value: '60', label: <FormattedMessage id= "wizard.hours" defaultMessage= "hours" />},
-            {value: '1440', label: <FormattedMessage id= "wizard.days" defaultMessage= "days" />},
+            {value: '1', label: <FormattedMessage id="wizard.minutes" defaultMessage="minutes" />},
+            {value: '60', label: <FormattedMessage id="wizard.hours" defaultMessage="hours" />},
+            {value: '1440', label: <FormattedMessage id="wizard.days" defaultMessage="days" />},
         ];
     },
 
@@ -212,26 +212,26 @@ const ManageSettings = createReactClass({
 
         return (
             <span>
-        <Button bsStyle="info" onClick={this._openModal}><FormattedMessage id= "wizard.manageSettings" defaultMessage= "Manage settings" /></Button>
+        <Button bsStyle="info" onClick={this._openModal}><FormattedMessage id="wizard.manageSettings" defaultMessage="Manage settings" /></Button>
         <BootstrapModalForm ref="configModal"
-                            title={<FormattedMessage id= "wizard.manageWizardSettings" defaultMessage= "Manage Wizard settings" />}
+                            title={<FormattedMessage id="wizard.manageWizardSettings" defaultMessage="Manage Wizard settings" />}
                             onSubmitForm={this._saveConfig}
                             onModalClose={this._resetConfig}
-                            cancelButtonText={<FormattedMessage id= "wizard.cancel" defaultMessage= "Cancel" />}
-                            submitButtonText={<FormattedMessage id= "wizard.save" defaultMessage= "Save" />}>
+                            cancelButtonText={<FormattedMessage id="wizard.cancel" defaultMessage="Cancel" />}
+                            submitButtonText={<FormattedMessage id="wizard.save" defaultMessage="Save" />}>
             <div>
               <Col md={6}>                   
-                <h3><FormattedMessage id= "wizard.order" defaultMessage= "Order" /></h3>
-                <p><FormattedMessage id= "wizard.descriptionOrder" defaultMessage= "Use drag and drop to change the order." /></p>
+                <h3><FormattedMessage id="wizard.order" defaultMessage="Order" /></h3>
+                <p><FormattedMessage id="wizard.descriptionOrder" defaultMessage="Use drag and drop to change the order." /></p>
                 <SortableList items={this._sortableItems()} onMoveItem={this._updateSorting}/>
                 
-                <h3><FormattedMessage id= "wizard.status" defaultMessage= "Status" /></h3>
-                <p><FormattedMessage id= "wizard.checkboxesStatus" defaultMessage= "Change the checkboxes to change the status." /></p>
+                <h3><FormattedMessage id="wizard.status" defaultMessage="Status" /></h3>
+                <p><FormattedMessage id="wizard.checkboxesStatus" defaultMessage="Change the checkboxes to change the status." /></p>
                 <Table striped bordered condensed className="top-margin">
                 <thead>
                   <tr>
-                    <th><FormattedMessage id= "wizard.field" defaultMessage= "Field" /></th>
-                    <th><FormattedMessage id= "wizard.enabled" defaultMessage= "Enabled" /></th>
+                    <th><FormattedMessage id="wizard.field" defaultMessage="Field" /></th>
+                    <th><FormattedMessage id="wizard.enabled" defaultMessage="Enabled" /></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -239,14 +239,14 @@ const ManageSettings = createReactClass({
                 </tbody>
                 </Table>
                   
-                <h3><FormattedMessage id= "wizard.importPolicy" defaultMessage= "Import strategy" /></h3>
-                <p><FormattedMessage id= "wizard.descriptionImportPolicy" defaultMessage= "Choose the action when the alert rule already exists." /></p>
+                <h3><FormattedMessage id="wizard.importPolicy" defaultMessage="Import strategy" /></h3>
+                <p><FormattedMessage id="wizard.descriptionImportPolicy" defaultMessage="Choose the action when the alert rule already exists." /></p>
                 <FormGroup>
                   <OverlayElement overlay={tooltipDoNothing} placement="top" useOverlay={true} trigger={['hover', 'focus']}>
                       <div className="radio">
                         <label>
                           <input type="radio" value="DONOTHING" checked={this.state.config.import_policy === 'DONOTHING'} onChange={this._onRadioChange}/>
-                            <FormattedMessage id= "wizard.doNothing" defaultMessage= "Don't import" />
+                            <FormattedMessage id="wizard.doNothing" defaultMessage="Don't import" />
                         </label>
                       </div>
                   </OverlayElement>
@@ -254,7 +254,7 @@ const ManageSettings = createReactClass({
                       <div className="radio">
                         <label>
                           <input type="radio" value="REPLACE" checked={this.state.config.import_policy === 'REPLACE'} onChange={this._onRadioChange}/>
-                            <FormattedMessage id= "wizard.replace" defaultMessage= "Import and Replace" />
+                            <FormattedMessage id="wizard.replace" defaultMessage="Import and Replace" />
                           </label>
                       </div>
                   </OverlayElement>
@@ -262,7 +262,7 @@ const ManageSettings = createReactClass({
                       <div className="radio">
                         <label>
                           <input type="radio" value="RENAME" checked={this.state.config.import_policy === 'RENAME'} onChange={this._onRadioChange}/>
-                            <FormattedMessage id= "wizard.rename" defaultMessage= "Import, but keep both alert rules" />
+                            <FormattedMessage id="wizard.rename" defaultMessage="Import, but keep both alert rules" />
                         </label>
                       </div>
                   </OverlayElement>
@@ -270,8 +270,8 @@ const ManageSettings = createReactClass({
                   
               </Col>
               <Col md={6}> 
-                <h3><FormattedMessage id= "wizard.defaultValues" defaultMessage= "Default values of the alert rule" /></h3>
-                <p><FormattedMessage id= "wizard.changeDefaultValues" defaultMessage= "Change the default values." /></p>
+                <h3><FormattedMessage id="wizard.defaultValues" defaultMessage="Default values of the alert rule" /></h3>
+                <p><FormattedMessage id="wizard.changeDefaultValues" defaultMessage="Change the default values." /></p>
                 <fieldset style={{ marginBottom: '15px' }}>
                 <Input ref="title" id="title" name="title" type="text" label={<FormattedMessage id ="wizard.title" defaultMessage="Title" />}
                        value={this.state.config.default_values.title} onChange={this._onValueChanged("title")}/>
@@ -280,7 +280,7 @@ const ManageSettings = createReactClass({
                     label={<FormattedMessage id ="wizard.alertSeverity" defaultMessage="Alert Severity" />}
                     help={<FormattedMessage id ="wizard.descriptionAlertSeverity" defaultMessage="The default severity of logged alerts when adding a new notification" />}
                     name="severity">
-                  <Select placeholder={<FormattedMessage id= "wizard.select" defaultMessage= "Select..." />}
+                  <Select placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..." />}
                           options={this._availableSeverityTypes()}
                           matchProp="value"
                           value={this.state.config.default_values.severity}
@@ -289,8 +289,8 @@ const ManageSettings = createReactClass({
                   />
                 </Input>     
                 <Input ref="matching_type" id="matching_type" name="matching_type" 
-                       label={<FormattedMessage id= "wizard.matchingType" defaultMessage= "Matching type" />}>
-                    <Select placeholder={<FormattedMessage id= "wizard.select" defaultMessage= "Select..." />}
+                       label={<FormattedMessage id="wizard.matchingType" defaultMessage="Matching type" />}>
+                    <Select placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..." />}
                         autosize={false}
                         value={this.state.config.default_values.matching_type}
                         options={this._availableMatchingType()}
@@ -300,8 +300,8 @@ const ManageSettings = createReactClass({
                     />
                 </Input>
                 <Input ref="threshold_type" id="threshold_type" name="threshold_type" 
-                       label={<FormattedMessage id= "wizard.thresholdType" defaultMessage= "Threshold type" />}>
-                    <Select placeholder={<FormattedMessage id= "wizard.select" defaultMessage= "Select..." />}
+                       label={<FormattedMessage id="wizard.thresholdType" defaultMessage="Threshold type" />}>
+                    <Select placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..." />}
                         autosize={false}
                         value={this.state.config.default_values.threshold_type}
                         options={this._availableThresholdTypes()}
@@ -311,14 +311,14 @@ const ManageSettings = createReactClass({
                     />
                 </Input>
                 <Input ref="threshold" id="threshold" name="threshold" type="number" min="0"
-                       label={<FormattedMessage id= "wizard.threshold" defaultMessage= "Threshold" />}
+                       label={<FormattedMessage id="wizard.threshold" defaultMessage="Threshold" />}
                        onChange={this._onValueChanged("threshold")} value={this.state.config.default_values.threshold}/> 
                 <Input ref="time" id="time" name="time" type="number" min="1"
-                       label={<FormattedMessage id= "wizard.time" defaultMessage= "Time Range" />}
+                       label={<FormattedMessage id="wizard.time" defaultMessage="Time Range" />}
                        onChange={this._onValueChanged("time")} value={this.state.config.default_values.time}/>
                 <Input ref="time_type" id="time_type" name="time_type" 
-                       label={<FormattedMessage id= "wizard.timeType" defaultMessage= "Time Range unit" />}>
-                    <Select placeholder={<FormattedMessage id= "wizard.select" defaultMessage= "Select..." />}
+                       label={<FormattedMessage id="wizard.timeType" defaultMessage="Time Range unit" />}>
+                    <Select placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..." />}
                         autosize={false}
                         value={this.state.config.default_values.time_type? this.state.config.default_values.time_type.toString() : ''}
                         options={this._availableTimeTypes()}
@@ -328,14 +328,14 @@ const ManageSettings = createReactClass({
                     />
                 </Input>
               </fieldset>
-              <h3><FormattedMessage id= "wizard.conditionDefaultValues" defaultMessage= "Default values of the event" /></h3>
-              <p><FormattedMessage id= "wizard.changeDefaultValues" defaultMessage= "Change the default values." /></p>
+              <h3><FormattedMessage id="wizard.conditionDefaultValues" defaultMessage="Default values of the event" /></h3>
+              <p><FormattedMessage id="wizard.changeDefaultValues" defaultMessage="Change the default values." /></p>
               <fieldset>
                 <Input ref="backlog" id="backlog" name="backlog" type="number" min="0"
-                       label={<FormattedMessage id= "wizard.msgBacklog" defaultMessage= "Message Backlog" />}
+                       label={<FormattedMessage id="wizard.msgBacklog" defaultMessage="Message Backlog" />}
                        onChange={this._onValueChanged("backlog")} value={this.state.config.default_values.backlog}/>
                 <Input ref="grace" id="grace" name="grace" type="number" min="1"
-                       label={<FormattedMessage id= "wizard.gracePeriod" defaultMessage= "Execute search every (minutes)" />}
+                       label={<FormattedMessage id="wizard.gracePeriod" defaultMessage="Execute search every (minutes)" />}
                        onChange={this._onValueChanged("grace")} value={this.state.config.default_values.grace}/> 
               </fieldset>
             </Col>
