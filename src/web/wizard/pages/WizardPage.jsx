@@ -54,7 +54,6 @@ const WizardPage = () => {
         return <Spinner text="Loading, please wait..." />;
     }
 
-    // TODO write a test if <AlertRuleList config={configuration.field_order} /> instead of <AlertRuleList field_order={configuration.field_order} />
     return (
         <IntlProvider locale={language} messages={messages[language]}>
             <DocumentTitle title="Alert Rules">
