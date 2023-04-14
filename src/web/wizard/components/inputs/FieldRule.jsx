@@ -37,20 +37,13 @@ const FieldRule = createReactClass({
     mixins: [Reflux.connect(CurrentUserStore), Reflux.connect(AlertListStore)],
 
     propTypes: {
-        rule: PropTypes.object,
-        onUpdate: PropTypes.func,
-        onDelete: PropTypes.func,
-        matchData: PropTypes.array
+        rule: PropTypes.object.isRequired,
+        onUpdate: PropTypes.func.isRequired,
+        onDelete: PropTypes.func.isRequired,
+        matchData: PropTypes.array.isRequired
     },
     contextTypes: {
         intl: PropTypes.object.isRequired,
-    },
-
-    // TODO remove and make field 'rule' required in propTypes!
-    getDefaultProps() {
-        return {
-            rule: {field: '', type: '', value: ''},
-        };
     },
 
     getInitialState() {
