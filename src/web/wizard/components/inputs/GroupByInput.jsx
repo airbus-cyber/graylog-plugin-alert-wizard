@@ -66,7 +66,6 @@ const GroupByInput = createReactClass({
                 </Col>
             </Row>
         );
-        
     },
 });
 

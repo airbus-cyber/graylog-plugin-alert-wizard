@@ -15,7 +15,6 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
- // TODO rename into NumberInput
 
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -24,8 +23,8 @@ import {FormattedMessage} from 'react-intl';
 import { Input, Row, Col } from 'components/bootstrap';
 import { Select } from 'components/common';
 
-const NumberCondition = createReactClass({
-    displayName: 'NumberCondition',
+const NumberInput = createReactClass({
+    displayName: 'NumberInput',
 
     propTypes: {
         onUpdate: PropTypes.func,
@@ -73,7 +72,7 @@ const NumberCondition = createReactClass({
         return (
             <Row>
                 <Col md={2} style={{ marginTop: 5, marginBottom: 0 }}>
-                    <label className="pull-right"><FormattedMessage id= "wizard.NumberCondition" defaultMessage= "Count Condition" /></label>
+                    <label className="pull-right"><FormattedMessage id= "wizard.NumberInput" defaultMessage= "Count Condition" /></label>
                 </Col>
                 <Col md={10}>
                     <label><FormattedMessage id= "wizard.thereMustBe" defaultMessage= "There must be " /></label>
@@ -103,4 +102,4 @@ const NumberCondition = createReactClass({
     },
 });
 
-export default NumberCondition;
+export default NumberInput;

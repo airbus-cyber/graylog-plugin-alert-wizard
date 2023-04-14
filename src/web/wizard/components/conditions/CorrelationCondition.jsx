@@ -24,7 +24,7 @@ import ObjectUtils from 'util/ObjectUtils';
 import { Button } from 'react-bootstrap';
 import { FormattedMessage } from 'react-intl';
 import FieldsInput from 'wizard/components/inputs/FieldsInput';
-import NumberCondition from 'wizard/components/inputs/NumberCondition';
+import NumberInput from 'wizard/components/inputs/NumberInput';
 import TimeRangeCondition from 'wizard/components/inputs/TimeRangeCondition';
 import Description from 'wizard/components/Description';
 import GroupByInput from 'wizard/components/inputs/GroupByInput';
@@ -133,7 +133,7 @@ const CorrelationCondition = createReactClass({
                     <FieldsInput stream={this.state.alert.stream} onSaveStream={this._handleChangeStream} message={this.props.message}
                                     matchData={this.props.matchData} />
                     <br/>
-                    <NumberCondition onUpdate={this._handleChangeCondition} threshold={this.state.alert.condition_parameters.threshold} 
+                    <NumberInput onUpdate={this._handleChangeCondition} threshold={this.state.alert.condition_parameters.threshold}
                                     threshold_type={this.state.alert.condition_parameters.threshold_type} />
                 </div>
                 <br/>
@@ -142,7 +142,7 @@ const CorrelationCondition = createReactClass({
                 <div style={{ backgroundColor: '#f6f6f6', padding: '10px' }}>
                     <FieldsInput stream={this.state.alert.second_stream} onSaveStream={this._handleChangeSecondStream} message={this.props.message} />
                     <br/>
-                    <NumberCondition onUpdate={this._handleChangeAdditionalNbrCond} threshold={this.state.alert.condition_parameters.additional_threshold} 
+                    <NumberInput onUpdate={this._handleChangeAdditionalNbrCond} threshold={this.state.alert.condition_parameters.additional_threshold}
                                     threshold_type={this.state.alert.condition_parameters.additional_threshold_type} />
                 </div>
                 <br/>

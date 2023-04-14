@@ -21,7 +21,7 @@ import React from 'react';
 import createReactClass from 'create-react-class';
 import ObjectUtils from 'util/ObjectUtils';
 import FieldsInput from 'wizard/components/inputs/FieldsInput';
-import NumberCondition from 'wizard/components/inputs/NumberCondition';
+import NumberInput from 'wizard/components/inputs/NumberInput';
 import TimeRangeCondition from 'wizard/components/inputs/TimeRangeCondition';
 import Description from 'wizard/components/Description';
 
@@ -73,7 +73,7 @@ const CountCondition = createReactClass({
                 <FieldsInput stream={this.props.alert.stream} onSaveStream={this._handleChangeStream} message={this.props.message}
                                 matchData={this.props.matchData} />
                 <br/>
-                <NumberCondition onUpdate={this._handleChangeCondition} threshold={this.props.alert.condition_parameters.threshold}
+                <NumberInput onUpdate={this._handleChangeCondition} threshold={this.props.alert.condition_parameters.threshold}
                                 threshold_type={this.props.alert.condition_parameters.threshold_type} />
                 <br/>
                 <TimeRangeCondition onUpdate={this._handleChangeCondition} time={time.toString()} time_type={time_type.toString()} />

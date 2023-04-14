@@ -34,7 +34,7 @@
   "wizard.timeRangeCondition": "Condition d'intervalle de temps",
   "wizard.messagesCome": "Les messages doivent apparaitre dans les",
   "wizard.countCondition": "Comptage",
-  "wizard.NumberCondition": "Condition sur le nombre",
+  "wizard.NumberInput": "Condition sur le nombre",
   "wizard.thereMustBe": "Il doit y avoir",
   "wizard.mustBe": "doit être",
   "wizard.messages": "messages",
