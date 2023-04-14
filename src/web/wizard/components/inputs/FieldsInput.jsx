@@ -29,7 +29,7 @@ import { Input, Row, Col } from 'components/bootstrap';
 import { Select, Spinner } from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import { FormattedMessage } from 'react-intl';
-import FieldRule from 'wizard/components/FieldRule';
+import FieldRule from './FieldRule';
 import IconAdd from "wizard/components/icons/Add";
 import StreamsStore from 'stores/streams/StreamsStore';
 import { IndexSetsActions, IndexSetsStore } from 'stores/indices/IndexSetsStore';

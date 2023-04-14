@@ -15,7 +15,6 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-// TODO move this class somewhere down... Used only in ./inputs/FieldsInput
 
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -27,7 +26,7 @@ import {Select, Spinner, TypeAheadFieldInput} from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import AlertListActions from 'wizard/actions/AlertListActions';
 import AlertListStore from 'wizard/stores/AlertListStore';
-import IconRemove from './icons/Remove';
+import IconRemove from 'wizard/components/icons/Remove';
 import FormsUtils from 'util/FormsUtils';
 import { CurrentUserStore } from 'stores/users/CurrentUserStore';
 

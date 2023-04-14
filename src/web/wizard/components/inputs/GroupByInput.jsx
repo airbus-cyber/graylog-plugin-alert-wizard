@@ -15,7 +15,6 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
- // TODO rename into GroupByInput
 
 import PropTypes from 'prop-types';
 import React from 'react';
