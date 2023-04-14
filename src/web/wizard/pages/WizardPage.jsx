@@ -25,10 +25,9 @@ import { IfPermitted, PageHeader, DocumentTitle, Spinner } from 'components/comm
 import AlertRuleList from 'wizard/components/AlertRuleList';
 import ManageSettings from 'wizard/components/ManageSettings';
 import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
+import packageJson from '../../../../package.json';
 import messages_fr from 'translations/fr.json';
 import WizardConfigurationResource from 'wizard/resources/WizardConfigurationResource';
-import { PluginsStore } from 'stores/plugins/PluginsStore';
-import { NodesActions } from 'stores/nodes/NodesStore';
 
 let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
@@ -40,7 +39,6 @@ const messages = {
 
 const WizardPage = () => {
     const [configuration, setConfiguration] = useState(null);
-    const [version, setVersion] = useState('');
 
     const _saveConfiguration = configuration => {
         WizardConfigurationResource.update(configuration).then(() => setConfiguration(configuration));
@@ -49,20 +47,6 @@ const WizardPage = () => {
     useEffect(() => {
         WizardConfigurationResource.get().then(configuration => {
             setConfiguration(configuration);
-        });
-
-        // TODO this is an inefficient way to get the plugin version => would be better to inject it at build-time by retrieving it from package.json
-        NodesActions.list().then(nodes => {
-            if (!nodes.nodes[0]) {
-                return
-            }
-            PluginsStore.list(nodes.nodes[0].node_id).then((plugins) => {
-                for (let i = 0; i < plugins.length; i++) {
-                    if (plugins[i].unique_id === "com.airbus-cyber-security.graylog.AlertWizardPlugin") {
-                        setVersion(plugins[i].version);
-                    }
-                }
-            });
         });
     }, []);
 
@@ -83,10 +67,8 @@ const WizardPage = () => {
                       <span>
                           <FormattedMessage id ="wizard.documentation"
                             defaultMessage="Read more about Wizard alert rules in the documentation" />
-                          {version &&
                           <FormattedMessage id="wizard.version" defaultMessage=" (wizard version : {version})."
-                                            values={{version: version}}/>
-                          }
+                                            values={{version: packageJson.version}}/>
                       </span>
                       <span>
                         <IfPermitted permissions="wizard_alerts_rules:read">
