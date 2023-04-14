@@ -15,7 +15,6 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-// TODO remove Condition suffix, rename namespace ruletype into rule-types
 
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -23,14 +22,12 @@ import createReactClass from 'create-react-class';
 import ObjectUtils from 'util/ObjectUtils';
 import TitleSeverity from 'wizard/components/TitleSeverity';
 import FieldsCondition from 'wizard/components/inputs/FieldsCondition';
-import NumberCondition from 'wizard/components/inputs/NumberCondition';
 import TimeRangeCondition from 'wizard/components/inputs/TimeRangeCondition';
-import GroupByCondition from 'wizard/components/inputs/GroupByCondition';
-import DistinctCondition from 'wizard/components/inputs/DistinctCondition';
+import StatisticalCondition from 'wizard/components/inputs/StatisticalCondition';
 import Description from 'wizard/components/Description';
 
-const GroupDistinctCondition = createReactClass({
-    displayName: 'GroupDistinctCondition',
+const StatisticsCondition = createReactClass({
+    displayName: 'StatisticsCondition',
 
     propTypes: {
         onUpdate: PropTypes.func,
@@ -75,16 +72,13 @@ const GroupDistinctCondition = createReactClass({
         return (
             <>
                 <FieldsCondition stream={this.props.alert.stream} onSaveStream={this._handleChangeStream} message={this.props.message}
-                                matchData={this.props.matchData} />
-                <br/>
-                <NumberCondition onUpdate={this._handleChangeCondition} threshold={this.props.alert.condition_parameters.threshold} 
-                                threshold_type={this.props.alert.condition_parameters.threshold_type} />
+                            matchData={this.props.matchData} />
                 <br/>
                 <TimeRangeCondition onUpdate={this._handleChangeCondition} time={time.toString()} time_type={time_type.toString()} />
                 <br/>
-                <GroupByCondition onUpdate={this._handleChangeCondition} grouping_fields={this.props.alert.condition_parameters.grouping_fields} />
-                <br/>
-                <DistinctCondition onUpdate={this._handleChangeCondition} distinct_by={this.props.alert.condition_parameters.distinct_by} />
+                <StatisticalCondition onUpdate={this._handleChangeCondition} type={this.props.alert.condition_parameters.type}  
+                            field={this.props.alert.condition_parameters.field} threshold={this.props.alert.condition_parameters.threshold} 
+                            threshold_type={this.props.alert.condition_parameters.threshold_type} />
                 <br/>
                 <Description onUpdate={this.props.onUpdate} description={this.props.alert.description}/>
                 <br/>
@@ -94,4 +88,4 @@ const GroupDistinctCondition = createReactClass({
     },
 });
 
-export default GroupDistinctCondition;
+export default StatisticsCondition;

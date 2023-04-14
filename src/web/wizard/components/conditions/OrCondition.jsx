@@ -15,20 +15,26 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-// TODO remove Condition suffix, rename namespace ruletype into rule-types
 
 import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
 import ObjectUtils from 'util/ObjectUtils';
+import { FormattedMessage } from 'react-intl';
 import TitleSeverity from 'wizard/components/TitleSeverity';
 import FieldsCondition from 'wizard/components/inputs/FieldsCondition';
+import NumberCondition from 'wizard/components/inputs/NumberCondition';
 import TimeRangeCondition from 'wizard/components/inputs/TimeRangeCondition';
-import StatisticalCondition from 'wizard/components/inputs/StatisticalCondition';
 import Description from 'wizard/components/Description';
+import { Row, Col } from 'components/bootstrap';
 
-const StatisticsCondition = createReactClass({
-    displayName: 'StatisticsCondition',
+const STREAM = {
+        matching_type: '',
+        field_rule: [{field: '', type: '', value: ''}],
+    };
+
+const OrCondition = createReactClass({
+    displayName: 'OrCondition',
 
     propTypes: {
         onUpdate: PropTypes.func,
@@ -46,14 +52,23 @@ const StatisticsCondition = createReactClass({
             update.condition_parameters[field] = value;
         }
         this.setState({alert: update});
-        this.props.onUpdate('condition_parameters', update.condition_parameters)
+        this.props.onUpdate('condition_parameters', update.condition_parameters);
     },
 
     _handleChangeStream(field, value) {
         let update = ObjectUtils.clone(this.state.alert);
         update.stream[field] = value;
         this.setState({alert: update});
-        this.props.onUpdate('stream', update.stream)
+        this.props.onUpdate('stream', update.stream);
+    },
+    _handleChangeSecondStream(field, value) {
+        let update = ObjectUtils.clone(this.state.alert);
+        if(update.second_stream === null){
+            update.second_stream = STREAM;
+        }
+        update.second_stream[field] = value;
+        this.setState({alert: update});
+        this.props.onUpdate('second_stream', update.second_stream);
     },
     
     render() {
@@ -72,14 +87,21 @@ const StatisticsCondition = createReactClass({
         
         return (
             <>
-                <FieldsCondition stream={this.props.alert.stream} onSaveStream={this._handleChangeStream} message={this.props.message}
-                            matchData={this.props.matchData} />
+                <div style={{ backgroundColor: '#f6f6f6', padding: '10px' }}>
+                    <FieldsCondition stream={this.props.alert.stream} onSaveStream={this._handleChangeStream} message={this.props.message} 
+                                    matchData={this.props.matchData} />
+                </div>
+                <br/>
+                <Row style={{ marginBottom: '0px' }}><Col md={2} /><Col md={10}><label><FormattedMessage id= "wizard.or" defaultMessage= "OR" /></label></Col></Row>
+                <br/>
+                <div style={{ backgroundColor: '#f6f6f6', padding: '10px' }}>
+                    <FieldsCondition stream={this.props.alert.second_stream} onSaveStream={this._handleChangeSecondStream} message={this.props.message} />
+                </div>
+                <br/>
+                <NumberCondition onUpdate={this._handleChangeCondition} threshold={this.props.alert.condition_parameters.threshold} 
+                                threshold_type={this.props.alert.condition_parameters.threshold_type} />
                 <br/>
                 <TimeRangeCondition onUpdate={this._handleChangeCondition} time={time.toString()} time_type={time_type.toString()} />
-                <br/>
-                <StatisticalCondition onUpdate={this._handleChangeCondition} type={this.props.alert.condition_parameters.type}  
-                            field={this.props.alert.condition_parameters.field} threshold={this.props.alert.condition_parameters.threshold} 
-                            threshold_type={this.props.alert.condition_parameters.threshold_type} />
                 <br/>
                 <Description onUpdate={this.props.onUpdate} description={this.props.alert.description}/>
                 <br/>
@@ -89,4 +111,4 @@ const StatisticsCondition = createReactClass({
     },
 });
 
-export default StatisticsCondition;
+export default OrCondition;

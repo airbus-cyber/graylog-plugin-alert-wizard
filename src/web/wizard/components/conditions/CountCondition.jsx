@@ -15,7 +15,6 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-// TODO remove Condition suffix, rename namespace ruletype into rule-types
 
 import PropTypes from 'prop-types';
 import React from 'react';
