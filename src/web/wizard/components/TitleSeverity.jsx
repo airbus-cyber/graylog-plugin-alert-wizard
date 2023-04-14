@@ -32,7 +32,6 @@ const TitleSeverity = createReactClass({
         return {
             title: '',
             severity: '',
-            isPluginLoggingAlertPresent: true,
         };
     },
     getInitialState() {
@@ -40,11 +39,6 @@ const TitleSeverity = createReactClass({
             title: this.props.title,
             severity: this.props.severity,
         };
-    },
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.isPluginLoggingAlertPresent !== this.props.isPluginLoggingAlertPresent) {
-            this._onSeverityTypeSelect(nextProps.isPluginLoggingAlertPresent? nextProps.severity: '');
-        }
     },
     _onTitleChanged() {
         return e => {
@@ -85,7 +79,6 @@ const TitleSeverity = createReactClass({
                             options={this._availableSeverityTypes()}
                             matchProp="value"
                             onChange={this._onSeverityTypeSelect}
-                            disabled={!this.props.isPluginLoggingAlertPresent}
                             clearable={false}
                             placeholder={<FormattedMessage id= "wizard.select" defaultMessage= "Select..." />}
                         />

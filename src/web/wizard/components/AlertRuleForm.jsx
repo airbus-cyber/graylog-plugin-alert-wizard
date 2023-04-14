@@ -24,6 +24,7 @@ import { Spinner } from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import Navigation from 'wizard/routing/Navigation';
 import { LinkContainer } from 'react-router-bootstrap';
+// TODO: what is that for?
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import { FormattedMessage } from 'react-intl';
 import LoaderTabs from 'components/messageloaders/LoaderTabs';
@@ -35,8 +36,6 @@ import OrCondition from './ruletype/OrCondition'
 import CountCondition from './ruletype/CountCondition'
 import TitleSeverity from "./TitleSeverity";
 import StreamsStore from 'stores/streams/StreamsStore';
-import { PluginsStore } from 'stores/plugins/PluginsStore';
-import { NodesActions } from 'stores/nodes/NodesStore';
 
 
 const AlertRuleForm = createReactClass({
@@ -69,7 +68,7 @@ const AlertRuleForm = createReactClass({
         this.setState({messages: messages});
     },
     componentDidMount() {
-        this._isPluginsPresent();
+        this._handleSelect(this.state.alert.condition_type);
     },
     getInitialState() {
         let alert = ObjectUtils.clone(this.props.alert);
@@ -82,8 +81,6 @@ const AlertRuleForm = createReactClass({
             time: time,
             time_type: time_type,
             contentComponent: <Spinner/>,
-            isPluginCorrelation: true,
-            isPluginLoggingAlert: true,
         };
     },
     _destructureTime(time) {
@@ -103,35 +100,6 @@ const AlertRuleForm = createReactClass({
             time: time,
             time_type: 1
         }
-    },
-    _isPluginsPresent() {
-        NodesActions.list().then(nodes => {
-            if (nodes.nodes[0]) {
-                PluginsStore.list(nodes.nodes[0].node_id).then(plugins => {
-                    let isPluginCorrelationPresent = false;
-                    let isPluginLoggingAlertPresent = false;
-                    for (let i = 0; i < plugins.length; i++) {
-                        if (plugins[i].unique_id === "com.airbus-cyber-security.graylog.CorrelationCountPlugin") {
-                            isPluginCorrelationPresent = true;
-                        } else if (plugins[i].unique_id === "com.airbus-cyber-security.graylog.LoggingAlertPlugin") {
-                            isPluginLoggingAlertPresent = true;
-                        }
-                    }
-                    this.setState({
-                        isPluginCorrelation: isPluginCorrelationPresent,
-                        isPluginLoggingAlert: isPluginLoggingAlertPresent
-                    });
-                    // TODO severiry: this feels like a bug to me!!!
-                    if (isPluginLoggingAlertPresent === false && this.state.alert.severiry !== '') {
-                        const update = ObjectUtils.clone(this.state.alert);
-                        update['severity'] = '';
-                        this.setState({alert: update});
-                    }
-
-                    this._handleSelect(this.state.alert.condition_type);
-                });
-            }
-        });
     },
     _updateAlertField(field, value) {
         const update = ObjectUtils.clone(this.state.alert);
@@ -215,32 +183,32 @@ const AlertRuleForm = createReactClass({
             case 'COUNT':
                 this.setState({
                     contentComponent: <CountCondition onUpdate={this._updateAlertField} alert={alert} message={this.state.message}
-                        matchData={this.state.matchData} isPluginLoggingAlertPresent={this.state.isPluginLoggingAlert} />
+                        matchData={this.state.matchData} />
                 });
                 break;
             case 'GROUP_DISTINCT':
                 this.setState({
                     contentComponent: <GroupDistinctCondition onUpdate={this._updateAlertField} alert={alert} message={this.state.message} 
-                        matchData={this.state.matchData} isPluginLoggingAlertPresent={this.state.isPluginLoggingAlert}/>
+                        matchData={this.state.matchData} />
                 });
                 break;
             case 'STATISTICAL':
                 this.setState({
                     contentComponent: <StatisticsCondition onUpdate={this._updateAlertField} alert={alert} message={this.state.message}
-                        matchData={this.state.matchData} isPluginLoggingAlertPresent={this.state.isPluginLoggingAlert}/>
+                        matchData={this.state.matchData} />
                 });
                 break;
             case 'THEN':
             case 'AND':
                 this.setState({
                     contentComponent: <CorrelationCondition onUpdate={this._updateAlertField} onUpdateAlert={this._updateAlert} alert={alert}
-                        message={this.state.message} matchData={this.state.matchData} isPluginLoggingAlertPresent={this.state.isPluginLoggingAlert}/>
+                        message={this.state.message} matchData={this.state.matchData} />
                 });
                 break;
             case 'OR':
                 this.setState({
                     contentComponent: <OrCondition onUpdate={this._updateAlertField} alert={alert} message={this.state.message}
-                        matchData={this.state.matchData} isPluginLoggingAlertPresent={this.state.isPluginLoggingAlert}/>
+                        matchData={this.state.matchData} />
                 });
                 break;
             default:
@@ -282,10 +250,10 @@ const AlertRuleForm = createReactClass({
                     <NavItem eventKey={'STATISTICAL'} title={this.state.messages.tooltipStatisticalCondition}>
                         <FormattedMessage id= "wizard.StatisticsCondition" defaultMessage= "Statistics" />
                     </NavItem>
-                    <NavItem eventKey={'THEN'} title={this.state.messages.tooltipThenCondition} disabled={!this.state.isPluginCorrelation}>
+                    <NavItem eventKey={'THEN'} title={this.state.messages.tooltipThenCondition}>
                         <FormattedMessage id= "wizard.thenCondition" defaultMessage= "THEN" />
                     </NavItem>
-                    <NavItem eventKey={'AND'} title={this.state.messages.tooltipAndCondition} disabled={!this.state.isPluginCorrelation}>
+                    <NavItem eventKey={'AND'} title={this.state.messages.tooltipAndCondition}>
                         <FormattedMessage id= "wizard.andCondition" defaultMessage= "AND" />
                     </NavItem>
                     <NavItem eventKey={'OR'} title={this.state.messages.tooltipOrCondition}>
@@ -311,8 +279,7 @@ const AlertRuleForm = createReactClass({
                         {this.props.navigationToRuleComponents}
                         <p className="description"><FormattedMessage id= "wizard.descripionParameters" defaultMessage= "Define the parameters of the alert rule." /></p>
                         <form className="form-inline">
-                            <TitleSeverity onUpdate={this._updateAlertField} title={this.state.alert.title} severity={this.state.alert.severity}
-                                           isPluginLoggingAlertPresent={this.state.isPluginLoggingAlertPresent}/>
+                            <TitleSeverity onUpdate={this._updateAlertField} title={this.state.alert.title} severity={this.state.alert.severity} />
                             <br/>
                             {this.state.contentComponent}
                         </form>
