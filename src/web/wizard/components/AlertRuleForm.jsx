@@ -52,21 +52,21 @@ const AlertRuleForm = createReactClass({
     },
     componentWillMount() {
         const messages = {
-                titlePopup: this.context.intl.formatMessage({id: "wizard.titlePopup", defaultMessage: "Alert rule is saved"}),
-                messagePopup: this.context.intl.formatMessage({id: "wizard.messagePopup", defaultMessage: "Go to Advanced settings?"}),
-                advancedSettings: this.context.intl.formatMessage({id: "wizard.advancedSettings", defaultMessage: "Advanced settings"}),
-                done: this.context.intl.formatMessage({id: "wizard.done", defaultMessage: "I'm done!"}),
-                placeholderTitle: this.context.intl.formatMessage({id: "wizard.placeholderTitle", defaultMessage: "Title of the alert rule                 "}),
-                add: this.context.intl.formatMessage({id: "wizard.add", defaultMessage: "Add"}),
-                ruleType: this.context.intl.formatMessage({id: "wizard.ruleType", defaultMessage: "Rule Type"}),
-                tooltipCountCondition: this.context.intl.formatMessage({id: "wizard.tooltipCountCondition", defaultMessage: "Count Condition"}),
-                tooltipGroupDistinctCondition: this.context.intl.formatMessage({id: "wizard.tooltipGroupDistinctCondition", defaultMessage: "Group / Distinct Condition"}),
-                tooltipStatisticalCondition: this.context.intl.formatMessage({id: "wizard.tooltipStatisticalCondition", defaultMessage: "Statistical Condition"}),
-                tooltipThenCondition: this.context.intl.formatMessage({id: "wizard.tooltipThenCondition", defaultMessage: "THEN Condition"}),
-                tooltipAndCondition: this.context.intl.formatMessage({id: "wizard.tooltipAndCondition", defaultMessage: "AND Condition"}),
-                tooltipOrCondition: this.context.intl.formatMessage({id: "wizard.tooltipOrCondition", defaultMessage: "OR Condition"}),
-            };
-        this.setState({messages:messages});
+            titlePopup: this.context.intl.formatMessage({id: "wizard.titlePopup", defaultMessage: "Alert rule is saved"}),
+            messagePopup: this.context.intl.formatMessage({id: "wizard.messagePopup", defaultMessage: "Go to Advanced settings?"}),
+            advancedSettings: this.context.intl.formatMessage({id: "wizard.advancedSettings", defaultMessage: "Advanced settings"}),
+            done: this.context.intl.formatMessage({id: "wizard.done", defaultMessage: "I'm done!"}),
+            placeholderTitle: this.context.intl.formatMessage({id: "wizard.placeholderTitle", defaultMessage: "Title of the alert rule                 "}),
+            add: this.context.intl.formatMessage({id: "wizard.add", defaultMessage: "Add"}),
+            ruleType: this.context.intl.formatMessage({id: "wizard.ruleType", defaultMessage: "Rule Type"}),
+            tooltipCountCondition: this.context.intl.formatMessage({id: "wizard.tooltipCountCondition", defaultMessage: "Count Condition"}),
+            tooltipGroupDistinctCondition: this.context.intl.formatMessage({id: "wizard.tooltipGroupDistinctCondition", defaultMessage: "Group / Distinct Condition"}),
+            tooltipStatisticalCondition: this.context.intl.formatMessage({id: "wizard.tooltipStatisticalCondition", defaultMessage: "Statistical Condition"}),
+            tooltipThenCondition: this.context.intl.formatMessage({id: "wizard.tooltipThenCondition", defaultMessage: "THEN Condition"}),
+            tooltipAndCondition: this.context.intl.formatMessage({id: "wizard.tooltipAndCondition", defaultMessage: "AND Condition"}),
+            tooltipOrCondition: this.context.intl.formatMessage({id: "wizard.tooltipOrCondition", defaultMessage: "OR Condition"}),
+        };
+        this.setState({messages: messages});
     },
     componentDidMount() {
         this._isPluginsPresent();
