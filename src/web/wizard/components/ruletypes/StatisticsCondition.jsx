@@ -22,10 +22,10 @@ import React from 'react';
 import createReactClass from 'create-react-class';
 import ObjectUtils from 'util/ObjectUtils';
 import TitleSeverity from 'wizard/components/TitleSeverity';
-import FieldsCondition from 'wizard/components/conditions/FieldsCondition';
-import TimeRangeCondition from 'wizard/components/conditions/TimeRangeCondition';
+import FieldsCondition from 'wizard/components/inputs/FieldsCondition';
+import TimeRangeCondition from 'wizard/components/inputs/TimeRangeCondition';
+import StatisticalCondition from 'wizard/components/inputs/StatisticalCondition';
 import Description from 'wizard/components/Description';
-import StatisticalCondition from 'wizard/components/conditions/StatisticalCondition';
 
 const StatisticsCondition = createReactClass({
     displayName: 'StatisticsCondition',

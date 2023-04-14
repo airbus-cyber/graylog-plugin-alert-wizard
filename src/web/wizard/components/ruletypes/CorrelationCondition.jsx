@@ -24,11 +24,11 @@ import ObjectUtils from 'util/ObjectUtils';
 // TODO why are we not using the Button from components/bootstrap like elsewhere?
 import { Button } from 'react-bootstrap';
 import { FormattedMessage } from 'react-intl';
-import FieldsCondition from 'wizard/components/conditions/FieldsCondition';
-import NumberCondition from 'wizard/components/conditions/NumberCondition';
-import TimeRangeCondition from 'wizard/components/conditions/TimeRangeCondition';
+import FieldsCondition from 'wizard/components/inputs/FieldsCondition';
+import NumberCondition from 'wizard/components/inputs/NumberCondition';
+import TimeRangeCondition from 'wizard/components/inputs/TimeRangeCondition';
 import Description from 'wizard/components/Description';
-import GroupByCondition from 'wizard/components/conditions/GroupByCondition';
+import GroupByCondition from 'wizard/components/inputs/GroupByCondition';
 import { Row, Col } from 'components/bootstrap';
 import IconArrowsV from "wizard/components/icons/ArrowsV";
 
