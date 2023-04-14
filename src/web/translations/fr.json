@@ -64,7 +64,7 @@
   "wizard.notContain": "ne contient pas",
   "wizard.delete": "Supprimer",
   "wizard.groupDistinctCondition": "Regroupement / Différenciation",
-  "wizard.statisticalCondition": "Condition Statistiques",
+  "wizard.statisticalInput": "Condition Statistiques",
   "wizard.thenCondition": "ENSUITE",
   "wizard.andCondition": "ET",
   "wizard.orCondition": "OU",
