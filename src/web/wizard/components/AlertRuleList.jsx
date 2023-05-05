@@ -34,7 +34,7 @@ import StreamsStore from 'stores/streams/StreamsStore';
 import AlertRuleStore from 'wizard/stores/AlertRuleStore';
 import AlertRuleActions from 'wizard/actions/AlertRuleActions';
 import EventDefinitionResources from 'wizard/resources/EventDefinitionResource';
-import AlertForm from './AlertForm';
+import AlertRuleCloneForm from './AlertRuleCloneForm';
 import AlertRuleText from './AlertRuleText'
 import ButtonToEventDefinition from './buttons/ButtonToEventDefinition';
 import ButtonToNotification from './buttons/ButtonToNotification';
@@ -380,7 +380,7 @@ const AlertRuleList = createReactClass({
                                dataRowFormatter={this._alertInfoFormatter}
                                filterLabel={<FormattedMessage id ="wizard.filter" defaultMessage="Filter alert rules" />}
                                filterKeys={filterKeys} />
-                    <AlertForm ref="cloneForm" onSubmit={this._onCloneSubmit} />
+                    <AlertRuleCloneForm ref="cloneForm" onSubmit={this._onCloneSubmit} />
                 </div>
             );
         }

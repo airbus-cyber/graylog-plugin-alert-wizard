@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 import BootstrapModalForm from 'components/bootstrap/BootstrapModalForm';
 import {Input} from 'components/bootstrap';
 
-const AlertForm = createReactClass({
+const AlertRuleCloneForm = createReactClass({
     displayName: 'AlertForm',
 
     propTypes: {
@@ -92,4 +92,4 @@ const AlertForm = createReactClass({
     },
 });
 
-export default AlertForm;
+export default AlertRuleCloneForm;
