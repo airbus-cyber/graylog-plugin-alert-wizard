@@ -4439,11 +4439,11 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.2.4
     "@babel/preset-env" "7.16.11"
     "@babel/preset-typescript" "7.16.7"
     create-react-class "15.7.0"
-    eslint-config-graylog "file:../.cache/yarn/v6/npm-graylog-web-plugin-4.3.6-31a85d80-a405-4504-9a65-9650f330f0e9-1683276451866/node_modules/eslint-config-graylog"
+    eslint-config-graylog "file:../.cache/yarn/v6/npm-graylog-web-plugin-4.3.6-591e1ad5-ea74-4e03-a06f-b98774c523c5-1683290148120/node_modules/eslint-config-graylog"
     formik "2.2.9"
     html-webpack-plugin "^5.5.0"
     javascript-natural-sort "0.7.1"
-    jest-preset-graylog "file:../.cache/yarn/v6/npm-graylog-web-plugin-4.3.6-31a85d80-a405-4504-9a65-9650f330f0e9-1683276451866/node_modules/jest-preset-graylog"
+    jest-preset-graylog "file:../.cache/yarn/v6/npm-graylog-web-plugin-4.3.6-591e1ad5-ea74-4e03-a06f-b98774c523c5-1683290148120/node_modules/jest-preset-graylog"
     jquery "3.5.1"
     moment "2.29.1"
     moment-timezone "0.5.34"
@@ -7033,11 +7033,6 @@ react-bootstrap@0.33.1:
     react-transition-group "^2.0.0"
     uncontrollable "^7.0.2"
     warning "^3.0.0"
-
-react-confirm-alert@^2.4.1:
-  version "2.8.0"
-  resolved "https://registry.yarnpkg.com/react-confirm-alert/-/react-confirm-alert-2.8.0.tgz#b3538c412432226e817478d3a2614538196ab204"
-  integrity sha512-qvNjJWuWUpTh+q4NecUjCMIWLNDl8IwW6JRIky5pzoiFBXsLWSA2Z1VsaDsQedwgyxEpKnMEJFETkDogBpv/kA==
 
 react-dom@16.14.0:
   version "16.14.0"
