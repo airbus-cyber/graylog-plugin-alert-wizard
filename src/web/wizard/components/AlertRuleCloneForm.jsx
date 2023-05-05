@@ -17,7 +17,6 @@
 
 import React from 'react';
 import createReactClass from 'create-react-class';
-import LinkedStateMixin from 'react-addons-linked-state-mixin';
 import {FormattedMessage} from 'react-intl';
 import PropTypes from 'prop-types';
 
