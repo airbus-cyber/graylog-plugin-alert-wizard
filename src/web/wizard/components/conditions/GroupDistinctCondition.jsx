@@ -26,7 +26,7 @@ import NumberInput from 'wizard/components/inputs/NumberInput';
 import TimeRangeInput from 'wizard/components/inputs/TimeRangeInput';
 import GroupByInput from 'wizard/components/inputs/GroupByInput';
 import DistinctInput from 'wizard/components/inputs/DistinctInput';
-import Description from 'wizard/components/Description';
+import Description from 'wizard/components/inputs/Description';
 
 const GroupDistinctCondition = createReactClass({
     displayName: 'GroupDistinctCondition',

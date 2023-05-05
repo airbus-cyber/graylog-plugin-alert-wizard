@@ -26,7 +26,7 @@ import { FormattedMessage } from 'react-intl';
 import FieldsInput from 'wizard/components/inputs/FieldsInput';
 import NumberInput from 'wizard/components/inputs/NumberInput';
 import TimeRangeInput from 'wizard/components/inputs/TimeRangeInput';
-import Description from 'wizard/components/Description';
+import Description from 'wizard/components/inputs/Description';
 import GroupByInput from 'wizard/components/inputs/GroupByInput';
 import { Row, Col } from 'components/bootstrap';
 import IconArrowsV from "wizard/components/icons/ArrowsV";

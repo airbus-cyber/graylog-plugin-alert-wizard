@@ -23,7 +23,7 @@ import ObjectUtils from 'util/ObjectUtils';
 import FieldsInput from 'wizard/components/inputs/FieldsInput';
 import NumberInput from 'wizard/components/inputs/NumberInput';
 import TimeRangeInput from 'wizard/components/inputs/TimeRangeInput';
-import Description from 'wizard/components/Description';
+import Description from 'wizard/components/inputs/Description';
 
 const CountCondition = createReactClass({
     displayName: 'CountCondition',

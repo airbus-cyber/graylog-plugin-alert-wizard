@@ -25,7 +25,7 @@ import TitleSeverity from 'wizard/components/TitleSeverity';
 import FieldsInput from 'wizard/components/inputs/FieldsInput';
 import NumberInput from 'wizard/components/inputs/NumberInput';
 import TimeRangeInput from 'wizard/components/inputs/TimeRangeInput';
-import Description from 'wizard/components/Description';
+import Description from 'wizard/components/inputs/Description';
 import { Row, Col } from 'components/bootstrap';
 
 const STREAM = {

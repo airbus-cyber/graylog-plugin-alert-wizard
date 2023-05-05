@@ -24,7 +24,7 @@ import TitleSeverity from 'wizard/components/TitleSeverity';
 import FieldsInput from 'wizard/components/inputs/FieldsInput';
 import TimeRangeInput from 'wizard/components/inputs/TimeRangeInput';
 import StatisticalInput from 'wizard/components/inputs/StatisticalInput';
-import Description from 'wizard/components/Description';
+import Description from 'wizard/components/inputs/Description';
 
 const StatisticsCondition = createReactClass({
     displayName: 'StatisticsCondition',
