@@ -27,8 +27,3 @@
 :local(.divider) {
     border-bottom: #D1D1D1 solid 1px;
 }
-
-/* TODO seems to me this can be removed... unused */
-:local(.bigText) {
-    height: 300px;
-}
