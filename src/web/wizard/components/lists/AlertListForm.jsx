@@ -18,7 +18,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
-import LinkedStateMixin from 'react-addons-linked-state-mixin';
 import BootstrapModalForm from 'components/bootstrap/BootstrapModalForm';
 import {Input} from 'components/bootstrap';
 import {FormattedMessage} from 'react-intl';
@@ -33,8 +32,6 @@ const AlertListForm = createReactClass({
     contextTypes: {
         intl: PropTypes.object.isRequired,
     },
-
-    mixins: [LinkedStateMixin],
 
     componentWillMount(){
         const messages = {
