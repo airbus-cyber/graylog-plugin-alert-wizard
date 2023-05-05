@@ -19,23 +19,25 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
-import { Button, Col, Row, Nav, NavItem } from 'components/bootstrap';
-import { Spinner } from 'components/common';
-import ObjectUtils from 'util/ObjectUtils';
-import Navigation from 'wizard/routing/Navigation';
 import { LinkContainer } from 'react-router-bootstrap';
 // TODO: what is that for?
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import { FormattedMessage } from 'react-intl';
+
+import { Button, Col, Row, Nav, NavItem } from 'components/bootstrap';
+import { Spinner } from 'components/common';
+import ObjectUtils from 'util/ObjectUtils';
 import LoaderTabs from 'components/messageloaders/LoaderTabs';
-import styles from './WizardStyle.css';
-import StatisticsCondition from './conditions/StatisticsCondition'
-import GroupDistinctCondition from './conditions/GroupDistinctCondition'
-import CorrelationCondition from './conditions/CorrelationCondition'
-import OrCondition from './conditions/OrCondition'
-import CountCondition from './conditions/CountCondition'
-import TitleSeverity from "./TitleSeverity";
 import StreamsStore from 'stores/streams/StreamsStore';
+
+import Navigation from 'wizard/routing/Navigation';
+import StatisticsCondition from 'wizard/components/conditions/StatisticsCondition'
+import GroupDistinctCondition from 'wizard/components/conditions/GroupDistinctCondition'
+import CorrelationCondition from 'wizard/components/conditions/CorrelationCondition'
+import OrCondition from 'wizard/components/conditions/OrCondition'
+import CountCondition from 'wizard/components/conditions/CountCondition'
+import styles from './WizardStyle.css';
+import TitleSeverity from 'wizard/components/TitleSeverity';
 
 
 const AlertRuleForm = createReactClass({

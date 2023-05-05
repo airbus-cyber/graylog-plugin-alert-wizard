@@ -34,10 +34,10 @@ import StreamsStore from 'stores/streams/StreamsStore';
 import AlertRuleStore from 'wizard/stores/AlertRuleStore';
 import AlertRuleActions from 'wizard/actions/AlertRuleActions';
 import EventDefinitionResources from 'wizard/resources/EventDefinitionResource';
+import ButtonToEventDefinition from 'wizard/components/buttons/ButtonToEventDefinition';
+import ButtonToNotification from 'wizard/components/buttons/ButtonToNotification';
 import AlertRuleCloneForm from './AlertRuleCloneForm';
 import AlertRuleText from './AlertRuleText'
-import ButtonToEventDefinition from './buttons/ButtonToEventDefinition';
-import ButtonToNotification from './buttons/ButtonToNotification';
 
 
 const AlertRuleList = createReactClass({

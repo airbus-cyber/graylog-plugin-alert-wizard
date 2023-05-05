@@ -21,7 +21,7 @@ import createReactClass from 'create-react-class';
 import { Button, Col, Row } from 'components/bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { DocumentTitle, PageHeader, Spinner } from 'components/common';
-import AlertRuleForm from 'wizard/components/AlertRuleForm';
+import AlertRuleForm from 'wizard/components/rules/AlertRuleForm';
 import AlertRuleActions from 'wizard/actions/AlertRuleActions';
 import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
 import messages_fr from 'translations/fr.json';

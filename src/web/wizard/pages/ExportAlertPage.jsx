@@ -28,7 +28,7 @@ import AlertRuleActions from 'wizard/actions/AlertRuleActions';
 import FileSaver from 'wizard/logic/FileSaver';
 import IconDownload from 'wizard/components/icons/Download';
 import Navigation from 'wizard/routing/Navigation';
-import AlertRuleSelectionList from 'wizard/components/AlertRuleSelectionList'
+import AlertRuleSelectionList from 'wizard/components/rules/AlertRuleSelectionList'
 import RulesImportExport from 'wizard/logic/RulesImportExport'
 import { EventNotificationsActions } from 'stores/event-notifications/EventNotificationsStore';
 
