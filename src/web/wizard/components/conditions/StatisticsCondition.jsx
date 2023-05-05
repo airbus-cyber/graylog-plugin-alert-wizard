@@ -20,7 +20,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
 import ObjectUtils from 'util/ObjectUtils';
-import TitleSeverity from 'wizard/components/TitleSeverity';
+import TitleSeverity from 'wizard/components/inputs/TitleSeverity';
 import FieldsInput from 'wizard/components/inputs/FieldsInput';
 import TimeRangeInput from 'wizard/components/inputs/TimeRangeInput';
 import StatisticalInput from 'wizard/components/inputs/StatisticalInput';

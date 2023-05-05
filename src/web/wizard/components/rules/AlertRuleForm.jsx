@@ -37,7 +37,7 @@ import CorrelationCondition from 'wizard/components/conditions/CorrelationCondit
 import OrCondition from 'wizard/components/conditions/OrCondition'
 import CountCondition from 'wizard/components/conditions/CountCondition'
 import styles from './WizardStyle.css';
-import TitleSeverity from 'wizard/components/TitleSeverity';
+import TitleSeverity from 'wizard/components/inputs/TitleSeverity';
 
 
 const AlertRuleForm = createReactClass({

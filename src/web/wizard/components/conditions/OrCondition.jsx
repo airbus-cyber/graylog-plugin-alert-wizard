@@ -21,7 +21,7 @@ import React from 'react';
 import createReactClass from 'create-react-class';
 import ObjectUtils from 'util/ObjectUtils';
 import { FormattedMessage } from 'react-intl';
-import TitleSeverity from 'wizard/components/TitleSeverity';
+import TitleSeverity from 'wizard/components/inputs/TitleSeverity';
 import FieldsInput from 'wizard/components/inputs/FieldsInput';
 import NumberInput from 'wizard/components/inputs/NumberInput';
 import TimeRangeInput from 'wizard/components/inputs/TimeRangeInput';

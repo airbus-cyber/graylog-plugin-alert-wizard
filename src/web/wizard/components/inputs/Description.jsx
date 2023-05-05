@@ -14,7 +14,7 @@
  * along with this program. If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-// TODO move into directory inputs
+
 import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
