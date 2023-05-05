@@ -24,7 +24,6 @@ import { Spinner } from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import Routes from 'routing/Routes';
 import { LinkContainer } from 'react-router-bootstrap';
-import 'react-confirm-alert/src/react-confirm-alert.css';
 import { Input, Button, Col, Row } from 'components/bootstrap';
 
 

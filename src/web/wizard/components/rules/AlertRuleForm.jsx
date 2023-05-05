@@ -20,8 +20,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
 import { LinkContainer } from 'react-router-bootstrap';
-// TODO: what is that for?
-import 'react-confirm-alert/src/react-confirm-alert.css';
 import { FormattedMessage } from 'react-intl';
 
 import { Button, Col, Row, Nav, NavItem } from 'components/bootstrap';
