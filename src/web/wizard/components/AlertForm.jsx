@@ -15,13 +15,14 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
 import LinkedStateMixin from 'react-addons-linked-state-mixin';
+import {FormattedMessage} from 'react-intl';
+import PropTypes from 'prop-types';
+
 import BootstrapModalForm from 'components/bootstrap/BootstrapModalForm';
 import {Input} from 'components/bootstrap';
-import {FormattedMessage} from 'react-intl';
 
 const AlertForm = createReactClass({
     displayName: 'AlertForm',
