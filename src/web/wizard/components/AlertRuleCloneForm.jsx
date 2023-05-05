@@ -39,8 +39,8 @@ const AlertRuleCloneForm = createReactClass({
 
     componentWillMount(){
         const messages = {
-                placeholderTitle: this.context.intl.formatMessage({id: "wizard.placeholderCloneTitle", defaultMessage: "A descriptive name of the new alert rule"}),
-            };
+            placeholderTitle: this.context.intl.formatMessage({id: "wizard.placeholderCloneTitle", defaultMessage: "A descriptive name of the new alert rule"}),
+        };
         this.setState({messages:messages});
     },
 
