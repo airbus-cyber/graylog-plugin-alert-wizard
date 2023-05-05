@@ -18,11 +18,11 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import {FormattedMessage} from 'react-intl';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import Reflux from 'reflux';
 import createReactClass from 'create-react-class';
-import {Input} from 'components/bootstrap';
-import {Select, Spinner, TypeAheadFieldInput} from 'components/common';
+import { Input } from 'components/bootstrap';
+import { Select, Spinner, TypeAheadFieldInput } from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import AlertListActions from 'wizard/actions/AlertListActions';
 import AlertListStore from 'wizard/stores/AlertListStore';
@@ -42,9 +42,6 @@ const FieldRule = createReactClass({
         onDelete: PropTypes.func.isRequired,
         matchData: PropTypes.array.isRequired
     },
-    contextTypes: {
-        intl: PropTypes.object.isRequired,
-    },
 
     getInitialState() {
         return {
@@ -62,8 +59,9 @@ const FieldRule = createReactClass({
         }
     },
     componentWillMount() {
+        const { intl } = this.props;
         const messages = {
-            delete: this.context.intl.formatMessage({id: "wizard.delete", defaultMessage: "Delete"}),
+            delete: intl.formatMessage({id: "wizard.delete", defaultMessage: "Delete"}),
         };
         this.setState({messages: messages});
         this.list();
@@ -257,4 +255,4 @@ const FieldRule = createReactClass({
     },
 });
 
-export default FieldRule;
+export default injectIntl(FieldRule);

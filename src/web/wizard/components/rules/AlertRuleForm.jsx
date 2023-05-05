@@ -20,7 +20,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
 import { LinkContainer } from 'react-router-bootstrap';
-import { FormattedMessage } from 'react-intl';
+import { injectIntl, FormattedMessage } from 'react-intl';
 
 import { Button, Col, Row, Nav, NavItem } from 'components/bootstrap';
 import { Spinner } from 'components/common';
@@ -46,24 +46,23 @@ const AlertRuleForm = createReactClass({
         navigationToRuleComponents: PropTypes.element,
         onSave: PropTypes.func.isRequired
     },
-    contextTypes: {
-        intl: PropTypes.object.isRequired,
-    },
+
     componentWillMount() {
+        const { intl } = this.props;
         const messages = {
-            titlePopup: this.context.intl.formatMessage({id: "wizard.titlePopup", defaultMessage: "Alert rule is saved"}),
-            messagePopup: this.context.intl.formatMessage({id: "wizard.messagePopup", defaultMessage: "Go to Advanced settings?"}),
-            advancedSettings: this.context.intl.formatMessage({id: "wizard.advancedSettings", defaultMessage: "Advanced settings"}),
-            done: this.context.intl.formatMessage({id: "wizard.done", defaultMessage: "I'm done!"}),
-            placeholderTitle: this.context.intl.formatMessage({id: "wizard.placeholderTitle", defaultMessage: "Title of the alert rule                 "}),
-            add: this.context.intl.formatMessage({id: "wizard.add", defaultMessage: "Add"}),
-            ruleType: this.context.intl.formatMessage({id: "wizard.ruleType", defaultMessage: "Rule Type"}),
-            tooltipCountCondition: this.context.intl.formatMessage({id: "wizard.tooltipCountCondition", defaultMessage: "Count Condition"}),
-            tooltipGroupDistinctCondition: this.context.intl.formatMessage({id: "wizard.tooltipGroupDistinctCondition", defaultMessage: "Group / Distinct Condition"}),
-            tooltipStatisticalCondition: this.context.intl.formatMessage({id: "wizard.tooltipStatisticalCondition", defaultMessage: "Statistical Condition"}),
-            tooltipThenCondition: this.context.intl.formatMessage({id: "wizard.tooltipThenCondition", defaultMessage: "THEN Condition"}),
-            tooltipAndCondition: this.context.intl.formatMessage({id: "wizard.tooltipAndCondition", defaultMessage: "AND Condition"}),
-            tooltipOrCondition: this.context.intl.formatMessage({id: "wizard.tooltipOrCondition", defaultMessage: "OR Condition"}),
+            titlePopup: intl.formatMessage({id: "wizard.titlePopup", defaultMessage: "Alert rule is saved"}),
+            messagePopup: intl.formatMessage({id: "wizard.messagePopup", defaultMessage: "Go to Advanced settings?"}),
+            advancedSettings: intl.formatMessage({id: "wizard.advancedSettings", defaultMessage: "Advanced settings"}),
+            done: intl.formatMessage({id: "wizard.done", defaultMessage: "I'm done!"}),
+            placeholderTitle: intl.formatMessage({id: "wizard.placeholderTitle", defaultMessage: "Title of the alert rule                 "}),
+            add: intl.formatMessage({id: "wizard.add", defaultMessage: "Add"}),
+            ruleType: intl.formatMessage({id: "wizard.ruleType", defaultMessage: "Rule Type"}),
+            tooltipCountCondition: intl.formatMessage({id: "wizard.tooltipCountCondition", defaultMessage: "Count Condition"}),
+            tooltipGroupDistinctCondition: intl.formatMessage({id: "wizard.tooltipGroupDistinctCondition", defaultMessage: "Group / Distinct Condition"}),
+            tooltipStatisticalCondition: intl.formatMessage({id: "wizard.tooltipStatisticalCondition", defaultMessage: "Statistical Condition"}),
+            tooltipThenCondition: intl.formatMessage({id: "wizard.tooltipThenCondition", defaultMessage: "THEN Condition"}),
+            tooltipAndCondition: intl.formatMessage({id: "wizard.tooltipAndCondition", defaultMessage: "AND Condition"}),
+            tooltipOrCondition: intl.formatMessage({id: "wizard.tooltipOrCondition", defaultMessage: "OR Condition"}),
         };
         this.setState({messages: messages});
     },
@@ -291,4 +290,4 @@ const AlertRuleForm = createReactClass({
     },
 });
 
-export default AlertRuleForm;
+export default injectIntl(AlertRuleForm);

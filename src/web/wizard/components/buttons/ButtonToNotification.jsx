@@ -21,7 +21,7 @@ import PropTypes from 'prop-types';
 import { LinkContainer } from 'react-router-bootstrap';
 // TODO make our own InfoButton and factor?
 import { Button } from 'components/bootstrap';
-import { FormattedMessage } from 'react-intl';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import Routes from 'routing/Routes';
 
 const ButtonToNotification = createReactClass({
@@ -31,12 +31,9 @@ const ButtonToNotification = createReactClass({
         disabled: PropTypes.bool,
     },
 
-    contextTypes: {
-        intl: PropTypes.object.isRequired,
-    },
-
     componentWillMount() {
-        const tooltip = this.context.intl.formatMessage({id: "wizard.tooltipNotification", defaultMessage: "Edit notification for this alert rule"});
+        const { intl } = this.props;
+        const tooltip = intl.formatMessage({id: "wizard.tooltipNotification", defaultMessage: "Edit notification for this alert rule"});
         this.setState({tooltip:tooltip});
     },
 
@@ -52,4 +49,4 @@ const ButtonToNotification = createReactClass({
     }
 });
 
-export default ButtonToNotification;
+export default injectIntl(ButtonToNotification);

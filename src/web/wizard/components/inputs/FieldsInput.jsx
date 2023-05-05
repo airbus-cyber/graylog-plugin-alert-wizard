@@ -28,7 +28,7 @@ import { Button } from 'react-bootstrap';
 import { Input, Row, Col } from 'components/bootstrap';
 import { Select, Spinner } from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
-import { FormattedMessage } from 'react-intl';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import FieldRule from './FieldRule';
 import IconAdd from "wizard/components/icons/Add";
 import StreamsStore from 'stores/streams/StreamsStore';
@@ -50,9 +50,6 @@ const FieldsInput = createReactClass({
         message: PropTypes.object,
         matchData: PropTypes.object,
     },   
-    contextTypes: {
-        intl: PropTypes.object.isRequired,
-    },
     getDefaultProps() {
         return {
             stream: STREAM,
@@ -62,9 +59,10 @@ const FieldsInput = createReactClass({
         IndexSetsActions.list(false);
     },
     componentWillMount() {
+        const { intl } = this.props;
         const messages = {
-                add: this.context.intl.formatMessage({id: "wizard.add", defaultMessage: "Add"}),
-                tryFieldsCondition: this.context.intl.formatMessage({id: "wizard.tryFieldsCondition", defaultMessage: "Try the fields condition"}),
+                add: intl.formatMessage({id: "wizard.add", defaultMessage: "Add"}),
+                tryFieldsCondition: intl.formatMessage({id: "wizard.tryFieldsCondition", defaultMessage: "Try the fields condition"}),
             };
         this.setState({messages:messages});
     },
@@ -268,4 +266,4 @@ const FieldsInput = createReactClass({
     },
 });
 
-export default FieldsInput;
+export default injectIntl(FieldsInput);

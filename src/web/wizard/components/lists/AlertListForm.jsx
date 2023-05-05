@@ -19,8 +19,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
 import BootstrapModalForm from 'components/bootstrap/BootstrapModalForm';
-import {Input} from 'components/bootstrap';
-import {FormattedMessage} from 'react-intl';
+import { Input } from 'components/bootstrap';
+import { injectIntl, FormattedMessage } from 'react-intl';
 
 const AlertListForm = createReactClass({
     displayName: 'AlertListForm',
@@ -29,13 +29,9 @@ const AlertListForm = createReactClass({
         onSubmit: PropTypes.func.isRequired,
     },
 
-    contextTypes: {
-        intl: PropTypes.object.isRequired,
-    },
-
     componentWillMount(){
         const messages = {
-            placeholderTitle: this.context.intl.formatMessage({id: "wizard.placeholderCloneTitleList", defaultMessage: "A descriptive name of the new alert list"}),
+            placeholderTitle: this.props.intl.formatMessage({id: "wizard.placeholderCloneTitleList", defaultMessage: "A descriptive name of the new alert list"}),
         };
         this.setState({messages:messages});
     },
@@ -88,4 +84,4 @@ const AlertListForm = createReactClass({
     },
 });
 
-export default AlertListForm;
+export default injectIntl(AlertListForm);

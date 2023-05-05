@@ -25,14 +25,12 @@ import { Button, Col, Row } from 'components/bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { DocumentTitle, PageHeader } from 'components/common';
 import Routes from 'routing/Routes';
-import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
+import { IntlProvider, FormattedMessage } from 'react-intl';
 import messages_fr from 'translations/fr.json';
 import CreateListFormInput from 'wizard/components/lists/CreateListFormInput';
 import AlertListActions from 'wizard/actions/AlertListActions';
 
-let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
-addLocaleData(frLocaleData);
 
 const messages = {
     'fr': messages_fr

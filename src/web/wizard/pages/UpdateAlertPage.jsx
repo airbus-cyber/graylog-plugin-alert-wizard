@@ -23,16 +23,14 @@ import { LinkContainer } from 'react-router-bootstrap';
 import { DocumentTitle, PageHeader, Spinner } from 'components/common';
 import AlertRuleForm from 'wizard/components/rules/AlertRuleForm';
 import AlertRuleActions from 'wizard/actions/AlertRuleActions';
-import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
+import { IntlProvider, FormattedMessage } from 'react-intl';
 import messages_fr from 'translations/fr.json';
 import withParams from 'routing/withParams';
 import Navigation from 'wizard/routing/Navigation';
 import ButtonToEventDefinition from 'wizard/components/buttons/ButtonToEventDefinition';
 import ButtonToNotification from 'wizard/components/buttons/ButtonToNotification';
 
-let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
-addLocaleData(frLocaleData);
 
 const messages = {
     'fr': messages_fr

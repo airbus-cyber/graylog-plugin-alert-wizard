@@ -19,7 +19,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import Reflux from 'reflux';
 import createReactClass from 'create-react-class';
-import { FormattedMessage } from 'react-intl';
+// TODO should rather use useIntl, but should convert to functional components first...
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { LinkContainer } from 'react-router-bootstrap';
 // TODO remove imports from react-bootstrap everywhere, and use only components/bootstrap?
 import { Tooltip } from 'react-bootstrap';
@@ -49,34 +50,31 @@ const AlertRuleList = createReactClass({
         field_order: PropTypes.array.isRequired,
     },
 
-    contextTypes: {
-        intl: PropTypes.object.isRequired,
-    },
-    
     componentWillMount() {
+        const { intl } = this.props;
         const fieldsTitle = {
-            title: this.context.intl.formatMessage({id: "wizard.title", defaultMessage: "Title"}),
-            severity: this.context.intl.formatMessage({id: "wizard.severity", defaultMessage: "Severity"}),
-            description: this.context.intl.formatMessage({id: "wizard.fieldDescription", defaultMessage: "Description"}),
-            created: this.context.intl.formatMessage({id: "wizard.created", defaultMessage: "Created"}),
-            lastModified: this.context.intl.formatMessage({id: "wizard.lastModified", defaultMessage: "Last Modified"}),
-            user: this.context.intl.formatMessage({id: "wizard.user", defaultMessage: "User"}),
-            alerts: this.context.intl.formatMessage({id: "wizard.alerts", defaultMessage: "Alerts"}),
-            status: this.context.intl.formatMessage({id: "wizard.status", defaultMessage: "Status"}),
-            actions: this.context.intl.formatMessage({id: "wizard.actions", defaultMessage: "Actions"}),
-            rule: this.context.intl.formatMessage({id: "wizard.rule", defaultMessage: "Rule"})
+            title: intl.formatMessage({id: "wizard.title", defaultMessage: "Title"}),
+            severity: intl.formatMessage({id: "wizard.severity", defaultMessage: "Severity"}),
+            description: intl.formatMessage({id: "wizard.fieldDescription", defaultMessage: "Description"}),
+            created: intl.formatMessage({id: "wizard.created", defaultMessage: "Created"}),
+            lastModified: intl.formatMessage({id: "wizard.lastModified", defaultMessage: "Last Modified"}),
+            user: intl.formatMessage({id: "wizard.user", defaultMessage: "User"}),
+            alerts: intl.formatMessage({id: "wizard.alerts", defaultMessage: "Alerts"}),
+            status: intl.formatMessage({id: "wizard.status", defaultMessage: "Status"}),
+            actions: intl.formatMessage({id: "wizard.actions", defaultMessage: "Actions"}),
+            rule: intl.formatMessage({id: "wizard.rule", defaultMessage: "Rule"})
         };
         const messages = {
-            infoDelete: this.context.intl.formatMessage({id: "wizard.buttonInfoDelete", defaultMessage: "Delete this alert rule"}),
-            infoUpdate: this.context.intl.formatMessage({id: "wizard.buttonInfoUpdate", defaultMessage: "Edit this alert rule"}),
-            infoEnable: this.context.intl.formatMessage({id: "wizard.buttonInfoEnable", defaultMessage: "Enable this alert rule"}),
-            infoDisable: this.context.intl.formatMessage({id: "wizard.buttonInfoDisable", defaultMessage: "Disable this alert rule"}),
-            infoClone: this.context.intl.formatMessage({id: "wizard.buttonInfoClone", defaultMessage: "Clone this alert rule"}),
-            createAlert: this.context.intl.formatMessage({id: "wizard.createAlert", defaultMessage: "Create alert rule"}),
-            importAlert: this.context.intl.formatMessage({id: "wizard.importAlert", defaultMessage: "Import alert rules"}),
-            exportAlert: this.context.intl.formatMessage({id: "wizard.exportAlert",  defaultMessage :"Export alert rules"}),
-            confirmDeletion: this.context.intl.formatMessage({id: "wizard.confirmDeletion",  defaultMessage :"Do you really want to delete the alert rule"}),
-            confirmDisable: this.context.intl.formatMessage({id: "wizard.confirmDisable",  defaultMessage :"Do you really want to disable the alert rule"}),
+            infoDelete: intl.formatMessage({id: "wizard.buttonInfoDelete", defaultMessage: "Delete this alert rule"}),
+            infoUpdate: intl.formatMessage({id: "wizard.buttonInfoUpdate", defaultMessage: "Edit this alert rule"}),
+            infoEnable: intl.formatMessage({id: "wizard.buttonInfoEnable", defaultMessage: "Enable this alert rule"}),
+            infoDisable: intl.formatMessage({id: "wizard.buttonInfoDisable", defaultMessage: "Disable this alert rule"}),
+            infoClone: intl.formatMessage({id: "wizard.buttonInfoClone", defaultMessage: "Clone this alert rule"}),
+            createAlert: intl.formatMessage({id: "wizard.createAlert", defaultMessage: "Create alert rule"}),
+            importAlert: intl.formatMessage({id: "wizard.importAlert", defaultMessage: "Import alert rules"}),
+            exportAlert: intl.formatMessage({id: "wizard.exportAlert",  defaultMessage :"Export alert rules"}),
+            confirmDeletion: intl.formatMessage({id: "wizard.confirmDeletion",  defaultMessage :"Do you really want to delete the alert rule"}),
+            confirmDisable: intl.formatMessage({id: "wizard.confirmDisable",  defaultMessage :"Do you really want to disable the alert rule"}),
         };
         
         this.setState({fieldsTitle:fieldsTitle});
@@ -389,4 +387,4 @@ const AlertRuleList = createReactClass({
     },
 });
 
-export default AlertRuleList;
+export default injectIntl(AlertRuleList);

@@ -20,7 +20,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Button } from 'components/bootstrap';
-import { FormattedMessage } from 'react-intl';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import Routes from 'routing/Routes';
 
 const ButtonToEventDefintion = createReactClass({
@@ -30,12 +30,9 @@ const ButtonToEventDefintion = createReactClass({
         disabled: PropTypes.bool,
     },
 
-    contextTypes: {
-        intl: PropTypes.object.isRequired,
-    },
-
     componentWillMount() {
-        const tooltip = this.context.intl.formatMessage({id: "wizard.tooltipEventDefinition", defaultMessage: "Edit event definition for this alert rule"});
+        const { intl } = this.props;
+        const tooltip = intl.formatMessage({id: "wizard.tooltipEventDefinition", defaultMessage: "Edit event definition for this alert rule"});
         this.setState({tooltip:tooltip});
     },
 
@@ -50,4 +47,4 @@ const ButtonToEventDefintion = createReactClass({
     }
 });
 
-export default ButtonToEventDefintion;
+export default injectIntl(ButtonToEventDefintion);

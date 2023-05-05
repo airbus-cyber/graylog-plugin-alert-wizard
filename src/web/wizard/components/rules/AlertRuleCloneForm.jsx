@@ -17,7 +17,7 @@
 
 import React from 'react';
 import createReactClass from 'create-react-class';
-import {FormattedMessage} from 'react-intl';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 
 import BootstrapModalForm from 'components/bootstrap/BootstrapModalForm';
@@ -30,13 +30,9 @@ const AlertRuleCloneForm = createReactClass({
         onSubmit: PropTypes.func.isRequired,
     },
 
-    contextTypes: {
-        intl: PropTypes.object.isRequired,
-    },
-
     componentWillMount(){
         const messages = {
-            placeholderTitle: this.context.intl.formatMessage({id: "wizard.placeholderCloneTitle", defaultMessage: "A descriptive name of the new alert rule"}),
+            placeholderTitle: this.props.intl.formatMessage({id: "wizard.placeholderCloneTitle", defaultMessage: "A descriptive name of the new alert rule"}),
         };
         this.setState({messages: messages});
     },
@@ -89,4 +85,4 @@ const AlertRuleCloneForm = createReactClass({
     },
 });
 
-export default AlertRuleCloneForm;
+export default injectIntl(AlertRuleCloneForm);

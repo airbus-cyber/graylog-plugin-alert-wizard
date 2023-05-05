@@ -17,7 +17,7 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { LinkContainer } from 'react-router-bootstrap';
 import createReactClass from 'create-react-class';
 import DateTime from 'logic/datetimes/DateTime';
@@ -42,30 +42,27 @@ const AlertListDisplay = createReactClass({
         config: PropTypes.object.isRequired,
     },
 
-    contextTypes: {
-        intl: PropTypes.object.isRequired,
-    },
-
     componentWillMount() {
+        const { intl } = this.props;
         const fieldsTitle = {
-            title: this.context.intl.formatMessage({id: "wizard.title", defaultMessage: "Title"}),
-            description: this.context.intl.formatMessage({id: "wizard.fieldDescription", defaultMessage: "Description"}),
-            created: this.context.intl.formatMessage({id: "wizard.created", defaultMessage: "Created"}),
-            lastModified: this.context.intl.formatMessage({id: "wizard.lastModified", defaultMessage: "Last Modified"}),
-            user: this.context.intl.formatMessage({id: "wizard.user", defaultMessage: "User"}),
-            usage: this.context.intl.formatMessage({id: "wizard.usage", defaultMessage: "Usage"}),
-            lists: this.context.intl.formatMessage({id: "wizard.lists", defaultMessage: "Lists"}),
-            actions: this.context.intl.formatMessage({id: "wizard.actions", defaultMessage: "Actions"}),
+            title: intl.formatMessage({id: "wizard.title", defaultMessage: "Title"}),
+            description: intl.formatMessage({id: "wizard.fieldDescription", defaultMessage: "Description"}),
+            created: intl.formatMessage({id: "wizard.created", defaultMessage: "Created"}),
+            lastModified: intl.formatMessage({id: "wizard.lastModified", defaultMessage: "Last Modified"}),
+            user: intl.formatMessage({id: "wizard.user", defaultMessage: "User"}),
+            usage: intl.formatMessage({id: "wizard.usage", defaultMessage: "Usage"}),
+            lists: intl.formatMessage({id: "wizard.lists", defaultMessage: "Lists"}),
+            actions: intl.formatMessage({id: "wizard.actions", defaultMessage: "Actions"}),
         };
         const messages = {
-            infoDelete: this.context.intl.formatMessage({id: "wizard.buttonInfoDeleteList", defaultMessage: "Delete this alert list"}),
-            infoNoDelete: this.context.intl.formatMessage({id: "wizard.buttonInfoNoDeleteList", defaultMessage: "List used in alert rules"}),
-            infoUpdate: this.context.intl.formatMessage({id: "wizard.buttonInfoUpdateList", defaultMessage: "Edit this alert list"}),
-            infoClone: this.context.intl.formatMessage({id: "wizard.buttonInfoCloneList", defaultMessage: "Clone this alert list"}),
-            createAlertList: this.context.intl.formatMessage({id: "wizard.createAlertList", defaultMessage: "Create alert list"}),
-            importAlertList: this.context.intl.formatMessage({id: "wizard.importAlertList", defaultMessage: "Import alert list"}),
-            exportAlertList: this.context.intl.formatMessage({id: "wizard.exportAlertList",  defaultMessage :"Export alert list"}),
-            confirmDeletion: this.context.intl.formatMessage({id: "wizard.confirmDeletionList",  defaultMessage :"Do you really want to delete the alert list"}),
+            infoDelete: intl.formatMessage({id: "wizard.buttonInfoDeleteList", defaultMessage: "Delete this alert list"}),
+            infoNoDelete: intl.formatMessage({id: "wizard.buttonInfoNoDeleteList", defaultMessage: "List used in alert rules"}),
+            infoUpdate: intl.formatMessage({id: "wizard.buttonInfoUpdateList", defaultMessage: "Edit this alert list"}),
+            infoClone: intl.formatMessage({id: "wizard.buttonInfoCloneList", defaultMessage: "Clone this alert list"}),
+            createAlertList: intl.formatMessage({id: "wizard.createAlertList", defaultMessage: "Create alert list"}),
+            importAlertList: intl.formatMessage({id: "wizard.importAlertList", defaultMessage: "Import alert list"}),
+            exportAlertList: intl.formatMessage({id: "wizard.exportAlertList",  defaultMessage :"Export alert list"}),
+            confirmDeletion: intl.formatMessage({id: "wizard.confirmDeletionList",  defaultMessage :"Do you really want to delete the alert list"}),
         };
 
         this.setState({fieldsTitle:fieldsTitle});
@@ -272,4 +269,4 @@ const AlertListDisplay = createReactClass({
     },
 });
 
-export default AlertListDisplay;
+export default injectIntl(AlertListDisplay);

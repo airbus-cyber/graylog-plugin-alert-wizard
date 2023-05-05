@@ -41,10 +41,6 @@ const CreateListFormInput = createReactClass({
         onSave: PropTypes.func.isRequired,
     },
 
-    contextTypes: {
-        intl: PropTypes.object.isRequired,
-    },
-
     getDefaultProps() {
         return {
             list: INIT_LIST

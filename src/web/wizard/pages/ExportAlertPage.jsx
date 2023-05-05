@@ -17,7 +17,7 @@
 
 import React from 'react';
 import createReactClass from 'create-react-class';
-import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
+import { IntlProvider, FormattedMessage } from 'react-intl';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Row, Col, Button } from 'components/bootstrap';
 import { DocumentTitle, PageHeader } from 'components/common';
@@ -32,9 +32,7 @@ import AlertRuleSelectionList from 'wizard/components/rules/AlertRuleSelectionLi
 import RulesImportExport from 'wizard/logic/RulesImportExport'
 import { EventNotificationsActions } from 'stores/event-notifications/EventNotificationsStore';
 
-let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
-addLocaleData(frLocaleData);
 
 const messages = {
     'fr': messages_fr

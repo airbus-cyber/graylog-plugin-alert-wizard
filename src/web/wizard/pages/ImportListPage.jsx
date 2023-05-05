@@ -18,16 +18,14 @@
 import React from 'react';
 import createReactClass from 'create-react-class';
 import Routes from 'routing/Routes';
-import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
+import { IntlProvider, FormattedMessage } from 'react-intl';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Row, Col, Button } from 'components/bootstrap';
 import messages_fr from 'translations/fr.json';
 import AlertListActions from 'wizard/actions/AlertListActions';
 import { DocumentTitle, PageHeader } from 'components/common';
 
-let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
-addLocaleData(frLocaleData);
 
 const messages = {
     'fr': messages_fr

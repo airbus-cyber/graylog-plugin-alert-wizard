@@ -25,14 +25,12 @@ import { DocumentTitle, PageHeader, Spinner } from 'components/common';
 import CreateListFormInput from 'wizard/components/lists/CreateListFormInput';
 import AlertListActions from 'wizard/actions/AlertListActions';
 import Routes from 'routing/Routes';
-import { addLocaleData, FormattedMessage, IntlProvider } from 'react-intl';
+import { FormattedMessage, IntlProvider } from 'react-intl';
 import messages_fr from 'translations/fr.json';
 import withParams from 'routing/withParams';
 import { CurrentUserStore } from 'stores/users/CurrentUserStore';
 
-let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
-addLocaleData(frLocaleData);
 
 const messages = {
     'fr': messages_fr

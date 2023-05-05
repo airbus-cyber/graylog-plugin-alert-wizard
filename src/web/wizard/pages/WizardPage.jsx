@@ -24,14 +24,12 @@ import { Col, Row } from 'react-bootstrap';
 import { IfPermitted, PageHeader, DocumentTitle, Spinner } from 'components/common';
 import AlertRuleList from 'wizard/components/rules/AlertRuleList';
 import ManageSettings from 'wizard/components/ManageSettings';
-import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
+import { IntlProvider, FormattedMessage } from 'react-intl';
 import packageJson from '../../../../package.json';
 import messages_fr from 'translations/fr.json';
 import WizardConfigurationResource from 'wizard/resources/WizardConfigurationResource';
 
-let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
-addLocaleData(frLocaleData);
 
 const messages = {
     'fr': messages_fr

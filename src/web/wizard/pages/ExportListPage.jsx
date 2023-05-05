@@ -19,7 +19,7 @@
 // * views/components/views/MissingRequirements.tsx
 import React from 'react';
 import createReactClass from 'create-react-class';
-import { addLocaleData, IntlProvider, FormattedMessage } from 'react-intl';
+import { IntlProvider, FormattedMessage } from 'react-intl';
 import { LinkContainer } from 'react-router-bootstrap';
 import messages_fr from 'translations/fr.json';
 import { Row, Col, Button } from 'components/bootstrap';
@@ -31,9 +31,7 @@ import AlertListActions from 'wizard/actions/AlertListActions';
 import FileSaver from 'wizard/logic/FileSaver';
 import IconDownload from 'wizard/components/icons/Download';
 
-let frLocaleData = require('react-intl/locale-data/fr');
 const language = navigator.language.split(/[-_]/)[0];
-addLocaleData(frLocaleData);
 
 const messages = {
     'fr': messages_fr
