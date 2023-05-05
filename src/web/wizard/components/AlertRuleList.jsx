@@ -19,23 +19,25 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import Reflux from 'reflux';
 import createReactClass from 'create-react-class';
-import AlertRuleStore from 'wizard/stores/AlertRuleStore';
-import AlertRuleActions from 'wizard/actions/AlertRuleActions';
+import { FormattedMessage } from 'react-intl';
+import { LinkContainer } from 'react-router-bootstrap';
 // TODO remove imports from react-bootstrap everywhere, and use only components/bootstrap?
 import { Tooltip } from 'react-bootstrap';
+
 import { DataTable, IfPermitted, OverlayElement, Spinner, Timestamp } from 'components/common';
 import { Button } from 'components/bootstrap';
 import PermissionsMixin from 'util/PermissionsMixin';
 import Routes from 'routing/Routes';
-import { LinkContainer } from 'react-router-bootstrap';
-import AlertForm from './AlertForm';
 import DateTime from 'logic/datetimes/DateTime';
-import { FormattedMessage } from 'react-intl';
+import StreamsStore from 'stores/streams/StreamsStore';
+
+import AlertRuleStore from 'wizard/stores/AlertRuleStore';
+import AlertRuleActions from 'wizard/actions/AlertRuleActions';
+import EventDefinitionResources from 'wizard/resources/EventDefinitionResource';
+import AlertForm from './AlertForm';
 import AlertRuleText from './AlertRuleText'
 import ButtonToEventDefinition from './buttons/ButtonToEventDefinition';
 import ButtonToNotification from './buttons/ButtonToNotification';
-import StreamsStore from 'stores/streams/StreamsStore';
-import EventDefinitionResources from 'wizard/resources/EventDefinitionResource';
 
 
 const AlertRuleList = createReactClass({
