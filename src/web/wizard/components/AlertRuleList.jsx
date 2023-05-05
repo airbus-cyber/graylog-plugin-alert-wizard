@@ -190,23 +190,21 @@ const AlertRuleList = createReactClass({
     },
 
     _alertInfoFormatter(alert) {
-        let alertValid;
-        let colorValid;
-        // TODO rename ID into Identifier
-        let streamID;
+        let alertValid = true;
+        let textColor = '';
         if (alert.condition_parameters === null || alert.stream === null) {
             alertValid = false;
-            colorValid = "#F7230C";
-            streamID = '';
-        } else {
-            alertValid = true;
-            colorValid = "#000000";
-            streamID = alert.stream.id;
-            if (alert.disabled) {
-                colorValid = "#ABABAB";
-            }
+            textColor = 'text-danger';
+        } else if (alert.disabled) {
+            textColor = 'text-muted';
         }
-        
+
+        // TODO rename ID into Identifier
+        // TODO why is the default case '' for streamID and null for streamId2?
+        let streamID = '';
+        if (alert.stream) {
+            streamID = alert.stream.id;
+        }
         let streamId2 = null;
         if (alert.second_stream) {
             streamId2 = alert.second_stream.id;
@@ -330,9 +328,8 @@ const AlertRuleList = createReactClass({
                 }
             }
         });
-
         return (
-            <tr key={alert.title} style={{color:colorValid}}>
+            <tr key={alert.title} className={textColor} >
                 {tabFields}
                 <td style={{whiteSpace: 'nowrap'}}>{actions}</td>
             </tr>
