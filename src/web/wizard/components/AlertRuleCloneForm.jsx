@@ -35,8 +35,6 @@ const AlertRuleCloneForm = createReactClass({
         intl: PropTypes.object.isRequired,
     },
 
-    mixins: [LinkedStateMixin],
-
     componentWillMount(){
         const messages = {
             placeholderTitle: this.context.intl.formatMessage({id: "wizard.placeholderCloneTitle", defaultMessage: "A descriptive name of the new alert rule"}),
