@@ -69,6 +69,8 @@ const AlertRuleCloneForm = createReactClass({
     },
 
     render() {
+        // TODO should try to remove the necessity to use ref, but I can't seem to make BootstrapModalForm property show work...
+        //      for functional components, see URLWhiteListFormModal
         return (
             <BootstrapModalForm ref="modal"
                                 title={<FormattedMessage id= "wizard.cloneAlertRule" defaultMessage= 'Cloning Alert Rule "{title}"' values={{title: this.state.origTitle }} />}
@@ -85,4 +87,4 @@ const AlertRuleCloneForm = createReactClass({
     },
 });
 
-export default injectIntl(AlertRuleCloneForm);
+export default injectIntl(AlertRuleCloneForm, {forwardRef: true});

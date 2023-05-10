@@ -77,8 +77,7 @@ const AlertRuleList = createReactClass({
             confirmDisable: intl.formatMessage({id: "wizard.confirmDisable",  defaultMessage :"Do you really want to disable the alert rule"}),
         };
         
-        this.setState({fieldsTitle:fieldsTitle});
-        this.setState({messages:messages});
+        this.setState({fieldsTitle: fieldsTitle, messages: messages});
         this.list();
     },
     list() {
@@ -142,7 +141,7 @@ const AlertRuleList = createReactClass({
 
     _onClone(name) {
         return () => {
-            this.refs.cloneForm.open(name);
+            this.refs.cloneModal.open(name);
         }
     },
 
@@ -378,11 +377,10 @@ const AlertRuleList = createReactClass({
                                dataRowFormatter={this._alertInfoFormatter}
                                filterLabel={<FormattedMessage id ="wizard.filter" defaultMessage="Filter alert rules" />}
                                filterKeys={filterKeys} />
-                    <AlertRuleCloneForm ref="cloneForm" onSubmit={this._onCloneSubmit} />
+                    <AlertRuleCloneForm ref="cloneModal" onSubmit={this._onCloneSubmit} />
                 </div>
             );
         }
-
         return <Spinner/>
     },
 });
