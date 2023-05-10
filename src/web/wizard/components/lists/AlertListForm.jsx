@@ -84,4 +84,4 @@ const AlertListForm = createReactClass({
     },
 });
 
-export default injectIntl(AlertListForm);
+export default injectIntl(AlertListForm, {forwardRef: true});
