@@ -42,6 +42,7 @@ const AlertListDisplay = createReactClass({
         config: PropTypes.object.isRequired,
     },
 
+    // TODO replace deprecated componentWillMount into a combination of getInitialState and componentDidMount
     componentWillMount() {
         const { intl } = this.props;
         const fieldsTitle = {

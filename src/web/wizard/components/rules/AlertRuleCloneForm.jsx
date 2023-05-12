@@ -30,6 +30,7 @@ const AlertRuleCloneForm = createReactClass({
         onSubmit: PropTypes.func.isRequired,
     },
 
+    // TODO replace deprecated componentWillMount into a combination of getInitialState and componentDidMount
     componentWillMount(){
         const messages = {
             placeholderTitle: this.props.intl.formatMessage({id: "wizard.placeholderCloneTitle", defaultMessage: "A descriptive name of the new alert rule"}),

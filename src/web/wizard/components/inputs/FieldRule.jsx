@@ -58,6 +58,8 @@ const FieldRule = createReactClass({
             this.setState({rule: this.props.rule})
         }
     },
+
+    // TODO replace deprecated componentWillMount into a combination of getInitialState and componentDidMount
     componentWillMount() {
         const { intl } = this.props;
         const messages = {

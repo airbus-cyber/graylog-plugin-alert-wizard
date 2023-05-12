@@ -55,9 +55,12 @@ const FieldsInput = createReactClass({
             stream: STREAM,
         };
     },
+
     componentDidMount() {
         IndexSetsActions.list(false);
     },
+
+    // TODO replace deprecated componentWillMount into a combination of getInitialState and componentDidMount
     componentWillMount() {
         const { intl } = this.props;
         const messages = {

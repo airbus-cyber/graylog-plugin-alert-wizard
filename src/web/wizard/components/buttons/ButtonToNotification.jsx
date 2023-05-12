@@ -31,6 +31,7 @@ const ButtonToNotification = createReactClass({
         disabled: PropTypes.bool,
     },
 
+    // TODO replace deprecated componentWillMount into a combination of getInitialState and componentDidMount
     componentWillMount() {
         const { intl } = this.props;
         const tooltip = intl.formatMessage({id: "wizard.tooltipNotification", defaultMessage: "Edit notification for this alert rule"});

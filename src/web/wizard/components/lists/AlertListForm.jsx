@@ -29,6 +29,7 @@ const AlertListForm = createReactClass({
         onSubmit: PropTypes.func.isRequired,
     },
 
+    // TODO replace deprecated componentWillMount into a combination of getInitialState and componentDidMount
     componentWillMount(){
         const messages = {
             placeholderTitle: this.props.intl.formatMessage({id: "wizard.placeholderCloneTitleList", defaultMessage: "A descriptive name of the new alert list"}),

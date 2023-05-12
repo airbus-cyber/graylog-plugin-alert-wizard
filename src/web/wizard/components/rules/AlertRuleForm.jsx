@@ -47,6 +47,7 @@ const AlertRuleForm = createReactClass({
         onSave: PropTypes.func.isRequired
     },
 
+    // TODO replace deprecated componentWillMount into a combination of getInitialState and componentDidMount
     componentWillMount() {
         const { intl } = this.props;
         const messages = {
