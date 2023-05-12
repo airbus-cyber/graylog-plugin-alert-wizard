@@ -50,7 +50,7 @@ const AlertRuleList = createReactClass({
         field_order: PropTypes.array.isRequired,
     },
 
-    componentWillMount() {
+    getInitialState() {
         const { intl } = this.props;
         const fieldsTitle = {
             title: intl.formatMessage({id: "wizard.title", defaultMessage: "Title"}),
@@ -76,18 +76,27 @@ const AlertRuleList = createReactClass({
             confirmDeletion: intl.formatMessage({id: "wizard.confirmDeletion",  defaultMessage :"Do you really want to delete the alert rule"}),
             confirmDisable: intl.formatMessage({id: "wizard.confirmDisable",  defaultMessage :"Do you really want to disable the alert rule"}),
         };
-        
-        this.setState({fieldsTitle: fieldsTitle, messages: messages});
+
+        return {
+            fieldsTitle: fieldsTitle,
+            messages: messages
+        };
+    },
+
+    componentDidMount() {
         this.list();
     },
+
     list() {
         AlertRuleActions.listWithData().then(newAlerts => {
             this.setState({alerts: newAlerts});
         });
     },
+
     deleteAlert(name) {
         AlertRuleActions.deleteByName(name);
     },
+
     _deleteAlertFunction(name) {
         return () => {
             if (window.confirm(`${this.state.messages.confirmDeletion} "${name}" ?`)) {
@@ -95,6 +104,7 @@ const AlertRuleList = createReactClass({
             }
         };
     },
+
     _onResume(eventDefinitionIdentifier, stream, secondEventDefinitionIdentifier, stream2) {
         return async () => {
             const promises = [];
@@ -122,6 +132,7 @@ const AlertRuleList = createReactClass({
             await Promise.all(promises);
         }
     },
+
     _headerCellFormatter(header) {
         let formattedHeaderCell;
 
@@ -184,6 +195,7 @@ const AlertRuleList = createReactClass({
             {value: 'Rule', label: this.state.fieldsTitle.rule},
         ];
     },
+
     _getFieldName(field) {
         return this._availableFieldName().filter((t) => t.value === field)[0].label;
     },
