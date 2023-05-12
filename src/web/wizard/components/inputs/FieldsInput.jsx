@@ -204,6 +204,7 @@ const FieldsInput = createReactClass({
             this.setState({matchData: undefined});
         }
     },
+    // TODO factor this copy-pasted code (see FieldRule)
     _getMatchDataColor() {
         return (this.state.matchData.matches ? '#dff0d8' : '#f2dede');
     },
