@@ -136,8 +136,6 @@ const AlertListDisplay = createReactClass({
     },
 
     _listInfoFormatter(list) {
-
-
         const deleteAction = (
             <IfPermitted permissions="wizard_alerts_rules:delete">
                 <button id="delete-list" type="button" className="btn btn-md btn-primary" disabled={list.usage > 0}
@@ -211,7 +209,7 @@ const AlertListDisplay = createReactClass({
         });
 
         return (
-            <tr key={list.title} style={{color:"#000000"}}>
+            <tr key={list.title}>
                 {tabFields}
                 <td style={{whiteSpace: 'nowrap'}}>{actions}</td>
             </tr>
