@@ -55,6 +55,7 @@ const CountCondition = createReactClass({
     },
     
     render() {
+        // TODO should factor this code block that seemed to have been copy-pasted
         let time;
         let time_type;
         if (this.props.alert.condition_parameters.time >= 1440) {
