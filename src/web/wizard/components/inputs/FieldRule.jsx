@@ -181,7 +181,7 @@ const FieldRule = createReactClass({
 
     render() {
         const isMatchDataPesent = (this.props.matchData && this.props.matchData.rules.hasOwnProperty(this.props.rule.id));
-        const color = (isMatchDataPesent ? this._getMatchDataColor() : '#FFFFFF');
+        const color = (isMatchDataPesent ? this._getMatchDataColor() : '');
 
         const valueBox = ((this.state.rule.type !== 5 && this.state.rule.type !== -5 && this.state.rule.type !== 7 && this.state.rule.type !== -7) ?
             <Input style={{
