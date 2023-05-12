@@ -42,23 +42,3 @@ ButtonToEventDefinition.propTypes = {
 };
 
 export default ButtonToEventDefinition;
-
-/*
-const ButtonToEventDefinition = createReactClass({
-
-
-    render() {
-        const { intl } = this.props;
-        const tooltip = intl.formatMessage({id: "wizard.tooltipEventDefinition", defaultMessage: "Edit event definition for this alert rule"});
-        return (
-            <LinkContainer disabled={this.props.disabled} to={Routes.ALERTS.DEFINITIONS.edit(this.props.target)} >
-                <Button bsStyle="info" title={tooltip} >
-                    <FormattedMessage id="wizard.eventDefinition" defaultMessage="Event definition" />
-                </Button>
-            </LinkContainer>
-        );
-    }
-});
-
-export default injectIntl(ButtonToEventDefinition);
-*/
