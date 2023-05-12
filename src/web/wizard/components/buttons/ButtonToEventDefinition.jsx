@@ -20,27 +20,39 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Button } from 'components/bootstrap';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { useIntl, FormattedMessage } from 'react-intl';
 import Routes from 'routing/Routes';
 
-const ButtonToEventDefintion = createReactClass({
+const ButtonToEventDefinition = ({target, disabled}) => {
+    const intl = useIntl();
+    const tooltip = intl.formatMessage({id: "wizard.tooltipEventDefinition", defaultMessage: "Edit event definition for this alert rule"});
 
-    propTypes: {
-        target: PropTypes.string.isRequired,
-        disabled: PropTypes.bool,
-    },
+    return (
+        <LinkContainer disabled={disabled} to={Routes.ALERTS.DEFINITIONS.edit(target)} >
+            <Button bsStyle="info" title={tooltip} >
+                <FormattedMessage id="wizard.eventDefinition" defaultMessage="Event definition" />
+            </Button>
+        </LinkContainer>
+    );
+}
 
-    // TODO replace deprecated componentWillMount into a combination of getInitialState and componentDidMount
-    componentWillMount() {
-        const { intl } = this.props;
-        const tooltip = intl.formatMessage({id: "wizard.tooltipEventDefinition", defaultMessage: "Edit event definition for this alert rule"});
-        this.setState({tooltip:tooltip});
-    },
+ButtonToEventDefinition.propTypes = {
+    target: PropTypes.string.isRequired,
+    disabled: PropTypes.bool,
+};
+
+export default ButtonToEventDefinition;
+
+/*
+const ButtonToEventDefinition = createReactClass({
+
 
     render() {
+        const { intl } = this.props;
+        const tooltip = intl.formatMessage({id: "wizard.tooltipEventDefinition", defaultMessage: "Edit event definition for this alert rule"});
         return (
             <LinkContainer disabled={this.props.disabled} to={Routes.ALERTS.DEFINITIONS.edit(this.props.target)} >
-                <Button bsStyle="info" title={this.state.tooltip} >
+                <Button bsStyle="info" title={tooltip} >
                     <FormattedMessage id="wizard.eventDefinition" defaultMessage="Event definition" />
                 </Button>
             </LinkContainer>
@@ -48,4 +60,5 @@ const ButtonToEventDefintion = createReactClass({
     }
 });
 
-export default injectIntl(ButtonToEventDefintion);
+export default injectIntl(ButtonToEventDefinition);
+*/

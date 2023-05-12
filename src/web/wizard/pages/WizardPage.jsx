@@ -85,8 +85,6 @@ const WizardPage = () => {
             </DocumentTitle>
         </IntlProvider>
     );
-
-
 }
 
 export default WizardPage;
