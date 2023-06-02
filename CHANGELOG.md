@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 ### Bug Fixes
 * After deleting the stream associated with a rule, the list of rules would not load anymore ([issue #105](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/105))
 * The backlog size value set in the configuration is now taken into account in the event definition ([issue #40](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/40))
+* Several display bugs in the dark mode fixed ([issue #59](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/59))
 ### Changes
 * POST plugins/com.airbus_cyber_security.graylog.wizard/alerts, field `description` should be not null (use an empty string, if there is no description)
 
