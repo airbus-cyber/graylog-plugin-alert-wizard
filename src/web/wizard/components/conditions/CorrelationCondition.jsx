@@ -15,7 +15,6 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-
 import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
@@ -23,18 +22,20 @@ import ObjectUtils from 'util/ObjectUtils';
 // TODO why are we not using the Button from components/bootstrap like elsewhere?
 import { Button } from 'react-bootstrap';
 import { FormattedMessage } from 'react-intl';
+import { Row, Col } from 'components/bootstrap';
 import FieldsInput from 'wizard/components/inputs/FieldsInput';
 import NumberInput from 'wizard/components/inputs/NumberInput';
 import TimeRangeInput from 'wizard/components/inputs/TimeRangeInput';
 import Description from 'wizard/components/inputs/Description';
 import GroupByInput from 'wizard/components/inputs/GroupByInput';
-import { Row, Col } from 'components/bootstrap';
-import IconArrowsV from "wizard/components/icons/ArrowsV";
+import IconArrowsV from 'wizard/components/icons/ArrowsV';
+import HighlightedDiv from 'wizard/components/widgets/HighlightedDiv';
 
 const STREAM = {
-        matching_type: '',
-        field_rule: [{field: '', type: '', value: ''}],
-    };
+    matching_type: '',
+    field_rule: [{field: '', type: '', value: ''}],
+};
+
 
 const CorrelationCondition = createReactClass({
     displayName: 'CorrelationCondition',
@@ -126,25 +127,25 @@ const CorrelationCondition = createReactClass({
         } else if (this.props.alert.condition_type === 'AND') {
             label = <Row style={{ marginBottom: '0px' }}><Col md={2}></Col><Col md={10}><label><FormattedMessage id= "wizard.and" defaultMessage= "AND" /></label></Col></Row>;
         }
-        
+
         return (
             <>
-                <div style={{ backgroundColor: '#f6f6f6', padding: '10px' }}>
+                <HighlightedDiv>
                     <FieldsInput stream={this.state.alert.stream} onSaveStream={this._handleChangeStream} message={this.props.message}
                                     matchData={this.props.matchData} />
                     <br/>
                     <NumberInput onUpdate={this._handleChangeCondition} threshold={this.state.alert.condition_parameters.threshold}
                                     threshold_type={this.state.alert.condition_parameters.threshold_type} />
-                </div>
+                </HighlightedDiv>
                 <br/>
                 {label}
                 <br/>
-                <div style={{ backgroundColor: '#f6f6f6', padding: '10px' }}>
+                <HighlightedDiv>
                     <FieldsInput stream={this.state.alert.second_stream} onSaveStream={this._handleChangeSecondStream} message={this.props.message} />
                     <br/>
                     <NumberInput onUpdate={this._handleChangeAdditionalNbrCond} threshold={this.state.alert.condition_parameters.additional_threshold}
                                     threshold_type={this.state.alert.condition_parameters.additional_threshold_type} />
-                </div>
+                </HighlightedDiv>
                 <br/>
                 <TimeRangeInput onUpdate={this._handleChangeCondition} time={time.toString()} time_type={time_type.toString()} />
                 <br/>
