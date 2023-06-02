@@ -36,8 +36,8 @@ const NumberInput = createReactClass({
     },
     getInitialState() {
         return {
-            threshold_type:this.props.threshold_type,
-            threshold:this.props.threshold,
+            threshold_type: this.props.threshold_type,
+            threshold: this.props.threshold,
         };
     },
     // TODO remove componentWillReceiveProps
@@ -52,8 +52,8 @@ const NumberInput = createReactClass({
     // TODO should factor constants with ManageSettings
     _availableThresholdTypes() {
         return [
-            {value: '>', label: <FormattedMessage id= "wizard.more" defaultMessage= "more than" />},
-            {value: '<', label: <FormattedMessage id= "wizard.less" defaultMessage= "less than" />},
+            {value: '>', label: <FormattedMessage id="wizard.more" defaultMessage="more than" />},
+            {value: '<', label: <FormattedMessage id="wizard.less" defaultMessage="less than" />},
         ];
     },
     _onThresholdTypeSelect(id) {
@@ -72,10 +72,10 @@ const NumberInput = createReactClass({
         return (
             <Row>
                 <Col md={2} style={{ marginTop: 5, marginBottom: 0 }}>
-                    <label className="pull-right"><FormattedMessage id= "wizard.NumberInput" defaultMessage= "Count Condition" /></label>
+                    <label className="pull-right"><FormattedMessage id="wizard.NumberInput" defaultMessage="Count Condition" /></label>
                 </Col>
                 <Col md={10}>
-                    <label><FormattedMessage id= "wizard.thereMustBe" defaultMessage= "There must be " /></label>
+                    <label><FormattedMessage id="wizard.thereMustBe" defaultMessage="There must be " /></label>
                     <Input ref="threshold_type" id="threshold_type" name="threshold_type" required>
                         <div style={{width:'150px'}}>
                         <Select
@@ -85,7 +85,7 @@ const NumberInput = createReactClass({
                             options={this._availableThresholdTypes()}
                             matchProp="value"
                             onChange={this._onThresholdTypeSelect}
-                            placeholder={<FormattedMessage id= "wizard.select" defaultMessage= "Select..." />}
+                            placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..." />}
                         />
                         </div>
                     </Input>
@@ -93,7 +93,7 @@ const NumberInput = createReactClass({
                            value={this.state.threshold}
                            style={{borderTopLeftRadius: '0px', borderBottomLeftRadius: '0px', height:'36px', width:'100px'}} />
                     <label>&nbsp; </label>
-                    <label><FormattedMessage id= "wizard.messages" defaultMessage= "messages" /></label>
+                    <label><FormattedMessage id="wizard.messages" defaultMessage="messages" /></label>
                     
                 </Col>
             </Row>
