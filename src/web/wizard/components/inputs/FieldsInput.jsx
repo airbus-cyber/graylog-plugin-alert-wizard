@@ -34,7 +34,7 @@ import IconAdd from "wizard/components/icons/Add";
 import StreamsStore from 'stores/streams/StreamsStore';
 import { IndexSetsActions, IndexSetsStore } from 'stores/indices/IndexSetsStore';
 
-// TODO should move this module into another namespace: it is not really a unitary input
+// TODO should move this module into another namespace: it is not really a unitary input (maybe widgets)
 const STREAM = {
     matching_type: '',
     field_rule: [{field: '', type: '', value: ''}],
@@ -90,8 +90,8 @@ const FieldsInput = createReactClass({
     },
     _availableMatchingType() {
         return [
-            {value: 'AND', label: <FormattedMessage id= "wizard.all" defaultMessage= "all" />},
-            {value: 'OR', label: <FormattedMessage id= "wizard.atLeastOne" defaultMessage= "at least one" />},
+            {value: 'AND', label: <FormattedMessage id="wizard.all" defaultMessage="all" />},
+            {value: 'OR', label: <FormattedMessage id="wizard.atLeastOne" defaultMessage="at least one" />},
         ];
     },
     _onMatchingTypeSelect(id) {
@@ -236,10 +236,10 @@ const FieldsInput = createReactClass({
         return (
         <Row>
             <Col md={2} style={{ marginTop: 5, marginBottom: 0 }}>
-                <label className="pull-right" ><FormattedMessage id= "wizard.fieldsCondition" defaultMessage= "Fields Condition" /></label>
+                <label className="pull-right" ><FormattedMessage id="wizard.fieldsCondition" defaultMessage="Fields Condition" /></label>
             </Col>
             <Col md={10}>
-                <label><FormattedMessage id= "wizard.messagesMatch" defaultMessage= "Messages must match" /></label>
+                <label><FormattedMessage id="wizard.messagesMatch" defaultMessage="Messages must match" /></label>
                 <Input ref="matching_type" id="matching_type" name="matching_type" required>
                     <div style={{width:'150px'}}>
                     <Select style={{backgroundColor: color}}
@@ -250,12 +250,12 @@ const FieldsInput = createReactClass({
                         options={this._availableMatchingType()}
                         matchProp="value"
                         onChange={this._onMatchingTypeSelect}
-                        placeholder={<FormattedMessage id= "wizard.select" defaultMessage= "Select..." />}
+                        placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..." />}
                     />
                     </div>
                 </Input>
                 <label>&nbsp; </label>
-                <label><FormattedMessage id= "wizard.followingRules" defaultMessage= "of the following rules:" /></label>
+                <label><FormattedMessage id="wizard.followingRules" defaultMessage="of the following rules:" /></label>
                 {' '}
                 <Button disabled={!this.props.message} onClick={this._checkFieldsCondition} bsStyle="info" title={this.state.messages.tryFieldsCondition} style={{marginLeft: '10em'}}>
                     <FormattedMessage id ="wizard.try" defaultMessage="Try" />
