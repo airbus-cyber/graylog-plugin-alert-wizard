@@ -19,6 +19,7 @@ import styled, { css } from 'styled-components';
 
 // sources of inspiration for this code:
 // * views/components/widgets/MessageTable.tsx
+// * theme/docs/ThemeProvider.md
 const HighlightedDiv = styled.div(({ theme }) => css`
     background-color: ${theme.colors.gray[90]};
     color: ${theme.utils.readableColor(theme.colors.gray[90])};
