@@ -40,15 +40,6 @@ const NumberInput = createReactClass({
             threshold: this.props.threshold,
         };
     },
-    // TODO remove componentWillReceiveProps
-    componentWillReceiveProps(nextProps) {
-        if(nextProps.threshold !== this.props.threshold){
-            this.setState({threshold: nextProps.threshold});
-        }
-        if(nextProps.threshold_type !== this.props.threshold_type){
-            this.setState({threshold_type: nextProps.threshold_type});
-        }
-    },
     // TODO should factor constants with ManageSettings
     _availableThresholdTypes() {
         return [
