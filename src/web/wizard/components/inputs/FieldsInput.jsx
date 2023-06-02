@@ -34,6 +34,7 @@ import IconAdd from "wizard/components/icons/Add";
 import StreamsStore from 'stores/streams/StreamsStore';
 import { IndexSetsActions, IndexSetsStore } from 'stores/indices/IndexSetsStore';
 
+// TODO should move this module into another namespace: it is not really a unitary input
 const STREAM = {
     matching_type: '',
     field_rule: [{field: '', type: '', value: ''}],
