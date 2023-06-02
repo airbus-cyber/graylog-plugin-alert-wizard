@@ -187,11 +187,11 @@ const FieldRule = createReactClass({
 
         const valueBox = ((this.state.rule.type !== 5 && this.state.rule.type !== -5 && this.state.rule.type !== 7 && this.state.rule.type !== -7) ?
             <Input style={{
-                backgroundColor: color,
-                borderTopLeftRadius: '0px',
-                borderBottomLeftRadius: '0px',
-                height: '36px'
-            }}
+                    backgroundColor: color,
+                    borderTopLeftRadius: '0px',
+                    borderBottomLeftRadius: '0px',
+                    height: '36px'
+                }}
                    id="value" name="value" type="text"
                    onChange={this._onValueChanged("value")} value={this.state.rule.value}/>
             : (this.state.rule.type === 7 || this.state.rule.type === -7) ?
