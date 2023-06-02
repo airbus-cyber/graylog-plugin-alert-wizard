@@ -15,7 +15,6 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-
 import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
@@ -41,6 +40,7 @@ const NumberInput = createReactClass({
             threshold:this.props.threshold,
         };
     },
+    // TODO remove componentWillReceiveProps
     componentWillReceiveProps(nextProps) {
         if(nextProps.threshold !== this.props.threshold){
             this.setState({threshold: nextProps.threshold});

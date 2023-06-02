@@ -70,6 +70,7 @@ const FieldsInput = createReactClass({
             };
         this.setState({messages:messages});
     },
+    // TODO remove componentWillReceiveProps
     componentWillReceiveProps(nextProps) {
         if (!_.isEqual(nextProps.matchData, this.props.matchData)) {
             this.setState({matchData: nextProps.matchData});

@@ -47,6 +47,7 @@ const ManageSettings = createReactClass({
         };
     },
     
+    // TODO remove componentWillReceiveProps
     componentWillReceiveProps(nextProps){
         this.setState({config:nextProps.config});
     },

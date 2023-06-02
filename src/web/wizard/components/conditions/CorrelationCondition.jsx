@@ -49,6 +49,8 @@ const CorrelationCondition = createReactClass({
             alert: ObjectUtils.clone(this.props.alert),
         };
     },
+
+    // TODO remove componentWillReceiveProps
     componentWillReceiveProps(nextProps) {
         if (nextProps.alert !== this.props.alert) {
             this.setState({alert: nextProps.alert});
