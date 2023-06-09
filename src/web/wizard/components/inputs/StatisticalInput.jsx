@@ -26,6 +26,18 @@ import ObjectUtils from 'util/ObjectUtils';
 
 import withFormattedFields from './withFormattedFields';
 
+export const AVAILABLE_AGGREGATION_TYPES = [
+    {value: 'AVG', label: <FormattedMessage id="wizard.meanValue" defaultMessage="average value" />},
+    {value: 'STDDEV', label: <FormattedMessage id="wizard.standardDeviation" defaultMessage="standard deviation" />},
+    {value: 'MIN', label: <FormattedMessage id="wizard.minValue" defaultMessage="min value" />},
+    {value: 'MAX', label: <FormattedMessage id="wizard.maxValue" defaultMessage="max value" />},
+    {value: 'SUM', label: <FormattedMessage id="wizard.sum" defaultMessage="sum" />},
+    {value: 'CARD', label: <FormattedMessage id="wizard.card" defaultMessage="cardinality" />},
+    {value: 'COUNT', label: <FormattedMessage id="wizard.count" defaultMessage="count" />},
+    {value: 'SUMOFSQUARES', label: <FormattedMessage id="wizard.sum" defaultMessage="sum of squares" />},
+    {value: 'VARIANCE', label: <FormattedMessage id="wizard.variance" defaultMessage="variance" />},
+];
+
 const StatisticalInput = createReactClass({
     displayName: 'StatisticalInput',
 
@@ -42,30 +54,18 @@ const StatisticalInput = createReactClass({
             threshold_type: this.props.threshold_type,
         };
     },
-    _availableAggregationTypes() {
-        return [
-            {value: 'AVG', label: <FormattedMessage id= "wizard.meanValue" defaultMessage= "average value" />},
-            {value: 'STDDEV', label: <FormattedMessage id= "wizard.standardDeviation" defaultMessage= "standard deviation" />},
-            {value: 'MIN', label: <FormattedMessage id= "wizard.minValue" defaultMessage= "min value" />},
-            {value: 'MAX', label: <FormattedMessage id= "wizard.maxValue" defaultMessage= "max value" />},
-            {value: 'SUM', label: <FormattedMessage id= "wizard.sum" defaultMessage= "sum" />},
-            {value: 'CARD', label: <FormattedMessage id= "wizard.card" defaultMessage= "cardinality" />},
-            {value: 'COUNT', label: <FormattedMessage id= "wizard.count" defaultMessage= "count" />},
-            {value: 'SUMOFSQUARES', label: <FormattedMessage id= "wizard.sum" defaultMessage= "sum of squares" />},
-            {value: 'VARIANCE', label: <FormattedMessage id= "wizard.variance" defaultMessage= "variance" />},
-        ];
-    },
     _onAggregationTypeSelect(value) {
         this.setState({type: value});
         this.props.onUpdate('type', value);
     },
+    // TODO this is also probably a duplicate with the code in AlertRuleText => try to factor
     _availableThresholdTypes() {
         return [
-            {value: '>', label: <FormattedMessage id= "wizard.higher" defaultMessage= "higher than" />},
-            {value: '>=', label: <FormattedMessage id= "wizard.higherEqual" defaultMessage= "higher or equal than" />},
-            {value: '<', label: <FormattedMessage id= "wizard.lower" defaultMessage= "lower than" />},
-            {value: '<=', label: <FormattedMessage id= "wizard.lowerEqual" defaultMessage= "lower or equal than" />},
-            {value: '==', label: <FormattedMessage id= "wizard.equal" defaultMessage= "equal" />},
+            {value: '>', label: <FormattedMessage id="wizard.higher" defaultMessage="higher than" />},
+            {value: '>=', label: <FormattedMessage id="wizard.higherEqual" defaultMessage="higher or equal than" />},
+            {value: '<', label: <FormattedMessage id="wizard.lower" defaultMessage="lower than" />},
+            {value: '<=', label: <FormattedMessage id="wizard.lowerEqual" defaultMessage="lower or equal than" />},
+            {value: '==', label: <FormattedMessage id="wizard.equal" defaultMessage="equal" />},
         ];
     },
     _onThresholdTypeSelect(value) {
@@ -104,25 +104,25 @@ const StatisticalInput = createReactClass({
         return (
                     <Row>
                         <Col md={2} style={{ marginTop: 5, marginBottom: 0 }}>
-                            <label className="pull-right"><FormattedMessage id= "wizard.statisticalInput" defaultMessage= "Statistical Condition" /></label>
+                            <label className="pull-right"><FormattedMessage id="wizard.statisticalInput" defaultMessage="Statistical Condition" /></label>
                         </Col>
                         <Col md={10}>
-                            <label><FormattedMessage id= "wizard.the" defaultMessage= "The" /></label>
+                            <label><FormattedMessage id="wizard.the" defaultMessage="The" /></label>
                             <Input ref="type" id="type" name="type" required>
                                 <div style={{width:'200px'}}>
                                 <Select
                                     required
                                     clearable={false}
                                     value={this.state.type}
-                                    options={this._availableAggregationTypes()}
+                                    options={AVAILABLE_AGGREGATION_TYPES}
                                     matchProp="value"
                                     onChange={this._onAggregationTypeSelect}
-                                    placeholder={<FormattedMessage id= "wizard.select" defaultMessage= "Select..." />}
+                                    placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..." />}
                                 />
                                 </div>
                             </Input>
                             <label>&nbsp; </label>
-                            <label><FormattedMessage id= "wizard.of" defaultMessage= "of" /></label> 
+                            <label><FormattedMessage id="wizard.of" defaultMessage="of" /></label>
                             <Input ref="field" id="field" name="field">
                                 <div style={{width:'200px'}}>
                                 <Select
@@ -132,12 +132,12 @@ const StatisticalInput = createReactClass({
                                     matchProp="value"
                                     onChange={this._onParameterFieldSelect}
                                     allowCreate={true}
-                                    placeholder={<FormattedMessage id= "wizard.select" defaultMessage= "Select..." />}
+                                    placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..." />}
                                 />
                                 </div>
                             </Input>
                             <label>&nbsp;</label>
-                            <label><FormattedMessage id= "wizard.mustBe" defaultMessage= "must be" /></label>
+                            <label><FormattedMessage id="wizard.mustBe" defaultMessage="must be" /></label>
                             <Input ref="threshold_type" id="threshold_type" name="threshold_type" required>
                                 <div style={{width:'200px'}}>
                                 <Select
@@ -147,7 +147,7 @@ const StatisticalInput = createReactClass({
                                     options={this._availableThresholdTypes()}
                                     matchProp="value"
                                     onChange={this._onThresholdTypeSelect}
-                                    placeholder={<FormattedMessage id= "wizard.select" defaultMessage= "Select..." />}
+                                    placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..." />}
                                 />
                                 </div>
                             </Input>

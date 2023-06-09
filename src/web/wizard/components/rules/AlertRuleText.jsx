@@ -20,6 +20,7 @@ import React from 'react';
 import createReactClass from 'create-react-class';
 import { Spinner } from 'components/common';
 import { FormattedMessage } from 'react-intl';
+import { AVAILABLE_AGGREGATION_TYPES } from 'wizard/components/inputs/StatisticalInput';
 
 const AlertRuleText = createReactClass({
     displayName: 'AlertRuleText',
@@ -55,22 +56,8 @@ const AlertRuleText = createReactClass({
     _getThresholdType(type) {
         return this._availableThresholdTypes().filter((t) => t.value === type)[0].label;
     },
-    // TODO: try to factor, this seems to be a duplicate of code in components/inputs/StatisticalInput.jsx
-    _availableAggregationTypes() {
-        return [
-            {value: 'AVG', label: <FormattedMessage id= "wizard.meanValue" defaultMessage= "average value" />},
-            {value: 'STDDEV', label: <FormattedMessage id= "wizard.standardDeviation" defaultMessage= "standard deviation" />},
-            {value: 'MIN', label: <FormattedMessage id= "wizard.minValue" defaultMessage= "min value" />},
-            {value: 'MAX', label: <FormattedMessage id= "wizard.maxValue" defaultMessage= "max value" />},
-            {value: 'SUM', label: <FormattedMessage id= "wizard.sum" defaultMessage= "sum" />},
-            {value: 'CARD', label: <FormattedMessage id= "wizard.card" defaultMessage= "cardinality" />},
-            {value: 'COUNT', label: <FormattedMessage id= "wizard.count" defaultMessage= "count" />},
-            {value: 'SUMOFSQUARES', label: <FormattedMessage id= "wizard.sum" defaultMessage= "sum of squares" />},
-            {value: 'VARIANCE', label: <FormattedMessage id= "wizard.variance" defaultMessage= "variance" />},
-        ];
-    },
     _getAggregationType(type) {
-        return this._availableAggregationTypes().filter((t) => t.value === type)[0].label;
+        return AVAILABLE_AGGREGATION_TYPES.filter((t) => t.value === type)[0].label;
     },
 
     // TODO try to factor this code with the one in FieldRule.jsx and ManageSettings
