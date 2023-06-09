@@ -15,14 +15,11 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-
 import PropTypes from 'prop-types';
-import React from 'react';
-import createReactClass from 'create-react-class';
+import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Input, Row, Col } from 'components/bootstrap';
 import { Select } from 'components/common';
-import ObjectUtils from 'util/ObjectUtils';
 
 import withFormattedFields from './withFormattedFields';
 
@@ -47,117 +44,91 @@ const AVAILABLE_THRESHOLD_TYPES = [
     {value: '==', label: <FormattedMessage id="wizard.equal" defaultMessage="equal" />},
 ];
 
-const StatisticalInput = createReactClass({
-    displayName: 'StatisticalInput',
+const StatisticalInput = ({onUpdate, type, field, thresholdType, threshold, formattedFields}) => {
+    // TODO: a state is necessary for the input type number, but not for the Select, why?
+    //       Maybe the state should be put in a new component, NumericalInput (factor if there ever is the same pattern in other components)
+    const [currentThreshold, setCurrentThreshold] = useState(threshold);
 
-    propTypes: {
-        onUpdate: PropTypes.func.isRequired,
-        formattedFields: PropTypes.array.isRequired,
-    },
+    const _onAggregationTypeSelect = (value) => {
+        onUpdate('type', value);
+    };
 
-    getInitialState() {
-        return {
-            type: this.props.type,
-            field: this.props.field,
-            threshold: this.props.threshold,
-            threshold_type: this.props.threshold_type,
-        };
-    },
-    _onAggregationTypeSelect(value) {
-        this.setState({type: value});
-        this.props.onUpdate('type', value);
-    },
-    _onThresholdTypeSelect(value) {
-        this.setState({threshold_type: value});
-        this.props.onUpdate('threshold_type', value);
-    },
-    
-    _updateAlertField(field, value) {
-        const update = ObjectUtils.clone(this.state);
-        update[field] = value;
-        this.setState({parameters: update});
+    const _onParameterFieldSelect = (value) => {
+        onUpdate('field', value);
+    };
 
-        this.props.onUpdate(field, value);
-    },
-    _onThresholdChanged() {
-        return e => {
-            this.setState({threshold: e.target.value});
-            this.props.onUpdate('threshold', e.target.value);
-        };
-    },
-    _onParameterFieldSelect(value) {
-        this.setState({field: value});
-        this.props.onUpdate('field', value);
+    const _onThresholdChanged = (e) => {
+        const value = e.target.value;
+        setCurrentThreshold(value);
+        onUpdate('threshold', value);
+    };
 
-        //add value to list fields if not present
-        if (value !== '' && this.state.fields.indexOf(value) < 0) {
-            const update = ObjectUtils.clone(this.state.fields);
-            update.push(value);
-            this.setState({fields: update});
-        }
-    },
+    const _onThresholdTypeSelect = (value) => {
+        onUpdate('threshold_type', value);
+    };
 
-    render() {
-        const { formattedFields } = this.props;
+    return (
+        <Row>
+            <Col md={2} style={{ marginTop: 5, marginBottom: 0 }}>
+                <label className="pull-right"><FormattedMessage id="wizard.statisticalInput" defaultMessage="Statistical Condition" /></label>
+            </Col>
+            <Col md={10}>
+                <label><FormattedMessage id="wizard.the" defaultMessage="The" /></label>
+                <Input id="type" name="type" required>
+                    <div style={{width:'200px'}}>
+                    <Select
+                        required
+                        clearable={false}
+                        value={type}
+                        options={AVAILABLE_AGGREGATION_TYPES}
+                        matchProp="value"
+                        onChange={_onAggregationTypeSelect}
+                        placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..." />}
+                    />
+                    </div>
+                </Input>
+                <label>&nbsp; </label>
+                <label><FormattedMessage id="wizard.of" defaultMessage="of" /></label>
+                <Input id="field" name="field">
+                    <div style={{width:'200px'}}>
+                    <Select
+                        required
+                        value={field}
+                        options={formattedFields}
+                        matchProp="value"
+                        onChange={_onParameterFieldSelect}
+                        allowCreate={true}
+                        placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..." />}
+                    />
+                    </div>
+                </Input>
+                <label>&nbsp;</label>
+                <label><FormattedMessage id="wizard.mustBe" defaultMessage="must be" /></label>
+                <Input id="threshold_type" name="threshold_type" required>
+                    <div style={{width:'200px'}}>
+                    <Select
+                        required
+                        clearable={false}
+                        value={thresholdType}
+                        options={AVAILABLE_THRESHOLD_TYPES}
+                        matchProp="value"
+                        onChange={_onThresholdTypeSelect}
+                        placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..." />}
+                    />
+                    </div>
+                </Input>
+                <Input id="threshold" name="threshold" type="number" min="0"
+                       onChange={_onThresholdChanged}
+                       value={currentThreshold}
+                       style={{borderTopLeftRadius: '0px', borderBottomLeftRadius: '0px', height:'36px', width:'100px'}}/>
+            </Col>
+        </Row>
+    );
+}
 
-        return (
-                    <Row>
-                        <Col md={2} style={{ marginTop: 5, marginBottom: 0 }}>
-                            <label className="pull-right"><FormattedMessage id="wizard.statisticalInput" defaultMessage="Statistical Condition" /></label>
-                        </Col>
-                        <Col md={10}>
-                            <label><FormattedMessage id="wizard.the" defaultMessage="The" /></label>
-                            <Input ref="type" id="type" name="type" required>
-                                <div style={{width:'200px'}}>
-                                <Select
-                                    required
-                                    clearable={false}
-                                    value={this.state.type}
-                                    options={AVAILABLE_AGGREGATION_TYPES}
-                                    matchProp="value"
-                                    onChange={this._onAggregationTypeSelect}
-                                    placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..." />}
-                                />
-                                </div>
-                            </Input>
-                            <label>&nbsp; </label>
-                            <label><FormattedMessage id="wizard.of" defaultMessage="of" /></label>
-                            <Input ref="field" id="field" name="field">
-                                <div style={{width:'200px'}}>
-                                <Select
-                                    required
-                                    value={this.state.field}
-                                    options={formattedFields}
-                                    matchProp="value"
-                                    onChange={this._onParameterFieldSelect}
-                                    allowCreate={true}
-                                    placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..." />}
-                                />
-                                </div>
-                            </Input>
-                            <label>&nbsp;</label>
-                            <label><FormattedMessage id="wizard.mustBe" defaultMessage="must be" /></label>
-                            <Input ref="threshold_type" id="threshold_type" name="threshold_type" required>
-                                <div style={{width:'200px'}}>
-                                <Select
-                                    required
-                                    clearable={false}
-                                    value={this.state.threshold_type}
-                                    options={AVAILABLE_THRESHOLD_TYPES}
-                                    matchProp="value"
-                                    onChange={this._onThresholdTypeSelect}
-                                    placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..." />}
-                                />
-                                </div>
-                            </Input>
-                            <Input ref="threshold" id="threshold" name="threshold" type="number" min="0"
-                                   onChange={this._onThresholdChanged()}
-                                   value={this.state.threshold}
-                                   style={{borderTopLeftRadius: '0px', borderBottomLeftRadius: '0px', height:'36px', width:'100px'}}/>
-                        </Col>
-                    </Row>
-        );
-    },
-});
+StatisticalInput.propTypes = {
+    onUpdate: PropTypes.func.isRequired,
+    formattedFields: PropTypes.array.isRequired,
+}
 
 export default withFormattedFields(StatisticalInput);

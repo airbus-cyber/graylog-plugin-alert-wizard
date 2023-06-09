@@ -78,7 +78,7 @@ const StatisticsCondition = createReactClass({
                 <br/>
                 <StatisticalInput onUpdate={this._handleChangeCondition} type={this.props.alert.condition_parameters.type}
                             field={this.props.alert.condition_parameters.field} threshold={this.props.alert.condition_parameters.threshold} 
-                            threshold_type={this.props.alert.condition_parameters.threshold_type} />
+                            thresholdType={this.props.alert.condition_parameters.threshold_type} />
                 <br/>
                 <Description onUpdate={this.props.onUpdate} description={this.props.alert.description}/>
                 <br/>
