@@ -38,6 +38,15 @@ export const AVAILABLE_AGGREGATION_TYPES = [
     {value: 'VARIANCE', label: <FormattedMessage id="wizard.variance" defaultMessage="variance" />},
 ];
 
+// TODO this is also probably a duplicate with the code in AlertRuleText => try to factor
+const AVAILABLE_THRESHOLD_TYPES = [
+    {value: '>', label: <FormattedMessage id="wizard.higher" defaultMessage="higher than" />},
+    {value: '>=', label: <FormattedMessage id="wizard.higherEqual" defaultMessage="higher or equal than" />},
+    {value: '<', label: <FormattedMessage id="wizard.lower" defaultMessage="lower than" />},
+    {value: '<=', label: <FormattedMessage id="wizard.lowerEqual" defaultMessage="lower or equal than" />},
+    {value: '==', label: <FormattedMessage id="wizard.equal" defaultMessage="equal" />},
+];
+
 const StatisticalInput = createReactClass({
     displayName: 'StatisticalInput',
 
@@ -57,16 +66,6 @@ const StatisticalInput = createReactClass({
     _onAggregationTypeSelect(value) {
         this.setState({type: value});
         this.props.onUpdate('type', value);
-    },
-    // TODO this is also probably a duplicate with the code in AlertRuleText => try to factor
-    _availableThresholdTypes() {
-        return [
-            {value: '>', label: <FormattedMessage id="wizard.higher" defaultMessage="higher than" />},
-            {value: '>=', label: <FormattedMessage id="wizard.higherEqual" defaultMessage="higher or equal than" />},
-            {value: '<', label: <FormattedMessage id="wizard.lower" defaultMessage="lower than" />},
-            {value: '<=', label: <FormattedMessage id="wizard.lowerEqual" defaultMessage="lower or equal than" />},
-            {value: '==', label: <FormattedMessage id="wizard.equal" defaultMessage="equal" />},
-        ];
     },
     _onThresholdTypeSelect(value) {
         this.setState({threshold_type: value});
@@ -144,7 +143,7 @@ const StatisticalInput = createReactClass({
                                     required
                                     clearable={false}
                                     value={this.state.threshold_type}
-                                    options={this._availableThresholdTypes()}
+                                    options={AVAILABLE_THRESHOLD_TYPES}
                                     matchProp="value"
                                     onChange={this._onThresholdTypeSelect}
                                     placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..." />}
