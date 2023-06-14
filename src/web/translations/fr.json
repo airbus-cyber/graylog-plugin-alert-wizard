@@ -204,7 +204,7 @@
   "wizard.buttonInfoNoDeleteList": "Liste utilisé dans les règles d'alerte",
   "wizard.card": "cardinalité",
   "wizard.count": "condition de comptage",
-  "wizard.sum": "somme des carrés",
+  "wizard.sumOfSquares": "somme des carrés",
   "wizard.variance": "variance",
   "wizard.eventDefinition": "Définition de l'évènement",
   "wizard.notification": "Notification",

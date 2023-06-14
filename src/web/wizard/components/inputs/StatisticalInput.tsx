@@ -31,7 +31,7 @@ export const AVAILABLE_AGGREGATION_TYPES = [
     {value: 'SUM', label: <FormattedMessage id="wizard.sum" defaultMessage="sum" />},
     {value: 'CARD', label: <FormattedMessage id="wizard.card" defaultMessage="cardinality" />},
     {value: 'COUNT', label: <FormattedMessage id="wizard.count" defaultMessage="count" />},
-    {value: 'SUMOFSQUARES', label: <FormattedMessage id="wizard.sum" defaultMessage="sum of squares" />},
+    {value: 'SUMOFSQUARES', label: <FormattedMessage id="wizard.sumOfSquares" defaultMessage="sum of squares" />},
     {value: 'VARIANCE', label: <FormattedMessage id="wizard.variance" defaultMessage="variance" />},
 ];
 
@@ -54,8 +54,7 @@ type Props = {
     formattedFields: any[]
 }
 
-const StatisticalInput = (props: Props) => {
-    const {onUpdate, type, field, thresholdType, threshold, formattedFields} = props;
+const StatisticalInput = ({type, field, thresholdType, threshold, formattedFields, onUpdate}: Props) => {
     // TODO: a state is necessary for the input type number, but not for the Select, why?
     //       Maybe the state should be put in a new component, NumericalInput (factor if there ever is the same pattern in other components)
     const [currentThreshold, setCurrentThreshold] = useState(threshold);
