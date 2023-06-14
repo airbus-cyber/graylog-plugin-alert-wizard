@@ -74,7 +74,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <graylog.version>${project.parent.version}</graylog.version>
         <graylog2.plugin-dir>/usr/share/graylog-server/plugin</graylog2.plugin-dir>
-        <auto-value.version>1.6.5</auto-value.version>
         <!-- Test dependencies -->
         <assertj-core.version>3.20.2</assertj-core.version>
         <mockito.version>2.8.9</mockito.version>
