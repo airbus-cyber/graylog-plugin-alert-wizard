@@ -121,12 +121,12 @@
         <dependency>
             <groupId>com.airbus-cyber-security.graylog</groupId>
             <artifactId>graylog-plugin-correlation-count</artifactId>
-            <version>[4.2.0,4.3.0)</version>
+            <version>4.2.0</version>
         </dependency>
         <dependency>
             <groupId>com.airbus-cyber-security.graylog</groupId>
             <artifactId>graylog-plugin-logging-alert</artifactId>
-            <version>[4.4.0,4.5.0)</version>
+            <version>4.4.1</version>
         </dependency>
     </dependencies>
     <build>
