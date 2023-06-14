@@ -74,8 +74,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <graylog.version>${project.parent.version}</graylog.version>
         <graylog2.plugin-dir>/usr/share/graylog-server/plugin</graylog2.plugin-dir>
-        <!-- Test dependencies -->
-        <fongo.version>2.2.0-RC2</fongo.version>
     </properties>
 
     <dependencies>
@@ -119,11 +117,6 @@
             <groupId>com.lordofthejars</groupId>
             <artifactId>nosqlunit-mongodb</artifactId>
             <version>${nosqlunit.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.fakemongo</groupId>
-            <artifactId>fongo</artifactId>
-            <version>${fongo.version}</version>
         </dependency>
         <dependency>
             <groupId>com.airbus-cyber-security.graylog</groupId>
