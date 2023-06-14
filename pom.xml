@@ -75,7 +75,6 @@
         <graylog.version>${project.parent.version}</graylog.version>
         <graylog2.plugin-dir>/usr/share/graylog-server/plugin</graylog2.plugin-dir>
         <!-- Test dependencies -->
-        <nosqlunit.version>1.0.0</nosqlunit.version>
         <fongo.version>2.2.0-RC2</fongo.version>
     </properties>
 
