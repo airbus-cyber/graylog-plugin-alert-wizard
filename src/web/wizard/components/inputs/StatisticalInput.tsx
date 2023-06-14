@@ -44,7 +44,18 @@ const AVAILABLE_THRESHOLD_TYPES = [
     {value: '==', label: <FormattedMessage id="wizard.equal" defaultMessage="equal" />},
 ];
 
-const StatisticalInput = ({onUpdate, type, field, thresholdType, threshold, formattedFields}) => {
+// TODO replace any with more precise types
+type Props = {
+    onUpdate: (string, unknown) => void,
+    type: any,
+    field: any,
+    thresholdType: any,
+    threshold: number,
+    formattedFields: any[]
+}
+
+const StatisticalInput = (props: Props) => {
+    const {onUpdate, type, field, thresholdType, threshold, formattedFields} = props;
     // TODO: a state is necessary for the input type number, but not for the Select, why?
     //       Maybe the state should be put in a new component, NumericalInput (factor if there ever is the same pattern in other components)
     const [currentThreshold, setCurrentThreshold] = useState(threshold);
