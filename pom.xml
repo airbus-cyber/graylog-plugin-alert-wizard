@@ -73,7 +73,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <graylog.version>${project.parent.version}</graylog.version>
-        <graylog2.plugin-dir>/usr/share/graylog-server/plugin</graylog2.plugin-dir>
+        <graylog.plugin-dir>/usr/share/graylog-server/plugin</graylog.plugin-dir>
     </properties>
 
     <dependencies>
@@ -271,7 +271,7 @@
                             <type>file</type>
                             <mapper>
                                 <type>perm</type>
-                                <prefix>${graylog2.plugin-dir}</prefix>
+                                <prefix>${graylog.plugin-dir}</prefix>
                                 <filemode>644</filemode>
                                 <user>root</user>
                                 <group>root</group>
@@ -303,7 +303,7 @@
                     <defaultGroupname>root</defaultGroupname>
                     <mappings>
                         <mapping>
-                            <directory>${graylog2.plugin-dir}</directory>
+                            <directory>${graylog.plugin-dir}</directory>
                             <sources>
                                 <source>
                                     <location>${project.build.directory}/</location>
