@@ -25,7 +25,7 @@ import messages_fr from 'translations/fr.json';
 import { Row, Col, Button } from 'components/bootstrap';
 import { DocumentTitle, PageHeader} from 'components/common';
 import UserNotification from 'util/UserNotification';
-import DateTime from 'logic/datetimes/DateTime';
+import { adjustFormat } from 'util/DateTime';
 import Routes from 'routing/Routes';
 import AlertListActions from 'wizard/actions/AlertListActions';
 import FileSaver from 'wizard/logic/FileSaver';
@@ -80,7 +80,8 @@ const ExportListPage = createReactClass({
 
         AlertListActions.exportAlertLists(request).then((response) => {
             UserNotification.success('Successfully export alert lists. Starting download...', 'Success!');
-            let date = DateTime.ignoreTZ(DateTime.now()).toString(DateTime.Formats.DATETIME).replace(/:/g, '').replace(/ /g, '_')
+            // TODO factor with ExportAlertPage?
+            let date = adjustFormat(new Date()).replace(/:/g, '').replace(/ /g, '_')
             FileSaver.save(response, date+'_alert_lists.json', 'application/json', 'utf-8');
         });
     },

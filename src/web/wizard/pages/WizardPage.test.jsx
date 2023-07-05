@@ -28,7 +28,6 @@ import WizardPage from './WizardPage';
 
 import fetch from 'logic/rest/FetchProvider';
 
-//jest.mock('logic/rest/FetchProvider', () => jest.fn(() => Promise.resolve()));
 jest.mock('logic/rest/FetchProvider', () => jest.fn((method, url) => {
     if (url === 'http://localhost/system/locales') {
         // TODO should check the value that is returned by /system/locales in real life
@@ -46,7 +45,11 @@ jest.mock('stores/nodes/NodesStore', () => ({
 
 describe('<WizardPage>', () => {
     it('should not fail', async () => {
-        fetch.mockReturnValueOnce(Promise.resolve({ field_order: [] }))
+        const configuration = {
+            field_order: [],
+            default_values: {}
+        };
+        fetch.mockReturnValueOnce(Promise.resolve(configuration))
         // TODO I do not like this await act thing very much, simple syntax? (see: https://kentcdodds.com/blog/fix-the-not-wrapped-in-act-warning)
         await act(async () => {
             render(<WizardPage />)

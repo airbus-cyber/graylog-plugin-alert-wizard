@@ -47,9 +47,8 @@ const ManageSettings = createReactClass({
         };
     },
     
-    // TODO remove componentWillReceiveProps
-    componentWillReceiveProps(nextProps){
-        this.setState({config:nextProps.config});
+    componentDidMount(){
+        this.setState({config: this.props.config});
     },
 
     _openModal() {

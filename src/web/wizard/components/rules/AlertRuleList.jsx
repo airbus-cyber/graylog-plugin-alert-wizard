@@ -15,6 +15,9 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
+// sources of inspiration for this code:
+// * components/nodes/SystemInformation.jsx
+
 import PropTypes from 'prop-types';
 import React from 'react';
 import Reflux from 'reflux';
@@ -24,12 +27,13 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { LinkContainer } from 'react-router-bootstrap';
 // TODO remove imports from react-bootstrap everywhere, and use only components/bootstrap?
 import { Tooltip } from 'react-bootstrap';
+import moment from 'moment';
 
 import { DataTable, IfPermitted, OverlayElement, Spinner, Timestamp } from 'components/common';
 import { Button } from 'components/bootstrap';
 import PermissionsMixin from 'util/PermissionsMixin';
 import Routes from 'routing/Routes';
-import DateTime from 'logic/datetimes/DateTime';
+import { toDateObject } from 'util/DateTime';
 import StreamsStore from 'stores/streams/StreamsStore';
 
 import AlertRuleStore from 'wizard/stores/AlertRuleStore';
@@ -173,10 +177,10 @@ const AlertRuleList = createReactClass({
     
     _availableSeverityTypes() {
         return [
-            {value: 'info', label: <FormattedMessage id= "wizard.info" defaultMessage= "Info" />},
-            {value: 'low', label: <FormattedMessage id= "wizard.low" defaultMessage= "Low" />},
-            {value: 'medium', label: <FormattedMessage id= "wizard.medium" defaultMessage= "Medium" />},
-            {value: 'high', label: <FormattedMessage id= "wizard.high" defaultMessage= "High" />},
+            {value: 'info', label: <FormattedMessage id="wizard.info" defaultMessage="Info" />},
+            {value: 'low', label: <FormattedMessage id="wizard.low" defaultMessage="Low" />},
+            {value: 'medium', label: <FormattedMessage id="wizard.medium" defaultMessage="Medium" />},
+            {value: 'high', label: <FormattedMessage id="wizard.high" defaultMessage="High" />},
         ];
     },
     _getSeverityType(type) {
@@ -225,7 +229,7 @@ const AlertRuleList = createReactClass({
             <IfPermitted permissions="wizard_alerts_rules:delete">
                 <button id="delete-alert" type="button" className="btn btn-md btn-primary"
                         title={this.state.messages.infoDelete} onClick={this._deleteAlertFunction(alert.title)}>
-                    <FormattedMessage id ="wizard.delete" defaultMessage="Delete" />
+                    <FormattedMessage id="wizard.delete" defaultMessage="Delete" />
                 </button>
             </IfPermitted>
         );
@@ -234,7 +238,7 @@ const AlertRuleList = createReactClass({
             <IfPermitted permissions="wizard_alerts_rules:read">
                 <LinkContainer to={Routes.pluginRoute('WIZARD_UPDATEALERT_ALERTRULETITLE')(alert.title.replace(/\//g, '%2F'))} disabled={!alertValid}>
                     <Button bsStyle="info" type="submit" title={this.state.messages.infoUpdate} >
-                        <FormattedMessage id ="wizard.edit" defaultMessage="Edit" />
+                        <FormattedMessage id="wizard.edit" defaultMessage="Edit" />
                     </Button>
                 </LinkContainer>
             </IfPermitted>
@@ -245,14 +249,14 @@ const AlertRuleList = createReactClass({
             toggleStreamLink = (
                 <Button bsStyle="success" onClick={this._onResume(alert.condition, streamID, alert.second_event_definition, streamId2)} disabled={!alertValid}
                         title={this.state.messages.infoEnable} style={{whiteSpace: 'pre'}} >
-                    <FormattedMessage id ="wizard.enable" defaultMessage="Enable " />
+                    <FormattedMessage id="wizard.enable" defaultMessage="Enable " />
                 </Button>
             );
         } else {
             toggleStreamLink = (
                 <Button bsStyle="primary" onClick={this._onPause(alert.title, alert.condition, streamID, alert.second_event_definition, streamId2)} disabled={!alertValid}
                         title={this.state.messages.infoDisable} >
-                    <FormattedMessage id ="wizard.disable" defaultMessage="Disable" />
+                    <FormattedMessage id="wizard.disable" defaultMessage="Disable" />
                 </Button>
             );
         }
@@ -260,7 +264,7 @@ const AlertRuleList = createReactClass({
         const cloneAlert = (
             <Button id="clone-alert" type="button" bsStyle="info" onClick={this._onClone(alert.title)} disabled={!alertValid}
                     title={this.state.messages.infoClone} >
-                <FormattedMessage id ="wizard.clone" defaultMessage="Clone" />
+                <FormattedMessage id="wizard.clone" defaultMessage="Clone" />
             </Button>
         );
 
@@ -277,15 +281,17 @@ const AlertRuleList = createReactClass({
 
         const tooltipAlertCount = (
             <Tooltip id="default-alert-count-tooltip">
-                <FormattedMessage id ="wizard.tooltipAlerts" defaultMessage="The daily throughput and the total number of triggered alerts since the last modification of the alert rule" />
+                <FormattedMessage id="wizard.tooltipAlerts" defaultMessage="The daily throughput and the total number of triggered alerts since the last modification of the alert rule" />
                </Tooltip>);
         
         const tooltipUser = (
                 <Tooltip id="default-user-tooltip">
-                    <FormattedMessage id ="wizard.tooltipUser" defaultMessage="The last user who modified the alert rule" />
+                    <FormattedMessage id="wizard.tooltipUser" defaultMessa
+
+                    ge="The last user who modified the alert rule" />
                 </Tooltip>);
 
-        let nbDays = (DateTime.now() - DateTime.parseFromString(alert.last_modified).toMoment()) / 1000 / 60 / 60 / 24;
+        let nbDays = moment().diff(toDateObject(alert.last_modified), 'days');
         let nbAlertDay = Math.round(alert.alert_count / Math.ceil(nbDays));
         
         let tabFields = [<td className="limited">{alert.title}</td>];
@@ -299,10 +305,10 @@ const AlertRuleList = createReactClass({
                         tabFields.push(<td className="limited"><span style={{whiteSpace: 'pre-line'}}>{alert.description}</span></td>);
                         break;
                     case 'Created':
-                        tabFields.push(<td className="limited"><Timestamp dateTime={DateTime.parseFromString(alert.created_at).toString(DateTime.Formats.DATETIME)} relative/></td>);
+                        tabFields.push(<td className="limited"><Timestamp dateTime={toDateObject(alert.created_at)} relative/></td>);
                         break;
                     case 'Last Modified':
-                        tabFields.push(<td className="limited"><Timestamp dateTime={DateTime.parseFromString(alert.last_modified).toString(DateTime.Formats.DATETIME)} relative/>
+                        tabFields.push(<td className="limited"><Timestamp dateTime={toDateObject(alert.last_modified)} relative/>
                         </td>);
                         break;
                     case 'User':
@@ -317,7 +323,7 @@ const AlertRuleList = createReactClass({
                         tabFields.push(<td className="limited">
                             <OverlayElement overlay={tooltipAlertCount} placement="top" useOverlay={true}
                                             trigger={['hover', 'focus']}>
-                                <div><FormattedMessage id ="wizard.manualCount" defaultMessage="{alertDay} alerts/day ({alertCount} total)" 
+                                <div><FormattedMessage id="wizard.manualCount" defaultMessage="{alertDay} alerts/day ({alertCount} total)"
                                         values={{alertDay: nbAlertDay, alertCount: alert.alert_count}}/></div>
                             </OverlayElement>
                         </td>);
@@ -325,10 +331,10 @@ const AlertRuleList = createReactClass({
                     case 'Status':
                         if (alertValid) {
                             tabFields.push(<td className="limited">{alert.disabled ? 
-                                    <span style={{backgroundColor: 'orange', color: 'white'}}><FormattedMessage id ="wizard.disabled" defaultMessage="Disabled" /></span> : 
-                                    <FormattedMessage id ="wizard.enabled" defaultMessage="Enabled" />}</td>);
+                                    <span style={{backgroundColor: 'orange', color: 'white'}}><FormattedMessage id="wizard.disabled" defaultMessage="Disabled" /></span> :
+                                    <FormattedMessage id="wizard.enabled" defaultMessage="Enabled" />}</td>);
                         } else {
-                            tabFields.push(<td className="limited"><FormattedMessage id ="wizard.corrupted" defaultMessage="Corrupted" /></td>);
+                            tabFields.push(<td className="limited"><FormattedMessage id="wizard.corrupted" defaultMessage="Corrupted" /></td>);
                         }
                         break;
                     case 'Rule':
@@ -358,24 +364,28 @@ const AlertRuleList = createReactClass({
         headers.push(this.state.fieldsTitle.actions);
 
         if (this.state.alerts) {
+            const filterLabel = this.props.intl.formatMessage({
+              id: 'wizard.filter',
+              defaultMessage: 'Filter alert rules'
+            });
             return (
                 <div>
                     <div className="alert-actions pull-right">
                         <LinkContainer to={Routes.pluginRoute('WIZARD_NEWALERT')}>
                             <Button bsStyle="success" type="submit" title={this.state.messages.createAlert}>
-                                <FormattedMessage id ="wizard.create" defaultMessage="Create" />
+                                <FormattedMessage id="wizard.create" defaultMessage="Create" />
                             </Button>
                         </LinkContainer>
                         {' '}
                         <LinkContainer to={Routes.pluginRoute('WIZARD_IMPORTALERT')}>
                             <Button bsStyle="success" type="submit" title={this.state.messages.importAlert}>
-                                <FormattedMessage id ="wizard.import" defaultMessage="Import" />
+                                <FormattedMessage id="wizard.import" defaultMessage="Import" />
                             </Button>
                         </LinkContainer>
                         {' '}
                         <LinkContainer to={Routes.pluginRoute('WIZARD_EXPORTALERT')}>
                             <Button bsStyle="success" type="submit" title={this.state.messages.exportAlert}>
-                                <FormattedMessage id ="wizard.export" defaultMessage="Export" />
+                                <FormattedMessage id="wizard.export" defaultMessage="Export" />
                             </Button>
                         </LinkContainer>
                     </div>
@@ -387,7 +397,7 @@ const AlertRuleList = createReactClass({
                                rows={this.state.alerts}
                                filterBy="title"
                                dataRowFormatter={this._alertInfoFormatter}
-                               filterLabel={<FormattedMessage id ="wizard.filter" defaultMessage="Filter alert rules" />}
+                               filterLabel={filterLabel}
                                filterKeys={filterKeys} />
                     <AlertRuleCloneForm ref="cloneModal" onSubmit={this._onCloneSubmit} />
                 </div>

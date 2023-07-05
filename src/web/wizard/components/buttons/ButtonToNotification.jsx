@@ -35,7 +35,7 @@ const ButtonToNotification = createReactClass({
     componentWillMount() {
         const { intl } = this.props;
         const tooltip = intl.formatMessage({id: "wizard.tooltipNotification", defaultMessage: "Edit notification for this alert rule"});
-        this.setState({tooltip:tooltip});
+        this.setState({tooltip: tooltip});
     },
 
     render() {

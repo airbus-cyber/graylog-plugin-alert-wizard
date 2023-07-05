@@ -20,10 +20,10 @@ import React from 'react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { LinkContainer } from 'react-router-bootstrap';
 import createReactClass from 'create-react-class';
-import DateTime from 'logic/datetimes/DateTime';
 import Reflux from 'reflux';
 import { Tooltip } from 'react-bootstrap';
 import { Button } from 'components/bootstrap';
+import { toDateObject } from 'util/DateTime';
 import { DataTable, IfPermitted, OverlayElement, Spinner, Timestamp } from 'components/common';
 import PermissionsMixin from 'util/PermissionsMixin';
 import Routes from 'routing/Routes';
@@ -185,10 +185,10 @@ const AlertListDisplay = createReactClass({
                         tabFields.push(<td className="limited"><span style={{whiteSpace: 'pre-line'}}>{list.description}</span></td>);
                         break;
                     case 'Created':
-                        tabFields.push(<td className="limited"><Timestamp dateTime={DateTime.parseFromString(list.created_at).toString(DateTime.Formats.DATETIME)} relative/></td>);
+                        tabFields.push(<td className="limited"><Timestamp dateTime={toDateObject(list.created_at)} relative/></td>);
                         break;
                     case 'Last Modified':
-                        tabFields.push(<td className="limited"><Timestamp dateTime={DateTime.parseFromString(list.last_modified).toString(DateTime.Formats.DATETIME)} relative/>
+                        tabFields.push(<td className="limited"><Timestamp dateTime={toDateObject(list.last_modified)} relative/>
                         </td>);
                         break;
                     case 'User':

@@ -22,7 +22,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 import { Row, Col, Button } from 'components/bootstrap';
 import { DocumentTitle, PageHeader } from 'components/common';
 import UserNotification from 'util/UserNotification';
-import DateTime from 'logic/datetimes/DateTime';
+import { adjustFormat } from 'util/DateTime';
 import messages_fr from 'translations/fr.json';
 import AlertRuleActions from 'wizard/actions/AlertRuleActions';
 import FileSaver from 'wizard/logic/FileSaver';
@@ -71,7 +71,7 @@ const ExportAlertPage = createReactClass({
 
         UserNotification.success('Successfully export alert rules. Starting download...', 'Success!');
         let exportData = RulesImportExport.createExportDataFromRules(alerts);
-        let date = DateTime.ignoreTZ(DateTime.now()).toString(DateTime.Formats.DATETIME).replace(/:/g, '').replace(/ /g, '_');
+        let date = adjustFormat(new Date()).replace(/:/g, '').replace(/ /g, '_');
         FileSaver.save(JSON.stringify(exportData), date+'_alert_rules.json', 'application/json', 'utf-8');
     },
 

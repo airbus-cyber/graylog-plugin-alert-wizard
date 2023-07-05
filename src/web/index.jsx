@@ -16,7 +16,7 @@
  */
 
 import packageJson from '../../package.json';
-import {PluginManifest, PluginStore} from 'graylog-web-plugin/plugin';
+import { PluginManifest, PluginStore } from 'graylog-web-plugin/plugin';
 import WizardPage from './wizard/pages/WizardPage';
 import NewAlertPage from './wizard/pages/NewAlertPage';
 import UpdateAlertPage from './wizard/pages/UpdateAlertPage';

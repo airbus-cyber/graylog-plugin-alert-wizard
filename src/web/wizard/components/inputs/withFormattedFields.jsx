@@ -20,7 +20,7 @@ import React from 'react';
 import { Spinner } from 'components/common';
 
 import lodash from 'lodash';
-import { defaultCompare } from 'views/logic/DefaultCompare';
+import { defaultCompare } from 'logic/DefaultCompare';
 import useFieldTypes from 'views/logic/fieldtypes/useFieldTypes';
 import { ALL_MESSAGES_TIMERANGE } from 'views/Constants';
 
