@@ -1,15 +1,18 @@
+# sources of inspiration for this file
+# * https://go2docs.graylog.org/5-1/downloading_and_installing_graylog/docker_installation.htm
+# * https://github.com/Graylog2/docker-compose
+
 version: '3'
 services:
 
   # MongoDB: https://hub.docker.com/_/mongo/
   mongo:
-    image: "mongo:4.2"
-    container_name: mongo4
-    networks:
-      net:
-        ipv4_address: 172.15.0.2
+    image: "mongo:6.0"
+    container_name: mongo
 
-  # OpenSearch: https://opensearch.org/docs/1.3/install-and-configure/install-opensearch/docker/#sample-docker-composeyml
+  # OpenSearch:
+  # * https://hub.docker.com/r/opensearchproject/opensearch
+  # * https://opensearch.org/docs/1.3/install-and-configure/install-opensearch/docker/#sample-docker-composeyml
   opensearch:
     image: "opensearchproject/opensearch:1.3.9"
     container_name: opensearch1.3
@@ -22,11 +25,8 @@ services:
       memlock:
         soft: -1
         hard: -1
-    networks:
-      net:
-        ipv4_address: 172.15.0.3
 
-  # Graylog: https://hub.docker.com/r/graylog/graylog/ 
+  # Graylog: https://hub.docker.com/r/graylog/graylog/
   graylog:
     image: "graylog/graylog:4.3"
     container_name: graylog
@@ -49,17 +49,6 @@ services:
       - 12201:12201
       # GELF UDP
       - 12201:12201/udp
-    networks:
-      net:
-        ipv4_address: 172.15.0.4
     volumes:
      - ./graylog/config:/usr/share/graylog/data/config
      - ./graylog/plugin:/usr/share/graylog/plugin/
-
-networks:
-  net:
-    ipam:
-      driver: default
-      config:
-      - subnet: 172.15.0.0/16
-
