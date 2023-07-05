@@ -1,42 +1,47 @@
 name: Continuous Integration
+
 on: push
+
+env:
+ JAVA_VERSION: 8
+
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
         with:
           path: plugin
-      - name: Setup Java JDK 8
+      - name: Setup Java JDK ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v3
         with:
-          java-version: 8
+          java-version: ${{ env.JAVA_VERSION }}
           distribution: temurin
           cache: maven
       - name: Retrieve variables from pom
         id: requestPom
         working-directory: plugin
         run: |
-          echo "graylogVersion=$(mvn help:evaluate -Dexpression=project.parent.version -q -DforceStdout)" >> $GITHUB_OUTPUT
+          echo "GRAYLOG_VERSION=$(mvn help:evaluate -Dexpression=project.parent.version -q -DforceStdout)" >> $GITHUB_OUTPUT
 
           NAME=$(mvn help:evaluate -Dexpression=project.name -q -DforceStdout)
           VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          echo "jarPath=target/${NAME}-${VERSION}.jar" >> $GITHUB_OUTPUT
-          echo "rpmPath=target/rpm/${NAME}/RPMS/noarch/${NAME}-${VERSION}-1.noarch.rpm" >> $GITHUB_OUTPUT
-          echo "debPath=target/${NAME}-${VERSION}.deb" >> $GITHUB_OUTPUT
+          echo "JAR_PATH=target/$NAME-$VERSION.jar" >> $GITHUB_OUTPUT
+          echo "RPM_PATH=target/rpm/$NAME/RPMS/noarch/$NAME-$VERSION-1.noarch.rpm" >> $GITHUB_OUTPUT
+          echo "DEB_PATH=target/$NAME-$VERSION.deb" >> $GITHUB_OUTPUT
       - name: Cache Graylog
         uses: actions/cache@v3
         id: cache
         with:
           path: graylog2-server
-          key: ${{ steps.requestPom.outputs.graylogVersion }}
-      - name: Check out Graylog
+          key: ${{ steps.requestPom.outputs.GRAYLOG_VERSION }}
+      - name: Check out Graylog ${{ steps.requestPom.outputs.GRAYLOG_VERSION }}
         if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/checkout@v3
         with:
           repository: Graylog2/graylog2-server
-          ref: ${{ steps.requestPom.outputs.graylogVersion }}
+          ref: ${{ steps.requestPom.outputs.GRAYLOG_VERSION }}
           path: graylog2-server
       - name: Build Graylog
         if: steps.cache.outputs.cache-hit != 'true'
@@ -56,7 +61,7 @@ jobs:
         working-directory: plugin
         run: |
           mkdir runtime/graylog/plugin
-          cp ${{ steps.requestPom.outputs.jarPath }} runtime/graylog/plugin
+          cp ${{ steps.requestPom.outputs.JAR_PATH }} runtime/graylog/plugin
       - name: Execute backend tests
         working-directory: plugin/validation
         run: |
@@ -72,7 +77,7 @@ jobs:
         run: |
           mvn rpm:rpm
           echo -n "$GPG_PRIVATE_KEY" | gpg2 --batch --allow-secret-key-import --import
-          rpm --define "_gpg_name Airbus CyberSecurity" --define "_gpg_sign_cmd_extra_args --pinentry-mode loopback --passphrase $PASSPHRASE" --addsign "${{ steps.requestPom.outputs.rpmPath }}"
+          rpm --define "_gpg_name Airbus CyberSecurity" --define "_gpg_sign_cmd_extra_args --pinentry-mode loopback --passphrase $PASSPHRASE" --addsign "${{ steps.requestPom.outputs.RPM_PATH }}"
       - name: Package signed .deb
         working-directory: plugin
         env:
@@ -90,28 +95,28 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: jar
-          path: plugin/${{ steps.requestPom.outputs.jarPath }}
+          path: plugin/${{ steps.requestPom.outputs.JAR_PATH }}
           if-no-files-found: error
       - name: Archive .rpm
         uses: actions/upload-artifact@v3
         with:
           name: rpm
-          path: plugin/${{ steps.requestPom.outputs.rpmPath }}
+          path: plugin/${{ steps.requestPom.outputs.RPM_PATH }}
           if-no-files-found: error
       - name: Archive .deb
         uses: actions/upload-artifact@v3
         with:
           name: deb
-          path: plugin/${{ steps.requestPom.outputs.debPath }}
+          path: plugin/${{ steps.requestPom.outputs.DEB_PATH }}
           if-no-files-found: error
       - name: Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            plugin/${{ steps.requestPom.outputs.jarPath }}
-            plugin/${{ steps.requestPom.outputs.rpmPath }}
-            plugin/${{ steps.requestPom.outputs.debPath }}
+            plugin/${{ steps.requestPom.outputs.JAR_PATH }}
+            plugin/${{ steps.requestPom.outputs.RPM_PATH }}
+            plugin/${{ steps.requestPom.outputs.DEB_PATH }}
           fail_on_unmatched_files: true
       - name: Deploy to Maven Central
         if: startsWith(github.ref, 'refs/tags/')
