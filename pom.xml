@@ -77,23 +77,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>org.graylog2</groupId>
-            <artifactId>graylog2-server</artifactId>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.logging.log4j</groupId>
-                    <artifactId>log4j-slf4j-impl</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.google.auto.value</groupId>
-            <artifactId>auto-value</artifactId>
-            <version>${auto-value.version}</version>
-            <scope>provided</scope>
-        </dependency>
         <!-- Test dependencies -->
         <dependency>
             <groupId>junit</groupId>
