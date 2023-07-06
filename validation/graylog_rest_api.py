@@ -14,9 +14,9 @@ class GraylogRestApi:
     def _build_url(self, path):
         return parse.urljoin('http://127.0.0.1:9000/api/', path)
 
-    def _get(self, path):
+    def _get(self, path, params=None):
         url = self._build_url(path)
-        response = requests.get(url, auth=_AUTH, headers=_HEADERS)
+        response = requests.get(url, params, auth=_AUTH, headers=_HEADERS)
         self._print(f'GET {url} => {response.status_code}')
         return response
 
@@ -241,6 +241,12 @@ class GraylogRestApi:
             'title': title
         }
         self._post('plugins/com.airbus_cyber_security.graylog.wizard/lists', payload)
+
+    def query_data_adapter(self, adapter_name, key):
+        params = {
+            'key': key
+        }
+        return self._get(f'system/lookup/adapters/{adapter_name}/query?key=a', params=params)
 
     # TODO rename into get_notification_by_title
     # TODO try to remove this method, should not be necessary (use the notification field on the alert rule to retrieve the notification)
