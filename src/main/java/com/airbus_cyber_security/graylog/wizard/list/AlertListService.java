@@ -45,6 +45,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 
+// TODO move class into sub-namespace business
 public class AlertListService {
 
     private static final Path LISTS_PATH = Paths.get("/usr/share/graylog/data/alert-lists");

@@ -47,12 +47,14 @@ public class LookupService {
         this.lookupTableService = lookupTableService;
     }
 
+    // source of inspiration org.graylog2.rest.resources.system.lookup.LookupTableResource
     public String createDataAdapter(String title, LookupDataAdapterConfiguration configuration) {
         String identifier = RandomStringUtils.random(RANDOM_COUNT, RANDOM_CHARS);
 
         // TODO shouldn't use the title here, rather an identifier
         String name = this.getDataAdapterName(title);
         DataAdapterDto dto = DataAdapterDto.builder()
+                // TODO id may be null here and it will be automatically generated? Try it out!
                 .id(identifier)
                 .title("Alert wizard data adapter for list " + title)
                 .description(Description.COMMENT_ALERT_WIZARD)
@@ -61,7 +63,7 @@ public class LookupService {
                 .config(configuration)
                 .build();
 
-        DataAdapterDto dataAdapter = this.dataAdapterService.save(dto);
+        DataAdapterDto dataAdapter = this.dataAdapterService.saveAndPostEvent(dto);
         return dataAdapter.id();
     }
 

@@ -73,8 +73,8 @@ class Test(TestCase):
 
     def test_create_list_should_create_data_adapter(self):
         self._graylog.create_list('test', ['a'])
-        status_code = self._graylog.query_data_adapter('alert-wizard-list-data-adapter-test', 'a')
-        self.assertEqual(200, status_code)
+        response = self._graylog.query_data_adapter('alert-wizard-list-data-adapter-test', 'a')
+        self.assertEqual(200, response.status_code)
 
     def test_create_alert_rule_with_list_should_generate_event_when_message_field_is_in_list(self):
         title = 'list'
