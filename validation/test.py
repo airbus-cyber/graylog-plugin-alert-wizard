@@ -76,6 +76,13 @@ class Test(TestCase):
         response = self._graylog.query_data_adapter('alert-wizard-list-data-adapter-test', 'a')
         self.assertEqual(200, response.status_code)
 
+    def test_create_list_should_create_lookup_table_with_the_list_values(self):
+        self._graylog.create_list('test', ['a'])
+        response = self._graylog.query_lookup_table('alert-wizard-list-lookup-table-test', 'a')
+        print(response.json())
+        result = response.json()['single_value']
+        self.assertEqual('a', result)
+
     def test_create_alert_rule_with_list_should_generate_event_when_message_field_is_in_list(self):
         title = 'list'
         value = 'a'

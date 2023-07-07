@@ -99,6 +99,9 @@ class Graylog:
     def query_data_adapter(self, adapter_name, key):
         return self._api.query_data_adapter(adapter_name, key)
 
+    def query_lookup_table(self, table_name, key):
+        return self._api.query_lookup_table(table_name, key)
+
     def get_event_definition(self, identifier):
         return self._api.get_event_definition(identifier)
 

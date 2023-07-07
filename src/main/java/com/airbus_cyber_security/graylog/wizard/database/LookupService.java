@@ -47,14 +47,14 @@ public class LookupService {
         this.lookupTableService = lookupTableService;
     }
 
-    // source of inspiration org.graylog2.rest.resources.system.lookup.LookupTableResource
+    // source of inspiration org.graylog2.rest.resources.system.lookup.LookupTableResource.createAdapter
     public String createDataAdapter(String title, LookupDataAdapterConfiguration configuration) {
         String identifier = RandomStringUtils.random(RANDOM_COUNT, RANDOM_CHARS);
 
         // TODO shouldn't use the title here, rather an identifier
         String name = this.getDataAdapterName(title);
         DataAdapterDto dto = DataAdapterDto.builder()
-                // TODO id may be null here and it will be automatically generated? Try it out!
+                // TODO id may be null here and it will be automatically generated? Try it out (and also for the cache and table)!
                 .id(identifier)
                 .title("Alert wizard data adapter for list " + title)
                 .description(Description.COMMENT_ALERT_WIZARD)
@@ -67,6 +67,7 @@ public class LookupService {
         return dataAdapter.id();
     }
 
+    // source of inspiration org.graylog2.rest.resources.system.lookup.LookupTableResource.createCache
     private String createUniqueCache() {
         Collection<CacheDto> caches = this.cacheService.findAll();
         for (CacheDto cacheDto: caches) {
@@ -89,7 +90,7 @@ public class LookupService {
                 .config(config)
                 .build();
 
-        CacheDto cache = this.cacheService.save(dto);
+        CacheDto cache = this.cacheService.saveAndPostEvent(dto);
         return cache.id();
     }
 
@@ -101,6 +102,7 @@ public class LookupService {
         return "alert-wizard-list-lookup-table-" + title;
     }
 
+    // source of inspiration org.graylog2.rest.resources.system.lookup.LookupTableResource.createTable
     public void createLookupTable(String adapterIdentifier, String title) {
         String cacheIdentifier = this.createUniqueCache();
         String name = this.getLookupTableName(title);
@@ -117,7 +119,7 @@ public class LookupService {
                 .defaultMultiValueType(LookupDefaultMultiValue.Type.NULL)
                 .build();
 
-        this.lookupTableService.save(dto);
+        this.lookupTableService.saveAndPostEvent(dto);
     }
 
     public void deleteDataAdapter(String title) {

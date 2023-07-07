@@ -246,7 +246,13 @@ class GraylogRestApi:
         params = {
             'key': key
         }
-        return self._get(f'system/lookup/adapters/{adapter_name}/query?key=a', params=params)
+        return self._get(f'system/lookup/adapters/{adapter_name}/query?key={key}', params=params)
+
+    def query_lookup_table(self, table_name, key):
+        params = {
+            'key': key
+        }
+        return self._get(f'system/lookup/tables/{table_name}/query?key={key}', params=params)
 
     # TODO rename into get_notification_by_title
     # TODO try to remove this method, should not be necessary (use the notification field on the alert rule to retrieve the notification)
