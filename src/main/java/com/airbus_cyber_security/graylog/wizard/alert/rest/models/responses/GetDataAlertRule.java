@@ -101,6 +101,12 @@ public abstract class GetDataAlertRule {
                                           @JsonProperty("notification") String notificationIdentifier,
                                           @JsonProperty("created_at") DateTime createdAt,
                                           @JsonProperty("creator_user_id") String creatorUserIdentifier,
+										  // TODO shouldn't the JsonProperty here be last_modified rather than created_at?
+										  //      I guess all annotations on this method create can be removed
+										  //      since, if I understand well, this @JsonCreator is used to deserialize
+										  //      json objects to java.
+										  //      However this object is returns by the API REST, but never fed inside the request
+										  // TODO try to remove all annotations on this method
                                           @JsonProperty("created_at") DateTime lastModified,
                                           @JsonProperty("disabled") boolean isDisabled,
                                           @JsonProperty("description") String description,
