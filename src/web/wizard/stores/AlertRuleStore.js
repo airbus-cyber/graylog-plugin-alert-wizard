@@ -66,7 +66,6 @@ const AlertRuleStore = Reflux.createStore({
             .then(
                 response => {
                     this.alerts = response;
-                    this.trigger({alerts: this.alerts});
                     return this.alerts;
                 },
                 error => {
