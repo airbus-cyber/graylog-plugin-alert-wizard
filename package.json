@@ -18,10 +18,7 @@
   "dependencies": {},
   "devDependencies": {
     "graylog-web-plugin": "file:../graylog2-server/graylog2-web-interface/packages/graylog-web-plugin",
-    "react-intl": "^6.4.2",
-    "@babel/preset-react": "^7.16.7",
-    "@babel/plugin-transform-runtime": "^7.17.0",
-    "babel-plugin-dynamic-import-node": "^2.3.3"
+    "react-intl": "^6.4.2"
   },
   "private": true
 }
