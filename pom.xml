@@ -97,11 +97,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.lordofthejars</groupId>
-            <artifactId>nosqlunit-mongodb</artifactId>
-            <version>${nosqlunit.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.airbus-cyber-security.graylog</groupId>
             <artifactId>graylog-plugin-correlation-count</artifactId>
             <version>5.0.0</version>
@@ -123,6 +118,14 @@
             </resource>
         </resources>
         <plugins>
+            <!--
+            Note: most plugins versions are not explicited, because they are defined in the parent graylog pom
+            So they are updated, when the graylog version is updated
+
+            A command to find the available goals provided by a plugin:
+            mvn help:describe -Dplugin=org.apache.maven.plugins:maven-jar-plugin
+            mvn org.apache.maven.plugins:maven-jar-plugin:help
+            -->
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
