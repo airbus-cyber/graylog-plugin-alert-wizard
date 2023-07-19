@@ -170,6 +170,24 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return this.alertRuleService.all();
     }
 
+    // TODO is this really necessary? Should either be just the GET, or the GET with a formatting option (if performance are really an issue)
+    @GET
+    @Path("/data")
+    @Timed
+    @ApiOperation(value = "Lists all existing alerts with additional data")
+    @RequiresAuthentication
+    @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_READ)
+    public List<GetDataAlertRule> listWithData() {
+        List<AlertRule> alerts = this.alertRuleService.all();
+
+        List<GetDataAlertRule> alertsData = new ArrayList<>();
+        for (AlertRule alert: alerts) {
+            alertsData.add(this.constructDataAlertRule(alert));
+        }
+
+        return alertsData;
+    }
+
     @GET
     @Path("/{title}")
     @Timed
@@ -187,24 +205,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             throw new NotFoundException("Alert <" + alertTitle + "> not found!");
         }
         return this.constructDataAlertRule(alert);
-    }
-
-    // TODO is this really necessary? Should either be just the GET, or the GET with a formatting option (if performance are really an issue)
-    @GET
-    @Path("/data")
-    @Timed
-    @ApiOperation(value = "Lists all existing alerts with additional data")
-    @RequiresAuthentication
-    @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_READ)
-    public List<GetDataAlertRule> listWithData() {
-        List<AlertRule> alerts = this.alertRuleService.all();
-
-        List<GetDataAlertRule> alertsData = new ArrayList<>();
-        for (AlertRule alert: alerts) {
-            alertsData.add(this.constructDataAlertRule(alert));
-        }
-
-        return alertsData;
     }
 
     private String checkImportPolicyAndGetTitle(String title) {
