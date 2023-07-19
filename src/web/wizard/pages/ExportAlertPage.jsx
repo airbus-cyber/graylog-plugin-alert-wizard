@@ -49,7 +49,7 @@ const ExportAlertPage = createReactClass({
 
     componentDidMount() {
         AlertRuleActions.list().then(newAlerts => {
-            this.setState({alertRules: newAlerts});
+            this.setState({ alertRules: newAlerts });
         });
     },
 
