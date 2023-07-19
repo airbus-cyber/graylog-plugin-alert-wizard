@@ -97,16 +97,11 @@ const AlertRuleList = createReactClass({
         });
     },
 
-    deleteAlert(name) {
-        AlertRuleActions.deleteByName(name);
-    },
-
-    _deleteAlertFunction(name) {
-        return () => {
-            if (window.confirm(`${this.state.messages.confirmDeletion} "${name}" ?`)) {
-                this.deleteAlert(name);
-            }
-        };
+    _deleteAlert(name) {
+        if (!window.confirm(`${this.state.messages.confirmDeletion} "${name}" ?`)) {
+            return;
+        }
+        AlertRuleActions.deleteByName(name).then(() => this.list());
     },
 
     _onResume(eventDefinitionIdentifier, stream, secondEventDefinitionIdentifier, stream2) {
@@ -227,7 +222,7 @@ const AlertRuleList = createReactClass({
         const deleteAction = (
             <IfPermitted permissions="wizard_alerts_rules:delete">
                 <button id="delete-alert" type="button" className="btn btn-md btn-primary"
-                        title={this.state.messages.infoDelete} onClick={this._deleteAlertFunction(alert.title)}>
+                        title={this.state.messages.infoDelete} onClick={() => this._deleteAlert(alert.title)}>
                     <FormattedMessage id="wizard.delete" defaultMessage="Delete" />
                 </button>
             </IfPermitted>

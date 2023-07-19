@@ -160,8 +160,6 @@ const AlertRuleStore = Reflux.createStore({
         const promise = fetch(method, url)
             .then(() => {
                 UserNotification.success('Alert rule successfully deleted');
-                // TODO try to remove
-                this.listWithData();
                 return null;
             }, (error) => {
                 UserNotification.error(`Deleting alert rule failed with status: ${error.message}`,
