@@ -145,8 +145,6 @@ const AlertRuleStore = Reflux.createStore({
         const promise = fetch(method, url, request)
             .then(() => {
                 UserNotification.success('Alert rule successfully updated');
-                // TODO try to remove
-                this.list();
                 return true;
             }, (error) => {
                 UserNotification.error(`Updating alert rule failed with status: ${error.message}`,
