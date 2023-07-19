@@ -259,8 +259,7 @@ public class Conversions {
                                                    Stream secondStream,
                                                    String secondEventIdentifier,
                                                    List<FieldRule> pipelineFieldRules,
-                                                   List<FieldRule> secondPipelineFieldRules,
-                                                   long alertCount) {
+                                                   List<FieldRule> secondPipelineFieldRules) {
         Map<String, Object> parametersCondition = this.getConditionParameters(event.config());
         AlertRuleStream alertRuleStream = constructAlertRuleStream(stream, pipelineFieldRules);
         AlertRuleStream alertRuleStream2 = constructSecondAlertRuleStream(secondStream, secondPipelineFieldRules);
@@ -278,7 +277,6 @@ public class Conversions {
                 lastModified,
                 isDisabled,
                 event.description(),
-                alertCount,
                 conditionType,
                 parametersCondition,
                 alertRuleStream,

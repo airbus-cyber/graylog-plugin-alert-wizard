@@ -89,7 +89,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private final StreamPipelineService streamPipelineService;
     private final AlertListUtilsService alertListUtilsService;
     private final NotificationService notificationService;
-    private final AlertService alertService;
 
     @Inject
     public AlertRuleResource(AlertRuleService alertRuleService,
@@ -101,8 +100,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                              EventNotificationsResource eventNotificationsResource,
                              Conversions conversions,
                              EventDefinitionService eventDefinitionService,
-                             NotificationService notificationService,
-                             AlertService alertService) {
+                             NotificationService notificationService) {
         // TODO should probably move these fields down into the business namespace
         this.alertRuleService = alertRuleService;
         this.streamService = streamService;
@@ -115,7 +113,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.conversions = conversions;
         this.streamPipelineService = streamPipelineService;
         this.notificationService = notificationService;
-        this.alertService = alertService;
     }
 
     private Stream loadStream(String streamIdentifier) {
@@ -140,10 +137,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String eventIdentifier = alert.getEventID();
         EventDefinitionDto event = this.eventDefinitionService.getEventDefinition(eventIdentifier);
         NotificationDto notification = this.notificationService.get(alert.getNotificationID());
-        String streamIdentifier = alert.getStreamIdentifier();
-        Stream stream = this.loadStream(streamIdentifier);
+        Stream stream = this.loadStream(alert.getStreamIdentifier());
         DateTime lastModified = alert.getLastModified();
-        long alertCount = this.alertService.countAlerts(streamIdentifier, alert.getLastModified());
         Stream secondStream = this.loadSecondStream(alert.getSecondStreamID());
         return this.conversions.constructDataAlertRule(
                 alert.getTitle(),
@@ -157,8 +152,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 secondStream,
                 alert.getSecondEventID(),
                 alert.getPipelineFieldRules(),
-                alert.getSecondPipelineFieldRules(),
-                alertCount);
+                alert.getSecondPipelineFieldRules());
     }
 
     @GET
