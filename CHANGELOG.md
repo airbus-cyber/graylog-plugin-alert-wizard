@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [5.0.0](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/4.4.1...5.0.0)
+## [5.0.0](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/4.5.0...5.0.0)
 ### Features
 * Add compatibility with [Graylog 5.0](https://www.graylog.org/post/announcing-graylog-v5-0-8/)
 ### Changes
