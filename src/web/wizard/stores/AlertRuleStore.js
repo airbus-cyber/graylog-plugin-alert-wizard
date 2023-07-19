@@ -60,6 +60,7 @@ const AlertRuleStore = Reflux.createStore({
         // TODO try to remove
         this.trigger({alerts: this.alerts});
     },
+
     list() {
         const promise = fetch('GET', URLUtils.qualifyUrl(SOURCE_URL))
             .then(
@@ -74,6 +75,7 @@ const AlertRuleStore = Reflux.createStore({
                 });
         AlertRuleActions.list.promise(promise);
     },
+
     listWithData() {
         const promise = fetch('GET', URLUtils.qualifyUrl(SOURCE_URL + '/data'))
             .then(
@@ -86,6 +88,7 @@ const AlertRuleStore = Reflux.createStore({
                 });
         AlertRuleActions.listWithData.promise(promise);
     },
+
     get(name) {
         const promise = fetch('GET', URLUtils.qualifyUrl(SOURCE_URL + '/' + encodeURIComponent(name)))
             .then(
@@ -99,6 +102,7 @@ const AlertRuleStore = Reflux.createStore({
                 });
         AlertRuleActions.get.promise(promise);
     },
+
     create(newAlert) {
         const url = URLUtils.qualifyUrl(SOURCE_URL);
 
@@ -123,6 +127,7 @@ const AlertRuleStore = Reflux.createStore({
 
         AlertRuleActions.create.promise(promise);
     },
+
     update(name, updatedAlert) {
         const url = URLUtils.qualifyUrl(SOURCE_URL + '/' + encodeURIComponent(name));
         const method = 'PUT';
