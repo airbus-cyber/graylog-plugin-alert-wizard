@@ -344,6 +344,7 @@
         </plugins>
     </build>
 
+    <!-- Note: this is necessary to run js tests -->
     <profiles>
         <profile>
             <id>web-interface-build</id>
