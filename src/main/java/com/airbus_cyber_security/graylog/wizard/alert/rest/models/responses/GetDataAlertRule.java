@@ -90,9 +90,6 @@ public abstract class GetDataAlertRule {
 	@JsonProperty("disabled")
 	public abstract boolean isDisabled();
 
-	@JsonProperty("alert_count")
-	public abstract long getAlertCount();
-
 	@JsonCreator
 	public static GetDataAlertRule create(@JsonProperty("title") String title,
                                           @JsonProperty("severity") String severity,
@@ -110,14 +107,13 @@ public abstract class GetDataAlertRule {
                                           @JsonProperty("created_at") DateTime lastModified,
                                           @JsonProperty("disabled") boolean isDisabled,
                                           @JsonProperty("description") String description,
-                                          @JsonProperty("alert_count") long alertCount,
                                           @JsonProperty("condition_type") String conditionType,
                                           @JsonProperty("condition_parameters") Map<String, Object> conditionParameters,
                                           @JsonProperty("stream") AlertRuleStream stream,
                                           @JsonProperty("second_stream") AlertRuleStream stream2) {
 		return new AutoValue_GetDataAlertRule(title, severity, description, conditionType, conditionParameters, stream, stream2,
 				eventDefinitionIdentifier, secondEventDefinitionIdentifier, notificationIdentifier, createdAt, creatorUserIdentifier,
-				lastModified, isDisabled, alertCount);
+				lastModified, isDisabled);
 	}
 
 }

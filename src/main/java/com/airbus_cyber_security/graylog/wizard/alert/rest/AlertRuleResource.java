@@ -260,7 +260,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     }
 
     @POST
-    // TODO is this necessary? What is it for? Remove?
+    // TODO is this annotation @Timed necessary? What is it for? Remove?
     @Timed
     @ApiOperation(value = "Create an alert")
     @RequiresAuthentication
