@@ -62,7 +62,7 @@ const AlertRuleStore = Reflux.createStore({
     },
 
     list() {
-        const promise = fetch('GET', URLUtils.qualifyUrl(SOURCE_URL + '/data'))
+        const promise = fetch('GET', URLUtils.qualifyUrl(SOURCE_URL))
             .then(
                 response => {
                     return response;

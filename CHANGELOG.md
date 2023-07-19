@@ -7,7 +7,9 @@ All notable changes to this project will be documented in this file.
 * Add compatibility with [Graylog 5.0](https://www.graylog.org/post/announcing-graylog-v5-0-8/)
 ### Changes
 * Removed column `Alerts` on the page displaying rules
-* GET plugins/com.airbus_cyber_security.graylog.wizard/alerts/data plugins/com.airbus_cyber_security.graylog.wizard/alerts/{title} do not return field `alert_count` in their results anymore
+* GET plugins/com.airbus_cyber_security.graylog.wizard/alerts/data has been removed
+* GET plugins/com.airbus_cyber_security.graylog.wizard/alerts now returns the full information of each alert rules (what endpoint plugins/com.airbus_cyber_security.graylog.wizard/alerts/data used to return)
+* GET plugins/com.airbus_cyber_security.graylog.wizard/alerts plugins/com.airbus_cyber_security.graylog.wizard/alerts/{title} do not return field `alert_count` in their results anymore
 
 ## [4.5.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/4.4.1...4.5.0)
 ### Features

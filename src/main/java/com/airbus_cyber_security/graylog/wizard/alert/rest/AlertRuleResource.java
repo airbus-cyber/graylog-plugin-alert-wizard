@@ -160,18 +160,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     @ApiOperation(value = "Lists all existing alerts")
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_READ)
-    public List<AlertRule> list() {
-        return this.alertRuleService.all();
-    }
-
-    // TODO is this really necessary? Should either be just the GET, or the GET with a formatting option (if performance are really an issue)
-    @GET
-    @Path("/data")
-    @Timed
-    @ApiOperation(value = "Lists all existing alerts with additional data")
-    @RequiresAuthentication
-    @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_READ)
-    public List<GetDataAlertRule> listWithData() {
+    public List<GetDataAlertRule> list() {
         List<AlertRule> alerts = this.alertRuleService.all();
 
         List<GetDataAlertRule> alertsData = new ArrayList<>();

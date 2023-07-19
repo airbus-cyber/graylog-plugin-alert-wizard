@@ -201,7 +201,7 @@ class GraylogRestApi:
         return response.json()
 
     def get_alert_rules(self):
-        response = self._get('plugins/com.airbus_cyber_security.graylog.wizard/alerts/data')
+        response = self._get('plugins/com.airbus_cyber_security.graylog.wizard/alerts')
         return response.status_code
 
     def update_logging_alert_plugin_configuration(self):
