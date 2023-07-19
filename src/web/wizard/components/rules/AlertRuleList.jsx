@@ -194,7 +194,6 @@ const AlertRuleList = createReactClass({
             {value: 'Created', label: this.state.fieldsTitle.created},
             {value: 'Last Modified', label: this.state.fieldsTitle.lastModified},
             {value: 'User', label: this.state.fieldsTitle.user},
-            {value: 'Alerts', label: this.state.fieldsTitle.alerts},
             {value: 'Status', label: this.state.fieldsTitle.status},
             {value: 'Rule', label: this.state.fieldsTitle.rule},
         ];
@@ -279,11 +278,6 @@ const AlertRuleList = createReactClass({
             </div>
         );
 
-        const tooltipAlertCount = (
-            <Tooltip id="default-alert-count-tooltip">
-                <FormattedMessage id="wizard.tooltipAlerts" defaultMessage="The daily throughput and the total number of triggered alerts since the last modification of the alert rule" />
-               </Tooltip>);
-        
         const tooltipUser = (
                 <Tooltip id="default-user-tooltip">
                     <FormattedMessage id="wizard.tooltipUser" defaultMessa
@@ -291,9 +285,7 @@ const AlertRuleList = createReactClass({
                     ge="The last user who modified the alert rule" />
                 </Tooltip>);
 
-        let nbDays = moment().diff(toDateObject(alert.last_modified), 'days');
-        let nbAlertDay = Math.round(alert.alert_count / Math.ceil(nbDays));
-        
+
         let tabFields = [<td className="limited">{alert.title}</td>];
         this.props.field_order.map((field) => {
             if (field.enabled) {
@@ -318,15 +310,6 @@ const AlertRuleList = createReactClass({
                                         {alert.creator_user_id}
                                     </OverlayElement>
                                 </td>);
-                        break;
-                    case 'Alerts':
-                        tabFields.push(<td className="limited">
-                            <OverlayElement overlay={tooltipAlertCount} placement="top" useOverlay={true}
-                                            trigger={['hover', 'focus']}>
-                                <div><FormattedMessage id="wizard.manualCount" defaultMessage="{alertDay} alerts/day ({alertCount} total)"
-                                        values={{alertDay: nbAlertDay, alertCount: alert.alert_count}}/></div>
-                            </OverlayElement>
-                        </td>);
                         break;
                     case 'Status':
                         if (alertValid) {

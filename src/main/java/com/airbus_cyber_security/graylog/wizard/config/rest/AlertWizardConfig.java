@@ -62,7 +62,6 @@ public abstract class AlertWizardConfig {
 						FieldWizard.create("Created", true),
 						FieldWizard.create("Last Modified", true),
 						FieldWizard.create("User", true),
-						FieldWizard.create("Alerts", true),
 						FieldWizard.create("Status", true),
 						FieldWizard.create("Rule", false)))
 				.accessDefaultValues(DefaultValues.create("",

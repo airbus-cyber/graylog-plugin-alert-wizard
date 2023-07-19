@@ -19,7 +19,6 @@
   "wizard.title": "Titre",
   "wizard.filterlists": "Filtrer les listes",
   "wizard.filter": "Filtrer les règles d'alerte",
-  "wizard.tooltipAlerts": "Le flux journalier et le nombre total d'alertes déclenchées depuis la dernière modification de la règle d'alerte",
   "wizard.cancel": "Annuler",
   "wizard.save": "Sauvegarder",
   "wizard.titleParameters": "Paramètres de la règle d'alerte",

@@ -16,6 +16,7 @@
  */
 
 // TODO remove all the refs!!!
+// TODO move into sub-namespace configuration?
 
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -76,7 +77,6 @@ const ManageSettings = createReactClass({
             {value: 'Created', label: <FormattedMessage id="wizard.created" defaultMessage="Created" />},
             {value: 'Last Modified', label: <FormattedMessage id="wizard.lastModified" defaultMessage="Last Modified" />},
             {value: 'User', label: <FormattedMessage id="wizard.user" defaultMessage="User" />},
-            {value: 'Alerts', label: <FormattedMessage id="wizard.alerts" defaultMessage="Alerts" />},
             {value: 'Status', label: <FormattedMessage id="wizard.status" defaultMessage="Status" />},
             {value: 'Rule', label: <FormattedMessage id="wizard.rule" defaultMessage="Rule" />},
         ];

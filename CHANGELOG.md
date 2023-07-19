@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.0.0](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/4.4.1...5.0.0)
+### Features
+* Add compatibility with [Graylog 5.0](https://www.graylog.org/post/announcing-graylog-v5-0-8/)
+### Changes
+* Removed column `Alerts` on the page displaying rules 
+
 ## [4.5.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/4.4.1...4.5.0)
 ### Features
 * The rule description is now mapped to the event definition description ([issue #102](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/102))
