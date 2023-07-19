@@ -92,11 +92,12 @@ const AlertRuleList = createReactClass({
     },
 
     list() {
-        AlertRuleActions.listWithData().then(newAlerts => {
+        AlertRuleActions.list().then(newAlerts => {
             this.setState({alerts: newAlerts});
         });
     },
 
+    // TODO rename to _deleteAlertRule
     _deleteAlert(name) {
         if (!window.confirm(`${this.state.messages.confirmDeletion} "${name}" ?`)) {
             return;

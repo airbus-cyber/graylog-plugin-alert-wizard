@@ -53,7 +53,7 @@ const SOURCE_URL = RestUtils.buildSourceURL('alerts')
 
 const AlertRuleStore = Reflux.createStore({
     listenables: [AlertRuleActions],
-    // TODO try to remove this field (carefull with update and deleteByName
+    // TODO try to remove this field
     alerts: undefined,
 
     init() {
@@ -62,20 +62,6 @@ const AlertRuleStore = Reflux.createStore({
     },
 
     list() {
-        const promise = fetch('GET', URLUtils.qualifyUrl(SOURCE_URL))
-            .then(
-                response => {
-                    this.alerts = response;
-                    return this.alerts;
-                },
-                error => {
-                    UserNotification.error(`Fetching alert rules failed with status: ${error}`,
-                        'Could not retrieve alerts rules');
-                });
-        AlertRuleActions.list.promise(promise);
-    },
-
-    listWithData() {
         const promise = fetch('GET', URLUtils.qualifyUrl(SOURCE_URL + '/data'))
             .then(
                 response => {
@@ -83,9 +69,9 @@ const AlertRuleStore = Reflux.createStore({
                 },
                 error => {
                     UserNotification.error(`Fetching alert rules failed with status: ${error}`,
-                        'Could not retrieve alert rules with additional data');
+                        'Could not retrieve alert rules');
                 });
-        AlertRuleActions.listWithData.promise(promise);
+        AlertRuleActions.list.promise(promise);
     },
 
     get(name) {

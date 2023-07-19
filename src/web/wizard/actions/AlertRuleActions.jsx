@@ -19,7 +19,6 @@ import Reflux from 'reflux';
 
 const AlertRuleActions = Reflux.createActions({
     list: {asyncResult: true},
-    listWithData: {asyncResult: true},
     get: {asyncResult: true},
     create: {asyncResult: true},
     deleteByName: {asyncResult: true},
