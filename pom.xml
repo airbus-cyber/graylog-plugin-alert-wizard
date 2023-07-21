@@ -30,7 +30,6 @@
     <artifactId>graylog-plugin-alert-wizard</artifactId>
     <version>5.0.0</version>
     <packaging>jar</packaging>
-
     <name>${project.artifactId}</name>
     <description>Graylog ${project.artifactId} plugin.</description>
     <url>https://github.com/airbus-cyber/graylog-plugin-alert-wizard</url>
