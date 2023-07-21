@@ -18,8 +18,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
-// TODO why are we not using the Button from components/bootstrap like elsewhere?
-import { Button } from 'react-bootstrap';
+import { Button } from 'components/bootstrap';
 import { FormattedMessage } from 'react-intl';
 import { Row, Col } from 'components/bootstrap';
 import ObjectUtils from 'util/ObjectUtils';

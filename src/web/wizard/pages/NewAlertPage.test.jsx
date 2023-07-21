@@ -16,10 +16,10 @@
  */
 
 import React from 'react';
+import { act } from 'react-dom/test-utils';
 import { render } from 'wrappedTestingLibrary';
 import { StoreMock as MockStore } from 'helpers/mocking';
-import { Router } from 'react-router-dom';
-import history from 'util/History';
+import { BrowserRouter } from 'react-router-dom';
 import fetch from 'logic/rest/FetchProvider';
 
 import NewAlertPage from './NewAlertPage';
@@ -43,9 +43,11 @@ jest.mock('logic/rest/FetchProvider', () => jest.fn((method, url) => {
 }));
 
 describe('<NewAlertPage>', () => {
-    it('should not fail', () => {
-        render(<Router history={history}>
-                 <NewAlertPage />
-               </Router>);
+    it('should not fail', async () => {
+        await act(async () => {
+            render(<BrowserRouter>
+                       <NewAlertPage />
+                   </BrowserRouter>);
+        });
     });
 });

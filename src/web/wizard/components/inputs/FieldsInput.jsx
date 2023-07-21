@@ -23,8 +23,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
 import Reflux from 'reflux';
-// TODO rather use Button from components/bootstrap?
-import { Button } from 'react-bootstrap';
+import { Button } from 'components/bootstrap';
 import { Input, Row, Col } from 'components/bootstrap';
 import { Select, Spinner } from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';

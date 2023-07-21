@@ -190,7 +190,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return this.constructDataAlertRule(alert);
     }
 
-    private String checkImportPolicyAndGetTitle(String title) {
+    private String checkImportPolicyAndGetTitle(String title, UserContext userContext) {
         String alertTitle = title;
         if (this.alertRuleService.isPresent(alertTitle)) {
             // TODO should be get or default here: it will return null when starting with a fresh instance of graylog
@@ -207,7 +207,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 alertTitle = newAlertTitle;
             } else if (importPolicy != null && importPolicy.equals(ImportPolicyType.REPLACE)) {
                 try {
-                    this.delete(alertTitle);
+                    this.delete(alertTitle, userContext);
                 } catch (MongoException | UnsupportedEncodingException e) {
                     LOG.error("Failed to replace alert rule");
                     throw new BadRequestException("Failed to replace alert rule.");
@@ -257,7 +257,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         String userName = getCurrentUser().getName();
         String title = request.getTitle();
-        String alertTitle = checkImportPolicyAndGetTitle(title);
+        String alertTitle = checkImportPolicyAndGetTitle(title, userContext);
         AlertRuleStream streamConfiguration = request.getStream();
         AlertRuleStream streamConfiguration2 = request.getSecondStream();
         String severity = request.getSeverity();
@@ -437,7 +437,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     })
     @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_DELETE)
     public void delete(@ApiParam(name = TITLE, required = true)
-                       @PathParam(TITLE) String title
+                       @PathParam(TITLE) String title,
+                       @Context UserContext userContext
     ) throws MongoException, UnsupportedEncodingException {
         String alertTitle = java.net.URLDecoder.decode(title, ENCODING);
 
@@ -456,7 +457,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             }
             if (alertRule.getNotificationID() != null && !alertRule.getNotificationID().isEmpty()) {
                 // TODO move this down into AlertRuleUtilsService and remove the use for eventNotificationsResource
-                this.eventNotificationsResource.delete(alertRule.getNotificationID());
+                this.eventNotificationsResource.delete(alertRule.getNotificationID(), userContext);
             }
             if (alertRule.getSecondEventID() != null && !alertRule.getSecondEventID().isEmpty()) {
                 this.eventDefinitionService.delete(alertRule.getSecondEventID());

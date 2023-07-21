@@ -15,9 +15,8 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-import PropTypes from 'prop-types';
 import React from 'react';
-import createReactClass from 'create-react-class';
+import { useState, useEffect } from 'react';
 import { Button, Col, Row } from 'components/bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { DocumentTitle, PageHeader, Spinner } from 'components/common';
@@ -26,6 +25,7 @@ import AlertRuleActions from 'wizard/actions/AlertRuleActions';
 import { IntlProvider, FormattedMessage } from 'react-intl';
 import messages_fr from 'translations/fr.json';
 import withParams from 'routing/withParams';
+import useHistory from 'routing/useHistory';
 import Navigation from 'wizard/routing/Navigation';
 import ButtonToEventDefinition from 'wizard/components/buttons/ButtonToEventDefinition';
 import ButtonToNotification from 'wizard/components/buttons/ButtonToNotification';
@@ -36,65 +36,49 @@ const messages = {
     'fr': messages_fr
 };
 
-const UpdateAlertPage = createReactClass({
-    displayName: 'UpdateAlertPage',
-    propTypes: {
-        params: PropTypes.object.isRequired,
-    },
+const UpdateAlertPage = ({params}) => {
+    const [alert, setAlert] = useState(null);
+    const history = useHistory();
 
-    getInitialState() {
-        return {
-            alert: null,
-            alertData: null,
-        };
-    },
-
-    componentDidMount() {
-        AlertRuleActions.get(this.props.params.alertRuleTitle).then(alert => {
-            this.setState({alert: alert});
+    useEffect(() => {
+        AlertRuleActions.get(params.alertRuleTitle).then(alert => {
+            setAlert(alert);
         });
-        AlertRuleActions.get(this.props.params.alertRuleTitle).then(alertData => {
-            this.setState({alertData: alertData});
-        });
-    },
+    }, []);
 
-    _isLoading() {
-        return !this.state.alert || !this.state.alertData;
-    },
-
-    _update(alert) {
-        AlertRuleActions.update.triggerPromise(this.state.alertData.title, alert).then((response) => {
+    const _update = (alert) => {
+        // TODO simplify parameters here (only one necessary and the code in AlertRuleStore)
+        AlertRuleActions.update(alert.title, alert).then((response) => {
             if (response !== true) {
                 return;
             }
-            Navigation.redirectToWizard();
+            history.push(Navigation.getWizardRoute());
         });
-    },
+    }
 
-    render() {
-        if (this._isLoading()) {
-            return <Spinner/>;
-        }
+    if (!alert) {
+        return <Spinner/>;
+    }
 
-        let navigationToRuleComponents = (
-              <div className="alert-actions pull-right">
-                  <ButtonToEventDefinition target={this.state.alert.condition} />{' '}
-                  <ButtonToNotification target={this.state.alert.notification} />
-              </div>
-        );
+    let navigationToRuleComponents = (
+          <div className="alert-actions pull-right">
+              <ButtonToEventDefinition target={alert.condition} />{' '}
+              <ButtonToNotification target={alert.notification} />
+          </div>
+    );
 
-        return (
-          <IntlProvider locale={language} messages={messages[language]}>
+    return (
+        <IntlProvider locale={language} messages={messages[language]}>
             <DocumentTitle title="Edit alert rule">
                 <div>
-                    <PageHeader title={<FormattedMessage id= "wizard.updateAlertRule" 
-                            defaultMessage= 'Wizard: Editing alert rule "{title}"' 
-                            values={{title: this.state.alert.title }} />} >
+                    <PageHeader title={<FormattedMessage id= "wizard.updateAlertRule"
+                            defaultMessage= 'Wizard: Editing alert rule "{title}"'
+                            values={{title: alert.title }} />} >
                         <span>
                             <FormattedMessage id= "wizard.define" defaultMessage= "You can define an alert rule." />
                         </span>
                         <span>
-                            <FormattedMessage id="wizard.documentation" 
+                            <FormattedMessage id="wizard.documentation"
                             defaultMessage= "Read more about Wizard alert rules in the documentation." />
                         </span>
                         <span>
@@ -106,14 +90,13 @@ const UpdateAlertPage = createReactClass({
                     </PageHeader>
                     <Row className="content">
                         <Col md={12}>
-                            <AlertRuleForm alert={this.state.alertData} navigationToRuleComponents={navigationToRuleComponents} onSave={this._update} />
+                            <AlertRuleForm alert={state.alert} navigationToRuleComponents={navigationToRuleComponents} onSave={_update} />
                         </Col>
                     </Row>
                 </div>
             </DocumentTitle>
-           </IntlProvider>
-        );
-    },
-});
+        </IntlProvider>
+    );
+}
 
 export default withParams(UpdateAlertPage);
