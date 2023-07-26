@@ -25,11 +25,13 @@ import NumberInput from 'wizard/components/inputs/NumberInput';
 import TimeRangeInput from 'wizard/components/inputs/TimeRangeInput';
 import Description from 'wizard/components/inputs/Description';
 
+// TODO rewrite this component in functional style
 const CountCondition = createReactClass({
     displayName: 'CountCondition',
 
     propTypes: {
-        onUpdate: PropTypes.func,
+        alert: PropTypes.object.isRequired,
+        onUpdate: PropTypes.func
     },
     getInitialState() {
         return {
@@ -58,6 +60,7 @@ const CountCondition = createReactClass({
         // TODO should factor this code block that seemed to have been copy-pasted
         let time;
         let time_type;
+        // TODO extract alert before with deconstruction syntax
         if (this.props.alert.condition_parameters.time >= 1440) {
             time = this.props.alert.condition_parameters.time / 1440;
             time_type = 1440;
