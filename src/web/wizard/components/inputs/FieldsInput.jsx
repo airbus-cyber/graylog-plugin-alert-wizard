@@ -69,16 +69,17 @@ const FieldsInput = createReactClass({
             };
         this.setState({messages:messages});
     },
-    // TODO remove componentWillReceiveProps
-    componentWillReceiveProps(nextProps) {
-        if (!_.isEqual(nextProps.matchData, this.props.matchData)) {
-            this.setState({matchData: nextProps.matchData});
+
+    componentDidUpdate(prevProps) {
+        if (!_.isEqual(this.props.matchData, prevProps.matchData)) {
+            this.setState({matchData: this.props.matchData});
         }
-        if (!_.isEqual(nextProps.stream, this.props.stream) && nextProps.stream !== null) {
-            this.setState({stream: nextProps.stream});
+        if (!_.isEqual(this.props.stream, prevProps.stream) && this.props.stream !== null) {
+            this.setState({stream: this.props.stream});
             this.setState({matchData: undefined});
         }
     },
+
     getInitialState() {
         return {
             stream: ObjectUtils.clone(this.props.stream ? this.props.stream : STREAM),
