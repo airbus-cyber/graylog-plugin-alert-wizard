@@ -17,8 +17,7 @@
 
 import React from 'react';
 import { render } from 'wrappedTestingLibrary';
-import { Router } from 'react-router-dom';
-import history from 'util/History';
+import { BrowserRouter } from 'react-router-dom';
 
 import NewAlertListPage from './NewAlertListPage';
 
@@ -26,8 +25,8 @@ jest.mock('routing/Routes', () => ({ pluginRoute: () => '/route' }));
 
 describe('<NewAlertListPage>', () => {
     it('should not fail', () => {
-        render(<Router history={history}>
+        render(<BrowserRouter history={history}>
                  <NewAlertListPage />
-               </Router>);
+               </BrowserRouter>);
     });
 });

@@ -18,16 +18,15 @@
 import React from 'react';
 import { render } from 'wrappedTestingLibrary';
 import { IntlProvider } from 'react-intl';
-import { Router } from 'react-router-dom';
-import history from 'util/History';
+import { BrowserRouter } from 'react-router-dom';
 import ButtonToEventDefinition from './ButtonToEventDefinition';
 
 describe('<ButtonToEventDefinition>', () => {
     it('should not fail', () => {
         render(<IntlProvider locale="en">
-                   <Router history={history}>
+                   <BrowserRouter history={history}>
                        <ButtonToEventDefinition target="645e2702a840630f365f59ab" />
-                   </Router>
+                   </BrowserRouter>
                </IntlProvider>);
     });
 });
