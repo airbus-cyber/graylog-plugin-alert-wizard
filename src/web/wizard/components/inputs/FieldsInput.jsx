@@ -50,6 +50,7 @@ const FieldsInput = createReactClass({
         message: PropTypes.object,
         matchData: PropTypes.object,
     },
+
     getDefaultProps() {
         return {
             stream: STREAM,
@@ -58,16 +59,6 @@ const FieldsInput = createReactClass({
 
     componentDidMount() {
         IndexSetsActions.list(false);
-    },
-
-    // TODO replace deprecated componentWillMount into a combination of getInitialState and componentDidMount
-    componentWillMount() {
-        const { intl } = this.props;
-        const messages = {
-                add: intl.formatMessage({id: "wizard.add", defaultMessage: "Add"}),
-                tryFieldsCondition: intl.formatMessage({id: "wizard.tryFieldsCondition", defaultMessage: "Try the fields condition"}),
-            };
-        this.setState({messages:messages});
     },
 
     componentDidUpdate(prevProps) {
@@ -235,6 +226,11 @@ const FieldsInput = createReactClass({
         );
 
         const { intl } = this.props;
+        const messages = {
+            add: intl.formatMessage({id: "wizard.add", defaultMessage: "Add"}),
+            tryFieldsCondition: intl.formatMessage({ id: "wizard.tryFieldsCondition", defaultMessage: "Try the fields condition" }),
+            select: intl.formatMessage({id: "wizard.select", defaultMessage: "Select..."})
+        };
 
         return (
         <Row>
@@ -253,19 +249,19 @@ const FieldsInput = createReactClass({
                         options={this._availableMatchingType()}
                         matchProp="value"
                         onChange={this._onMatchingTypeSelect}
-                        placeholder={intl.formatMessage({id: "wizard.select", defaultMessage: "Select..."})}
+                        placeholder={messages.select}
                     />
                     </div>
                 </Input>
                 <label>&nbsp; </label>
                 <label><FormattedMessage id="wizard.followingRules" defaultMessage="of the following rules:" /></label>
                 {' '}
-                <Button disabled={!this.props.message} onClick={this._checkFieldsCondition} bsStyle="info" title={this.state.messages.tryFieldsCondition} style={{marginLeft: '10em'}}>
+                <Button disabled={!this.props.message} onClick={this._checkFieldsCondition} bsStyle="info" title={messages.tryFieldsCondition} style={{marginLeft: '10em'}}>
                     <FormattedMessage id ="wizard.try" defaultMessage="Try" />
                 </Button>
                 <br/><br/>
                 {listFieldRule}
-                <Button onClick={this._addFieldRule} bsStyle="info" title={this.state.messages.add}>
+                <Button onClick={this._addFieldRule} bsStyle="info" title={messages.add}>
                     <IconAdd/>
                 </Button>
             </Col>
