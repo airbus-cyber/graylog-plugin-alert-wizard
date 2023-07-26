@@ -27,6 +27,7 @@ import ObjectUtils from 'util/ObjectUtils';
 import { FormattedMessage } from 'react-intl';
 import FormsUtils from 'util/FormsUtils';
 
+// TODO convert into functional component
 const ManageSettings = createReactClass({
     displayName: 'ManageSettings',
 
@@ -42,6 +43,7 @@ const ManageSettings = createReactClass({
                 default_values: this.props.config.default_values,
                 import_policy: this.props.config.import_policy,
             },
+            showModal: false
         };
     },
     
@@ -50,11 +52,11 @@ const ManageSettings = createReactClass({
     },
 
     _openModal() {
-        this.refs.configModal.open();
+        this.setState({ showModal: true });
     },
 
     _closeModal() {
-        this.refs.configModal.close();
+        this.setState({ showModal: false });
     },
 
     _saveConfig() {
@@ -210,10 +212,10 @@ const ManageSettings = createReactClass({
         return (
             <span>
         <Button bsStyle="info" onClick={this._openModal}><FormattedMessage id="wizard.manageSettings" defaultMessage="Manage settings" /></Button>
-        <BootstrapModalForm ref="configModal"
+        <BootstrapModalForm show={this.state.showModal}
                             title={<FormattedMessage id="wizard.manageWizardSettings" defaultMessage="Manage Wizard settings" />}
                             onSubmitForm={this._saveConfig}
-                            onModalClose={this._resetConfig}
+                            onCancel={this._resetConfig}
                             cancelButtonText={<FormattedMessage id="wizard.cancel" defaultMessage="Cancel" />}
                             submitButtonText={<FormattedMessage id="wizard.save" defaultMessage="Save" />}>
             <div>

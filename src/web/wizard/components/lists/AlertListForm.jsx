@@ -70,6 +70,7 @@ const AlertListForm = createReactClass({
 
     render() {
         return (
+            // TODO should remove ref
             <BootstrapModalForm ref="modal"
                                 title={<FormattedMessage id= "wizard.cloneList" defaultMessage= 'Cloning List "{title}"' values={{title: this.state.origTitle }} />}
                                 onSubmitForm={this._onSubmit}
