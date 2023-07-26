@@ -18,7 +18,7 @@
 import React from 'react';
 import createReactClass from 'create-react-class';
 import { IntlProvider, FormattedMessage } from 'react-intl';
-import { Col, Row } from 'react-bootstrap';
+import { Col, Row } from 'components/bootstrap';
 import messages_fr from 'translations/fr.json';
 import { PageHeader, DocumentTitle } from 'components/common';
 import AlertListDisplay from 'wizard/components/lists/AlertListDisplay';

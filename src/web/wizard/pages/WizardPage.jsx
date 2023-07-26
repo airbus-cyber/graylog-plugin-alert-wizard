@@ -20,7 +20,7 @@
 // * pages/ShowMessagePage.tsx
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { Col, Row } from 'react-bootstrap';
+import { Col, Row } from 'components/bootstrap';
 import { IfPermitted, PageHeader, DocumentTitle, Spinner } from 'components/common';
 import AlertRuleList from 'wizard/components/rules/AlertRuleList';
 import ManageSettings from 'wizard/components/ManageSettings';
