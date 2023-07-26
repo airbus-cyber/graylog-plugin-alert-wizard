@@ -68,7 +68,7 @@ jobs:
           python -m venv venv
           source venv/bin/activate
           pip install -r requirements.txt
-          PYTHONBUFFERED=true python -m unittest --verbose
+          PYTHONUNBUFFERED=true python -m unittest --verbose
       - name: Package signed .rpm
         working-directory: plugin
         env:
