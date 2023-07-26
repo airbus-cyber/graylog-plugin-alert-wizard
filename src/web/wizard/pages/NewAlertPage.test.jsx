@@ -27,8 +27,8 @@ import NewAlertPage from './NewAlertPage';
 jest.mock('routing/Routes', () => ({ pluginRoute: () => '/route' }));
 jest.mock('stores/users/CurrentUserStore', () => ({ CurrentUserStore: MockStore('get') }));
 jest.mock('stores/nodes/NodesStore', () => ({
-  NodesActions: { list: (...args) => Promise.resolve({ nodes: [] }) },
-  NodesStore: MockStore(),
+    NodesActions: { list: (...args) => Promise.resolve({ nodes: [] }) },
+    NodesStore: MockStore(),
 }));
 jest.mock('logic/rest/FetchProvider', () => jest.fn((method, url) => {
     if (url === 'http://localhost/system/locales') {
