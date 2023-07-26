@@ -22,8 +22,7 @@
 import React from 'react';
 import { render } from 'wrappedTestingLibrary';
 import { asMock } from 'helpers/mocking';
-import { Router } from 'react-router-dom';
-import history from 'util/History';
+import { BrowserRouter } from 'react-router-dom';
 
 import { IntlProvider } from 'react-intl';
 import CreateListFormInput from 'wizard/components/lists/CreateListFormInput';
@@ -34,9 +33,9 @@ describe('<CreateListFormInput>', () => {
 
   it('should not fail when rendering', () => {
     render(<IntlProvider locale="en" >
-             <Router history={history}>
+             <BrowserRouter history={history}>
                <CreateListFormInput onSave={jest.fn()} />
-             </Router>
+             </BrowserRouter>
            </IntlProvider>);
   });
 });
