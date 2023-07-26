@@ -54,6 +54,15 @@ jest.mock('logic/rest/FetchProvider', () => jest.fn((method, url) => {
                 backlog: 500,
                 grace: 1
             }
+        },
+        '/system/inputs': {
+            total: 0,
+            inputs: []
+        },
+        '/system/indices/index_sets?stats=false': {
+            total: 0,
+            index_sets: [],
+            stats: {}
         }
     };
     const path = url.slice('http://localhost'.length)
