@@ -20,8 +20,9 @@ import React from 'react';
 import createReactClass from 'create-react-class';
 import { Input, Row, Col } from 'components/bootstrap';
 import { Select } from 'components/common';
-import { FormattedMessage } from 'react-intl';
+import { injectIntl, FormattedMessage } from 'react-intl';
 
+// TODO convert to a functional component
 const TitleSeverity = createReactClass({
     displayName: 'TitleSeverity',
 
@@ -61,6 +62,7 @@ const TitleSeverity = createReactClass({
     },
     
     render() {
+        const { intl } = this.props;
 
         return (
             <Row>
@@ -80,7 +82,7 @@ const TitleSeverity = createReactClass({
                             matchProp="value"
                             onChange={this._onSeverityTypeSelect}
                             clearable={false}
-                            placeholder={<FormattedMessage id= "wizard.select" defaultMessage= "Select..." />}
+                            placeholder={intl.formatMessage({id: "wizard.select", defaultMessage: "Select..."})}
                         />
                         </div>
                     </Input>
@@ -91,4 +93,4 @@ const TitleSeverity = createReactClass({
     },
 });
 
-export default TitleSeverity;
+export default injectIntl(TitleSeverity);
