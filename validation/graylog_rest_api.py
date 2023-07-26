@@ -8,8 +8,6 @@ _HEADERS = {'X-Requested-By': 'test-program'}
 
 class GraylogRestApi:
 
-    def _print(self, message):
-        print(message, flush=True)
 
     def _build_url(self, path):
         return parse.urljoin('http://127.0.0.1:9000/api/', path)
@@ -17,25 +15,25 @@ class GraylogRestApi:
     def _get(self, path, params=None):
         url = self._build_url(path)
         response = requests.get(url, params, auth=_AUTH, headers=_HEADERS)
-        self._print(f'GET {url} => {response.status_code}')
+        print(f'GET {url} => {response.status_code}')
         return response
 
     def _put(self, path, payload):
         url = self._build_url(path)
         response = requests.put(url, json=payload, auth=_AUTH, headers=_HEADERS)
-        self._print(f'PUT {url} {payload} => {response.status_code}')
+        print(f'PUT {url} {payload} => {response.status_code}')
         return response
 
     def _post(self, path, payload=None):
         url = self._build_url(path)
         response = requests.post(url, json=payload, auth=_AUTH, headers=_HEADERS)
-        self._print(f'POST {url} {payload} => {response.status_code}')
+        print(f'POST {url} {payload} => {response.status_code}')
         return response
 
     def _delete(self, path):
         url = self._build_url(path)
         response = requests.delete(url, auth=_AUTH, headers=_HEADERS)
-        self._print(f'DEL {url}')
+        print(f'DEL {url}')
         return response
 
     def default_deflector_is_up(self):
