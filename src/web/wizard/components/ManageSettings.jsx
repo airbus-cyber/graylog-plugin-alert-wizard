@@ -21,12 +21,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
-// TODO rather use components from components/bootsrap?
-import { Col, Table, FormGroup, Tooltip } from 'react-bootstrap';
-import { Button } from 'components/bootstrap';
+// TODO remove imports from react-bootstrap everywhere, and use only components/bootstrap?
+import { Col, Table, FormGroup } from 'react-bootstrap';
+import { Button, BootstrapModalForm, Input, Tooltip } from 'components/bootstrap';
 import { Select, SortableList, Spinner, OverlayElement } from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
-import { BootstrapModalForm, Input } from 'components/bootstrap';
 import { FormattedMessage } from 'react-intl';
 import FormsUtils from 'util/FormsUtils';
 

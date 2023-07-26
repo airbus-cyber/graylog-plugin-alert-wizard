@@ -25,11 +25,9 @@ import createReactClass from 'create-react-class';
 // TODO should rather use useIntl, but should convert to functional components first...
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { LinkContainer } from 'react-router-bootstrap';
-// TODO remove imports from react-bootstrap everywhere, and use only components/bootstrap?
-import { Tooltip } from 'react-bootstrap';
 import moment from 'moment';
 
-import { DataTable, IfPermitted, OverlayElement, Spinner, Timestamp } from 'components/common';
+import { DataTable, IfPermitted, OverlayElement, Spinner, Timestamp, Tooltip } from 'components/common';
 import { Button } from 'components/bootstrap';
 import PermissionsMixin from 'util/PermissionsMixin';
 import Routes from 'routing/Routes';
