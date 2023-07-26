@@ -24,22 +24,41 @@ import fetch from 'logic/rest/FetchProvider';
 
 import NewAlertPage from './NewAlertPage';
 
+// sources of inspiration for this code:
+// * views/components/SearchBar.test.tsx
 jest.mock('routing/Routes', () => ({ pluginRoute: () => '/route' }));
 jest.mock('stores/users/CurrentUserStore', () => ({ CurrentUserStore: MockStore('get') }));
 jest.mock('stores/nodes/NodesStore', () => ({
     NodesActions: { list: (...args) => Promise.resolve({ nodes: [] }) },
     NodesStore: MockStore(),
 }));
+// TODO I do not understand why this mock is necessary, shouldn't mock of FetchProvider url /streams sufficient?
+jest.mock('stores/streams/StreamsStore', () => MockStore(
+  ['listStreams', () => ({ then: jest.fn() })],
+  'availableStreams',
+));
+
 jest.mock('logic/rest/FetchProvider', () => jest.fn((method, url) => {
-    if (url === 'http://localhost/system/locales') {
+    const MOCKED_REQUESTS_RESULTS = {
         // TODO should check the value that is returned by /system/locales in real life
-        return Promise.resolve({ 'locales': '' })
-    }
-    if (url === 'http://localhost/plugins/com.airbus_cyber_security.graylog.wizard/config') {
-        // TODO should check the value that is returned by /system/locales in real life
-        return Promise.resolve()
-    }
-    return Promise.resolve()
+        '/system/locales': { 'locales': '' },
+        '/plugins/com.airbus_cyber_security.graylog.wizard/config': {
+            'default_values': {
+                title: 'title',
+                severity: 'info',
+                matching_type: 'AND',
+                threshold_type: '>',
+                threshold: 0,
+                time: 1,
+                time_type: 1,
+                backlog: 500,
+                grace: 1
+            }
+        }
+    };
+    const path = url.slice('http://localhost'.length)
+    const result = MOCKED_REQUESTS_RESULTS[path]
+    return Promise.resolve(result);
 }));
 
 describe('<NewAlertPage>', () => {

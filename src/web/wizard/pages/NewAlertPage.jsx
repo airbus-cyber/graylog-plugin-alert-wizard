@@ -58,7 +58,7 @@ const NewAlertPage = () => {
 
     let componentCreateAlertRule;
     if (configuration) {
-        const default_values = configurations.default_values;
+        const default_values = configuration.default_values;
         const time = default_values.time;
         const time_type = default_values.time_type;
         const alert = {
