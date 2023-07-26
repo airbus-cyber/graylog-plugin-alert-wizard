@@ -19,10 +19,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
-import { FormattedMessage } from 'react-intl';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { Input, Row, Col } from 'components/bootstrap';
 import { Select } from 'components/common';
 
+// TODO rewrite into a functional component
 const TimeRangeInput = createReactClass({
     displayName: 'TimeRangeInput',
 
@@ -60,6 +61,7 @@ const TimeRangeInput = createReactClass({
     },
 
     render() {
+        const { intl } = this.props;
         
         return (
             <Row>
@@ -79,7 +81,7 @@ const TimeRangeInput = createReactClass({
                             options={this._availableTimeTypes()}
                             matchProp="value"
                             onChange={this._onTimeSelect}
-                            placeholder={<FormattedMessage id= "wizard.select" defaultMessage= "Select..." />}
+                            placeholder={intl.formatMessage({ id: "wizard.select", defaultMessage: "Select..." })}
                         />
                         </div>
                     </Input>
@@ -90,4 +92,4 @@ const TimeRangeInput = createReactClass({
     },
 });
 
-export default TimeRangeInput;
+export default injectIntl(TimeRangeInput);
