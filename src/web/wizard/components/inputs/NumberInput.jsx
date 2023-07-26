@@ -18,10 +18,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
-import {FormattedMessage} from 'react-intl';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { Input, Row, Col } from 'components/bootstrap';
 import { Select } from 'components/common';
 
+// TODO rewrite into functional form
 const NumberInput = createReactClass({
     displayName: 'NumberInput',
 
@@ -59,6 +60,7 @@ const NumberInput = createReactClass({
     },
     
     render() {
+        const { intl } = this.props;
 
         return (
             <Row>
@@ -76,7 +78,7 @@ const NumberInput = createReactClass({
                             options={this._availableThresholdTypes()}
                             matchProp="value"
                             onChange={this._onThresholdTypeSelect}
-                            placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..." />}
+                            placeholder={intl.formatMessage({ id: "wizard.select", defaultMessage: "Select..." })}
                         />
                         </div>
                     </Input>
@@ -93,4 +95,4 @@ const NumberInput = createReactClass({
     },
 });
 
-export default NumberInput;
+export default injectIntl(NumberInput);
