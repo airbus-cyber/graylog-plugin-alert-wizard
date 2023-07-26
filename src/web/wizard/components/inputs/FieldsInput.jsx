@@ -38,6 +38,7 @@ const STREAM = {
     field_rule: [{field: '', type: '', value: ''}],
 };
 
+// TODO should convert to a functional component
 const FieldsInput = createReactClass({
     displayName: 'FieldsInput',
 
@@ -48,7 +49,7 @@ const FieldsInput = createReactClass({
         onSaveStream: PropTypes.func,
         message: PropTypes.object,
         matchData: PropTypes.object,
-    },   
+    },
     getDefaultProps() {
         return {
             stream: STREAM,
@@ -225,12 +226,14 @@ const FieldsInput = createReactClass({
         }
         const color = (this.state.matchData ? this._getMatchDataColor() : '#FFFFFF');
         let listFieldRule = this.state.stream.field_rule.map((rule) =>
-            <div><FieldRule rule={rule} onUpdate={this._onUpdateFieldRuleSubmit} onDelete={this._onDeleteFieldRuleSubmit}
+            <div key={rule}><FieldRule rule={rule} onUpdate={this._onUpdateFieldRuleSubmit} onDelete={this._onDeleteFieldRuleSubmit}
                            index={this.state.stream.field_rule.indexOf(rule)}
                            matchData={this.state.matchData}/>
                 <br/>
             </div>
         );
+
+        const { intl } = this.props;
 
         return (
         <Row>
@@ -249,7 +252,7 @@ const FieldsInput = createReactClass({
                         options={this._availableMatchingType()}
                         matchProp="value"
                         onChange={this._onMatchingTypeSelect}
-                        placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..." />}
+                        placeholder={intl.formatMessage({id: "wizard.select", defaultMessage: "Select..."})}
                     />
                     </div>
                 </Input>

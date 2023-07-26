@@ -31,6 +31,7 @@ import FormsUtils from 'util/FormsUtils';
 import { CurrentUserStore } from 'stores/users/CurrentUserStore';
 
 
+// TODO rewrite this as a functional component
 const FieldRule = createReactClass({
     displayName: 'FieldRule',
 
@@ -40,7 +41,7 @@ const FieldRule = createReactClass({
         rule: PropTypes.object.isRequired,
         onUpdate: PropTypes.func.isRequired,
         onDelete: PropTypes.func.isRequired,
-        matchData: PropTypes.array.isRequired
+        matchData: PropTypes.array
     },
 
     getInitialState() {
