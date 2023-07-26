@@ -45,12 +45,17 @@ const FieldRule = createReactClass({
     },
 
     getInitialState() {
+        const { intl } = this.props;
+        const messages = {
+            delete: intl.formatMessage({id: "wizard.delete", defaultMessage: "Delete"}),
+        };
         return {
             rule: ObjectUtils.clone(this.props.rule),
             isModified: false,
             isValid: false,
             hover: false,
             lists: null,
+            messages: messages
         };
     },
 
@@ -60,17 +65,7 @@ const FieldRule = createReactClass({
         }
     },
 
-    // TODO replace deprecated componentWillMount into a combination of getInitialState and componentDidMount
-    componentWillMount() {
-        const { intl } = this.props;
-        const messages = {
-            delete: intl.formatMessage({id: "wizard.delete", defaultMessage: "Delete"}),
-        };
-        this.setState({messages: messages});
-        this.list();
-    },
-
-    list() {
+    componentDidMount() {
         AlertListActions.list().then(lists => {
             this.setState({lists: lists});
         });
@@ -143,9 +138,7 @@ const FieldRule = createReactClass({
         update[field] = value;
         this.setState({rule: update});
         this.setState({isModified: true});
-        if (value === '') {
-            this.setState({isValid: false});
-        }
+        this._checkForm();
     },
 
     _onValueChanged(field) {
@@ -176,6 +169,9 @@ const FieldRule = createReactClass({
                 this.state.rule.type === 6 || this.state.rule.type === -6 ||
                 this.state.rule.type === 7 || this.state.rule.type === -7)) {
             this.setState({isValid: true});
+        }
+        if (value === '') {
+            this.setState({isValid: false});
         }
     },
     _getMatchDataColor() {
@@ -218,10 +214,6 @@ const FieldRule = createReactClass({
                 <IconRemove/>
             </button>
         );
-
-        if (!this.state.isValid) {
-            this._checkForm();
-        }
 
         if (this.state.isModified) {
             this.setState({isModified: false});
