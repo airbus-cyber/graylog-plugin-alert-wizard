@@ -38,6 +38,7 @@ import styles from './WizardStyle.css';
 import TitleSeverity from 'wizard/components/inputs/TitleSeverity';
 
 
+// TODO should convert component into functional form
 const AlertRuleForm = createReactClass({
     displayName: 'AlertRuleForm',
 
@@ -47,29 +48,10 @@ const AlertRuleForm = createReactClass({
         onSave: PropTypes.func.isRequired
     },
 
-    // TODO replace deprecated componentWillMount into a combination of getInitialState and componentDidMount
-    componentWillMount() {
-        const { intl } = this.props;
-        const messages = {
-            titlePopup: intl.formatMessage({id: "wizard.titlePopup", defaultMessage: "Alert rule is saved"}),
-            messagePopup: intl.formatMessage({id: "wizard.messagePopup", defaultMessage: "Go to Advanced settings?"}),
-            advancedSettings: intl.formatMessage({id: "wizard.advancedSettings", defaultMessage: "Advanced settings"}),
-            done: intl.formatMessage({id: "wizard.done", defaultMessage: "I'm done!"}),
-            placeholderTitle: intl.formatMessage({id: "wizard.placeholderTitle", defaultMessage: "Title of the alert rule                 "}),
-            add: intl.formatMessage({id: "wizard.add", defaultMessage: "Add"}),
-            ruleType: intl.formatMessage({id: "wizard.ruleType", defaultMessage: "Rule Type"}),
-            tooltipCountCondition: intl.formatMessage({id: "wizard.tooltipCountCondition", defaultMessage: "Count Condition"}),
-            tooltipGroupDistinctCondition: intl.formatMessage({id: "wizard.tooltipGroupDistinctCondition", defaultMessage: "Group / Distinct Condition"}),
-            tooltipStatisticalCondition: intl.formatMessage({id: "wizard.tooltipStatisticalCondition", defaultMessage: "Statistical Condition"}),
-            tooltipThenCondition: intl.formatMessage({id: "wizard.tooltipThenCondition", defaultMessage: "THEN Condition"}),
-            tooltipAndCondition: intl.formatMessage({id: "wizard.tooltipAndCondition", defaultMessage: "AND Condition"}),
-            tooltipOrCondition: intl.formatMessage({id: "wizard.tooltipOrCondition", defaultMessage: "OR Condition"}),
-        };
-        this.setState({messages: messages});
-    },
     componentDidMount() {
         this._handleSelect(this.state.alert.condition_type);
     },
+
     getInitialState() {
         let alert = ObjectUtils.clone(this.props.alert);
 
@@ -217,7 +199,23 @@ const AlertRuleForm = createReactClass({
         }
     },
     
-    render: function () {
+    render() {
+        const { intl } = this.props;
+        const messages = {
+            titlePopup: intl.formatMessage({id: "wizard.titlePopup", defaultMessage: "Alert rule is saved"}),
+            messagePopup: intl.formatMessage({id: "wizard.messagePopup", defaultMessage: "Go to Advanced settings?"}),
+            advancedSettings: intl.formatMessage({id: "wizard.advancedSettings", defaultMessage: "Advanced settings"}),
+            done: intl.formatMessage({id: "wizard.done", defaultMessage: "I'm done!"}),
+            placeholderTitle: intl.formatMessage({id: "wizard.placeholderTitle", defaultMessage: "Title of the alert rule                 "}),
+            add: intl.formatMessage({id: "wizard.add", defaultMessage: "Add"}),
+            ruleType: intl.formatMessage({id: "wizard.ruleType", defaultMessage: "Rule Type"}),
+            tooltipCountCondition: intl.formatMessage({id: "wizard.tooltipCountCondition", defaultMessage: "Count Condition"}),
+            tooltipGroupDistinctCondition: intl.formatMessage({id: "wizard.tooltipGroupDistinctCondition", defaultMessage: "Group / Distinct Condition"}),
+            tooltipStatisticalCondition: intl.formatMessage({id: "wizard.tooltipStatisticalCondition", defaultMessage: "Statistical Condition"}),
+            tooltipThenCondition: intl.formatMessage({id: "wizard.tooltipThenCondition", defaultMessage: "THEN Condition"}),
+            tooltipAndCondition: intl.formatMessage({id: "wizard.tooltipAndCondition", defaultMessage: "AND Condition"}),
+            tooltipOrCondition: intl.formatMessage({id: "wizard.tooltipOrCondition", defaultMessage: "OR Condition"}),
+        };
         const buttonCancel = (
             <LinkContainer to={Navigation.getWizardRoute()}>
                 <Button><FormattedMessage id= "wizard.cancel" defaultMessage= "Cancel" /></Button>
@@ -240,23 +238,23 @@ const AlertRuleForm = createReactClass({
                 
         const subnavigation = (
                 <Nav stacked bsStyle="pills" activeKey={this.state.alert.condition_type} onSelect={key => this._handleSelect(key)}>
-                    <NavItem key="divider" disabled title="Rule Type" className={styles.divider}>{this.state.messages.ruleType}</NavItem>
-                    <NavItem eventKey={'COUNT'} title={this.state.messages.tooltipCountCondition}>
+                    <NavItem key="divider" disabled title="Rule Type" className={styles.divider}>{messages.ruleType}</NavItem>
+                    <NavItem eventKey={'COUNT'} title={messages.tooltipCountCondition}>
                         <FormattedMessage id= "wizard.countCondition" defaultMessage= "Count" />
                     </NavItem>
-                    <NavItem eventKey={'GROUP_DISTINCT'} title={this.state.messages.tooltipGroupDistinctCondition}>
+                    <NavItem eventKey={'GROUP_DISTINCT'} title={messages.tooltipGroupDistinctCondition}>
                         <FormattedMessage id= "wizard.groupDistinctCondition" defaultMessage= "Group / Distinct" />
                     </NavItem>
-                    <NavItem eventKey={'STATISTICAL'} title={this.state.messages.tooltipStatisticalCondition}>
+                    <NavItem eventKey={'STATISTICAL'} title={messages.tooltipStatisticalCondition}>
                         <FormattedMessage id= "wizard.StatisticsCondition" defaultMessage= "Statistics" />
                     </NavItem>
-                    <NavItem eventKey={'THEN'} title={this.state.messages.tooltipThenCondition}>
+                    <NavItem eventKey={'THEN'} title={messages.tooltipThenCondition}>
                         <FormattedMessage id= "wizard.thenCondition" defaultMessage= "THEN" />
                     </NavItem>
-                    <NavItem eventKey={'AND'} title={this.state.messages.tooltipAndCondition}>
+                    <NavItem eventKey={'AND'} title={messages.tooltipAndCondition}>
                         <FormattedMessage id= "wizard.andCondition" defaultMessage= "AND" />
                     </NavItem>
-                    <NavItem eventKey={'OR'} title={this.state.messages.tooltipOrCondition}>
+                    <NavItem eventKey={'OR'} title={messages.tooltipOrCondition}>
                         <FormattedMessage id= "wizard.orCondition" defaultMessage= "OR" />
                     </NavItem>
                 </Nav>
