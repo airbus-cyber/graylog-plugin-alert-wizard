@@ -34,11 +34,11 @@ jest.mock('stores/nodes/NodesStore', () => ({
 }));
 // TODO I do not understand why this mock is necessary, shouldn't mock of FetchProvider url /streams sufficient?
 jest.mock('stores/streams/StreamsStore', () => MockStore(
-  ['listStreams', () => ({ then: jest.fn() })],
-  'availableStreams',
+  ['listStreams', () => ({ then: jest.fn() })]
 ));
 
 jest.mock('logic/rest/FetchProvider', () => jest.fn((method, url) => {
+    console.log('URL: ' + url);
     const MOCKED_REQUESTS_RESULTS = {
         // TODO should check the value that is returned by /system/locales in real life
         '/system/locales': { 'locales': '' },
