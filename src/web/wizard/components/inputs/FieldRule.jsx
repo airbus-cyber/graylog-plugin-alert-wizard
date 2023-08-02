@@ -71,8 +71,7 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete, index}) => {
         isModified: false,
         isValid: false,
         hover: false,
-        lists: null,
-        messages: messages
+        lists: null
     });
 
     useEffect(() => {
