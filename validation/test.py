@@ -47,15 +47,11 @@ class Test(TestCase):
         alert_rule = self._graylog.create_alert_rule_statistics('statistics', _PERIOD)
         self.assertEqual('statistics', alert_rule['title'])
 
-    # KO?
-    @skip
     def test_set_logging_alert_configuration_should_not_fail(self):
         status_code = self._graylog.update_logging_alert_plugin_configuration()
         # TODO should be 200 instead of 202!!
         self.assertEqual(202, status_code)
 
-    # KO?
-    @skip
     def test_default_time_range_in_configuration_should_propagate_into_notification_time_range__issue47(self):
         self._graylog.update_logging_alert_plugin_configuration()
         title = 'alert_rule_title'
@@ -63,16 +59,12 @@ class Test(TestCase):
         notification = self._graylog.get_notification_with_title(title)
         self.assertEqual(1441, notification['config']['aggregation_time'])
 
-    # KO?
-    @skip
     def test_get_alert_rule_should_return_correct_additional_threshold_type__issue34(self):
         title = 'rule_title'
         self._graylog.create_alert_rule_and(title, _PERIOD)
         retrieved_alert_rule = self._graylog.get_alert_rule(title)
         self.assertEqual('<', retrieved_alert_rule['condition_parameters']['additional_threshold_type'])
 
-    # KO?
-    @skip
     def test_get_alert_rule_should_return_correct_additional_threshold__issue69(self):
         title = 'rule_title'
         self._graylog.create_alert_rule_and(title, _PERIOD, additional_threshold=1)
