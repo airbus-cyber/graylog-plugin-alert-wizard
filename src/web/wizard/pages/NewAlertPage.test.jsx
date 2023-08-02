@@ -75,6 +75,7 @@ jest.mock('logic/rest/FetchProvider', () => jest.fn((method, url) => {
 
 describe('<NewAlertPage>', () => {
     it('should not fail', async () => {
+        // TODO should try to remove act everywhere!!!!! Replace with await findBy*, or some other await...
         await act(async () => {
             render(<BrowserRouter>
                        <NewAlertPage />
