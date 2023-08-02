@@ -48,6 +48,7 @@ const FieldRule = createReactClass({
         const { intl } = this.props;
         const messages = {
             delete: intl.formatMessage({id: "wizard.delete", defaultMessage: "Delete"}),
+            select: intl.formatMessage({id: "wizard.select", defaultMessage: "Select..."})
         };
         return {
             rule: ObjectUtils.clone(this.props.rule),
@@ -202,7 +203,7 @@ const FieldRule = createReactClass({
                                 options={this._createSelectItemsListTitle(this.state.lists)}
                                 matchProp="value"
                                 onChange={this._onListTypeSelect}
-                                placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..."/>}/>
+                                placeholder={this.state.messages.select}/>
                     </div>
                 </Input>
                 : <span style={{marginRight: 199}}/>);
@@ -238,7 +239,7 @@ const FieldRule = createReactClass({
                                     options={this._availableRuleType()}
                                     matchProp="value"
                                     onChange={this._onRuleTypeSelect}
-                                    placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..."/>}
+                                    placeholder={this.state.messages.select}
                             />
                         </div>
                     </Input>
