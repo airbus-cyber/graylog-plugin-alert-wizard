@@ -29,14 +29,10 @@ class Test(TestCase):
     def tearDown(self) -> None:
         self._graylog.stop()
 
-    # KO?
-    @skip
     def test_get_alerts_should_be_found(self):
         status_code = self._graylog.get_alert_rules()
         self.assertEqual(200, status_code)
 
-    # KO?
-    @skip
     def test_put_config_with_time_default_value_should_modify_time_default_value(self):
         default_time = 1441
         self._graylog.update_alert_wizard_plugin_configuration(default_time=default_time)
@@ -47,8 +43,6 @@ class Test(TestCase):
         alert_rule = self._graylog.create_alert_rule_count('alert_rule_title', _PERIOD)
         self.assertEqual('alert_rule_title', alert_rule['title'])
 
-    # KO?
-    @skip
     def test_create_alert_rule_statistics_should_not_fail(self):
         alert_rule = self._graylog.create_alert_rule_statistics('statistics', _PERIOD)
         self.assertEqual('statistics', alert_rule['title'])
