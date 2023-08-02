@@ -22,13 +22,13 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { Button, Col, Row } from 'components/bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import { DocumentTitle, PageHeader, Spinner } from 'components/common';
-import AlertRuleForm from 'wizard/components/rules/AlertRuleForm';
 import { IntlProvider, FormattedMessage } from 'react-intl';
 import messages_fr from 'translations/fr.json';
+import { DocumentTitle, PageHeader, Spinner } from 'components/common';
+import useHistory from 'routing/useHistory';
+import AlertRuleForm from 'wizard/components/rules/AlertRuleForm';
 import AlertRuleResource from 'wizard/resources/AlertRuleResource';
 import WizardConfigurationResource from 'wizard/resources/WizardConfigurationResource';
-import useHistory from 'routing/useHistory';
 import Navigation from 'wizard/routing/Navigation';
 
 const language = navigator.language.split(/[-_]/)[0];

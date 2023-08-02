@@ -19,10 +19,12 @@
 // sources of inspiration for this code: 
 // * pages/ShowMessagePage.tsx
 // * pages/IndexSetPage.tsx
+// * components/lookup-tables/DataAdapterForm.jsx (isEqual)
 import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
 import Reflux from 'reflux';
+import isEqual from 'lodash/isEqual';
 import { Button } from 'components/bootstrap';
 import { Input, Row, Col } from 'components/bootstrap';
 import { Select, Spinner } from 'components/common';
@@ -62,10 +64,10 @@ const FieldsInput = createReactClass({
     },
 
     componentDidUpdate(prevProps) {
-        if (!_.isEqual(this.props.matchData, prevProps.matchData)) {
+        if (!isEqual(this.props.matchData, prevProps.matchData)) {
             this.setState({matchData: this.props.matchData});
         }
-        if (!_.isEqual(this.props.stream, prevProps.stream) && this.props.stream !== null) {
+        if (!isEqual(this.props.stream, prevProps.stream) && this.props.stream !== null) {
             this.setState({stream: this.props.stream});
             this.setState({matchData: undefined});
         }

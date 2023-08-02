@@ -43,7 +43,7 @@ jest.mock('logic/rest/FetchProvider', () => jest.fn((method, url) => {
         // TODO should check the value that is returned by /system/locales in real life
         '/system/locales': { 'locales': '' },
         '/plugins/com.airbus_cyber_security.graylog.wizard/config': {
-            'default_values': {
+            default_values: {
                 title: 'title',
                 severity: 'info',
                 matching_type: 'AND',
@@ -54,6 +54,9 @@ jest.mock('logic/rest/FetchProvider', () => jest.fn((method, url) => {
                 backlog: 500,
                 grace: 1
             }
+        },
+        '/plugins/com.airbus_cyber_security.graylog.wizard/lists': {
+            lists: []
         },
         '/system/inputs': {
             total: 0,
