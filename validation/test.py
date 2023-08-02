@@ -71,15 +71,11 @@ class Test(TestCase):
         retrieved_alert_rule = self._graylog.get_alert_rule(title)
         self.assertEqual(1, retrieved_alert_rule['condition_parameters']['additional_threshold'])
 
-    # KO?
-    @skip
     def test_create_list_should_create_data_adapter(self):
         self._graylog.create_list('test', ['a'])
         response = self._graylog.query_data_adapter('alert-wizard-list-data-adapter-test', 'a')
         self.assertEqual(200, response.status_code)
 
-    # KO?
-    @skip
     def test_create_list_should_create_lookup_table_with_the_list_values(self):
         self._graylog.create_list('test', ['a'])
         response = self._graylog.query_lookup_table('alert-wizard-list-lookup-table-test', 'a')
@@ -87,8 +83,6 @@ class Test(TestCase):
         result = response.json()['single_value']
         self.assertEqual('a', result)
 
-    # KO?
-    @skip
     def test_create_alert_rule_with_list_should_generate_event_when_message_field_is_in_list(self):
         title = 'list'
         value = 'a'
@@ -115,8 +109,6 @@ class Test(TestCase):
                 time.sleep(1)
             self.fail('Event not generated within 60 seconds')
 
-    # KO?
-    @skip
     def test_create_alert_rule_with_list_should_not_generate_event_on_substrings_of_elements_in_list__issue49(self):
         list_title = 'list'
         self._graylog.create_list(list_title, ['administrator', 'toto', 'root', 'foobar'])
@@ -137,8 +129,6 @@ class Test(TestCase):
             time.sleep(60)
             self.assertEqual(0, self._graylog.get_events_count())
 
-    # KO?
-    @skip
     def test_get_config_should_have_a_default_severity_info__issue61(self):
         configuration = self._graylog.get_alert_wizard_plugin_configuration()
         self.assertEqual('info', configuration['default_values']['severity'])
