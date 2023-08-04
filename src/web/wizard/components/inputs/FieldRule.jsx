@@ -69,14 +69,12 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete, index}) => {
     const [state, setState] = useState({
         rule: ObjectUtils.clone(rule),
         isModified: false,
-        isValid: false,
-        lists: null
+        isValid: false
     });
+    const [lists, setLists] = useState(null);
 
     useEffect(() => {
-        AlertListActions.list().then(lists => {
-            setState({ ...state, lists: lists });
-        });
+        AlertListActions.list().then(setLists);
     }, []);
 
     const _getMatchDataColor = () => {
@@ -181,7 +179,7 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete, index}) => {
                             required
                             clearable={false}
                             value={state.rule.value}
-                            options={_createSelectItemsListTitle(state.lists)}
+                            options={_createSelectItemsListTitle(lists)}
                             matchProp="value"
                             onChange={_onListTypeSelect}
                             placeholder={messages.select}/>
@@ -202,7 +200,7 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete, index}) => {
         _update();
     }
 
-    if (state.lists) {
+    if (lists) {
         return (
             <div className="form-inline">
                 {deleteAction}
