@@ -138,7 +138,7 @@ const AlertRuleForm = createReactClass({
     },
     _checkAlert(alert) {
         let isFormValid = this._isAlertValid(alert);
-        if(this.state.isValid !== isFormValid){
+        if (this.state.isValid !== isFormValid) {
             this.setState({isValid: isFormValid});
         }
     },
