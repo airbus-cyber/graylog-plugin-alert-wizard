@@ -70,7 +70,6 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete, index}) => {
         rule: ObjectUtils.clone(rule),
         isModified: false,
         isValid: false,
-        hover: false,
         lists: null
     });
 
