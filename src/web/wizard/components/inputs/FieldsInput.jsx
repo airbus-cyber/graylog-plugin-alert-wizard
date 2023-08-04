@@ -48,7 +48,7 @@ const FieldsInput = createReactClass({
 
     propTypes: {
         stream: PropTypes.object,
-        onSaveStream: PropTypes.func,
+        onSaveStream: PropTypes.func.isRequired,
         message: PropTypes.object,
         matchData: PropTypes.object,
     },

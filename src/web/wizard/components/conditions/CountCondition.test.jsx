@@ -26,6 +26,9 @@ describe('<CountCondition>', () => {
         const alert = {
             condition_parameters: {
                 time: 1
+            },
+            stream: {
+                field_rule: []
             }
         };
         render(<IntlProvider locale="en" >

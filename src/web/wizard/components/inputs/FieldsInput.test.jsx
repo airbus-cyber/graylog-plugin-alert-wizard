@@ -23,8 +23,9 @@ import FieldsInput from './FieldsInput';
 
 describe('<FieldsInput>', () => {
     it('should not fail', () => {
+        const onSaveStream = jest.fn()
         render(<IntlProvider locale="en" >
-                   <FieldsInput />
+                   <FieldsInput onSaveStream={onSaveStream} />
                </IntlProvider>);
     });
 });
