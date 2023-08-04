@@ -180,8 +180,6 @@ class Test(TestCase):
         alert_rule = self._graylog.get_alert_rule(title)
         self.assertEqual('>', alert_rule['condition_parameters']['threshold_type'])
 
-    # KO?
-    @skip
     def test_create_alert_rule_with_same_name_should_not_fail(self):
         title = 'aaa'
         self._graylog.create_alert_rule_count(title, _PERIOD)
