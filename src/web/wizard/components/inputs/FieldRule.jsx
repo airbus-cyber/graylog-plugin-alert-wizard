@@ -67,14 +67,9 @@ const _availableRuleType = () => {
 // TODO fix bug: set a value, modify field, click => the value is back to empty string
 // TODO could most probably remove prop index
 const FieldRule = ({matchData, rule, onUpdate, onDelete, index}) => {
-    const [field, setField] = useState(rule.field);
-    const [type, setType] = useState(rule.type);
-    const [value, setValue] = useState(rule.value);
+    const [state, setState] = useState({field: rule.field, type: rule.type, value: rule.value});
     const [lists, setLists] = useState(null);
 
-    console.log('Started', field, type, value);
-    // TODO this is a hack, because it seems the callback provided to the TypeAheadFieldInput does not have access to the current value of state
-    //   => try to pinpoint the bug and report to Graylog/or try to use some other widget (react-bootstrap-typeahead)/or try to implement own
     useEffect(() => {
         AlertListActions.list().then(setLists);
     }, []);
@@ -83,55 +78,64 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete, index}) => {
         return (matchData.rules[rule.id] ? '#dff0d8' : '#f2dede');
     };
 
-    const _checkForm = () => {
-        if (value === '') {
+    const _checkForm = (newState) => {
+        if (newState.value === '') {
             return false;
         }
-        if (field === '') {
+        if (newState.field === '') {
             return false;
         }
         // TODO try to make this condition simpler
-        if ((type === 5 || type === -5) ||
-            value !== '' &&
-            (type === 1 || type === -1 ||
-                type === 2 || type === -2 ||
-                type === 3 || type === -3 ||
-                type === 4 || type === -4 ||
-                type === 6 || type === -6 ||
-                type === 7 || type === -7)) {
+        if ((newState.type === 5 || newState.type === -5) ||
+            newState.value !== '' &&
+            (newState.type === 1 || newState.type === -1 ||
+                newState.type === 2 || newState.type === -2 ||
+                newState.type === 3 || newState.type === -3 ||
+                newState.type === 4 || newState.type === -4 ||
+                newState.type === 6 || newState.type === -6 ||
+                newState.type === 7 || newState.type === -7)) {
             return true;
         }
         return false;
     };
 
-    const _propagateUpdate = () => {
-        const isValid = _checkForm();
-        console.log('New value propagated: ', {field: field, type: type, value: value});
-        onUpdate(index, {field: field, type: type, value: value}, isValid);
+    const _propagateUpdate = (newState) => {
+        const isValid = _checkForm(newState);
+        setState(newState);
+        onUpdate(index, newState, isValid);
     };
 
-    useEffect(_propagateUpdate, [field]);
-
     const _onRuleFieldSelect = (event) => {
-        console.log('_onRuleFieldSelect', field, type, value);
-        setField(FormsUtils.getValueFromInput(event.target));
-//        _propagateUpdate();
+        const newState = {
+            ...state,
+            field: FormsUtils.getValueFromInput(event.target)
+        };
+        _propagateUpdate(newState);
     };
 
     const _onListTypeSelect = (value) => {
-        setType(value);
-        _propagateUpdate();
+        const newState = {
+            ...state,
+            type: value
+        };
+        _propagateUpdate(newState);
     };
 
     const _onRuleTypeSelect = (value) => {
         // TODO parseInt('') returns NaN which is a problem later on (will turn into null after a call to ObjectUtils.clone
-        setType(parseInt(value));
-        _propagateUpdate();
+        const newState = {
+            ...state,
+            type: parseInt(value)
+        };
+        _propagateUpdate(newState);
     };
 
     const _onValueChanged = (e) => {
-        setValue(e.target.value);
-        _propagateUpdate();
+        const newState = {
+            ...state,
+            value: e.target.value
+        };
+        _propagateUpdate(newState);
     };
 
     const _createSelectItemsListTitle = (list) => {
@@ -171,7 +175,7 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete, index}) => {
         </button>
     );
 
-    const valueBox = ((type !== 5 && type !== -5 && type !== 7 && type !== -7) ?
+    const valueBox = ((state.type !== 5 && state.type !== -5 && state.type !== 7 && state.type !== -7) ?
         <Input style={{
                 backgroundColor: color,
                 borderTopLeftRadius: '0px',
@@ -179,15 +183,15 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete, index}) => {
                 height: '36px'
             }}
                id="value" name="value" type="text"
-               onChange={_onValueChanged} value={value}/>
-        : (type === 7 || type === -7) ?
+               onChange={_onValueChanged} value={state.value}/>
+        : (state.type === 7 || state.type === -7) ?
             <Input id="alertLists" name="alertLists">
                 <div style={{width: '150px'}}>
                     <Select style={{backgroundColor: color, borderRadius: '0px'}}
                             autosize={false}
                             required
                             clearable={false}
-                            value={value}
+                            value={state.value}
                             options={_createSelectItemsListTitle(lists)}
                             matchProp="value"
                             onChange={_onListTypeSelect}
@@ -203,7 +207,7 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete, index}) => {
                 {deleteAction}
                 <Input id="field" name="field">
                     <div style={{width: '200px'}}>
-                        <TypeAheadFieldInput id="field-input" type="text" required name="field" defaultValue={field} onChange={_onRuleFieldSelect} autoFocus />
+                        <TypeAheadFieldInput id="field-input" type="text" required name="field" defaultValue={state.field} onChange={_onRuleFieldSelect} autoFocus />
                     </div>
                 </Input>
                 <Input id="type" name="type">
@@ -211,7 +215,7 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete, index}) => {
                         <Select style={{backgroundColor: color}}
                                 required
                                 clearable={false}
-                                value={type.toString()}
+                                value={state.type.toString()}
                                 options={_availableRuleType()}
                                 matchProp="value"
                                 onChange={_onRuleTypeSelect}

@@ -15,9 +15,7 @@
   ],
   "author": "Airbus CyberSecurity",
   "license": "SSPL-1.0",
-  "dependencies": {
-    "typeahead.js": "^0.11.1"
-  },
+  "dependencies": {},
   "devDependencies": {
     "graylog-web-plugin": "file:../graylog2-server/graylog2-web-interface/packages/graylog-web-plugin",
     "react-intl": "^6.4.2"
