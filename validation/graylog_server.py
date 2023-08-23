@@ -16,7 +16,7 @@ class GraylogServer:
     def start_logs_capture(self):
         logs = self.extract_all_logs()
         self._log_offset = len(logs)
-    
+
     def extract_logs(self):
         logs = self.extract_all_logs()
         return logs[self._log_offset:]
