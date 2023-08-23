@@ -186,8 +186,6 @@ class Test(TestCase):
         logs = self._graylog.extract_logs()
         self.assertNotIn('ERROR', logs)
 
-    # KO?
-    @skip
     def test_get_all_rules_should_not_fail_when_a_stream_is_deleted_issue105(self):
         title = 'aaa'
         alert_rule = self._graylog.create_alert_rule_count(title, _PERIOD)
@@ -195,8 +193,6 @@ class Test(TestCase):
         status_code = self._graylog.get_alert_rules()
         self.assertEqual(200, status_code)
 
-    # KO?
-    @skip
     def test_set_default_backlog_value_should_change_newly_created_event_definition_backlog_value_issue40(self):
         self._graylog.update_alert_wizard_plugin_configuration(backlog_size=1000)
         title = 'aaa'
@@ -223,8 +219,6 @@ class Test(TestCase):
         # TODO should not return 500 here
         alert_rule = self._graylog.get_alert_rule(title)
 
-    # KO?
-    @skip
     def test_get_alert_should_return_the_description_of_the_event_definition_issue102(self):
         title = 'aaa'
         alert_rule = self._graylog.create_alert_rule_count(title, _PERIOD)
