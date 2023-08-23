@@ -1,13 +1,13 @@
 import requests
 from urllib import parse
 from requests.exceptions import ConnectionError
+from gelf_input import GelfInput
 
 _AUTH = ('admin', 'admin')
 _HEADERS = {'X-Requested-By': 'test-program'}
 
 
 class GraylogRestApi:
-
 
     def _build_url(self, path):
         return parse.urljoin('http://127.0.0.1:9000/api/', path)
@@ -79,7 +79,8 @@ class GraylogRestApi:
             'type': 'org.graylog2.inputs.gelf.tcp.GELFTCPInput'
         }
         response = self._post('system/inputs', payload)
-        return response.json()['id']
+        identifier = response.json()['id']
+        return GelfInput(self, identifier)
 
     # TODO have rule creation return information about the rule
     def _create_alert_rule(self, title, rule, condition_type, time,
