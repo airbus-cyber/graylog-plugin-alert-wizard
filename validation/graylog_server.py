@@ -23,3 +23,4 @@ class GraylogServer:
 
     def stop(self):
         subprocess.run(['docker-compose', 'down'], cwd=self._docker_compose_path)
+        subprocess.run(['docker', 'volume', 'prune', '--force'])
