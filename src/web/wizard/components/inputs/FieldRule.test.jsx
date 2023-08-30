@@ -94,11 +94,9 @@ describe('<FieldRule>', () => {
         const onUpdate = jest.fn();
         const onDelete = jest.fn();
         // TODO use screen instead??
-        /* TODO put back!!!!
         const subject = render(<IntlProvider locale="en" >
                    <FieldRule rule={rule} onUpdate={onUpdate} onDelete={onDelete} />
                </IntlProvider>);
         await subject.findAllByRole('textbox');
-        */
     });
 });
