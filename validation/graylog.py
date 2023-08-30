@@ -23,7 +23,7 @@ class Graylog:
             time.sleep(sleep_duration)
             count += 1
             if count > attempts:
-                print(self._server.extract_all_logs())
+                print('Graylog server logs: ', self._server.extract_all_logs())
                 raise ServerTimeoutError()
 
     def _wait_until_graylog_has_started(self):
