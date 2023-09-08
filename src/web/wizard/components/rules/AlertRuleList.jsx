@@ -275,9 +275,7 @@ const AlertRuleList = createReactClass({
 
         const tooltipUser = (
                 <Tooltip id="default-user-tooltip">
-                    <FormattedMessage id="wizard.tooltipUser" defaultMessa
-
-                    ge="The last user who modified the alert rule" />
+                    <FormattedMessage id="wizard.tooltipUser" defaultMessage="The last user who modified the alert rule" />
                 </Tooltip>);
 
 
