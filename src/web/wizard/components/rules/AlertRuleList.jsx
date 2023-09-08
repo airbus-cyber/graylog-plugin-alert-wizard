@@ -177,6 +177,7 @@ const AlertRuleList = createReactClass({
             {value: 'high', label: <FormattedMessage id="wizard.high" defaultMessage="High" />},
         ];
     },
+
     _getSeverityType(type) {
         return this._availableSeverityTypes().filter((t) => t.value === type)[0].label;
     },
