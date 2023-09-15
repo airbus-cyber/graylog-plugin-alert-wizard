@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.1.1](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.1.0...5.1.1)
+### Bug Fixes
+* Fixed stack-trace when hovering over the user in the table of alert rules. The tooltip is now shown on the header only.
+
 ## [5.1.0](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.0.0...5.1.0)
 ### Features
 * Add compatibility with [Graylog 5.1](https://www.graylog.org/post/announcing-graylog-v5-1/)

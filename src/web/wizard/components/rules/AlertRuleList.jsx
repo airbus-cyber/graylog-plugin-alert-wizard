@@ -134,18 +134,11 @@ const AlertRuleList = createReactClass({
     _headerCellFormatter(header) {
         let formattedHeaderCell;
 
-        switch (header.toLocaleLowerCase()) {
-            case '':
-                formattedHeaderCell = <th className="user-type">{header}</th>;
-                break;
-            case 'actions':
-                formattedHeaderCell = <th className="actions">{header}</th>;
-                break;
-            default:
-                formattedHeaderCell = <th>{header}</th>;
+        if (header == this.state.fieldsTitle.actions) {
+            return <th className="actions">{header}</th>;
         }
 
-        return formattedHeaderCell;
+        return <th>{header}</th>;
     },
 
     _onClone(name) {
@@ -181,14 +174,25 @@ const AlertRuleList = createReactClass({
     _getSeverityType(type) {
         return this._availableSeverityTypes().filter((t) => t.value === type)[0].label;
     },
-    
+
+    // TODO could simplify this code: return a dictionary instead of a list, move into getInitialState
     _availableFieldName() {
+        const tooltipUser = (
+            <Tooltip id="default-user-tooltip">
+                <FormattedMessage id="wizard.tooltipUser" defaultMessage="The last user who modified the alert rule" />
+            </Tooltip>
+        );
+        const userHeader = (
+            <OverlayElement overlay={tooltipUser} placement="top" useOverlay={true} trigger={['hover', 'focus']}>
+                {this.state.fieldsTitle.user}
+            </OverlayElement>
+        );
         return [
             {value: 'Severity', label: this.state.fieldsTitle.severity},
             {value: 'Description', label: this.state.fieldsTitle.description},
             {value: 'Created', label: this.state.fieldsTitle.created},
             {value: 'Last Modified', label: this.state.fieldsTitle.lastModified},
-            {value: 'User', label: this.state.fieldsTitle.user},
+            {value: 'User', label: userHeader},
             {value: 'Status', label: this.state.fieldsTitle.status},
             {value: 'Rule', label: this.state.fieldsTitle.rule},
         ];
@@ -273,11 +277,6 @@ const AlertRuleList = createReactClass({
             </div>
         );
 
-        const tooltipUser = (
-                <Tooltip id="default-user-tooltip">
-                    <FormattedMessage id="wizard.tooltipUser" defaultMessage="The last user who modified the alert rule" />
-                </Tooltip>);
-
         let tabFields = [<td className="limited">{alert.title}</td>];
         this.props.field_order.map((field) => {
             if (field.enabled) {
@@ -296,13 +295,7 @@ const AlertRuleList = createReactClass({
                         </td>);
                         break;
                     case 'User':
-                        // TODO should rather move the tooltip on the header
-                        tabFields.push(<td className="limited">
-                                    <OverlayElement overlay={tooltipUser} placement="top" useOverlay={true}
-                                                    trigger={['hover', 'focus']}>
-                                        {alert.creator_user_id}
-                                    </OverlayElement>
-                                </td>);
+                        tabFields.push(<td className="limited">{alert.creator_user_id}</td>);
                         break;
                     case 'Status':
                         if (alertValid) {
