@@ -27,8 +27,8 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { LinkContainer } from 'react-router-bootstrap';
 import moment from 'moment';
 
-import { DataTable, IfPermitted, OverlayElement, Spinner, Timestamp, Tooltip } from 'components/common';
-import { Button } from 'components/bootstrap';
+import { DataTable, IfPermitted, OverlayElement, Spinner, Timestamp } from 'components/common';
+import { Button, Tooltip } from 'components/bootstrap';
 import PermissionsMixin from 'util/PermissionsMixin';
 import Routes from 'routing/Routes';
 import { toDateObject } from 'util/DateTime';
@@ -278,7 +278,6 @@ const AlertRuleList = createReactClass({
                     <FormattedMessage id="wizard.tooltipUser" defaultMessage="The last user who modified the alert rule" />
                 </Tooltip>);
 
-
         let tabFields = [<td className="limited">{alert.title}</td>];
         this.props.field_order.map((field) => {
             if (field.enabled) {
@@ -297,6 +296,7 @@ const AlertRuleList = createReactClass({
                         </td>);
                         break;
                     case 'User':
+                        // TODO should rather move the tooltip on the header
                         tabFields.push(<td className="limited">
                                     <OverlayElement overlay={tooltipUser} placement="top" useOverlay={true}
                                                     trigger={['hover', 'focus']}>
