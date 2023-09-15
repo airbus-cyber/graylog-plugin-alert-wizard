@@ -113,14 +113,6 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete, index}) => {
         _propagateUpdate(newState);
     };
 
-    const _onListTypeSelect = (value) => {
-        const newState = {
-            ...state,
-            type: value
-        };
-        _propagateUpdate(newState);
-    };
-
     const _onRuleTypeSelect = (value) => {
         // TODO parseInt('') returns NaN which is a problem later on (will turn into null after a call to ObjectUtils.clone
         const newState = {
@@ -130,10 +122,10 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete, index}) => {
         _propagateUpdate(newState);
     };
 
-    const _onValueChanged = (e) => {
+    const _onValueChanged = (value) => {
         const newState = {
             ...state,
-            value: e.target.value
+            value: value
         };
         _propagateUpdate(newState);
     };
@@ -177,13 +169,14 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete, index}) => {
 
     const valueBox = ((state.type !== 5 && state.type !== -5 && state.type !== 7 && state.type !== -7) ?
         <Input style={{
-                backgroundColor: color,
-                borderTopLeftRadius: '0px',
-                borderBottomLeftRadius: '0px',
-                height: '36px'
-            }}
+                   backgroundColor: color,
+                   borderTopLeftRadius: '0px',
+                   borderBottomLeftRadius: '0px',
+                   height: '36px'
+               }}
                id="value" name="value" type="text"
-               onChange={_onValueChanged} value={state.value}/>
+               onChange={(e) => _onValueChanged(e.target.value)}
+               value={state.value}/>
         : (state.type === 7 || state.type === -7) ?
             <Input id="alertLists" name="alertLists">
                 <div style={{width: '150px'}}>
@@ -194,7 +187,7 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete, index}) => {
                             value={state.value}
                             options={_createSelectItemsListTitle(lists)}
                             matchProp="value"
-                            onChange={_onListTypeSelect}
+                            onChange={_onValueChanged}
                             placeholder={messages.select}/>
                 </div>
             </Input>
