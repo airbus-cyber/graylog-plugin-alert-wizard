@@ -5,7 +5,8 @@ All notable changes to this project will be documented in this file.
 ## [5.1.1](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.1.0...5.1.1)
 ### Bug Fixes
 * stack-trace when hovering over the user in the table of alert rules. The tooltip is now shown on the header only
-* incorrect field being updated when a condition of type "is present in list" is selected during rule creation 
+* incorrect field being updated when a condition of type "is present in list" is selected during rule creation
+* fixed highlighting of AND, THEN and OR conditions in dark mode
 
 ## [5.1.0](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.0.0...5.1.0)
 ### Features
