@@ -39,6 +39,38 @@ Perfect for example to configure together and at the same time a stream, an aler
 
 ## Upgrading
 
+### Upgrading to 5.0.0
+Column `Alerts` on the page displaying rules. This field should be removed from the configuration.
+When updating from a previous version, this field should be removed from the configuration. This can be done with the REST API
+(plugins/com.airbus_cyber_security.graylog.wizard/config endpoint)
+To give a concrete example, for the following configuration, entry `{ "enabled": true, "name": "Alerts" },` should be removed from the `field_order` values.
+```diff
+{
+  "default_values": {
+    "severity": "info",
+    "matching_type": "AND",
+    "threshold_type": ">",
+    "threshold": 0,
+    "time": 1,
+    "time_type": 1,
+    "grace": 1,
+    "backlog": 500,
+    "title": ""
+  },
+  "field_order": [
+    { "enabled": true, "name": "Severity" },
+    { "enabled": true, "name": "Description" },
+    { "enabled": true, "name": "Created" },
+    { "enabled": true, "name": "Last Modified" },
+    { "enabled": true, "name": "User" },
+-    { "enabled": true, "name": "Alerts" },
+    { "enabled": true, "name": "Status" },
+    { "enabled": false, "name": "Rule" }
+  ],
+  "import_policy": "DONOTHING"
+}
+```
+
 ### Upgrading to 4.5.0
 
 The alert rule description field is now mapped to the Event Definition description field.
