@@ -29,9 +29,9 @@ import Description from 'wizard/components/inputs/Description';
 import { Row, Col } from 'components/bootstrap';
 
 const STREAM = {
-        matching_type: '',
-        field_rule: [{field: '', type: '', value: ''}],
-    };
+    matching_type: '',
+    field_rule: [{field: '', type: '', value: ''}],
+};
 
 const OrCondition = createReactClass({
     displayName: 'OrCondition',
