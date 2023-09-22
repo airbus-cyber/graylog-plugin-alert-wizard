@@ -61,7 +61,6 @@ const AlertRuleList = createReactClass({
             created: intl.formatMessage({id: "wizard.created", defaultMessage: "Created"}),
             lastModified: intl.formatMessage({id: "wizard.lastModified", defaultMessage: "Last Modified"}),
             user: intl.formatMessage({id: "wizard.user", defaultMessage: "User"}),
-            alerts: intl.formatMessage({id: "wizard.alerts", defaultMessage: "Alerts"}),
             status: intl.formatMessage({id: "wizard.status", defaultMessage: "Status"}),
             actions: intl.formatMessage({id: "wizard.actions", defaultMessage: "Actions"}),
             rule: intl.formatMessage({id: "wizard.rule", defaultMessage: "Rule"})
