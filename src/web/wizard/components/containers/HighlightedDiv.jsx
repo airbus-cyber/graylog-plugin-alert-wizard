@@ -18,13 +18,20 @@
 import styled, { css } from 'styled-components';
 
 // sources of inspiration for this code:
+// * views/components/messagelist/decorators/AddDecoratorButton.tsx
 // * views/components/widgets/MessageTable.tsx
 // * theme/docs/ThemeProvider.md
 const HighlightedDiv = styled.div(({ theme }) => css`
-    background-color: ${theme.colors.gray[90]};
-    color: ${theme.utils.readableColor(theme.colors.gray[90])};
-
-    padding: '10px';
+  margin-bottom: 10px;
+  margin-top: 10px;
+  margin-left: 5px;
+  display: inline-block;
+  border-style: solid;
+  border-color: ${theme.colors.gray[80]};
+  border-radius: 5px;
+  border-width: 1px;
+  padding: 10px;
+  background: ${theme.colors.global.background};
 `);
 
 export default HighlightedDiv;

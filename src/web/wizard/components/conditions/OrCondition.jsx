@@ -27,6 +27,7 @@ import NumberInput from 'wizard/components/inputs/NumberInput';
 import TimeRangeInput from 'wizard/components/inputs/TimeRangeInput';
 import Description from 'wizard/components/inputs/Description';
 import { Row, Col } from 'components/bootstrap';
+import HighlightedDiv from 'wizard/components/containers/HighlightedDiv';
 
 const STREAM = {
     matching_type: '',
@@ -87,16 +88,16 @@ const OrCondition = createReactClass({
         
         return (
             <>
-                <div style={{ backgroundColor: '#f6f6f6', padding: '10px' }}>
+                <HighlightedDiv>
                     <FieldsInput stream={this.props.alert.stream} onSaveStream={this._handleChangeStream} message={this.props.message}
                                     matchData={this.props.matchData} />
-                </div>
+                </HighlightedDiv>
                 <br/>
                 <Row style={{ marginBottom: '0px' }}><Col md={2} /><Col md={10}><label><FormattedMessage id= "wizard.or" defaultMessage= "OR" /></label></Col></Row>
                 <br/>
-                <div style={{ backgroundColor: '#f6f6f6', padding: '10px' }}>
+                <HighlightedDiv>
                     <FieldsInput stream={this.props.alert.second_stream} onSaveStream={this._handleChangeSecondStream} message={this.props.message} />
-                </div>
+                </HighlightedDiv>
                 <br/>
                 <NumberInput onUpdate={this._handleChangeCondition} threshold={this.props.alert.condition_parameters.threshold}
                                 threshold_type={this.props.alert.condition_parameters.threshold_type} />

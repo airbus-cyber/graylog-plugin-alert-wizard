@@ -33,6 +33,6 @@ describe('<HighlightedDiv>', () => {
             </ThemeProvider>
         );
         const element = getByTestId('test-identifier');
-        expect(element).toHaveStyleRule('background-color', '#959595');
+        expect(element).toHaveStyleRule('background', '#222');
     });
 });
