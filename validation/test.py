@@ -10,7 +10,7 @@
 # To execute only one test, suffix with the fully qualified test name. Example:
 #   python -m unittest test.Test.test_create_alert_rule_with_list_should_generate_event_when_message_field_is_in_list
 
-from unittest import TestCase, skip
+from unittest import TestCase
 import time
 from graylog import Graylog
 
@@ -208,16 +208,6 @@ class Test(TestCase):
         event_definition_identifier = alert_rule['condition']
         event_definition = self._graylog.get_event_definition(event_definition_identifier)
         self.assertEqual('rule_description', event_definition['description'])
-
-    @skip
-    def test_get_alert_should_not_fail_when_event_definition_is_corrupted(self):
-        title = 'aaa'
-        alert_rule = self._graylog.create_alert_rule_count(title, _PERIOD)
-        event_definition = self._graylog.get_event_definition(alert_rule['condition'])
-        print(event_definition)
-        self._graylog.update_event_definition(alert_rule['condition'], 'new_description')
-        # TODO should not return 500 here
-        alert_rule = self._graylog.get_alert_rule(title)
 
     def test_get_alert_should_return_the_description_of_the_event_definition_issue102(self):
         title = 'aaa'
