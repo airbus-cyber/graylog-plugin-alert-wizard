@@ -56,7 +56,12 @@ const WizardPage = () => {
         <IntlProvider locale={language} messages={messages[language]}>
             <DocumentTitle title="Alert Rules">
                 <div>
-                    <PageHeader title={<FormattedMessage id="wizard.alertsRule" defaultMessage= "Alert Rules" />}>
+                    <PageHeader title={<FormattedMessage id="wizard.alertsRule" defaultMessage= "Alert Rules" />}
+                                actions={(
+                                  <IfPermitted permissions="wizard_alerts_rules:read">
+                                    <ManageSettings config={configuration} onSave={_saveConfiguration}/>
+                                  </IfPermitted>
+                                  )}>
                       <span><FormattedMessage id ="wizard.description"
                             defaultMessage="With the wizard, you can manage the alert rules. An alert rule consists of one or more streams with rules, an alert condition and an alert notification."
                             />
@@ -66,11 +71,6 @@ const WizardPage = () => {
                             defaultMessage="Read more about Wizard alert rules in the documentation" />
                           <FormattedMessage id="wizard.version" defaultMessage=" (wizard version : {version})."
                                             values={{version: packageJson.version}}/>
-                      </span>
-                      <span>
-                        <IfPermitted permissions="wizard_alerts_rules:read">
-                          <ManageSettings config={configuration} onSave={_saveConfiguration}/>
-                        </IfPermitted>
                       </span>
                     </PageHeader>
 
