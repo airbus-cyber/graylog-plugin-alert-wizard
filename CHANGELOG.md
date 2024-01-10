@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.1.2](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.1.1...5.1.2)
+### Bug Fixes
+* Fixed layout of header buttons in the wizard page and rule creation page ([issue #121](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/121))
+
 ## [5.1.1](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.1.0...5.1.1)
 ### Bug Fixes
 * stack-trace when hovering over the user in the table of alert rules. The tooltip is now shown on the header only
