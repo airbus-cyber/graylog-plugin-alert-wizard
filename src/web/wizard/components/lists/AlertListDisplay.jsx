@@ -91,9 +91,6 @@ const AlertListDisplay = createReactClass({
         let formattedHeaderCell;
 
         switch (header.toLocaleLowerCase()) {
-            case '':
-                formattedHeaderCell = <th className="user-type">{header}</th>;
-                break;
             case 'actions':
                 formattedHeaderCell = <th className="actions">{header}</th>;
                 break;
