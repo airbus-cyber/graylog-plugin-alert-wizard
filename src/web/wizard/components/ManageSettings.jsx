@@ -226,7 +226,7 @@ const ManageSettings = createReactClass({
                 
                 <h3><FormattedMessage id="wizard.status" defaultMessage="Status" /></h3>
                 <p><FormattedMessage id="wizard.checkboxesStatus" defaultMessage="Change the checkboxes to change the status." /></p>
-                <Table striped bordered condensed className="top-margin">
+                <Table striped bordered condensed>
                 <thead>
                   <tr>
                     <th><FormattedMessage id="wizard.field" defaultMessage="Field" /></th>
