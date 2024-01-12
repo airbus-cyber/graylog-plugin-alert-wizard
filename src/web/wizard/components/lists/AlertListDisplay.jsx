@@ -230,7 +230,7 @@ const AlertListDisplay = createReactClass({
         if(this.state.lists) {
               return (
                   <div>
-                      <div className="alert-actions pull-right">
+                      <div className="pull-right">
                           <LinkContainer to={Routes.pluginRoute('WIZARD_NEWLIST')}>
                               <Button bsStyle="success" type="submit" title={this.state.messages.createAlertList}>
                                   <FormattedMessage id="wizard.create" defaultMessage="Create"/>
