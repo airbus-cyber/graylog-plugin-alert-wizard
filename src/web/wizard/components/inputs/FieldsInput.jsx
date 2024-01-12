@@ -24,16 +24,20 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
 import Reflux from 'reflux';
+import { injectIntl, FormattedMessage } from 'react-intl';
+
 import isEqual from 'lodash/isEqual';
+
 import { Button } from 'components/bootstrap';
 import { Input, Row, Col } from 'components/bootstrap';
 import { Select, Spinner } from 'components/common';
-import ObjectUtils from 'util/ObjectUtils';
-import { injectIntl, FormattedMessage } from 'react-intl';
-import FieldRule from './FieldRule';
-import IconAdd from 'wizard/components/icons/Add';
 import StreamsStore from 'stores/streams/StreamsStore';
 import { IndexSetsActions, IndexSetsStore } from 'stores/indices/IndexSetsStore';
+import ObjectUtils from 'util/ObjectUtils';
+
+import IconAdd from 'wizard/components/icons/Add';
+import FieldRule from './FieldRule';
+
 
 const STREAM = {
     matching_type: '',
