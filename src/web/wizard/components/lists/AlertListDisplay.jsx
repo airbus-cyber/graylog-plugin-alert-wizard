@@ -164,7 +164,7 @@ const AlertListDisplay = createReactClass({
         );
 
         const actions = (
-            <div className="alert-actions pull-left">
+            <div className="pull-left">
                 {updateList}{' '}
                 {cloneList}{' '}
                 {deleteAction}{' '}

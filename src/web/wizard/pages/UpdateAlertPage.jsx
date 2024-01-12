@@ -61,7 +61,7 @@ const UpdateAlertPage = ({params}) => {
     }
 
     let navigationToRuleComponents = (
-          <div className="alert-actions pull-right">
+          <div className="pull-right">
               <ButtonToEventDefinition target={alert.condition} />{' '}
               <ButtonToNotification target={alert.notification} />
           </div>

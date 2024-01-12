@@ -266,7 +266,7 @@ const AlertRuleList = createReactClass({
         );
 
         const actions = (
-            <div className="alert-actions pull-left">
+            <div className="pull-left">
                 {updateAlert}{' '}
                 <ButtonToEventDefinition target={alert.condition} disabled={!alertValid} />{' '}
                 <ButtonToNotification target={alert.notification} disabled={!alertValid} />{' '}
@@ -338,7 +338,7 @@ const AlertRuleList = createReactClass({
             });
             return (
                 <div>
-                    <div className="alert-actions pull-right has-bm">
+                    <div className="pull-right has-bm">
                         <LinkContainer to={Routes.pluginRoute('WIZARD_NEWALERT')}>
                             <Button bsStyle="success" type="submit" title={this.state.messages.createAlert}>
                                 <FormattedMessage id="wizard.create" defaultMessage="Create" />
