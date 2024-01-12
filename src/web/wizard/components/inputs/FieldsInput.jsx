@@ -184,10 +184,11 @@ const FieldsInput = createReactClass({
                     
                     let newRules = [];
                     for (let index = 0; index < stream.rules.length; index++) {
-                        let rule= { value: stream.rules[index].value,
-                                field: stream.rules[index].field,
-                                id: stream.rules[index].id,
-                                type: stream.rules[index].inverted ? -stream.rules[index].type : stream.rules[index].type
+                        let rule = {
+                            value: stream.rules[index].value,
+                            field: stream.rules[index].field,
+                            id: stream.rules[index].id,
+                            type: stream.rules[index].inverted ? -stream.rules[index].type : stream.rules[index].type
                         };
                         newRules.push(rule);
                     }
