@@ -79,7 +79,6 @@ class Test(TestCase):
     def test_create_list_should_create_lookup_table_with_the_list_values(self):
         self._graylog.create_list('test', ['a'])
         response = self._graylog.query_lookup_table('alert-wizard-list-lookup-table-test', 'a')
-        print(response.json())
         result = response.json()['single_value']
         self.assertEqual('a', result)
 
