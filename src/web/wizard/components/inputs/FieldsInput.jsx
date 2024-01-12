@@ -160,10 +160,11 @@ const FieldsInput = createReactClass({
                         inverted = true;
                         type = -this.state.stream.field_rule[index].type;
                     }
-                    let rule= { type: type,
-                                value: this.state.stream.field_rule[index].value,
-                                field: this.state.stream.field_rule[index].field,
-                                inverted: inverted
+                    let rule= {
+                        type: type,
+                        value: this.state.stream.field_rule[index].value,
+                        field: this.state.stream.field_rule[index].field,
+                        inverted: inverted
                     };
                     tempRules.push(rule);
                 }
