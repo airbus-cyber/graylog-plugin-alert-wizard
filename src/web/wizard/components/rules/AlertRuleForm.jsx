@@ -34,8 +34,9 @@ import GroupDistinctCondition from 'wizard/components/conditions/GroupDistinctCo
 import CorrelationCondition from 'wizard/components/conditions/CorrelationCondition'
 import OrCondition from 'wizard/components/conditions/OrCondition'
 import CountCondition from 'wizard/components/conditions/CountCondition'
-import styles from './AlertRuleForm.css';
 import TitleSeverity from 'wizard/components/inputs/TitleSeverity';
+
+import styles from './AlertRuleForm.css';
 
 
 // TODO should convert component into functional form
