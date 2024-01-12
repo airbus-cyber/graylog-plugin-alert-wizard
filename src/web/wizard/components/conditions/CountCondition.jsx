@@ -19,11 +19,14 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
+
 import ObjectUtils from 'util/ObjectUtils';
+
 import FieldsInput from 'wizard/components/inputs/FieldsInput';
 import NumberInput from 'wizard/components/inputs/NumberInput';
 import TimeRangeInput from 'wizard/components/inputs/TimeRangeInput';
 import Description from 'wizard/components/inputs/Description';
+
 
 // TODO rewrite this component in functional style
 const CountCondition = createReactClass({
