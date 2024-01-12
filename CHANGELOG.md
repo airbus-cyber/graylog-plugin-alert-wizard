@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [5.1.2](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.1.1...5.1.2)
 ### Bug Fixes
-* Fixed layout of header buttons in the wizard page and rule creation page ([issue #121](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/121))
+* Fixed layout of buttons in several pages ([issue #121](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/121))
 
 ## [5.1.1](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.1.0...5.1.1)
 ### Bug Fixes
