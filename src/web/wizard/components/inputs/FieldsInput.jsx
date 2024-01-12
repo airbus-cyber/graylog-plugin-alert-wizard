@@ -116,6 +116,7 @@ const FieldsInput = createReactClass({
         this.setState({stream: update});
         this.props.onSaveStream('field_rule', update.field_rule);
     },
+
     _isRuleValid(rule) {
         if (!(rule.field !== '' &&
                 (rule.type === 5 || rule.type === -5) ||
