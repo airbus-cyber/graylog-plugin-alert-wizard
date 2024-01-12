@@ -338,7 +338,7 @@ const AlertRuleList = createReactClass({
             });
             return (
                 <div>
-                    <div className="alert-actions pull-right">
+                    <div className="alert-actions pull-right has-bm">
                         <LinkContainer to={Routes.pluginRoute('WIZARD_NEWALERT')}>
                             <Button bsStyle="success" type="submit" title={this.state.messages.createAlert}>
                                 <FormattedMessage id="wizard.create" defaultMessage="Create" />
