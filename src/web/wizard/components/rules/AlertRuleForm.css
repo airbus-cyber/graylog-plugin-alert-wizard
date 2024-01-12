@@ -15,6 +15,7 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
+/* TODO should probably either reuse predefined graylog components or introduce our own components if really necessary */
 :local(.subnavigation) {
     border-right: #D1D1D1 solid 1px;
 }
