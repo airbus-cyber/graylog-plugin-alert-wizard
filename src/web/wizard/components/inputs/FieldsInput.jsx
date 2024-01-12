@@ -130,6 +130,7 @@ const FieldsInput = createReactClass({
             }
         return true;
     },
+
     _isFieldRulesValid() {
         for (let i = 0; i < this.state.stream.field_rule.length; i++) {
             if (!this._isRuleValid(this.state.stream.field_rule[i])) {
@@ -138,6 +139,7 @@ const FieldsInput = createReactClass({
         }
         return true;
     },
+
     _addFieldRule() {
         const rule = {field: '', type: '', value: ''};
         const update = ObjectUtils.clone(this.state.stream);
@@ -145,6 +147,7 @@ const FieldsInput = createReactClass({
         this.setState({stream: update});
         this.props.onSaveStream('field_rule', update.field_rule);
     },
+
     _checkFieldsCondition() {
         if (this.props.message !== undefined) {
             /* Create temporary stream */
@@ -207,10 +210,12 @@ const FieldsInput = createReactClass({
             this.setState({matchData: undefined});
         }
     },
+
     // TODO factor this copy-pasted code (see FieldRule)
     _getMatchDataColor() {
         return (this.state.matchData.matches ? '#dff0d8' : '#f2dede');
     },
+
     _isLoading() {
         return (!this.state.stream);
     },
@@ -226,8 +231,8 @@ const FieldsInput = createReactClass({
         const color = (this.state.matchData ? this._getMatchDataColor() : '#FFFFFF');
         let listFieldRule = this.state.stream.field_rule.map((rule) =>
             <div key={rule}><FieldRule rule={rule} onUpdate={this._onUpdateFieldRuleSubmit} onDelete={this._onDeleteFieldRuleSubmit}
-                           index={this.state.stream.field_rule.indexOf(rule)}
-                           matchData={this.state.matchData}/>
+                             index={this.state.stream.field_rule.indexOf(rule)}
+                             matchData={this.state.matchData} />
                 <br/>
             </div>
         );

@@ -18,7 +18,7 @@
 import React from 'react';
 import { Icon } from 'components/common';
 
-cont IconRemove = () => {
+const IconRemove = () => {
     return <Icon name="trash" />
 }
 
