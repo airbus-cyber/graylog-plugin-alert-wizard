@@ -204,9 +204,7 @@ const FieldsInput = createReactClass({
                         StreamsStore.remove(this.state.tempStreamID); 
                     });
                 });
-                
-            } );
-
+            });
         } else {
             this.setState({matchData: undefined});
         }
