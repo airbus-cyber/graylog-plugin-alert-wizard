@@ -166,7 +166,7 @@ const FieldsInput = createReactClass({
                                 inverted: inverted
                     };
                     tempRules.push(rule);
-                }   
+                }
             }
             
             let tempStream = {
