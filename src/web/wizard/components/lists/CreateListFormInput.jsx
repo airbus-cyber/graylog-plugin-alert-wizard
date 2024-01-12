@@ -80,7 +80,7 @@ const CreateListFormInput = createReactClass({
             <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
                 <Button onClick={() => this.props.onSave(this.state.list)} 
                         disabled={this.state.list.title === '' || this.state.list.lists === ''} 
-                        className="btn btn-md btn-primary">
+                        className="btn btn-primary">
                     <FormattedMessage id="wizard.save" defaultMessage="Save"/>
                 </Button>
             </LinkContainer>

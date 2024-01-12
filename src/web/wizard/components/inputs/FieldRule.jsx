@@ -160,7 +160,7 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete, index}) => {
     const color = (isMatchDataPesent ? _getMatchDataColor() : '');
 
     const deleteAction = (
-        <button id="delete-alert" type="button" className="btn btn-md btn-primary"
+        <button id="delete-alert" type="button" className="btn btn-primary"
                 title={messages.delete} style={{marginRight: '0.5em'}}
                 onClick={_delete}>
             <IconRemove/>

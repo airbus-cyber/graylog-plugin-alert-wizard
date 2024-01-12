@@ -225,7 +225,7 @@ const AlertRuleForm = createReactClass({
         const buttonSave = (
             <Button onClick={() => this.props.onSave(this.state.alert)}
                     disabled={!(this.state.isModified && this.state.isValid)}
-                    bsStyle="primary" className="btn btn-md btn-primary">
+                    bsStyle="primary" className="btn btn-primary">
                 <FormattedMessage id="wizard.save" defaultMessage="Save" />
             </Button>
         );

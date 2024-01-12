@@ -224,7 +224,7 @@ const AlertRuleList = createReactClass({
         
         const deleteAction = (
             <IfPermitted permissions="wizard_alerts_rules:delete">
-                <button id="delete-alert" type="button" className="btn btn-md btn-primary"
+                <button id="delete-alert" type="button" className="btn btn-primary"
                         title={this.state.messages.infoDelete} onClick={() => this._deleteAlert(alert.title)}>
                     <FormattedMessage id="wizard.delete" defaultMessage="Delete" />
                 </button>

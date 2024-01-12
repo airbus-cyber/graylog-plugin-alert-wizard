@@ -138,7 +138,7 @@ const AlertListDisplay = createReactClass({
     _listInfoFormatter(list) {
         const deleteAction = (
             <IfPermitted permissions="wizard_alerts_rules:delete">
-                <button id="delete-list" type="button" className="btn btn-md btn-primary" disabled={list.usage > 0}
+                <button id="delete-list" type="button" className="btn btn-primary" disabled={list.usage > 0}
                         title={list.usage ? this.state.messages.infoNoDelete : this.state.messages.infoDelete}
                         onClick={this._deleteAlertListFunction(list.title)}>
                     <FormattedMessage id ="wizard.delete" defaultMessage="Delete" />
