@@ -35,8 +35,7 @@ import StreamsStore from 'stores/streams/StreamsStore';
 import { IndexSetsActions, IndexSetsStore } from 'stores/indices/IndexSetsStore';
 import ObjectUtils from 'util/ObjectUtils';
 
-import IconAdd from 'wizard/components/icons/Add';
-import FieldRule from './FieldRule';
+import FieldRuleList from './FieldRuleList';
 
 
 const STREAM = {
@@ -83,15 +82,14 @@ const FieldsInput = createReactClass({
             indexSets: undefined,
         };
     },
-    _update() {
-        this.props.onUpdate(this.state.stream);
-    },
+
     _availableMatchingType() {
         return [
             {value: 'AND', label: <FormattedMessage id="wizard.all" defaultMessage="all" />},
             {value: 'OR', label: <FormattedMessage id="wizard.atLeastOne" defaultMessage="at least one" />},
         ];
     },
+
     _onMatchingTypeSelect(id) {
         this._updateStreamField('matching_type', id)
     },
@@ -102,19 +100,14 @@ const FieldsInput = createReactClass({
         this.setState({stream: update});
         this.props.onSaveStream(field, value);
     },
-    
-    _onUpdateFieldRuleSubmit(index, rule) {
-        let update = ObjectUtils.clone(this.state.stream);
-        update.field_rule[index] = rule;
-        this.setState({stream: update});
-        this.props.onSaveStream('field_rule', update.field_rule);
-    },
 
-    _onDeleteFieldRuleSubmit(index) {
-        let update = ObjectUtils.clone(this.state.stream);
-        update.field_rule.splice(index, 1);
+    _onSaveStream(newFieldRules) {
+        const update = {
+            ...this.state.stream,
+            field_rule: newFieldRules
+        };
         this.setState({stream: update});
-        this.props.onSaveStream('field_rule', update.field_rule);
+        this.props.onSaveStream('field_rule', newFieldRules);
     },
 
     _isRuleValid(rule) {
@@ -138,14 +131,6 @@ const FieldsInput = createReactClass({
             }
         }
         return true;
-    },
-
-    _addFieldRule() {
-        const rule = {field: '', type: '', value: ''};
-        const update = ObjectUtils.clone(this.state.stream);
-        update.field_rule.push(rule);
-        this.setState({stream: update});
-        this.props.onSaveStream('field_rule', update.field_rule);
     },
 
     _checkFieldsCondition() {
@@ -229,21 +214,15 @@ const FieldsInput = createReactClass({
             );
         }
         const color = (this.state.matchData ? this._getMatchDataColor() : '#FFFFFF');
-        let listFieldRule = this.state.stream.field_rule.map((rule) =>
-            <div key={rule}><FieldRule rule={rule} onUpdate={this._onUpdateFieldRuleSubmit} onDelete={this._onDeleteFieldRuleSubmit}
-                             index={this.state.stream.field_rule.indexOf(rule)}
-                             matchData={this.state.matchData} />
-                <br/>
-            </div>
-        );
 
         const { intl } = this.props;
         const messages = {
-            add: intl.formatMessage({id: "wizard.add", defaultMessage: "Add"}),
             tryFieldsCondition: intl.formatMessage({ id: "wizard.tryFieldsCondition", defaultMessage: "Try the fields condition" }),
             select: intl.formatMessage({id: "wizard.select", defaultMessage: "Select..."})
         };
 
+        // TODO: if possible try to isolate the Test Button as a special component TestButton... (functional one)
+        //       emulate the code of the StreamRulesEditor (even though we don't have a stream at creation time)...
         return (
         <Row>
             <Col md={2} style={{ marginTop: 5, marginBottom: 0 }}>
@@ -272,10 +251,8 @@ const FieldsInput = createReactClass({
                     <FormattedMessage id ="wizard.try" defaultMessage="Try" />
                 </Button>
                 <br/><br/>
-                {listFieldRule}
-                <Button onClick={this._addFieldRule} bsStyle="info" title={messages.add}>
-                    <IconAdd/>
-                </Button>
+
+                <FieldRuleList fieldRules={this.state.stream.field_rule} matchData={this.state.matchData} onSaveStream={this._onSaveStream} />
             </Col>
         </Row>
         );

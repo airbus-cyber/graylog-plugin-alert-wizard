@@ -17,7 +17,6 @@
 
 // TODO remove this import?
 import PropTypes from 'prop-types';
-// TODO remove this import?
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { useIntl, FormattedMessage } from 'react-intl';
