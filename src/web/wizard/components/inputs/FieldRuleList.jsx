@@ -36,7 +36,7 @@ const FieldRuleList = ({fieldRules, matchData, onSaveStream}) => {
     };
     const [state, setState] = useState(fieldRules);
 
-    // TODO is this really the right way to do it: both changing the state and propagating up (which will come back down)...
+    // TODO is this really the right way to do it: both changing the state and propagating up (which will come back down)?
     const _updateRules = (rules) => {
         setState(rules);
         onSaveStream(rules);
@@ -50,7 +50,7 @@ const FieldRuleList = ({fieldRules, matchData, onSaveStream}) => {
 
     const _onUpdateFieldRuleSubmit = (index, rule) => {
         const nextState = [...state];
-        nextState[index] = rule;
+        nextState[index] = {...rule, identifier: state[index].identifier};
         _updateRules(nextState);
     };
 
