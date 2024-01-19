@@ -20,6 +20,7 @@
 // * pages/ShowMessagePage.tsx
 // * pages/IndexSetPage.tsx
 // * components/lookup-tables/DataAdapterForm.jsx (isEqual)
+// * components/streamrules/StreamRulesEditor.tsx
 import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
@@ -45,7 +46,7 @@ const FieldsInput = createReactClass({
     mixins: [Reflux.connect(IndexSetsStore)],
 
     propTypes: {
-        stream: PropTypes.object,
+        stream: PropTypes.object.isRequired,
         onSaveStream: PropTypes.func.isRequired,
         message: PropTypes.object,
         matchData: PropTypes.object,
@@ -67,7 +68,7 @@ const FieldsInput = createReactClass({
 
     getInitialState() {
         return {
-            stream: ObjectUtils.clone(this.props.stream ? this.props.stream : STREAM),
+            stream: ObjectUtils.clone(this.props.stream),
             indexSets: undefined,
         };
     },
@@ -153,8 +154,9 @@ const FieldsInput = createReactClass({
             };
             
             StreamsStore.save(tempStream, stream => {
-                this.setState({tempStreamID: stream.stream_id}); 
+                this.setState({tempStreamID: stream.stream_id});
                 /* Get the rules */
+                // TODO we don't seem to get here... Most probably because it should be stream.id rather than stream.stream_id
                 StreamsStore.get(stream.stream_id, stream => {
                     
                     let newRules = [];
@@ -172,9 +174,10 @@ const FieldsInput = createReactClass({
                     this.setState({stream: update}); 
                     
                     /*Check the rules*/
+                    // TODO seems the try button is active only in update, why is that?
                     StreamsStore.testMatch(stream.id, {message: this.props.message.fields}, (resultData) => {
                         this.setState({matchData: resultData});
-                        
+
                         /* Remove temporary stream */
                         StreamsStore.remove(this.state.tempStreamID); 
                     });
