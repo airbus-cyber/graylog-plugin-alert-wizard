@@ -17,18 +17,22 @@
 
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { Button, Col, Row } from 'components/bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import { DocumentTitle, PageHeader, Spinner } from 'components/common';
-import AlertRuleForm from 'wizard/components/rules/AlertRuleForm';
-import AlertRuleActions from 'wizard/actions/AlertRuleActions';
 import { IntlProvider, FormattedMessage } from 'react-intl';
-import messages_fr from 'translations/fr.json';
+
+import { Button, Col, Row } from 'components/bootstrap';
+import { DocumentTitle, PageHeader, Spinner } from 'components/common';
 import withParams from 'routing/withParams';
 import useHistory from 'routing/useHistory';
+
+import messages_fr from 'translations/fr.json';
+import AlertRuleForm from 'wizard/components/rules/AlertRuleForm';
+import AlertRuleActions from 'wizard/actions/AlertRuleActions';
 import Navigation from 'wizard/routing/Navigation';
 import ButtonToEventDefinition from 'wizard/components/buttons/ButtonToEventDefinition';
 import ButtonToNotification from 'wizard/components/buttons/ButtonToNotification';
+import generateIdentifier from 'wizard/logic/IdentifierSequence';
+
 
 const language = navigator.language.split(/[-_]/)[0];
 
@@ -42,6 +46,10 @@ const UpdateAlertPage = ({params}) => {
 
     useEffect(() => {
         AlertRuleActions.get(params.alertRuleTitle).then(alert => {
+            alert.stream.field_rule.forEach(rule => rule.identifier = generateIdentifier());
+            if (alert.second_stream) {
+                alert.second_stream.field_rule.forEach(rule => rule.identifier = generateIdentifier());
+            }
             setAlert(alert);
         });
     }, []);

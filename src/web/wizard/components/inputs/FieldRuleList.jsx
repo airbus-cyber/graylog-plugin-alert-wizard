@@ -21,6 +21,7 @@ import { useIntl } from 'react-intl';
 
 import { Button } from 'components/bootstrap';
 
+import generateIdentifier from 'wizard/logic/IdentifierSequence';
 import IconAdd from 'wizard/components/icons/Add';
 import FieldRule from './FieldRule';
 
@@ -42,7 +43,7 @@ const FieldRuleList = ({fieldRules, matchData, onSaveStream}) => {
     }
 
     const _addFieldRule = () => {
-        const newRule = {field: '', type: '', value: ''};
+        const newRule = {field: '', type: '', value: '', identifier: generateIdentifier()};
         const nextState = [...state, newRule];
         _updateRules(nextState);
     };
@@ -60,11 +61,10 @@ const FieldRuleList = ({fieldRules, matchData, onSaveStream}) => {
     };
 
     const listFieldRule = state.map((rule, index) => {
-        const key = `${rule.field}_${rule.type}_${rule.value}`;
         // TODO should probably move the delete action out the FieldRule into here???
         // TODO try to remove the index prop from FieldRule!!!
         return (
-            <div key={key}>
+            <div key={rule.identifier}>
                 <FieldRule rule={rule} onUpdate={_onUpdateFieldRuleSubmit} onDelete={_onDeleteFieldRuleSubmit}
                            index={index} matchData={matchData} />
                 <br/>

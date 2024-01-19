@@ -15,21 +15,10 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-import React from 'react';
-import { render } from 'wrappedTestingLibrary';
-import { IntlProvider } from 'react-intl';
+let counter = 0;
 
-import FieldsInput from './FieldsInput';
+const generate = () => {
+    return counter++;
+};
 
-describe('<FieldsInput>', () => {
-    it('should not fail', () => {
-        const onSaveStream = jest.fn();
-        const stream = {
-            matching_type: '',
-            field_rule: [{field: '', type: '', value: '', identifier: 1}]
-        };
-        render(<IntlProvider locale="en" >
-                   <FieldsInput stream={stream} onSaveStream={onSaveStream} />
-               </IntlProvider>);
-    });
-});
+export default generate;

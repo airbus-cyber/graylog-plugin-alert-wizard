@@ -60,7 +60,8 @@ describe('<FieldRuleList>', () => {
         const rules = [{
             field: 'field',
             type: 5,
-            value: 'hello'
+            value: 'hello',
+            identifier: 1
         }];
         const onSaveStream = jest.fn();
         // TODO use screen instead??

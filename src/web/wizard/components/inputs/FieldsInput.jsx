@@ -37,7 +37,7 @@ import ObjectUtils from 'util/ObjectUtils';
 
 import FieldRuleList from './FieldRuleList';
 
-
+// TODO try to remove this, the component should not have default props
 const STREAM = {
     matching_type: '',
     field_rule: [{field: '', type: '', value: ''}],
