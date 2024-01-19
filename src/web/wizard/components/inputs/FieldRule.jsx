@@ -199,7 +199,7 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete, index}) => {
                 {deleteAction}
                 <Input id="field" name="field">
                     <div style={{width: '200px'}}>
-                        <TypeAheadFieldInput id="field-input" type="text" required name="field" defaultValue={state.field} onChange={_onRuleFieldSelect} autoFocus />
+                        <TypeAheadFieldInput id="field-input" type="text" required name="field" defaultValue={state.field} onChange={_onRuleFieldSelect} />
                     </div>
                 </Input>
                 <Input id="type" name="type">
