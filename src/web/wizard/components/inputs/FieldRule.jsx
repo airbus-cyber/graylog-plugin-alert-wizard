@@ -148,6 +148,40 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete, index}) => {
         onDelete(index);
     };
 
+    const selectValueBox = () => {
+        if (state.type !== 5 && state.type !== -5 && state.type !== 7 && state.type !== -7) {
+            return (
+                <Input style={{
+                           backgroundColor: color,
+                           borderTopLeftRadius: '0px',
+                           borderBottomLeftRadius: '0px',
+                           height: '36px'
+                       }}
+                       id="value" name="value" type="text"
+                       onChange={(e) => _onValueChanged(e.target.value)}
+                       value={state.value}/>
+            );
+        } else if (state.type === 7 || state.type === -7)  {
+            return (
+                <Input id="alertLists" name="alertLists">
+                    <div style={{width: '150px'}}>
+                        <Select style={{backgroundColor: color, borderRadius: '0px'}}
+                                autosize={false}
+                                required
+                                clearable={false}
+                                value={state.value}
+                                options={_createSelectItemsListTitle(lists)}
+                                matchProp="value"
+                                onChange={_onValueChanged}
+                                placeholder={messages.select}/>
+                    </div>
+                </Input>
+            );
+        } else {
+            return <span style={{marginRight: 199}}/>;
+        }
+    }
+
     const intl = useIntl();
     const messages = {
         delete: intl.formatMessage({id: "wizard.delete", defaultMessage: "Delete"}),
@@ -166,31 +200,7 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete, index}) => {
         </button>
     );
 
-    const valueBox = ((state.type !== 5 && state.type !== -5 && state.type !== 7 && state.type !== -7) ?
-        <Input style={{
-                   backgroundColor: color,
-                   borderTopLeftRadius: '0px',
-                   borderBottomLeftRadius: '0px',
-                   height: '36px'
-               }}
-               id="value" name="value" type="text"
-               onChange={(e) => _onValueChanged(e.target.value)}
-               value={state.value}/>
-        : (state.type === 7 || state.type === -7) ?
-            <Input id="alertLists" name="alertLists">
-                <div style={{width: '150px'}}>
-                    <Select style={{backgroundColor: color, borderRadius: '0px'}}
-                            autosize={false}
-                            required
-                            clearable={false}
-                            value={state.value}
-                            options={_createSelectItemsListTitle(lists)}
-                            matchProp="value"
-                            onChange={_onValueChanged}
-                            placeholder={messages.select}/>
-                </div>
-            </Input>
-            : <span style={{marginRight: 199}}/>);
+    const valueBox = selectValueBox();
 
     // TODO invert condition
     if (lists) {

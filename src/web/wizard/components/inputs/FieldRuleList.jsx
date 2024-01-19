@@ -59,7 +59,7 @@ const FieldRuleList = ({fieldRules, matchData, onSaveStream}) => {
         _updateRules(nextState);
     };
 
-    let listFieldRule = state.map((rule, index) => {
+    const listFieldRule = state.map((rule, index) => {
         const key = `${rule.field}_${rule.type}_${rule.value}`;
         // TODO should probably move the delete action out the FieldRule into here???
         // TODO try to remove the index prop from FieldRule!!!
