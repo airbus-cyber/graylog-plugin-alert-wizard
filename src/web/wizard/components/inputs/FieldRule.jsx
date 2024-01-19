@@ -64,8 +64,7 @@ const _availableRuleType = () => {
 };
 
 // TODO fix bug: set a value, modify field, click => the value is back to empty string
-// TODO could most probably remove prop index
-const FieldRule = ({matchData, rule, onUpdate, onDelete, index}) => {
+const FieldRule = ({matchData, rule, onUpdate, onDelete}) => {
     const [state, setState] = useState({field: rule.field, type: rule.type, value: rule.value});
     const [lists, setLists] = useState(null);
 
@@ -101,7 +100,7 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete, index}) => {
     const _propagateUpdate = (newState) => {
         const isValid = _checkForm(newState);
         setState(newState);
-        onUpdate(index, newState, isValid);
+        onUpdate(newState, isValid);
     };
 
     const _onRuleFieldSelect = (event) => {
@@ -142,10 +141,6 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete, index}) => {
             }
         }
         return items;
-    };
-
-    const _delete = () => {
-        onDelete(index);
     };
 
     const selectValueBox = () => {
@@ -195,7 +190,7 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete, index}) => {
     const deleteAction = (
         <button id="delete-alert" type="button" className="btn btn-primary"
                 title={messages.delete} style={{marginRight: '0.5em'}}
-                onClick={_delete}>
+                onClick={onDelete}>
             <IconRemove/>
         </button>
     );
@@ -238,8 +233,6 @@ FieldRule.propTypes = {
     onDelete: PropTypes.func.isRequired,
     // TODO isRequired?
     matchData: PropTypes.array,
-    // TODO isRequired?
-    index: PropTypes.number
 };
 
 export default FieldRule;
