@@ -154,9 +154,11 @@ const FieldsInput = createReactClass({
             };
             
             StreamsStore.save(tempStream, stream => {
+                // TODO why do we set this in the state??
                 this.setState({tempStreamID: stream.stream_id});
                 /* Get the rules */
                 // TODO we don't seem to get here... Most probably because it should be stream.id rather than stream.stream_id
+                // TODO is it really necessary to get the stream? (don't we already have the information?)
                 StreamsStore.get(stream.stream_id, stream => {
                     
                     let newRules = [];
