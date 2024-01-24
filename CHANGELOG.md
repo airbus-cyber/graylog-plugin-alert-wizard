@@ -2,12 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-## [5.1.2](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.1.1...5.1.2)
-### Bug Fixes
-* Fixed layout of buttons in several pages ([issue #121](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/121))
-
 ## [5.1.1](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.1.0...5.1.1)
 ### Bug Fixes
+* Fixed layout of buttons in several pages ([issue #121](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/121))
+* Clicking the delete button of a condition was always deleting the last condition ([issue #74](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/74))
 * stack-trace when hovering over the user in the table of alert rules. The tooltip is now shown on the header only
 * incorrect field being updated when a condition of type "is present in list" is selected during rule creation
 * fixed highlighting of AND, THEN and OR conditions in dark mode
