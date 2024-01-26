@@ -107,8 +107,10 @@ const AlertRuleList = createReactClass({
             const promises = [];
             promises.push(EventDefinitionResources.enable(eventDefinitionIdentifier));
             StreamsStore.resume(stream, response => response).finally(() => this.list());
-            if (stream2 !== null) {
+            if (secondEventDefinitionIdentifier !== null) {
                 promises.push(EventDefinitionResources.enable(secondEventDefinitionIdentifier));
+            }
+            if (stream2 !== null) {
                 StreamsStore.resume(stream2, response => response).finally(() => this.list());
             }
             await Promise.all(promises);
@@ -122,8 +124,10 @@ const AlertRuleList = createReactClass({
             const promises = [];
             promises.push(EventDefinitionResources.disable(eventDefinitionIdentifier));
             StreamsStore.pause(stream, response => response).finally(() => this.list());
-            if (secondStream !== null) {
+            if (secondEventDefinitionIdentifier) {
                 promises.push(EventDefinitionResources.disable(secondEventDefinitionIdentifier));
+            }
+            if (secondStream !== null) {
                 StreamsStore.pause(secondStream, response => response);
             }
             await Promise.all(promises);
