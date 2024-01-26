@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 * Fixed layout of buttons in several pages ([issue #121](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/121))
 * Clicking the delete button of a condition was always deleting the last condition ([issue #74](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/74))
 * Disabling/enabling a AND rule was throwing an exception ([issue #129](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/129))
+* Clone button was not working ([issue #131](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/131))
 * stack-trace when hovering over the user in the table of alert rules. The tooltip is now shown on the header only
 * incorrect field being updated when a condition of type "is present in list" is selected during rule creation
 * fixed highlighting of AND, THEN and OR conditions in dark mode

@@ -16,76 +16,64 @@
  */
 
 import React from 'react';
-import createReactClass from 'create-react-class';
-import { injectIntl, FormattedMessage } from 'react-intl';
-import PropTypes from 'prop-types';
+import { useState } from 'react';
+import { useIntl, FormattedMessage } from 'react-intl';
 
+import { Input } from 'components/bootstrap';
+import { Button } from 'components/bootstrap';
 import BootstrapModalForm from 'components/bootstrap/BootstrapModalForm';
-import {Input} from 'components/bootstrap';
 
-const AlertRuleCloneForm = createReactClass({
-    displayName: 'AlertForm',
+// source of inspiration: components/common/URLWhiteListFormModal
 
-    propTypes: {
-        onSubmit: PropTypes.func.isRequired,
-    },
+const AlertRuleCloneForm = ({alertTitle, alertValid, onSubmit}) => {
+    const intl = useIntl();
+    const messages = {
+        infoClone: intl.formatMessage({id: "wizard.buttonInfoClone", defaultMessage: "Clone this alert rule"}),
+        placeholderTitle: intl.formatMessage({id: "wizard.placeholderCloneTitle", defaultMessage: "A descriptive name of the new alert rule"}),
+    };
+    const [state, setState] = useState({title: '', description: ''});
+    const [showConfigModal, setShowConfigModal] = useState(false);
 
-    // TODO replace deprecated componentWillMount into a combination of getInitialState and componentDidMount
-    componentWillMount(){
-        const messages = {
-            placeholderTitle: this.props.intl.formatMessage({id: "wizard.placeholderCloneTitle", defaultMessage: "A descriptive name of the new alert rule"}),
+    const openModal = () => {
+        setShowConfigModal(true);
+    };
+
+    const closeModal = () => {
+        setShowConfigModal(false);
+    };
+
+    const submit = () => {
+        onSubmit(alertTitle, state.title, state.description);
+        closeModal();
+    };
+
+    const _onValueChanged = (event) => {
+        const newState = {
+            ...state,
+            [event.target.name]: event.target.value
         };
-        this.setState({messages: messages});
-    },
+        setState(newState);
+    };
 
-    getInitialState() {
-        return {
-            title: '',
-            description: '',
-        };
-    },
-
-    _resetValues() {
-        this.setState({title: ''});
-        this.setState({description: ''});
-    },
-
-    _onSubmit() {
-        this.props.onSubmit(this.state.origTitle, this.state.title, this.state.description);
-        this.refs.modal.close();
-    },
-
-    open(title) {
-        this.setState({origTitle: title});
-        this._resetValues();
-        this.refs.modal.open();
-    },
-
-    close() {
-        this.refs.modal.close();
-    },
-
-    _onValueChanged(event) {
-        this.setState({[event.target.name]: event.target.value});
-    },
-
-    render() {
-        // TODO should try to remove the necessity to use ref, but I can't seem to make BootstrapModalForm property show work...
-        //      for functional components, see URLWhiteListFormModal
-        return (
-            <BootstrapModalForm ref="modal"
-                                title={<FormattedMessage id= "wizard.cloneAlertRule" defaultMessage= 'Cloning Alert Rule "{title}"' values={{title: this.state.origTitle }} />}
-                                onSubmitForm={this._onSubmit}
+    return (
+        <>
+            <Button id="clone-alert" type="button" bsStyle="info" onClick={openModal} disabled={!alertValid} title={messages.infoClone} >
+                <FormattedMessage id="wizard.clone" defaultMessage="Clone" />
+            </Button>
+            <BootstrapModalForm show={showConfigModal}
+                                title={<FormattedMessage id= "wizard.cloneAlertRule" defaultMessage= 'Cloning Alert Rule "{title}"' values={{title: alertTitle}} />}
+                                onCancel={closeModal}
+                                onSubmitForm={submit}
                                 cancelButtonText={<FormattedMessage id= "wizard.cancel" defaultMessage= "Cancel" />}
                                 submitButtonText={<FormattedMessage id= "wizard.save" defaultMessage= "Save" />}>
                 <Input id="title" type="text" required label={<FormattedMessage id ="wizard.title" defaultMessage="Title" />} name="title"
-                       placeholder={this.state.messages.placeholderTitle}
-                       onChange={this._onValueChanged} autoFocus/>
+                       placeholder={messages.placeholderTitle}
+                       onChange={_onValueChanged} autoFocus />
                 <Input id="description" type="text" label={<FormattedMessage id= "wizard.fieldDescription" defaultMessage= "Description" />} name="description"
-                       onChange={this._onValueChanged}/>
+                       onChange={_onValueChanged} />
             </BootstrapModalForm>
-        );
-    },
-});
+        </>
+    );
+};
 
-export default injectIntl(AlertRuleCloneForm, {forwardRef: true});
+export default AlertRuleCloneForm;

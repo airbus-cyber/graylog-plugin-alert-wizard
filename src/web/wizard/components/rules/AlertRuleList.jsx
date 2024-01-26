@@ -70,7 +70,6 @@ const AlertRuleList = createReactClass({
             infoUpdate: intl.formatMessage({id: "wizard.buttonInfoUpdate", defaultMessage: "Edit this alert rule"}),
             infoEnable: intl.formatMessage({id: "wizard.buttonInfoEnable", defaultMessage: "Enable this alert rule"}),
             infoDisable: intl.formatMessage({id: "wizard.buttonInfoDisable", defaultMessage: "Disable this alert rule"}),
-            infoClone: intl.formatMessage({id: "wizard.buttonInfoClone", defaultMessage: "Clone this alert rule"}),
             createAlert: intl.formatMessage({id: "wizard.createAlert", defaultMessage: "Create alert rule"}),
             importAlert: intl.formatMessage({id: "wizard.importAlert", defaultMessage: "Import alert rules"}),
             exportAlert: intl.formatMessage({id: "wizard.exportAlert",  defaultMessage :"Export alert rules"}),
@@ -144,12 +143,6 @@ const AlertRuleList = createReactClass({
         return <th>{header}</th>;
     },
 
-    _onClone(name) {
-        return () => {
-            this.refs.cloneModal.open(name);
-        }
-    },
-
     _onCloneSubmit(name, title, description) {
         AlertRuleActions.get(name).then(rule => {
             const newRule = {
@@ -206,6 +199,9 @@ const AlertRuleList = createReactClass({
     },
 
     _alertInfoFormatter(alert) {
+        console.log('_alertInforFormatter')
+        console.log(alert)
+
         let alertValid = true;
         let textColor = '';
         if (alert.condition_parameters === null || alert.stream === null) {
@@ -225,7 +221,8 @@ const AlertRuleList = createReactClass({
         if (alert.second_stream) {
             streamId2 = alert.second_stream.id;
         }
-        
+
+        // TODO should it be Button starting with an upper case here?
         const deleteAction = (
             <IfPermitted permissions="wizard_alerts_rules:delete">
                 <button id="delete-alert" type="button" className="btn btn-primary"
@@ -262,12 +259,8 @@ const AlertRuleList = createReactClass({
             );
         }
 
-        const cloneAlert = (
-            <Button id="clone-alert" type="button" bsStyle="info" onClick={this._onClone(alert.title)} disabled={!alertValid}
-                    title={this.state.messages.infoClone} >
-                <FormattedMessage id="wizard.clone" defaultMessage="Clone" />
-            </Button>
-        );
+        console.log(alert.title);
+        const cloneAlert = <AlertRuleCloneForm alertTitle={alert.title} alertValid={alertValid} onSubmit={this._onCloneSubmit} />;
 
         const actions = (
             <div className="pull-left">
@@ -336,6 +329,8 @@ const AlertRuleList = createReactClass({
         headers.push(this.state.fieldsTitle.actions);
 
         if (this.state.alerts) {
+            console.log(this.state.alerts);
+
             const filterLabel = this.props.intl.formatMessage({
               id: 'wizard.filter',
               defaultMessage: 'Filter alert rules'
@@ -371,7 +366,6 @@ const AlertRuleList = createReactClass({
                                dataRowFormatter={this._alertInfoFormatter}
                                filterLabel={filterLabel}
                                filterKeys={filterKeys} />
-                    <AlertRuleCloneForm ref="cloneModal" onSubmit={this._onCloneSubmit} />
                 </div>
             );
         }
