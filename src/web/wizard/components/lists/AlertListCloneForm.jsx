@@ -24,7 +24,7 @@ import { Button } from 'components/bootstrap';
 import BootstrapModalForm from 'components/bootstrap/BootstrapModalForm';
 
 
-const AlertListCloneForm = ({listTitle, onSubmit}) => {
+const AlertListCloneForm = ({listTitle, disabled = false, onSubmit}) => {
     const intl = useIntl();
     const messages = {
         infoClone: intl.formatMessage({id: "wizard.buttonInfoCloneList", defaultMessage: "Clone this alert list"}),
@@ -56,7 +56,7 @@ const AlertListCloneForm = ({listTitle, onSubmit}) => {
 
     return (
         <>
-            <Button id="clone-list" type="button" bsStyle="info" onClick={openModal} title={messages.infoClone} >
+            <Button id="clone-list" type="button" bsStyle="info" onClick={openModal} disabled={disabled} title={messages.infoClone} >
                 <FormattedMessage id ="wizard.clone" defaultMessage="Clone" />
             </Button>
             <BootstrapModalForm show={showConfigModal}

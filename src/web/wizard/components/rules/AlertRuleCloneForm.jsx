@@ -25,7 +25,7 @@ import BootstrapModalForm from 'components/bootstrap/BootstrapModalForm';
 
 // source of inspiration: components/common/URLWhiteListFormModal
 
-const AlertRuleCloneForm = ({alertTitle, alertValid, onSubmit}) => {
+const AlertRuleCloneForm = ({alertTitle, disabled = false, onSubmit}) => {
     const intl = useIntl();
     const messages = {
         infoClone: intl.formatMessage({id: "wizard.buttonInfoClone", defaultMessage: "Clone this alert rule"}),
@@ -57,7 +57,7 @@ const AlertRuleCloneForm = ({alertTitle, alertValid, onSubmit}) => {
 
     return (
         <>
-            <Button id="clone-alert" type="button" bsStyle="info" onClick={openModal} disabled={!alertValid} title={messages.infoClone} >
+            <Button id="clone-alert" type="button" bsStyle="info" onClick={openModal} disabled={disabled} title={messages.infoClone} >
                 <FormattedMessage id="wizard.clone" defaultMessage="Clone" />
             </Button>
             <BootstrapModalForm show={showConfigModal}

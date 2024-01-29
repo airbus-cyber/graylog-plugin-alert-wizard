@@ -256,7 +256,7 @@ const AlertRuleList = createReactClass({
             );
         }
 
-        const cloneAlert = <AlertRuleCloneForm alertTitle={alert.title} alertValid={alertValid} onSubmit={this._onCloneSubmit} />;
+        const cloneAlert = <AlertRuleCloneForm alertTitle={alert.title} disabled={!alertValid} onSubmit={this._onCloneSubmit} />;
 
         const actions = (
             <div className="pull-left">
