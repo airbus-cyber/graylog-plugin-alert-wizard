@@ -25,12 +25,7 @@ import BootstrapModalForm from 'components/bootstrap/BootstrapModalForm';
 
 // source of inspiration: components/common/URLWhiteListFormModal
 
-const AlertRuleCloneForm = ({alertTitle, disabled = false, onSubmit}) => {
-    const intl = useIntl();
-    const messages = {
-        infoClone: intl.formatMessage({id: "wizard.buttonInfoClone", defaultMessage: "Clone this alert rule"}),
-        placeholderTitle: intl.formatMessage({id: "wizard.placeholderCloneTitle", defaultMessage: "A descriptive name of the new alert rule"}),
-    };
+const CloneButton = ({title, disabled = false, onSubmit, messages}) => {
     const [state, setState] = useState({title: '', description: ''});
     const [showConfigModal, setShowConfigModal] = useState(false);
 
@@ -43,7 +38,7 @@ const AlertRuleCloneForm = ({alertTitle, disabled = false, onSubmit}) => {
     };
 
     const submit = () => {
-        onSubmit(alertTitle, state.title, state.description);
+        onSubmit(title, state.title, state.description);
         closeModal();
     };
 
@@ -57,11 +52,11 @@ const AlertRuleCloneForm = ({alertTitle, disabled = false, onSubmit}) => {
 
     return (
         <>
-            <Button id="clone-alert" type="button" bsStyle="info" onClick={openModal} disabled={disabled} title={messages.infoClone} >
+            <Button type="button" bsStyle="info" onClick={openModal} disabled={disabled} title={messages.infoClone} >
                 <FormattedMessage id="wizard.clone" defaultMessage="Clone" />
             </Button>
             <BootstrapModalForm show={showConfigModal}
-                                title={<FormattedMessage id="wizard.cloneAlertRule" defaultMessage='Cloning Alert Rule "{title}"' values={{title: alertTitle}} />}
+                                title={messages.modalTitle}
                                 onCancel={closeModal}
                                 onSubmitForm={submit}
                                 cancelButtonText={<FormattedMessage id="wizard.cancel" defaultMessage="Cancel" />}
@@ -73,6 +68,18 @@ const AlertRuleCloneForm = ({alertTitle, disabled = false, onSubmit}) => {
                        onChange={onValueChanged} />
             </BootstrapModalForm>
         </>
+    );
+}
+
+const AlertRuleCloneForm = ({alertTitle, disabled = false, onSubmit}) => {
+    const intl = useIntl();
+    const messages = {
+        infoClone: intl.formatMessage({id: "wizard.buttonInfoClone", defaultMessage: "Clone this alert rule"}),
+        placeholderTitle: intl.formatMessage({id: "wizard.placeholderCloneTitle", defaultMessage: "A descriptive name of the new alert rule"}),
+        modalTitle: <FormattedMessage id="wizard.cloneAlertRule" defaultMessage='Cloning Alert Rule "{title}"' values={{title: alertTitle}} />
+    };
+    return (
+        <CloneButton title={alertTitle} disabled={disabled} onSubmit={onSubmit} messages={messages} />
     );
 };
 
