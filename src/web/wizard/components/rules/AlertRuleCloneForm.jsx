@@ -47,7 +47,7 @@ const AlertRuleCloneForm = ({alertTitle, alertValid, onSubmit}) => {
         closeModal();
     };
 
-    const _onValueChanged = (event) => {
+    const onValueChanged = (event) => {
         const newState = {
             ...state,
             [event.target.name]: event.target.value
@@ -61,16 +61,16 @@ const AlertRuleCloneForm = ({alertTitle, alertValid, onSubmit}) => {
                 <FormattedMessage id="wizard.clone" defaultMessage="Clone" />
             </Button>
             <BootstrapModalForm show={showConfigModal}
-                                title={<FormattedMessage id= "wizard.cloneAlertRule" defaultMessage= 'Cloning Alert Rule "{title}"' values={{title: alertTitle}} />}
+                                title={<FormattedMessage id="wizard.cloneAlertRule" defaultMessage='Cloning Alert Rule "{title}"' values={{title: alertTitle}} />}
                                 onCancel={closeModal}
                                 onSubmitForm={submit}
-                                cancelButtonText={<FormattedMessage id= "wizard.cancel" defaultMessage= "Cancel" />}
-                                submitButtonText={<FormattedMessage id= "wizard.save" defaultMessage= "Save" />}>
+                                cancelButtonText={<FormattedMessage id="wizard.cancel" defaultMessage="Cancel" />}
+                                submitButtonText={<FormattedMessage id="wizard.save" defaultMessage="Save" />}>
                 <Input id="title" type="text" required label={<FormattedMessage id ="wizard.title" defaultMessage="Title" />} name="title"
                        placeholder={messages.placeholderTitle}
-                       onChange={_onValueChanged} autoFocus />
+                       onChange={onValueChanged} autoFocus />
                 <Input id="description" type="text" label={<FormattedMessage id= "wizard.fieldDescription" defaultMessage= "Description" />} name="description"
-                       onChange={_onValueChanged} />
+                       onChange={onValueChanged} />
             </BootstrapModalForm>
         </>
     );

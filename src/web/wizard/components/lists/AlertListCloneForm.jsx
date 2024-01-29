@@ -15,75 +15,64 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-import PropTypes from 'prop-types';
 import React from 'react';
-import createReactClass from 'create-react-class';
-import BootstrapModalForm from 'components/bootstrap/BootstrapModalForm';
+import { useState } from 'react';
+import { useIntl, FormattedMessage } from 'react-intl';
+
 import { Input } from 'components/bootstrap';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { Button } from 'components/bootstrap';
+import BootstrapModalForm from 'components/bootstrap/BootstrapModalForm';
 
-const AlertListCloneForm = createReactClass({
-    displayName: 'AlertListCloneForm',
 
-    propTypes: {
-        onSubmit: PropTypes.func.isRequired,
-    },
+const AlertListCloneForm = ({listTitle, onSubmit}) => {
+    const intl = useIntl();
+    const messages = {
+        infoClone: intl.formatMessage({id: "wizard.buttonInfoCloneList", defaultMessage: "Clone this alert list"}),
+        placeholderTitle: intl.formatMessage({id: "wizard.placeholderCloneTitleList", defaultMessage: "A descriptive name of the new alert list"}),
+    };
+    const [state, setState] = useState({title: '', description: ''});
+    const [showConfigModal, setShowConfigModal] = useState(false);
 
-    // TODO replace deprecated componentWillMount into a combination of getInitialState and componentDidMount
-    componentWillMount(){
-        const messages = {
-            placeholderTitle: this.props.intl.formatMessage({id: "wizard.placeholderCloneTitleList", defaultMessage: "A descriptive name of the new alert list"}),
+    const openModal = () => {
+        setShowConfigModal(true);
+    };
+
+    const closeModal = () => {
+        setShowConfigModal(false);
+    };
+
+    const submit = () => {
+        onSubmit(listTitle, state.title, state.description);
+        closeModal();
+    };
+
+    const onValueChanged = (event) => {
+        const newState = {
+            ...state,
+            [event.target.name]: event.target.value
         };
-        this.setState({messages:messages});
-    },
+        setState(newState);
+    };
 
-    getInitialState() {
-        return {
-            title: '',
-            description: '',
-        };
-    },
-
-    _resetValues() {
-        this.setState({title: ''});
-        this.setState({description: ''});
-    },
-
-    _onSubmit() {
-        this.props.onSubmit(this.state.origTitle, this.state.title, this.state.description);
-        this.refs.modal.close();
-    },
-
-    open(title) {
-        this.setState({origTitle: title});
-        this._resetValues();
-        this.refs.modal.open();
-    },
-
-    close() {
-        this.refs.modal.close();
-    },
-
-    _onValueChanged(event) {
-        this.setState({[event.target.name]: event.target.value});
-    },
-
-    render() {
-        return (
-            // TODO should remove ref
-            <BootstrapModalForm ref="modal"
-                                title={<FormattedMessage id= "wizard.cloneList" defaultMessage= 'Cloning List "{title}"' values={{title: this.state.origTitle }} />}
-                                onSubmitForm={this._onSubmit}
-                                cancelButtonText={<FormattedMessage id= "wizard.cancel" defaultMessage= "Cancel" />}
-                                submitButtonText={<FormattedMessage id= "wizard.save" defaultMessage= "Save" />}>
+    return (
+        <>
+            <Button id="clone-list" type="button" bsStyle="info" onClick={openModal} title={messages.infoClone} >
+                <FormattedMessage id ="wizard.clone" defaultMessage="Clone" />
+            </Button>
+            <BootstrapModalForm show={showConfigModal}
+                                title={<FormattedMessage id="wizard.cloneList" defaultMessage='Cloning List "{title}"' values={{title: listTitle}} />}
+                                onCancel={closeModal}
+                                onSubmitForm={submit}
+                                cancelButtonText={<FormattedMessage id="wizard.cancel" defaultMessage="Cancel" />}
+                                submitButtonText={<FormattedMessage id="wizard.save" defaultMessage="Save" />}>
                 <Input id="title" type="text" required label={<FormattedMessage id ="wizard.title" defaultMessage="Title" />} name="title"
-                       placeholder={this.state.messages.placeholderTitle}
-                       onChange={this._onValueChanged} autoFocus/>
-                <Input id="description" type="text" label={<FormattedMessage id= "wizard.fieldDescription" defaultMessage= "Description" />} name="description"
-                       onChange={this._onValueChanged}/>
+                       placeholder={messages.placeholderTitle}
+                       onChange={onValueChanged} autoFocus/>
+                <Input id="description" type="text" label={<FormattedMessage id="wizard.fieldDescription" defaultMessage="Description" />} name="description"
+                       onChange={onValueChanged}/>
             </BootstrapModalForm>
-        );
-    },
-});
+        </>
+    );
+};
 
-export default injectIntl(AlertListCloneForm, {forwardRef: true});
+export default AlertListCloneForm;

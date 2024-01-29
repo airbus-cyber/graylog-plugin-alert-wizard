@@ -58,7 +58,6 @@ const AlertListDisplay = createReactClass({
             infoDelete: intl.formatMessage({id: "wizard.buttonInfoDeleteList", defaultMessage: "Delete this alert list"}),
             infoNoDelete: intl.formatMessage({id: "wizard.buttonInfoNoDeleteList", defaultMessage: "List used in alert rules"}),
             infoUpdate: intl.formatMessage({id: "wizard.buttonInfoUpdateList", defaultMessage: "Edit this alert list"}),
-            infoClone: intl.formatMessage({id: "wizard.buttonInfoCloneList", defaultMessage: "Clone this alert list"}),
             createAlertList: intl.formatMessage({id: "wizard.createAlertList", defaultMessage: "Create alert list"}),
             importAlertList: intl.formatMessage({id: "wizard.importAlertList", defaultMessage: "Import alert list"}),
             exportAlertList: intl.formatMessage({id: "wizard.exportAlertList",  defaultMessage :"Export alert list"}),
@@ -101,12 +100,6 @@ const AlertListDisplay = createReactClass({
         return formattedHeaderCell;
     },
 
-    _onClone(name) {
-        return () => {
-            this.refs.cloneForm.open(name);
-        }
-    },
-
     _onCloneSubmit(name, title, description) {
         AlertListActions.get(name).then(list => {
             const newList = {
@@ -132,6 +125,7 @@ const AlertListDisplay = createReactClass({
         return this._availableFieldName().filter((t) => t.value === field)[0].label;
     },
 
+    // TODO shouldn't it be Button instead of button here?
     _listInfoFormatter(list) {
         const deleteAction = (
             <IfPermitted permissions="wizard_alerts_rules:delete">
@@ -153,12 +147,7 @@ const AlertListDisplay = createReactClass({
             </IfPermitted>
         );
 
-        const cloneList = (
-            <Button id="clone-list" type="button" bsStyle="info" onClick={this._onClone(list.title)}
-                    title={this.state.messages.infoClone} >
-                <FormattedMessage id ="wizard.clone" defaultMessage="Clone" />
-            </Button>
-        );
+        const cloneList = <AlertListCloneForm listTitle={list.title} onSubmit={this._onCloneSubmit}/>
 
         const actions = (
             <div className="pull-left">
@@ -256,7 +245,6 @@ const AlertListDisplay = createReactClass({
                                  dataRowFormatter={this._listInfoFormatter}
                                  filterLabel={<FormattedMessage id="wizard.filterlists" defaultMessage="Filter lists"/>}
                                  filterKeys={filterKeys}/>
-                      <AlertListCloneForm ref="cloneForm" onSubmit={this._onCloneSubmit}/>
                   </div>
               );
           }
