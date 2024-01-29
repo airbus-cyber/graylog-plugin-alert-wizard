@@ -8,9 +8,11 @@ All notable changes to this project will be documented in this file.
 * Clicking the delete button of a condition was always deleting the last condition ([issue #74](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/74))
 * Disabling/enabling a AND rule was throwing an exception ([issue #129](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/129))
 * Clone button was not working ([issue #131](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/131))
-* stack-trace when hovering over the user in the table of alert rules. The tooltip is now shown on the header only
-* incorrect field being updated when a condition of type "is present in list" is selected during rule creation
-* fixed highlighting of AND, THEN and OR conditions in dark mode
+* Stack-trace when hovering over the user in the table of alert rules. The tooltip is now shown on the header only
+* Incorrect field being updated when a condition of type "is present in list" is selected during rule creation
+* Fixed highlighting of AND, THEN and OR conditions in dark mode
+* Update graylog-plugin-correlation-count dependency to [5.1.1](https://github.com/airbus-cyber/graylog-plugin-correlation-count/blob/5.1.1/CHANGELOG.md)
+* Update graylog-plugin-logging-alert dependency to [5.1.1](https://github.com/airbus-cyber/graylog-plugin-logging-alert/blob/5.1.1/CHANGELOG.md)
 
 ## [5.1.0](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.0.0...5.1.0)
 ### Features
