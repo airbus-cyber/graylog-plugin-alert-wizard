@@ -28,7 +28,7 @@ import PermissionsMixin from 'util/PermissionsMixin';
 import Routes from 'routing/Routes';
 import AlertListStore from 'wizard/stores/AlertListStore';
 import AlertListActions from 'wizard/actions/AlertListActions';
-import AlertListForm from './AlertListForm';
+import AlertListCloneForm from './AlertListCloneForm';
 import { CurrentUserStore } from 'stores/users/CurrentUserStore';
 
 
@@ -256,7 +256,7 @@ const AlertListDisplay = createReactClass({
                                  dataRowFormatter={this._listInfoFormatter}
                                  filterLabel={<FormattedMessage id="wizard.filterlists" defaultMessage="Filter lists"/>}
                                  filterKeys={filterKeys}/>
-                      <AlertListForm ref="cloneForm" onSubmit={this._onCloneSubmit}/>
+                      <AlertListCloneForm ref="cloneForm" onSubmit={this._onCloneSubmit}/>
                   </div>
               );
           }

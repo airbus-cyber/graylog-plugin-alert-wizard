@@ -22,8 +22,8 @@ import BootstrapModalForm from 'components/bootstrap/BootstrapModalForm';
 import { Input } from 'components/bootstrap';
 import { injectIntl, FormattedMessage } from 'react-intl';
 
-const AlertListForm = createReactClass({
-    displayName: 'AlertListForm',
+const AlertListCloneForm = createReactClass({
+    displayName: 'AlertListCloneForm',
 
     propTypes: {
         onSubmit: PropTypes.func.isRequired,
@@ -86,4 +86,4 @@ const AlertListForm = createReactClass({
     },
 });
 
-export default injectIntl(AlertListForm, {forwardRef: true});
+export default injectIntl(AlertListCloneForm, {forwardRef: true});
