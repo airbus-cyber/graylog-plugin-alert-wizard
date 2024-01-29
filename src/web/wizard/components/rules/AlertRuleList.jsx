@@ -199,9 +199,6 @@ const AlertRuleList = createReactClass({
     },
 
     _alertInfoFormatter(alert) {
-        console.log('_alertInforFormatter')
-        console.log(alert)
-
         let alertValid = true;
         let textColor = '';
         if (alert.condition_parameters === null || alert.stream === null) {
@@ -259,7 +256,6 @@ const AlertRuleList = createReactClass({
             );
         }
 
-        console.log(alert.title);
         const cloneAlert = <AlertRuleCloneForm alertTitle={alert.title} alertValid={alertValid} onSubmit={this._onCloneSubmit} />;
 
         const actions = (
@@ -329,8 +325,6 @@ const AlertRuleList = createReactClass({
         headers.push(this.state.fieldsTitle.actions);
 
         if (this.state.alerts) {
-            console.log(this.state.alerts);
-
             const filterLabel = this.props.intl.formatMessage({
               id: 'wizard.filter',
               defaultMessage: 'Filter alert rules'
