@@ -57,7 +57,7 @@ const AlertListCloneForm = ({listTitle, disabled = false, onSubmit}) => {
     return (
         <>
             <Button id="clone-list" type="button" bsStyle="info" onClick={openModal} disabled={disabled} title={messages.infoClone} >
-                <FormattedMessage id ="wizard.clone" defaultMessage="Clone" />
+                <FormattedMessage id="wizard.clone" defaultMessage="Clone" />
             </Button>
             <BootstrapModalForm show={showConfigModal}
                                 title={<FormattedMessage id="wizard.cloneList" defaultMessage='Cloning List "{title}"' values={{title: listTitle}} />}
