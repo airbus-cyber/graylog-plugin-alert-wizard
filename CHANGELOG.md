@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.1.3](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.1.2...5.1.3)
+### Bug Fixes
+* Update graylog-plugin-logging-alert dependency to [5.1.2](https://github.com/airbus-cyber/graylog-plugin-logging-alert/blob/5.1.2/CHANGELOG.md)
+
 ## [5.1.2](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.1.1...5.1.2)
 ### Bug Fixes
 * Fixed layout of buttons in several pages ([issue #121](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/121))
