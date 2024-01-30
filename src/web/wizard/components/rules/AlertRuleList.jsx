@@ -25,7 +25,6 @@ import createReactClass from 'create-react-class';
 // TODO should rather use useIntl, but should convert to functional components first...
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { LinkContainer } from 'react-router-bootstrap';
-import moment from 'moment';
 
 import { DataTable, IfPermitted, OverlayElement, Spinner, Timestamp } from 'components/common';
 import { Button, Tooltip } from 'components/bootstrap';
@@ -134,8 +133,6 @@ const AlertRuleList = createReactClass({
     },
 
     _headerCellFormatter(header) {
-        let formattedHeaderCell;
-
         if (header == this.state.fieldsTitle.actions) {
             return <th className="actions">{header}</th>;
         }

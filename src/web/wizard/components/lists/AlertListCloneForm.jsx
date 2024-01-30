@@ -16,62 +16,22 @@
  */
 
 import React from 'react';
-import { useState } from 'react';
 import { useIntl, FormattedMessage } from 'react-intl';
 
-import { Input } from 'components/bootstrap';
-import { Button } from 'components/bootstrap';
-import BootstrapModalForm from 'components/bootstrap/BootstrapModalForm';
+import CloneButton from 'wizard/components/buttons/CloneButton';
 
 
-const AlertListCloneForm = ({listTitle, disabled = false, onSubmit}) => {
+const AlertListCloneForm = ({listTitle, onSubmit}) => {
     const intl = useIntl();
+    // TODO uniformize: use only FormattedMessage here and remove intl? (if possible, otherwise try only intl)
     const messages = {
         infoClone: intl.formatMessage({id: "wizard.buttonInfoCloneList", defaultMessage: "Clone this alert list"}),
         placeholderTitle: intl.formatMessage({id: "wizard.placeholderCloneTitleList", defaultMessage: "A descriptive name of the new alert list"}),
-    };
-    const [state, setState] = useState({title: '', description: ''});
-    const [showConfigModal, setShowConfigModal] = useState(false);
-
-    const openModal = () => {
-        setShowConfigModal(true);
-    };
-
-    const closeModal = () => {
-        setShowConfigModal(false);
-    };
-
-    const submit = () => {
-        onSubmit(listTitle, state.title, state.description);
-        closeModal();
-    };
-
-    const onValueChanged = (event) => {
-        const newState = {
-            ...state,
-            [event.target.name]: event.target.value
-        };
-        setState(newState);
+        modalTitle: <FormattedMessage id="wizard.cloneList" defaultMessage='Cloning List "{title}"' values={{title: listTitle}} />
     };
 
     return (
-        <>
-            <Button id="clone-list" type="button" bsStyle="info" onClick={openModal} disabled={disabled} title={messages.infoClone} >
-                <FormattedMessage id="wizard.clone" defaultMessage="Clone" />
-            </Button>
-            <BootstrapModalForm show={showConfigModal}
-                                title={<FormattedMessage id="wizard.cloneList" defaultMessage='Cloning List "{title}"' values={{title: listTitle}} />}
-                                onCancel={closeModal}
-                                onSubmitForm={submit}
-                                cancelButtonText={<FormattedMessage id="wizard.cancel" defaultMessage="Cancel" />}
-                                submitButtonText={<FormattedMessage id="wizard.save" defaultMessage="Save" />}>
-                <Input id="title" type="text" required label={<FormattedMessage id ="wizard.title" defaultMessage="Title" />} name="title"
-                       placeholder={messages.placeholderTitle}
-                       onChange={onValueChanged} autoFocus/>
-                <Input id="description" type="text" label={<FormattedMessage id="wizard.fieldDescription" defaultMessage="Description" />} name="description"
-                       onChange={onValueChanged}/>
-            </BootstrapModalForm>
-        </>
+        <CloneButton title={listTitle} onSubmit={onSubmit} messages={messages} />
     );
 };
 
