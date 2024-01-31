@@ -65,9 +65,7 @@ const _availableRuleType = () => {
     ];
 };
 
-// TODO fix bug: set a value, modify field, click => the value is back to empty string
 const FieldRule = ({matchData, rule, onUpdate, onDelete}) => {
-    const [state, setState] = useState({field: rule.field, type: rule.type, value: rule.value});
     const [lists, setLists] = useState(null);
 
     useEffect(() => {
@@ -101,32 +99,22 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete}) => {
 
     const _propagateUpdate = (newState) => {
         const isValid = _checkForm(newState);
-        setState(newState);
         onUpdate(newState, isValid);
     };
 
     const _onRuleFieldSelect = (event) => {
-        const newState = {
-            ...state,
-            field: FormsUtils.getValueFromInput(event.target)
-        };
+        const newState = { field: FormsUtils.getValueFromInput(event.target), type: rule.type, value: rule.value };
         _propagateUpdate(newState);
     };
 
     const _onRuleTypeSelect = (value) => {
         // TODO parseInt('') returns NaN which is a problem later on (will turn into null after a call to ObjectUtils.clone
-        const newState = {
-            ...state,
-            type: parseInt(value)
-        };
+        const newState = { field: rule.field, type: parseInt(value), value: rule.value };
         _propagateUpdate(newState);
     };
 
     const _onValueChanged = (value) => {
-        const newState = {
-            ...state,
-            value: value
-        };
+        const newState = { field: rule.field, type: rule.type, value: value };
         _propagateUpdate(newState);
     };
 
@@ -146,7 +134,7 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete}) => {
     };
 
     const selectValueBox = () => {
-        if (state.type !== 5 && state.type !== -5 && state.type !== 7 && state.type !== -7) {
+        if (rule.type !== 5 && rule.type !== -5 && rule.type !== 7 && rule.type !== -7) {
             return (
                 <Input style={{
                            backgroundColor: color,
@@ -156,9 +144,9 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete}) => {
                        }}
                        id="value" name="value" type="text"
                        onChange={(e) => _onValueChanged(e.target.value)}
-                       value={state.value}/>
+                       value={rule.value}/>
             );
-        } else if (state.type === 7 || state.type === -7)  {
+        } else if (rule.type === 7 || rule.type === -7)  {
             return (
                 <Input id="alertLists" name="alertLists">
                     <div style={{width: '150px'}}>
@@ -166,7 +154,7 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete}) => {
                                 autosize={false}
                                 required
                                 clearable={false}
-                                value={state.value}
+                                value={rule.value}
                                 options={_createSelectItemsListTitle(lists)}
                                 matchProp="value"
                                 onChange={_onValueChanged}
@@ -206,7 +194,7 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete}) => {
                 {deleteAction}
                 <Input id="field" name="field">
                     <div style={{width: '200px'}}>
-                        <TypeAheadFieldInput id="field-input" type="text" required name="field" defaultValue={state.field} onChange={_onRuleFieldSelect} />
+                        <TypeAheadFieldInput id="field-input" type="text" required name="field" defaultValue={rule.field} onChange={_onRuleFieldSelect} />
                     </div>
                 </Input>
                 <Input id="type" name="type">
@@ -214,7 +202,7 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete}) => {
                         <Select style={{backgroundColor: color}}
                                 required
                                 clearable={false}
-                                value={state.type.toString()}
+                                value={rule.type.toString()}
                                 options={_availableRuleType()}
                                 matchProp="value"
                                 onChange={_onRuleTypeSelect}
