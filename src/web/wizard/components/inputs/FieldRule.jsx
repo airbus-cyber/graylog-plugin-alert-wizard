@@ -15,18 +15,20 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-// TODO remove this import?
-import PropTypes from 'prop-types';
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { useIntl, FormattedMessage } from 'react-intl';
+// TODO should use TypeScript rather than PropTypes
+import PropTypes from 'prop-types';
+
 import { Input } from 'components/bootstrap';
 import { Select, Spinner } from 'components/common';
-import TypeAheadFieldInput from './TypeAheadFieldInput';
 import ObjectUtils from 'util/ObjectUtils';
+import FormsUtils from 'util/FormsUtils';
+
 import AlertListActions from 'wizard/actions/AlertListActions';
 import IconRemove from 'wizard/components/icons/Remove';
-import FormsUtils from 'util/FormsUtils';
+import TypeAheadFieldInput from './TypeAheadFieldInput';
 
 
 // TODO transform this into a constant? _AVAILABLE_RULE_TYPE
