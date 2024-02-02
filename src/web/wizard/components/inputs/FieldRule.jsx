@@ -76,46 +76,22 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete}) => {
         return (matchData.rules[rule.id] ? '#dff0d8' : '#f2dede');
     };
 
-    const _checkForm = (newState) => {
-        if (newState.value === '') {
-            return false;
-        }
-        if (newState.field === '') {
-            return false;
-        }
-        // TODO try to make this condition simpler
-        if ((newState.type === 5 || newState.type === -5) ||
-            newState.value !== '' &&
-            (newState.type === 1 || newState.type === -1 ||
-                newState.type === 2 || newState.type === -2 ||
-                newState.type === 3 || newState.type === -3 ||
-                newState.type === 4 || newState.type === -4 ||
-                newState.type === 6 || newState.type === -6 ||
-                newState.type === 7 || newState.type === -7)) {
-            return true;
-        }
-        return false;
-    };
-
-    const _propagateUpdate = (newState) => {
-        const isValid = _checkForm(newState);
-        onUpdate(newState, isValid);
+    const _propagateUpdate = (field, type, value) => {
+        const newState = { field: field, type: type, value: value };
+        onUpdate(newState);
     };
 
     const _onRuleFieldSelect = (event) => {
-        const newState = { field: FormsUtils.getValueFromInput(event.target), type: rule.type, value: rule.value };
-        _propagateUpdate(newState);
+        _propagateUpdate(FormsUtils.getValueFromInput(event.target), rule.type, rule.value);
     };
 
     const _onRuleTypeSelect = (value) => {
         // TODO parseInt('') returns NaN which is a problem later on (will turn into null after a call to ObjectUtils.clone
-        const newState = { field: rule.field, type: parseInt(value), value: rule.value };
-        _propagateUpdate(newState);
+        _propagateUpdate(rule.field, parseInt(value), rule.value);
     };
 
     const _onValueChanged = (value) => {
-        const newState = { field: rule.field, type: rule.type, value: value };
-        _propagateUpdate(newState);
+        _propagateUpdate(rule.field, rule.type, value);
     };
 
     const _createSelectItemsListTitle = (list) => {

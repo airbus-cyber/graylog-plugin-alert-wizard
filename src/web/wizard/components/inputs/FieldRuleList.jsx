@@ -65,7 +65,7 @@ const FieldRuleList = ({fieldRules, matchData, onSaveStream}) => {
         return (
             <div key={rule.identifier}>
                 <FieldRule rule={rule} matchData={matchData}
-                           onUpdate={(newState, isValid) => _onUpdateFieldRuleSubmit(index, newState, isValid)}
+                           onUpdate={newState => _onUpdateFieldRuleSubmit(index, newState)}
                            onDelete={() => _onDeleteFieldRuleSubmit(index)} />
                 <br/>
             </div>

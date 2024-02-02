@@ -91,6 +91,7 @@ const AlertRuleForm = createReactClass({
         if (field !== "condition_type") {
             this.setState({isModified: true});
         }
+        // TODO why is this check necessary???
         if (value === '') {
             this.setState({isValid: false});
         } else {
@@ -101,7 +102,8 @@ const AlertRuleForm = createReactClass({
         this.setState({alert: alert});
         this.setState({isModified: true});
     },  
-    _isRuleValid(rule){
+    _isRuleValid(rule) {
+        // TODO simplify this condition...
         if (!(rule.field !== '' &&
                 (rule.type === 5 || rule.type === -5) ||
                 rule.field !== '' && rule.value !== '' &&
@@ -112,8 +114,8 @@ const AlertRuleForm = createReactClass({
                     rule.type === 6 || rule.type === -6) &&
                     (rule.type === 7 || rule.type === -7) ||
                 rule.field !== '' && rule.value !== '')) {
-                return false;
-            }
+            return false;
+        }
         return true;
     },
     _isFieldRulesValid(stream) {
