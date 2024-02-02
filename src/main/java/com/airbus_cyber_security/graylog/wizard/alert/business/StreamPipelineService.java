@@ -257,7 +257,7 @@ public class StreamPipelineService {
 
     public List<FieldRule> extractPipelineFieldRules(List<FieldRule> listFieldRule){
         List<FieldRule> listPipelineFieldRule = new ArrayList<>();
-        for (FieldRule fieldRule : listFieldRule) {
+        for (FieldRule fieldRule: listFieldRule) {
             if (fieldRule.getType() == 7 || fieldRule.getType() == -7) {
                 listPipelineFieldRule.add(fieldRule);
             }
