@@ -84,7 +84,7 @@ public class StreamPipelineService {
     }
 
     private void createStreamRule(List<FieldRule> listfieldRule, String streamID) throws ValidationException {
-        for (FieldRule fieldRule:listfieldRule) {
+        for (FieldRule fieldRule: listfieldRule) {
             if (fieldRule.getType() != -7 && fieldRule.getType() != 7) {
                 final Map<String, Object> streamRuleData = Maps.newHashMapWithExpectedSize(6);
 
