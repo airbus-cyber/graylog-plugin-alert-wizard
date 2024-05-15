@@ -35,6 +35,8 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class AlertRule {
 
+    // TODO should add an identifier and work with it (see Notification or EventDefinition)
+
     @JsonProperty("title")
     @NotNull
     public abstract String getTitle();
