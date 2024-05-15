@@ -45,6 +45,10 @@ public abstract class AlertRule {
     @Nullable
     public abstract String getAlertType();
 
+    @JsonProperty("conditions1")
+    @NotNull
+    public abstract TriggeringConditions conditions1();
+
     @JsonProperty("stream")
     @NotNull
     public abstract String getStreamIdentifier();
@@ -114,13 +118,14 @@ public abstract class AlertRule {
     @JsonCreator
     public static AlertRule create(@JsonProperty("_id") String objectId,
                                    @JsonProperty("title") String title,
+                                   @JsonProperty("alert_type") String alertType,
+                                   @JsonProperty("conditions1") TriggeringConditions conditions1,
                                    @JsonProperty("stream") String streamID,
                                    @JsonProperty("event") String eventID,
                                    @JsonProperty("notification") String notificationID,
                                    @JsonProperty("created_at") DateTime createdAt,
                                    @JsonProperty("creator_user_id") String creatorUserId,
                                    @JsonProperty("last_modified") DateTime lastModified,
-                                   @JsonProperty("condition_type") String alertType,
                                    @JsonProperty("stream2") String streamID2,
                                    @JsonProperty("event2") String eventID2,
                                    @JsonProperty("pipeline") String pipelineID,
@@ -129,19 +134,21 @@ public abstract class AlertRule {
                                    @JsonProperty("second pipeline") String pipelineID2,
                                    @JsonProperty("second pipeline_rule") String pipelineRuleID2,
                                    @JsonProperty("second_pipeline_field_rules") List<FieldRule> pipelineFieldRules2){
-        return new AutoValue_AlertRule(title, alertType, streamID, eventID, notificationID, createdAt, creatorUserId, lastModified,
-                streamID2, eventID2, pipelineID, pipelineRuleID, pipelineFieldRules, pipelineID2, pipelineRuleID2, pipelineFieldRules2);
+        return new AutoValue_AlertRule(title, alertType, conditions1, streamID, eventID, notificationID, createdAt,
+                creatorUserId, lastModified, streamID2, eventID2, pipelineID, pipelineRuleID, pipelineFieldRules,
+                pipelineID2, pipelineRuleID2, pipelineFieldRules2);
     }
 	
 	public static AlertRule create(
             String title,
+            String alertType,
+            TriggeringConditions conditions1,
             String streamID,
             String eventID,
             String notificationID,
             DateTime createdAt,
             String creatorUserId,
             DateTime lastModified,
-            String alertType,
             String streamIdentifier2,
             String eventIdentifier2,
             String pipelineIdentifier,
@@ -150,7 +157,9 @@ public abstract class AlertRule {
             String pipelineIdentifier2,
             String pipelineRuleIdentifier2,
             List<FieldRule> pipelineFieldRules2) {
-		return new AutoValue_AlertRule(title, alertType, streamID, eventID, notificationID, createdAt, creatorUserId, lastModified,
-                streamIdentifier2, eventIdentifier2, pipelineIdentifier, pipelineRuleIdentifier, pipelineFieldRules, pipelineIdentifier2, pipelineRuleIdentifier2, pipelineFieldRules2);
+		return new AutoValue_AlertRule(title, alertType, conditions1, streamID, eventID, notificationID, createdAt,
+                creatorUserId, lastModified, streamIdentifier2, eventIdentifier2, pipelineIdentifier,
+                pipelineRuleIdentifier, pipelineFieldRules, pipelineIdentifier2, pipelineRuleIdentifier2,
+                pipelineFieldRules2);
 	}
 }

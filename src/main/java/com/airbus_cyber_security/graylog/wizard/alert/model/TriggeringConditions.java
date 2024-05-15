@@ -18,6 +18,7 @@
 package com.airbus_cyber_security.graylog.wizard.alert.model;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.auto.value.AutoValue;
 
@@ -40,4 +41,16 @@ public abstract class TriggeringConditions {
     @JsonProperty("pipeline_rule")
     @Nullable
     public abstract String pipelineRuleIdentifier();
+
+    @JsonCreator
+    public static TriggeringConditions create(@JsonProperty("_id") String objectId,
+                                              @JsonProperty("stream") String streamIdentifier,
+                                              @JsonProperty("pipeline") String pipelineIdentifier,
+                                              @JsonProperty("pipeline_rule") String pipelineRuleIdentifier) {
+        return create(streamIdentifier, pipelineIdentifier, pipelineRuleIdentifier);
+    }
+
+    public static TriggeringConditions create(String streamIdentifier, String pipelineIdentifier, String pipelineRuleIdentifier) {
+        return new AutoValue_TriggeringConditions(streamIdentifier, pipelineIdentifier, pipelineRuleIdentifier);
+    }
 }

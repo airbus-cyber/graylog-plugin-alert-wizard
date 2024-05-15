@@ -21,6 +21,7 @@ package com.airbus_cyber_security.graylog.wizard.alert.rest;
 import com.airbus_cyber_security.graylog.wizard.alert.business.*;
 import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleService;
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRule;
+import com.airbus_cyber_security.graylog.wizard.alert.model.TriggeringConditions;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
@@ -289,15 +290,19 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String eventIdentifier2 = createSecondEvent(alertTitle, description, notificationIdentifier, conditionType, conditionParameters, userContext, streamIdentifier2);
 
         this.clusterEventBus.post(StreamsChangedEvent.create(streamIdentifier));
+
+        TriggeringConditions conditions1 = TriggeringConditions.create(streamIdentifier, pipeline.getPipelineID(), pipeline.getPipelineRuleID());
+
         AlertRule alertRule = AlertRule.create(
                 alertTitle,
+                conditionType,
+                conditions1,
                 streamIdentifier,
                 eventIdentifier,
                 notificationIdentifier,
                 DateTime.now(),
                 userName,
                 DateTime.now(),
-                conditionType,
                 streamIdentifier2,
                 eventIdentifier2,
                 pipeline.getPipelineID(),
@@ -388,15 +393,20 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             this.eventDefinitionService.delete(eventIdentifier2);
         }
 
+        TriggeringConditions conditions1 = TriggeringConditions.create(oldAlert.getStreamIdentifier(),
+                pipeline.getPipelineID(),
+                pipeline.getPipelineRuleID());
+
         AlertRule alertRule = AlertRule.create(
                 alertTitle,
+                request.getConditionType(),
+                conditions1,
                 oldAlert.getStreamIdentifier(),
                 oldAlert.getEventID(),
                 oldAlert.getNotificationID(),
                 oldAlert.getCreatedAt(),
                 userName,
                 DateTime.now(),
-                request.getConditionType(),
                 streamID2,
                 eventIdentifier2,
                 pipeline.getPipelineID(),
