@@ -19,23 +19,19 @@ package com.airbus_cyber_security.graylog.wizard.alert.business;
 
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRule;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
 import org.graylog2.bindings.providers.MongoJackObjectMapperProvider;
 import org.graylog2.database.MongoConnection;
 import org.graylog2.database.NotFoundException;
 import org.graylog2.database.PaginatedDbService;
 import org.mongojack.DBCursor;
 import org.mongojack.DBQuery;
-import org.mongojack.JacksonDBCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.swing.text.html.Option;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 
