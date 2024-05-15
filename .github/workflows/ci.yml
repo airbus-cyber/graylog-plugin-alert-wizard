@@ -69,7 +69,11 @@ jobs:
           source venv/bin/activate
           pip install -r requirements.txt
           docker-compose --project-directory ../runtime pull
-          PYTHONUNBUFFERED=true python -m unittest --verbose
+          PYTHONUNBUFFERED=true python -m unittest test --verbose
+      - name: Execute brittle tests
+        working-directory: plugin/validation
+        run: |
+          PYTHONUNBUFFERED=true python -m unittest test_brittle --verbose
       - name: Package signed .rpm
         working-directory: plugin
         env:
