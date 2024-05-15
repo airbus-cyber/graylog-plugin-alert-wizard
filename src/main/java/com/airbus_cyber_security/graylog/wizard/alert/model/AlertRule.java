@@ -23,7 +23,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.auto.value.AutoValue;
-import org.graylog2.database.CollectionName;
 import org.joda.time.DateTime;
 
 import javax.annotation.Nullable;
@@ -34,7 +33,6 @@ import java.util.List;
 @AutoValue
 @JsonAutoDetect
 @JsonIgnoreProperties(ignoreUnknown = true)
-@CollectionName("wizard_alerts")
 public abstract class AlertRule {
 
     @JsonProperty("title")
