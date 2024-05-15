@@ -138,7 +138,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String eventIdentifier = alert.getEventID();
         EventDefinitionDto event = this.eventDefinitionService.getEventDefinition(eventIdentifier);
         NotificationDto notification = this.notificationService.get(alert.getNotificationID());
-        Stream stream = this.loadStream(alert.getStreamIdentifier());
+        TriggeringConditions conditions1 = alert.conditions1();
+        Stream stream = this.loadStream(conditions1.streamIdentifier());
         DateTime lastModified = alert.getLastModified();
         Stream secondStream = this.loadSecondStream(alert.getSecondStreamID());
         return this.conversions.constructDataAlertRule(
@@ -297,7 +298,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 alertTitle,
                 conditionType,
                 conditions1,
-                streamIdentifier,
                 eventIdentifier,
                 notificationIdentifier,
                 DateTime.now(),
@@ -345,14 +345,20 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String alertTitle = request.getTitle();
         String userName = getCurrentUser().getName();
 
+        // TODO extract method updateConditions?
         // Update stream.
-        Stream stream = this.loadStream(oldAlert.getStreamIdentifier());
+        TriggeringConditions previousConditions1 = oldAlert.conditions1();
+        Stream stream = this.loadStream(previousConditions1.streamIdentifier());
         this.streamPipelineService.updateStream(stream, request.getStream(), alertTitle);
 
         //update pipeline
         this.streamPipelineService.deletePipeline(oldAlert.getPipelineID(), oldAlert.getPipelineRuleID());
         List<FieldRule> fieldRules = this.streamPipelineService.extractPipelineFieldRules(request.getStream().getFieldRules());
         Pipeline pipeline = this.createPipelineAndRule(stream, alertTitle, fieldRules, request.getStream().getMatchingType());
+
+        TriggeringConditions conditions1 = TriggeringConditions.create(previousConditions1.streamIdentifier(),
+                pipeline.getPipelineID(),
+                pipeline.getPipelineRuleID());
 
         // Update stream 2.
         Stream stream2 = this.streamPipelineService.createOrUpdateSecondStream(request.getSecondStream(), alertTitle, userName, request.getConditionType(), oldAlert);
@@ -368,10 +374,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             pipeline2 = this.createPipelineAndRule(stream2, alertTitle + "#2", fieldRules2, request.getStream().getMatchingType());
         }
 
-        //update Notification
+        // update Notification
         this.notificationService.updateNotification(alertTitle, oldAlert.getNotificationID(), request.getSeverity());
 
-        //Create Condition
+        // Create Type
         EventProcessorConfig configuration = this.conversions.createCondition(request.getConditionType(), request.conditionParameters(), stream.getId(), streamID2);
 
         // Update Event
@@ -393,15 +399,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             this.eventDefinitionService.delete(eventIdentifier2);
         }
 
-        TriggeringConditions conditions1 = TriggeringConditions.create(oldAlert.getStreamIdentifier(),
-                pipeline.getPipelineID(),
-                pipeline.getPipelineRuleID());
-
         AlertRule alertRule = AlertRule.create(
                 alertTitle,
                 request.getConditionType(),
                 conditions1,
-                oldAlert.getStreamIdentifier(),
                 oldAlert.getEventID(),
                 oldAlert.getNotificationID(),
                 oldAlert.getCreatedAt(),
@@ -454,7 +455,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         try {
             AlertRule alertRule = this.alertRuleService.load(alertTitle);
-            this.streamPipelineService.deleteStreamFromIdentifier(alertRule.getStreamIdentifier());
+            TriggeringConditions conditions1 = alertRule.conditions1();
+            this.streamPipelineService.deleteStreamFromIdentifier(conditions1.streamIdentifier());
 
             //Delete second Stream
             if (alertRule.getSecondStreamID() != null && !alertRule.getSecondStreamID().isEmpty()) {
