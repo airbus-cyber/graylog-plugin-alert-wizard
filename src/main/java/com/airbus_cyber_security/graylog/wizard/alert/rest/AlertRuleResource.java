@@ -148,7 +148,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 alert.getCreatedAt(),
                 alert.getCreatorUserId(),
                 lastModified,
-                alert.getConditionType(),
+                alert.getAlertType(),
                 secondStream,
                 alert.getSecondEventID(),
                 alert.getPipelineFieldRules(),
@@ -376,14 +376,14 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         //Or Condition for Second Stream
         if (request.getConditionType().equals("OR") && stream2 != null) {
             EventProcessorConfig configuration2 = this.conversions.createAggregationCondition(stream2.getId(), request.conditionParameters());
-            if (oldAlert.getConditionType().equals("OR")) {
+            if (oldAlert.getAlertType().equals("OR")) {
                 // Update Event
                 this.eventDefinitionService.updateEvent(alertTitle + "#2", request.getDescription(), eventIdentifier2, configuration2);
             } else {
                 //Create Event
                 eventIdentifier2 = this.eventDefinitionService.createEvent(alertTitle + "#2", request.getDescription(), oldAlert.getNotificationID(), configuration2, userContext);
             }
-        } else if (oldAlert.getConditionType().equals("OR")) {
+        } else if (oldAlert.getAlertType().equals("OR")) {
             //Delete Event
             this.eventDefinitionService.delete(eventIdentifier2);
         }
