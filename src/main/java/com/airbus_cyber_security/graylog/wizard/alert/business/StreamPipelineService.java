@@ -83,26 +83,31 @@ public class StreamPipelineService {
         this.lookupService = lookupService;
     }
 
-    private void createStreamRule(List<FieldRule> listfieldRule, String streamID) throws ValidationException {
-        for (FieldRule fieldRule: listfieldRule) {
-            if (fieldRule.getType() != -7 && fieldRule.getType() != 7) {
-                final Map<String, Object> streamRuleData = Maps.newHashMapWithExpectedSize(6);
+    private boolean isListFieldRule(FieldRule fieldRule) {
+        return (fieldRule.getType() == -7 || fieldRule.getType() == 7);
+    }
 
-                if (fieldRule.getType() >= 0) {
-                    streamRuleData.put(StreamRuleImpl.FIELD_TYPE, fieldRule.getType());
-                    streamRuleData.put(StreamRuleImpl.FIELD_INVERTED, false);
-                } else {
-                    streamRuleData.put(StreamRuleImpl.FIELD_TYPE, Math.abs(fieldRule.getType()));
-                    streamRuleData.put(StreamRuleImpl.FIELD_INVERTED, true);
-                }
-                streamRuleData.put(StreamRuleImpl.FIELD_FIELD, fieldRule.getField());
-                streamRuleData.put(StreamRuleImpl.FIELD_VALUE, fieldRule.getValue());
-                streamRuleData.put(StreamRuleImpl.FIELD_STREAM_ID, new ObjectId(streamID));
-                streamRuleData.put(StreamRuleImpl.FIELD_DESCRIPTION, Description.COMMENT_ALERT_WIZARD);
-
-                StreamRule newStreamRule = this.streamRuleService.create(streamRuleData);
-                this.streamRuleService.save(newStreamRule);
+    private void createStreamRule(List<FieldRule> fieldRules, String streamID) throws ValidationException {
+        for (FieldRule fieldRule: fieldRules) {
+            if (isListFieldRule(fieldRule)) {
+                continue;
             }
+            Map<String, Object> streamRuleData = Maps.newHashMapWithExpectedSize(6);
+
+            if (fieldRule.getType() >= 0) {
+                streamRuleData.put(StreamRuleImpl.FIELD_TYPE, fieldRule.getType());
+                streamRuleData.put(StreamRuleImpl.FIELD_INVERTED, false);
+            } else {
+                streamRuleData.put(StreamRuleImpl.FIELD_TYPE, Math.abs(fieldRule.getType()));
+                streamRuleData.put(StreamRuleImpl.FIELD_INVERTED, true);
+            }
+            streamRuleData.put(StreamRuleImpl.FIELD_FIELD, fieldRule.getField());
+            streamRuleData.put(StreamRuleImpl.FIELD_VALUE, fieldRule.getValue());
+            streamRuleData.put(StreamRuleImpl.FIELD_STREAM_ID, new ObjectId(streamID));
+            streamRuleData.put(StreamRuleImpl.FIELD_DESCRIPTION, Description.COMMENT_ALERT_WIZARD);
+
+            StreamRule newStreamRule = this.streamRuleService.create(streamRuleData);
+            this.streamRuleService.save(newStreamRule);
         }
     }
 
