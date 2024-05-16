@@ -153,7 +153,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 alert.getAlertType(),
                 secondStream,
                 alert.getSecondEventID(),
-                alert.getPipelineFieldRules(),
+                conditions1.pipelineFieldRules(),
                 alert.getSecondPipelineFieldRules());
     }
 
@@ -315,8 +315,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 DateTime.now(),
                 streamIdentifier2,
                 eventIdentifier2,
-                // TODO move fieldRulesWithList into TriggeringConditions
-                conditions1.pipelineFieldRules(),
                 pipeline2.getPipelineID(),
                 pipeline2.getPipelineRuleID(),
                 fieldRulesWithList2);
@@ -334,7 +332,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return Response.ok().entity(result).build();
     }
 
-    private TriggeringConditions updateConditions(TriggeringConditions previousConditions, String alertTitle, AlertRuleStream streamRequest, List<FieldRule> fieldRulesWithList) throws ValidationException {
+    private TriggeringConditions updateConditions(TriggeringConditions previousConditions, String alertTitle, AlertRuleStream streamRequest) throws ValidationException {
+        List<FieldRule> fieldRulesWithList = this.streamPipelineService.extractPipelineFieldRules(streamRequest.getFieldRules());
+
         // update stream
         Stream stream = this.loadStream(previousConditions.streamIdentifier());
         this.streamPipelineService.updateStream(stream, streamRequest, alertTitle);
@@ -370,9 +370,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String userName = getCurrentUser().getName();
 
         AlertRuleStream streamRequest = request.getStream();
-        List<FieldRule> fieldRulesWithList = this.streamPipelineService.extractPipelineFieldRules(streamRequest.getFieldRules());
-
-        TriggeringConditions conditions1 = updateConditions(previousAlert.conditions1(), alertTitle, streamRequest, fieldRulesWithList);
+        TriggeringConditions previousConditions1 = previousAlert.conditions1();
+        TriggeringConditions conditions1 = updateConditions(previousConditions1, alertTitle, streamRequest);
 
         // Update stream 2.
         Stream stream2 = this.streamPipelineService.createOrUpdateSecondStream(request.getSecondStream(), alertTitle, userName, request.getConditionType(), previousAlert);
@@ -424,21 +423,20 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 DateTime.now(),
                 streamID2,
                 eventIdentifier2,
-                fieldRulesWithList,
                 pipeline2.getPipelineID(),
                 pipeline2.getPipelineRuleID(),
                 fieldRules2);
         alertRule = this.alertRuleService.update(java.net.URLDecoder.decode(title, ENCODING), alertRule);
 
         // Decrement list usage
-        for (FieldRule fieldRule: this.nullSafe(previousAlert.getPipelineFieldRules())) {
+        for (FieldRule fieldRule: this.nullSafe(previousConditions1.pipelineFieldRules())) {
             this.alertListUtilsService.decrementUsage(fieldRule.getValue());
         }
         for (FieldRule fieldRule: this.nullSafe(previousAlert.getSecondPipelineFieldRules())) {
             this.alertListUtilsService.decrementUsage(fieldRule.getValue());
         }
         // Increment list usage
-        for (FieldRule fieldRule: this.nullSafe(fieldRulesWithList)) {
+        for (FieldRule fieldRule: this.nullSafe(conditions1.pipelineFieldRules())) {
             this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
         for (FieldRule fieldRule: this.nullSafe(fieldRules2)) {
@@ -497,7 +495,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             }
 
             //Update list usage
-            for (FieldRule fieldRule : this.nullSafe(alertRule.getPipelineFieldRules())) {
+            for (FieldRule fieldRule : this.nullSafe(conditions1.pipelineFieldRules())) {
                 this.alertListUtilsService.decrementUsage(fieldRule.getValue());
             }
             for (FieldRule fieldRule : this.nullSafe(alertRule.getSecondPipelineFieldRules())) {
