@@ -244,6 +244,21 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return this.eventDefinitionService.createEvent(alertTitle + "#2", description, notificationIdentifier, configuration2, userContext);
     }
 
+    private TriggeringConditions createTriggeringConditions(AlertRuleStream streamConfiguration, String title, List<FieldRule> fieldRulesWithList, String userName) throws ValidationException {
+        Stream stream = this.streamPipelineService.createStream(streamConfiguration, title, userName);
+
+        String pipelineIdentifier = null;
+        String pipelineRuleIdentifier = null;
+        if (!fieldRulesWithList.isEmpty()) {
+            PipelineDao pipeline = this.streamPipelineService.createPipeline(title, streamConfiguration.getMatchingType());
+            RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(title, fieldRulesWithList, stream);
+            pipelineIdentifier = pipeline.id();
+            pipelineRuleIdentifier = pipelineRule.id();
+        }
+
+        return TriggeringConditions.create(stream.getId(), pipelineIdentifier, pipelineRuleIdentifier);
+    }
+
     @POST
     // TODO is this annotation @Timed necessary? What is it for? Remove?
     @Timed
@@ -269,13 +284,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         String notificationIdentifier = this.notificationService.createNotification(alertTitle, severity, userContext);
 
-        // TODO extract method createCondition
-        // Create stream and pipeline
-        Stream stream = this.streamPipelineService.createStream(streamConfiguration, alertTitle, userName);
-        List<FieldRule> fieldRules = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration.getFieldRules());
-        Pipeline pipeline = this.createPipelineAndRule(stream, alertTitle, fieldRules, streamConfiguration.getMatchingType());
-        String streamIdentifier = stream.getId();
-        TriggeringConditions conditions1 = TriggeringConditions.create(streamIdentifier, pipeline.getPipelineID(), pipeline.getPipelineRuleID());
+        List<FieldRule> fieldRulesWithList = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration.getFieldRules());
+        TriggeringConditions conditions1 = createTriggeringConditions(streamConfiguration, alertTitle, fieldRulesWithList, userName);
 
         // Create second stream and pipeline
         String streamIdentifier2 = null;
@@ -289,10 +299,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
 
         //Create Events
-        String eventIdentifier = createEvent(alertTitle, description, notificationIdentifier, conditionType, conditionParameters, userContext, streamIdentifier, streamIdentifier2);
+        String eventIdentifier = createEvent(alertTitle, description, notificationIdentifier, conditionType, conditionParameters, userContext, conditions1.streamIdentifier(), streamIdentifier2);
         String eventIdentifier2 = createSecondEvent(alertTitle, description, notificationIdentifier, conditionType, conditionParameters, userContext, streamIdentifier2);
 
-        this.clusterEventBus.post(StreamsChangedEvent.create(streamIdentifier));
+        this.clusterEventBus.post(StreamsChangedEvent.create(conditions1.streamIdentifier()));
 
         AlertRule alertRule = AlertRule.create(
                 alertTitle,
@@ -305,14 +315,15 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 DateTime.now(),
                 streamIdentifier2,
                 eventIdentifier2,
-                fieldRules,
+                // TODO move fieldRulesWithList into TriggeringConditions
+                fieldRulesWithList,
                 pipeline2.getPipelineID(),
                 pipeline2.getPipelineRuleID(),
                 fieldRules2);
         alertRule = this.alertRuleService.create(alertRule);
 
         //Update list usage
-        for (FieldRule fieldRule: this.nullSafe(fieldRules)) {
+        for (FieldRule fieldRule: this.nullSafe(fieldRulesWithList)) {
             this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
         for (FieldRule fieldRule: this.nullSafe(fieldRules2)) {
