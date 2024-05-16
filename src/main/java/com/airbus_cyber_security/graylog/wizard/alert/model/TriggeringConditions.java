@@ -17,6 +17,7 @@
 
 package com.airbus_cyber_security.graylog.wizard.alert.model;
 
+import com.airbus_cyber_security.graylog.wizard.alert.rest.models.FieldRule;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -24,6 +25,7 @@ import com.google.auto.value.AutoValue;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @AutoValue
 @JsonAutoDetect
@@ -42,15 +44,20 @@ public abstract class TriggeringConditions {
     @Nullable
     public abstract String pipelineRuleIdentifier();
 
+    @JsonProperty("pipeline_field_rules")
+    @Nullable
+    public abstract List<FieldRule> pipelineFieldRules();
+
     @JsonCreator
     public static TriggeringConditions create(@JsonProperty("_id") String objectId,
                                               @JsonProperty("stream") String streamIdentifier,
                                               @JsonProperty("pipeline") String pipelineIdentifier,
-                                              @JsonProperty("pipeline_rule") String pipelineRuleIdentifier) {
-        return create(streamIdentifier, pipelineIdentifier, pipelineRuleIdentifier);
+                                              @JsonProperty("pipeline_rule") String pipelineRuleIdentifier,
+                                              @JsonProperty("pipeline_field_rules") List<FieldRule> pipelineFieldRules) {
+        return create(streamIdentifier, pipelineIdentifier, pipelineRuleIdentifier, pipelineFieldRules);
     }
 
-    public static TriggeringConditions create(String streamIdentifier, String pipelineIdentifier, String pipelineRuleIdentifier) {
-        return new AutoValue_TriggeringConditions(streamIdentifier, pipelineIdentifier, pipelineRuleIdentifier);
+    public static TriggeringConditions create(String streamIdentifier, String pipelineIdentifier, String pipelineRuleIdentifier, List<FieldRule> pipelineFieldRules) {
+        return new AutoValue_TriggeringConditions(streamIdentifier, pipelineIdentifier, pipelineRuleIdentifier, pipelineFieldRules);
     }
 }

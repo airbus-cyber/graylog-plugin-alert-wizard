@@ -244,7 +244,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return this.eventDefinitionService.createEvent(alertTitle + "#2", description, notificationIdentifier, configuration2, userContext);
     }
 
-    private TriggeringConditions createTriggeringConditions(AlertRuleStream streamConfiguration, String title, List<FieldRule> fieldRulesWithList, String userName) throws ValidationException {
+    private TriggeringConditions createTriggeringConditions(AlertRuleStream streamConfiguration, String title, String userName) throws ValidationException {
+        List<FieldRule> fieldRulesWithList = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration.getFieldRules());
         Stream stream = this.streamPipelineService.createStream(streamConfiguration, title, userName);
 
         String pipelineIdentifier = null;
@@ -256,7 +257,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             pipelineRuleIdentifier = pipelineRule.id();
         }
 
-        return TriggeringConditions.create(stream.getId(), pipelineIdentifier, pipelineRuleIdentifier);
+        return TriggeringConditions.create(stream.getId(), pipelineIdentifier, pipelineRuleIdentifier, fieldRulesWithList);
     }
 
     @POST
@@ -284,18 +285,17 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         String notificationIdentifier = this.notificationService.createNotification(alertTitle, severity, userContext);
 
-        List<FieldRule> fieldRulesWithList = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration.getFieldRules());
-        TriggeringConditions conditions1 = createTriggeringConditions(streamConfiguration, alertTitle, fieldRulesWithList, userName);
+        TriggeringConditions conditions1 = createTriggeringConditions(streamConfiguration, alertTitle, userName);
 
         // Create second stream and pipeline
         String streamIdentifier2 = null;
-        List<FieldRule> fieldRules2 = null;
+        List<FieldRule> fieldRulesWithList2 = null;
         Pipeline pipeline2 = new Pipeline(null, null);
         if (conditionType.equals("THEN") || conditionType.equals("AND") || conditionType.equals("OR")) {
             Stream stream2 = this.streamPipelineService.createStream(streamConfiguration2, alertTitle + "#2", userName);
             streamIdentifier2 = stream2.getId();
-            fieldRules2 = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration2.getFieldRules());
-            pipeline2 = this.createPipelineAndRule(stream2, alertTitle + "#2", fieldRules2, streamConfiguration.getMatchingType());
+            fieldRulesWithList2 = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration2.getFieldRules());
+            pipeline2 = this.createPipelineAndRule(stream2, alertTitle + "#2", fieldRulesWithList2, streamConfiguration.getMatchingType());
         }
 
         //Create Events
@@ -316,17 +316,17 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 streamIdentifier2,
                 eventIdentifier2,
                 // TODO move fieldRulesWithList into TriggeringConditions
-                fieldRulesWithList,
+                conditions1.pipelineFieldRules(),
                 pipeline2.getPipelineID(),
                 pipeline2.getPipelineRuleID(),
-                fieldRules2);
+                fieldRulesWithList2);
         alertRule = this.alertRuleService.create(alertRule);
 
         //Update list usage
-        for (FieldRule fieldRule: this.nullSafe(fieldRulesWithList)) {
+        for (FieldRule fieldRule: this.nullSafe(conditions1.pipelineFieldRules())) {
             this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
-        for (FieldRule fieldRule: this.nullSafe(fieldRules2)) {
+        for (FieldRule fieldRule: this.nullSafe(fieldRulesWithList2)) {
             this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
 
@@ -345,7 +345,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         return TriggeringConditions.create(previousConditions.streamIdentifier(),
                 pipeline.getPipelineID(),
-                pipeline.getPipelineRuleID());
+                pipeline.getPipelineRuleID(),
+                fieldRulesWithList);
     }
 
     @PUT

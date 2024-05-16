@@ -113,7 +113,7 @@ public abstract class AlertRule {
                                    @JsonProperty("last_modified") DateTime lastModified,
                                    @JsonProperty("stream2") String streamID2,
                                    @JsonProperty("event2") String eventID2,
-                                   @JsonProperty("pipeline_field_rules")List<FieldRule> pipelineFieldRules,
+                                   @JsonProperty("pipeline_field_rules") List<FieldRule> pipelineFieldRules,
                                    @JsonProperty("second pipeline") String pipelineID2,
                                    @JsonProperty("second pipeline_rule") String pipelineRuleID2,
                                    @JsonProperty("second_pipeline_field_rules") List<FieldRule> pipelineFieldRules2){
