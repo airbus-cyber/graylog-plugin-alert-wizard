@@ -36,7 +36,6 @@ import com.airbus_cyber_security.graylog.wizard.permissions.AlertRuleRestPermiss
 import com.codahale.metrics.annotation.Timed;
 import com.mongodb.MongoException;
 import io.swagger.annotations.*;
-import net.fortuna.ical4j.model.property.Trigger;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.graylog.events.notifications.NotificationDto;
@@ -357,11 +356,20 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         // update pipeline
         this.streamPipelineService.deletePipeline(previousConditions.pipelineIdentifier(), previousConditions.pipelineRuleIdentifier());
-        Pipeline pipeline = this.createPipelineAndRule(stream, alertTitle, fieldRulesWithList, streamRequest.getMatchingType());
+
+        if (fieldRulesWithList.isEmpty()) {
+            return TriggeringConditions.create(previousConditions.streamIdentifier(),
+                    null,
+                    null,
+                    fieldRulesWithList);
+        }
+
+        PipelineDao pipeline = this.streamPipelineService.createPipeline(alertTitle, streamRequest.getMatchingType());
+        RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(alertTitle, fieldRulesWithList, stream);
 
         return TriggeringConditions.create(previousConditions.streamIdentifier(),
-                pipeline.getPipelineID(),
-                pipeline.getPipelineRuleID(),
+                pipeline.id(),
+                pipelineRule.id(),
                 fieldRulesWithList);
     }
 
