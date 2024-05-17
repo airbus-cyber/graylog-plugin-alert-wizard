@@ -35,6 +35,7 @@ public abstract class TriggeringConditions {
     @NotNull
     public abstract String streamIdentifier();
 
+    // TODO should group these 3 fields into TriggeringConditionsPipeline
     @JsonProperty("pipeline")
     @Nullable
     public abstract String pipelineIdentifier();

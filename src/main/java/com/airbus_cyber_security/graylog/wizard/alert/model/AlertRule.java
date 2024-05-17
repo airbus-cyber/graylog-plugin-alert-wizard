@@ -49,6 +49,10 @@ public abstract class AlertRule {
     @NotNull
     public abstract TriggeringConditions conditions1();
 
+    @JsonProperty("conditions2")
+    @Nullable
+    public abstract TriggeringConditions conditions2();
+
     // TODO rename to getEventIdentifier
     // TODO can't this be always NotNull?
     @JsonProperty("event")
@@ -97,11 +101,13 @@ public abstract class AlertRule {
     @Nullable
     public abstract List<FieldRule> getSecondPipelineFieldRules();
 
+    // TODO should replace the create functions by a Builder (see EventDefinitionDTO)
     @JsonCreator
     public static AlertRule create(@JsonProperty("_id") String objectId,
                                    @JsonProperty("title") String title,
                                    @JsonProperty("alert_type") String alertType,
                                    @JsonProperty("conditions1") TriggeringConditions conditions1,
+                                   @JsonProperty("conditions2") TriggeringConditions conditions2,
                                    @JsonProperty("event") String eventID,
                                    @JsonProperty("notification") String notificationID,
                                    @JsonProperty("created_at") DateTime createdAt,
@@ -112,7 +118,7 @@ public abstract class AlertRule {
                                    @JsonProperty("second pipeline") String pipelineID2,
                                    @JsonProperty("second pipeline_rule") String pipelineRuleID2,
                                    @JsonProperty("second_pipeline_field_rules") List<FieldRule> pipelineFieldRules2){
-        return new AutoValue_AlertRule(title, alertType, conditions1, eventID, notificationID, createdAt,
+        return create(title, alertType, conditions1, conditions2, eventID, notificationID, createdAt,
                 creatorUserId, lastModified, streamID2, eventID2, pipelineID2, pipelineRuleID2, pipelineFieldRules2);
     }
 	
@@ -120,6 +126,7 @@ public abstract class AlertRule {
             String title,
             String alertType,
             TriggeringConditions conditions1,
+            TriggeringConditions conditions2,
             String eventID,
             String notificationID,
             DateTime createdAt,
@@ -130,7 +137,7 @@ public abstract class AlertRule {
             String pipelineIdentifier2,
             String pipelineRuleIdentifier2,
             List<FieldRule> pipelineFieldRules2) {
-		return new AutoValue_AlertRule(title, alertType, conditions1, eventID, notificationID, createdAt,
+		return new AutoValue_AlertRule(title, alertType, conditions1, conditions2, eventID, notificationID, createdAt,
                 creatorUserId, lastModified, streamIdentifier2, eventIdentifier2,
                 pipelineIdentifier2, pipelineRuleIdentifier2, pipelineFieldRules2);
 	}

@@ -288,6 +288,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         TriggeringConditions conditions1 = createTriggeringConditions(streamConfiguration, alertTitle, userName);
 
         // Create second stream and pipeline
+        TriggeringConditions conditions2 = null;
         String streamIdentifier2 = null;
         List<FieldRule> fieldRulesWithList2 = null;
         Pipeline pipeline2 = new Pipeline(null, null);
@@ -296,6 +297,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             streamIdentifier2 = stream2.getId();
             fieldRulesWithList2 = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration2.getFieldRules());
             pipeline2 = this.createPipelineAndRule(stream2, alertTitle + "#2", fieldRulesWithList2, streamConfiguration.getMatchingType());
+            // TODO try using createTriggeringConditions instead
+            conditions2 = TriggeringConditions.create(streamIdentifier2, pipeline2.getPipelineID(), pipeline2.getPipelineRuleID(), fieldRulesWithList2);
         }
 
         //Create Events
@@ -308,6 +311,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 alertTitle,
                 conditionType,
                 conditions1,
+                conditions2,
                 eventIdentifier,
                 notificationIdentifier,
                 DateTime.now(),
@@ -373,6 +377,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         TriggeringConditions previousConditions1 = previousAlert.conditions1();
         TriggeringConditions conditions1 = updateConditions(previousConditions1, alertTitle, streamRequest);
 
+        TriggeringConditions conditions2 = null;
+
         // Update stream 2.
         Stream stream2 = this.streamPipelineService.createOrUpdateSecondStream(request.getSecondStream(), alertTitle, userName, request.getConditionType(), previousAlert);
         String streamID2 = null;
@@ -385,6 +391,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             streamID2 = stream2.getId();
             fieldRules2 = this.streamPipelineService.extractPipelineFieldRules(request.getSecondStream().getFieldRules());
             pipeline2 = this.createPipelineAndRule(stream2, alertTitle + "#2", fieldRules2, request.getStream().getMatchingType());
+            // TODO try using updateConditions instead
+            conditions2 = TriggeringConditions.create(streamID2, pipeline2.getPipelineID(), pipeline2.getPipelineRuleID(), fieldRules2);
         }
 
         // update Notification
@@ -416,6 +424,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 alertTitle,
                 request.getConditionType(),
                 conditions1,
+                conditions2,
                 previousAlert.getEventID(),
                 previousAlert.getNotificationID(),
                 previousAlert.getCreatedAt(),
