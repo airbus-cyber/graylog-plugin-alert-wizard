@@ -18,6 +18,7 @@
 package com.airbus_cyber_security.graylog.wizard.alert.business;
 
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRule;
+import com.airbus_cyber_security.graylog.wizard.alert.model.TriggeringConditions;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.database.Description;
@@ -209,18 +210,20 @@ public class StreamPipelineService {
         return stream;
     }
 
-    public Stream createOrUpdateSecondStream(AlertRuleStream alertRuleStream, String title, String userName, String conditionType, AlertRule oldAlert) throws ValidationException, NotFoundException {
+    public Stream createOrUpdateSecondStream(AlertRuleStream alertRuleStream, String title, String userName, String conditionType, AlertRule previousAlert) throws ValidationException, NotFoundException {
+        TriggeringConditions previousConditions2 = previousAlert.conditions2();
         if (conditionType.equals("THEN") || conditionType.equals("AND") || conditionType.equals("OR")) {
-            if (oldAlert.getSecondStreamID() != null) {
-                Stream stream2 = this.streamService.load(oldAlert.getSecondStreamID());
+            if (previousConditions2 != null) {
+                Stream stream2 = this.streamService.load(previousConditions2.streamIdentifier());
                 updateStream(stream2, alertRuleStream, title+"#2");
                 return stream2;
             } else {
                 return createStream(alertRuleStream, title+"#2", userName);
             }
-            //Delete old stream if one
-        } else if (oldAlert.getSecondStreamID() != null && !oldAlert.getSecondStreamID().isEmpty()) {
-            deleteStreamFromIdentifier(oldAlert.getSecondStreamID());
+        // Delete old stream if on
+        // TODO is the second part of this && really necessary? Try to remove
+        } else if (previousConditions2 != null && !previousConditions2.streamIdentifier().isEmpty()) {
+            deleteStreamFromIdentifier(previousConditions2.streamIdentifier());
         }
         return null;
     }

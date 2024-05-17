@@ -77,11 +77,6 @@ public abstract class AlertRule {
     @Nullable
     public abstract DateTime getLastModified();
 
-    // TODO rename into getSecondStreamIdentifier
-    @JsonProperty("stream2")
-    @Nullable
-    public abstract String getSecondStreamID();
-
     // TODO rename into getSecondEventIdentifier
     @JsonProperty("event2")
     @Nullable
@@ -113,13 +108,12 @@ public abstract class AlertRule {
                                    @JsonProperty("created_at") DateTime createdAt,
                                    @JsonProperty("creator_user_id") String creatorUserId,
                                    @JsonProperty("last_modified") DateTime lastModified,
-                                   @JsonProperty("stream2") String streamID2,
                                    @JsonProperty("event2") String eventID2,
                                    @JsonProperty("second pipeline") String pipelineID2,
                                    @JsonProperty("second pipeline_rule") String pipelineRuleID2,
                                    @JsonProperty("second_pipeline_field_rules") List<FieldRule> pipelineFieldRules2){
         return create(title, alertType, conditions1, conditions2, eventID, notificationID, createdAt,
-                creatorUserId, lastModified, streamID2, eventID2, pipelineID2, pipelineRuleID2, pipelineFieldRules2);
+                creatorUserId, lastModified, eventID2, pipelineID2, pipelineRuleID2, pipelineFieldRules2);
     }
 	
 	public static AlertRule create(
@@ -132,13 +126,11 @@ public abstract class AlertRule {
             DateTime createdAt,
             String creatorUserId,
             DateTime lastModified,
-            String streamIdentifier2,
             String eventIdentifier2,
             String pipelineIdentifier2,
             String pipelineRuleIdentifier2,
             List<FieldRule> pipelineFieldRules2) {
 		return new AutoValue_AlertRule(title, alertType, conditions1, conditions2, eventID, notificationID, createdAt,
-                creatorUserId, lastModified, streamIdentifier2, eventIdentifier2,
-                pipelineIdentifier2, pipelineRuleIdentifier2, pipelineFieldRules2);
+                creatorUserId, lastModified, eventIdentifier2, pipelineIdentifier2, pipelineRuleIdentifier2, pipelineFieldRules2);
 	}
 }

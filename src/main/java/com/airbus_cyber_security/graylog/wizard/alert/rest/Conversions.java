@@ -20,8 +20,6 @@ package com.airbus_cyber_security.graylog.wizard.alert.rest;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
-import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetDataAlertRule;
-import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
 import com.airbus_cyber_security.graylog.events.processor.correlation.CorrelationCountProcessorConfig;
 import com.airbus_cyber_security.graylog.events.processor.correlation.checks.OrderType;
 import com.airbus_cyber_security.graylog.wizard.database.Description;
@@ -30,8 +28,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import org.graylog.events.conditions.Expr;
 import org.graylog.events.conditions.Expression;
-import org.graylog.events.notifications.*;
-import org.graylog.events.processor.EventDefinitionDto;
 import org.graylog.events.processor.EventProcessorConfig;
 import org.graylog.events.processor.aggregation.AggregationConditions;
 import org.graylog.events.processor.aggregation.AggregationEventProcessorConfig;
@@ -39,7 +35,6 @@ import org.graylog.events.processor.aggregation.AggregationFunction;
 import org.graylog.events.processor.aggregation.AggregationSeries;
 import org.graylog2.plugin.streams.Stream;
 import org.graylog2.plugin.streams.StreamRule;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,7 +109,7 @@ public class Conversions {
         }
     }
 
-    private Map<String, Object> getConditionParameters(EventProcessorConfig eventConfig) {
+    Map<String, Object> getConditionParameters(EventProcessorConfig eventConfig) {
         Map<String, Object> parametersCondition = Maps.newHashMap();
 
         switch (eventConfig.type()) {
@@ -248,50 +243,8 @@ public class Conversions {
         }
     }
 
-    public GetDataAlertRule constructDataAlertRule(String title,
-                                                   Stream stream,
-                                                   EventDefinitionDto event,
-                                                   NotificationDto notification,
-                                                   DateTime createdAt,
-                                                   String creatorUserIdentifier,
-                                                   DateTime lastModified,
-                                                   String conditionType,
-                                                   Stream secondStream,
-                                                   String secondEventIdentifier,
-                                                   List<FieldRule> pipelineFieldRules,
-                                                   List<FieldRule> secondPipelineFieldRules) {
-        Map<String, Object> parametersCondition = this.getConditionParameters(event.config());
-        AlertRuleStream alertRuleStream = constructAlertRuleStream(stream, pipelineFieldRules);
-        AlertRuleStream alertRuleStream2 = constructSecondAlertRuleStream(secondStream, secondPipelineFieldRules);
-        LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) notification.config();
-
-        boolean isDisabled = streamIsDisabled(stream);
-
-        return GetDataAlertRule.create(title,
-                loggingNotificationConfig.severity().getType(),
-                event.id(),
-                secondEventIdentifier,
-                notification.id(),
-                createdAt,
-                creatorUserIdentifier,
-                lastModified,
-                isDisabled,
-                event.description(),
-                conditionType,
-                parametersCondition,
-                alertRuleStream,
-                alertRuleStream2);
-    }
-
-    private static boolean streamIsDisabled(Stream stream) {
-        boolean isDisabled = false;
-        if (stream != null) {
-            isDisabled = stream.getDisabled();
-        }
-        return isDisabled;
-    }
-
-    private AlertRuleStream constructSecondAlertRuleStream(Stream stream, List<FieldRule> secondPipelineFieldRules) {
+    AlertRuleStream constructSecondAlertRuleStream(Stream stream, List<FieldRule> secondPipelineFieldRules) {
+        // TODO should try to remove this check and inline method?
         if (stream == null) {
             return null;
         }
@@ -310,7 +263,7 @@ public class Conversions {
         return listFieldRule;
     }
 
-    private AlertRuleStream constructAlertRuleStream(Stream stream, List<FieldRule> pipelineFieldRules) {
+    AlertRuleStream constructAlertRuleStream(Stream stream, List<FieldRule> pipelineFieldRules) {
         if (stream == null) {
             return null;
         }

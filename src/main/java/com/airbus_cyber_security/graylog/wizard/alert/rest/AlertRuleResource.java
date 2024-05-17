@@ -18,6 +18,7 @@
 // TODO should rename package rest into resources
 package com.airbus_cyber_security.graylog.wizard.alert.rest;
 
+import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
 import com.airbus_cyber_security.graylog.wizard.alert.business.*;
 import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleService;
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRule;
@@ -141,20 +142,35 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         TriggeringConditions conditions1 = alert.conditions1();
         Stream stream = this.loadStream(conditions1.streamIdentifier());
         DateTime lastModified = alert.getLastModified();
-        Stream secondStream = this.loadSecondStream(alert.getSecondStreamID());
-        return this.conversions.constructDataAlertRule(
-                alert.getTitle(),
-                stream,
-                event,
-                notification,
+        Map<String, Object> parametersCondition = this.conversions.getConditionParameters(event.config());
+        AlertRuleStream alertRuleStream = this.conversions.constructAlertRuleStream(stream, conditions1.pipelineFieldRules());
+        AlertRuleStream alertRuleStream2 = null;
+        TriggeringConditions conditions2 = alert.conditions2();
+        if (conditions2 != null) {
+            Stream secondStream = this.loadSecondStream(conditions2.streamIdentifier());
+            alertRuleStream2 = this.conversions.constructSecondAlertRuleStream(secondStream, alert.getSecondPipelineFieldRules());
+        }
+        LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) notification.config();
+
+        boolean isDisabled = false;
+        if (stream != null) {
+            isDisabled = stream.getDisabled();
+        }
+
+        return GetDataAlertRule.create(alert.getTitle(),
+                loggingNotificationConfig.severity().getType(),
+                event.id(),
+                alert.getSecondEventID(),
+                notification.id(),
                 alert.getCreatedAt(),
                 alert.getCreatorUserId(),
                 lastModified,
+                isDisabled,
+                event.description(),
                 alert.getAlertType(),
-                secondStream,
-                alert.getSecondEventID(),
-                conditions1.pipelineFieldRules(),
-                alert.getSecondPipelineFieldRules());
+                parametersCondition,
+                alertRuleStream,
+                alertRuleStream2);
     }
 
     @GET
@@ -317,7 +333,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 DateTime.now(),
                 userName,
                 DateTime.now(),
-                streamIdentifier2,
                 eventIdentifier2,
                 pipeline2.getPipelineID(),
                 pipeline2.getPipelineRuleID(),
@@ -430,7 +445,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 previousAlert.getCreatedAt(),
                 userName,
                 DateTime.now(),
-                streamID2,
                 eventIdentifier2,
                 pipeline2.getPipelineID(),
                 pipeline2.getPipelineRuleID(),
@@ -477,9 +491,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             TriggeringConditions conditions1 = alertRule.conditions1();
             this.streamPipelineService.deleteStreamFromIdentifier(conditions1.streamIdentifier());
 
+            TriggeringConditions conditions2 = alertRule.conditions2();
             //Delete second Stream
-            if (alertRule.getSecondStreamID() != null && !alertRule.getSecondStreamID().isEmpty()) {
-                this.streamPipelineService.deleteStreamFromIdentifier(alertRule.getSecondStreamID());
+            if (conditions2 != null) {
+                this.streamPipelineService.deleteStreamFromIdentifier(conditions2.streamIdentifier());
             }
 
             // Delete Event
