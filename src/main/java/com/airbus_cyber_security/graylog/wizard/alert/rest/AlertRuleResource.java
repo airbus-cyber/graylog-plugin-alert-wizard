@@ -136,7 +136,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     }
 
     private GetDataAlertRule constructDataAlertRule(AlertRule alert) {
-        String eventIdentifier = alert.getEventID();
+        String eventIdentifier = alert.event1();
         EventDefinitionDto event = this.eventDefinitionService.getEventDefinition(eventIdentifier);
         NotificationDto notification = this.notificationService.get(alert.getNotificationID());
         TriggeringConditions conditions1 = alert.conditions1();
@@ -160,7 +160,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return GetDataAlertRule.create(alert.getTitle(),
                 loggingNotificationConfig.severity().getType(),
                 event.id(),
-                alert.getSecondEventID(),
+                alert.event2(),
                 notification.id(),
                 alert.getCreatedAt(),
                 alert.getCreatorUserId(),
@@ -417,9 +417,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         EventProcessorConfig configuration = this.conversions.createCondition(request.getConditionType(), request.conditionParameters(), conditions1.streamIdentifier(), streamID2);
 
         // Update Event
-        this.eventDefinitionService.updateEvent(alertTitle, request.getDescription(), previousAlert.getEventID(), configuration);
+        this.eventDefinitionService.updateEvent(alertTitle, request.getDescription(), previousAlert.event1(), configuration);
 
-        String eventIdentifier2 = previousAlert.getSecondEventID();
+        String eventIdentifier2 = previousAlert.event2();
         //Or Condition for Second Stream
         if (request.getConditionType().equals("OR") && stream2 != null) {
             EventProcessorConfig configuration2 = this.conversions.createAggregationCondition(stream2.getId(), request.conditionParameters());
@@ -440,7 +440,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 request.getConditionType(),
                 conditions1,
                 conditions2,
-                previousAlert.getEventID(),
+                previousAlert.event1(),
                 eventIdentifier2,
                 previousAlert.getNotificationID(),
                 previousAlert.getCreatedAt(),
@@ -498,15 +498,15 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             }
 
             // Delete Event
-            if (alertRule.getEventID() != null && !alertRule.getEventID().isEmpty()) {
-                this.eventDefinitionService.delete(alertRule.getEventID());
+            if (alertRule.event1() != null && !alertRule.event1().isEmpty()) {
+                this.eventDefinitionService.delete(alertRule.event1());
             }
             if (alertRule.getNotificationID() != null && !alertRule.getNotificationID().isEmpty()) {
                 // TODO move this down into AlertRuleUtilsService and remove the use for eventNotificationsResource
                 this.eventNotificationsResource.delete(alertRule.getNotificationID(), userContext);
             }
-            if (alertRule.getSecondEventID() != null && !alertRule.getSecondEventID().isEmpty()) {
-                this.eventDefinitionService.delete(alertRule.getSecondEventID());
+            if (alertRule.event2() != null && !alertRule.event2().isEmpty()) {
+                this.eventDefinitionService.delete(alertRule.event2());
             }
 
             // Delete Pipeline

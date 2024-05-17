@@ -53,16 +53,14 @@ public abstract class AlertRule {
     @Nullable
     public abstract TriggeringConditions conditions2();
 
-    // TODO rename to getEventIdentifier
     // TODO can't this be always NotNull?
     @JsonProperty("event")
     @Nullable
-    public abstract String getEventID();
+    public abstract String event1();
 
-    // TODO rename into getSecondEventIdentifier
     @JsonProperty("event2")
     @Nullable
-    public abstract String getSecondEventID();
+    public abstract String event2();
 
     // TODO rename into getNotificationIdentifier
     @JsonProperty("notification")
