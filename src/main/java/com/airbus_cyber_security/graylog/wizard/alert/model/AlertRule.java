@@ -80,10 +80,6 @@ public abstract class AlertRule {
     @Nullable
     public abstract DateTime getLastModified();
 
-    @JsonProperty("second_pipeline_field_rules")
-    @Nullable
-    public abstract List<FieldRule> getSecondPipelineFieldRules();
-
     // TODO should replace the create functions by a Builder (see EventDefinitionDTO)
     @JsonCreator
     public static AlertRule create(@JsonProperty("_id") String objectId,
@@ -96,10 +92,9 @@ public abstract class AlertRule {
                                    @JsonProperty("notification") String notificationID,
                                    @JsonProperty("created_at") DateTime createdAt,
                                    @JsonProperty("creator_user_id") String creatorUserId,
-                                   @JsonProperty("last_modified") DateTime lastModified,
-                                   @JsonProperty("second_pipeline_field_rules") List<FieldRule> pipelineFieldRules2){
+                                   @JsonProperty("last_modified") DateTime lastModified){
         return create(title, alertType, conditions1, conditions2, eventID, eventID2, notificationID, createdAt,
-                creatorUserId, lastModified, pipelineFieldRules2);
+                creatorUserId, lastModified);
     }
 	
 	public static AlertRule create(
@@ -112,9 +107,8 @@ public abstract class AlertRule {
             String notificationID,
             DateTime createdAt,
             String creatorUserId,
-            DateTime lastModified,
-            List<FieldRule> pipelineFieldRules2) {
+            DateTime lastModified) {
 		return new AutoValue_AlertRule(title, alertType, conditions1, conditions2, eventID, eventIdentifier2, notificationID, createdAt,
-                creatorUserId, lastModified, pipelineFieldRules2);
+                creatorUserId, lastModified);
 	}
 }

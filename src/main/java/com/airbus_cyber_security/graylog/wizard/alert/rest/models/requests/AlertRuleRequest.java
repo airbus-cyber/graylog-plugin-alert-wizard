@@ -43,7 +43,6 @@ public abstract class AlertRuleRequest {
     @NotNull
     public abstract String getDescription();
 
-    // TODO should be @NotNull
     @JsonProperty("condition_type")
     @NotNull
     public abstract String getConditionType();

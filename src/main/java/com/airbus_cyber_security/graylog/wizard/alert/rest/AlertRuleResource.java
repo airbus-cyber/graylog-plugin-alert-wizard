@@ -149,7 +149,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         TriggeringConditions conditions2 = alert.conditions2();
         if (conditions2 != null) {
             Stream secondStream = this.loadSecondStream(conditions2.streamIdentifier());
-            alertRuleStream2 = this.conversions.constructSecondAlertRuleStream(secondStream, alert.getSecondPipelineFieldRules());
+            alertRuleStream2 = this.conversions.constructSecondAlertRuleStream(secondStream, conditions2.pipelineFieldRules());
         }
         LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) notification.config();
 
@@ -308,10 +308,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         // Create second stream and pipeline
         TriggeringConditions conditions2 = null;
-        List<FieldRule> fieldRulesWithList2 = null;
         if (conditionType.equals("THEN") || conditionType.equals("AND") || conditionType.equals("OR")) {
             conditions2 = this.createTriggeringConditions(streamConfiguration, alertTitle + "#2", userName);
-            fieldRulesWithList2 = conditions2.pipelineFieldRules();
         }
 
         //Create Events
@@ -333,8 +331,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 notificationIdentifier,
                 DateTime.now(),
                 userName,
-                DateTime.now(),
-                fieldRulesWithList2);
+                DateTime.now());
         alertRule = this.alertRuleService.create(alertRule);
 
         //Update list usage
@@ -403,12 +400,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         if (previousConditions2 != null) {
             this.streamPipelineService.deletePipeline(previousConditions2.pipelineIdentifier(), previousConditions2.pipelineRuleIdentifier());
         }
-        Pipeline pipeline2 = new Pipeline(null, null);
-        List<FieldRule> fieldRules2 = null;
         if (stream2 != null) {
             streamID2 = stream2.getId();
-            fieldRules2 = this.streamPipelineService.extractPipelineFieldRules(request.getSecondStream().getFieldRules());
-            pipeline2 = this.createPipelineAndRule(stream2, alertTitle + "#2", fieldRules2, request.getStream().getMatchingType());
+            List<FieldRule> fieldRules2 = this.streamPipelineService.extractPipelineFieldRules(request.getSecondStream().getFieldRules());
+            Pipeline pipeline2 = this.createPipelineAndRule(stream2, alertTitle + "#2", fieldRules2, request.getStream().getMatchingType());
             // TODO try using updateConditions instead
             conditions2 = TriggeringConditions.create(streamID2, pipeline2.getPipelineID(), pipeline2.getPipelineRuleID(), fieldRules2);
         }
@@ -448,23 +443,26 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 previousAlert.getNotificationID(),
                 previousAlert.getCreatedAt(),
                 userName,
-                DateTime.now(),
-                fieldRules2);
+                DateTime.now());
         alertRule = this.alertRuleService.update(java.net.URLDecoder.decode(title, ENCODING), alertRule);
 
         // Decrement list usage
         for (FieldRule fieldRule: this.nullSafe(previousConditions1.pipelineFieldRules())) {
             this.alertListUtilsService.decrementUsage(fieldRule.getValue());
         }
-        for (FieldRule fieldRule: this.nullSafe(previousAlert.getSecondPipelineFieldRules())) {
-            this.alertListUtilsService.decrementUsage(fieldRule.getValue());
-        }
         // Increment list usage
         for (FieldRule fieldRule: this.nullSafe(conditions1.pipelineFieldRules())) {
             this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
-        for (FieldRule fieldRule: this.nullSafe(fieldRules2)) {
-            this.alertListUtilsService.incrementUsage(fieldRule.getValue());
+        if (previousConditions2 != null) {
+            for (FieldRule fieldRule : this.nullSafe(previousConditions2.pipelineFieldRules())) {
+                this.alertListUtilsService.decrementUsage(fieldRule.getValue());
+            }
+        }
+        if (conditions2 != null) {
+            for (FieldRule fieldRule : this.nullSafe(conditions2.pipelineFieldRules())) {
+                this.alertListUtilsService.incrementUsage(fieldRule.getValue());
+            }
         }
 
         GetDataAlertRule result = this.constructDataAlertRule(alertRule);
