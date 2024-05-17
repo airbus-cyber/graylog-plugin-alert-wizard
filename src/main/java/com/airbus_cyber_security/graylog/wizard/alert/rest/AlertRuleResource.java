@@ -238,15 +238,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return alertTitle;
     }
 
-    public Pipeline createPipelineAndRule(Stream stream, String alertTitle, List<FieldRule> pipelineFieldRules, String matchingType) {
-        if (pipelineFieldRules.isEmpty()) {
-            return new Pipeline(null, null);
-        }
-        PipelineDao pipeline = this.streamPipelineService.createPipeline(alertTitle, matchingType);
-        RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(alertTitle, pipelineFieldRules, stream);
-        return new Pipeline(pipeline.id(), pipelineRule.id());
-    }
-
     private String createEvent(String alertTitle, String description, String notificationIdentifier, String conditionType, Map<String, Object> conditionParameters, UserContext userContext, TriggeringConditions conditions1, TriggeringConditions conditions2) {
         // TODO this is a code smell.
         // TODO should rather start with getting the conditionType, then according to its value, should go on performing different kind of creation/update => then there wouldn't be a null
@@ -352,9 +343,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return Response.ok().entity(result).build();
     }
 
-    private TriggeringConditions updateConditions(TriggeringConditions previousConditions, String alertTitle, AlertRuleStream streamRequest) throws ValidationException {
-        List<FieldRule> fieldRulesWithList = this.streamPipelineService.extractPipelineFieldRules(streamRequest.getFieldRules());
-
+    private TriggeringConditions updateTriggeringConditions(TriggeringConditions previousConditions, String alertTitle, AlertRuleStream streamRequest) throws ValidationException {
         // update stream
         Stream stream = this.loadStream(previousConditions.streamIdentifier());
         this.streamPipelineService.updateStream(stream, streamRequest, alertTitle);
@@ -362,6 +351,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         // update pipeline
         this.streamPipelineService.deletePipeline(previousConditions.pipelineIdentifier(), previousConditions.pipelineRuleIdentifier());
 
+        List<FieldRule> fieldRulesWithList = this.streamPipelineService.extractPipelineFieldRules(streamRequest.getFieldRules());
         if (fieldRulesWithList.isEmpty()) {
             return TriggeringConditions.create(previousConditions.streamIdentifier(),
                     null,
@@ -400,45 +390,47 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         AlertRuleStream streamRequest = request.getStream();
         TriggeringConditions previousConditions1 = previousAlert.conditions1();
-        TriggeringConditions conditions1 = updateConditions(previousConditions1, alertTitle, streamRequest);
+        TriggeringConditions conditions1 = updateTriggeringConditions(previousConditions1, alertTitle, streamRequest);
 
         TriggeringConditions previousConditions2 = previousAlert.conditions2();
         TriggeringConditions conditions2 = null;
 
-        // Update stream 2.
+
         String conditionType = request.getConditionType();
-        Stream stream2 = null;
         if (conditionType.equals("THEN") || conditionType.equals("AND") || conditionType.equals("OR")) {
+            Stream stream2;
             if (previousConditions2 != null) {
+                // updateTriggeringConditions()
                 stream2 = this.streamService.load(previousConditions2.streamIdentifier());
                 this.streamPipelineService.updateStream(stream2, request.getSecondStream(), title+"#2");
+                this.streamPipelineService.deletePipeline(previousConditions2.pipelineIdentifier(), previousConditions2.pipelineRuleIdentifier());
             } else {
+                // createTriggeringConditions()
                 stream2 = this.streamPipelineService.createStream(request.getSecondStream(), title+"#2", userName);
             }
-        } else {
-            // Delete old stream if one
-            if (previousConditions2 != null) {
-                this.streamPipelineService.deleteStreamFromIdentifier(previousConditions2.streamIdentifier());
-            }
-        }
-        String streamID2 = null;
-
-        // update pipeline 2
-        if (previousConditions2 != null) {
-            this.streamPipelineService.deletePipeline(previousConditions2.pipelineIdentifier(), previousConditions2.pipelineRuleIdentifier());
-        }
-        if (stream2 != null) {
+            // TODO try using updateTriggeringConditions instead
             List<FieldRule> fieldRules2 = this.streamPipelineService.extractPipelineFieldRules(request.getSecondStream().getFieldRules());
-            streamID2 = stream2.getId();
-            Pipeline pipeline2 = this.createPipelineAndRule(stream2, alertTitle + "#2", fieldRules2, request.getStream().getMatchingType());
-            // TODO try using updateConditions instead
-            conditions2 = TriggeringConditions.create(streamID2, pipeline2.getPipelineID(), pipeline2.getPipelineRuleID(), fieldRules2);
+
+            String matchingType = request.getStream().getMatchingType();
+            if (fieldRules2.isEmpty()) {
+                conditions2 = TriggeringConditions.create(stream2.getId(), null, null, fieldRules2);
+            } else {
+                PipelineDao pipeline = this.streamPipelineService.createPipeline(alertTitle + "#2", matchingType);
+                RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(alertTitle + "#2", fieldRules2, stream2);
+                conditions2 = TriggeringConditions.create(stream2.getId(), pipeline.id(), pipelineRule.id(), fieldRules2);
+            }
+        } else {
+            if (previousConditions2 != null) {
+                // deleteTriggeringConditions()
+                this.streamPipelineService.deleteStreamFromIdentifier(previousConditions2.streamIdentifier());
+                this.streamPipelineService.deletePipeline(previousConditions2.pipelineIdentifier(), previousConditions2.pipelineRuleIdentifier());
+            }
         }
 
         // Create Type
         EventProcessorConfig configuration;
         if (conditionType.equals("THEN") || conditionType.equals("AND")) {
-            configuration = this.conversions.createCorrelationCondition(conditionType, conditions1.streamIdentifier(), streamID2, request.conditionParameters());
+            configuration = this.conversions.createCorrelationCondition(conditionType, conditions1.streamIdentifier(), conditions2.streamIdentifier(), request.conditionParameters());
         } else {
             configuration = this.conversions.createCondition(request.getConditionType(), request.conditionParameters(), conditions1.streamIdentifier());
         }
@@ -451,8 +443,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         String eventIdentifier2 = previousAlert.event2();
         //Or Condition for Second Stream
-        if (request.getConditionType().equals("OR") && stream2 != null) {
-            EventProcessorConfig configuration2 = this.conversions.createAggregationCondition(stream2.getId(), request.conditionParameters());
+        if (request.getConditionType().equals("OR")) {
+            EventProcessorConfig configuration2 = this.conversions.createAggregationCondition(conditions2.streamIdentifier(), request.conditionParameters());
             if (previousAlert.getAlertType().equals("OR")) {
                 // Update Event
                 this.eventDefinitionService.updateEvent(alertTitle + "#2", request.getDescription(), eventIdentifier2, configuration2);
