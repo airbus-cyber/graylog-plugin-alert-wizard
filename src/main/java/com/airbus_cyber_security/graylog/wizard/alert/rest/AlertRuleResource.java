@@ -401,9 +401,11 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             }
         } else {
             if (previousConditions2 != null) {
-                // TODO try using deleteTriggeringConditions instead
                 this.streamPipelineService.deleteStreamFromIdentifier(previousConditions2.streamIdentifier());
                 this.streamPipelineService.deletePipeline(previousConditions2.pipelineIdentifier(), previousConditions2.pipelineRuleIdentifier());
+
+                // TODO should try this instead: carefull with list usage counters (not to decrement them twice!)
+                //  this.deleteTriggeringConditions(previousConditions2);
             }
         }
 
