@@ -35,7 +35,6 @@ public abstract class AlertRuleRequest {
     @NotNull
     public abstract String getTitle();
 
-    // TODO should be @NotNull
     @JsonProperty("severity")
     @NotNull
     public abstract String getSeverity();
@@ -46,7 +45,7 @@ public abstract class AlertRuleRequest {
 
     // TODO should be @NotNull
     @JsonProperty("condition_type")
-    @Nullable
+    @NotNull
     public abstract String getConditionType();
 
     // TODO this should be typed (its an union of 3 possibilities)...

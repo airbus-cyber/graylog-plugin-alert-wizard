@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.2.0](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.1.3...5.2.0)
+### Changes
+* POST plugins/com.airbus_cyber_security.graylog.wizard/alerts and PUT plugins/com.airbus_cyber_security.graylog.wizard/alerts/{title} field condition_type should be not null
+
 ## [5.1.3](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.1.2...5.1.3)
 ### Bug Fixes
 * Update graylog-plugin-logging-alert dependency to [5.1.2](https://github.com/airbus-cyber/graylog-plugin-logging-alert/blob/5.1.2/CHANGELOG.md)
