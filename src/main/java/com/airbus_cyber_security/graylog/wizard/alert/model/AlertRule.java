@@ -62,7 +62,7 @@ public abstract class AlertRule {
     @Nullable
     public abstract String event2();
 
-    // TODO rename into getNotificationIdentifier
+    // TODO rename into notification
     @JsonProperty("notification")
     @Nullable
     public abstract String getNotificationID();
@@ -79,11 +79,6 @@ public abstract class AlertRule {
     @JsonProperty("last_modified")
     @Nullable
     public abstract DateTime getLastModified();
-
-    // TODO rename into getSecondPipelineIdentifier
-    @JsonProperty("second pipeline")
-    @Nullable
-    public abstract String getSecondPipelineID();
 
     // TODO rename into getSecondPipelineRuleIdentifier
     @JsonProperty("second pipeline_rule")
@@ -107,11 +102,10 @@ public abstract class AlertRule {
                                    @JsonProperty("created_at") DateTime createdAt,
                                    @JsonProperty("creator_user_id") String creatorUserId,
                                    @JsonProperty("last_modified") DateTime lastModified,
-                                   @JsonProperty("second pipeline") String pipelineID2,
                                    @JsonProperty("second pipeline_rule") String pipelineRuleID2,
                                    @JsonProperty("second_pipeline_field_rules") List<FieldRule> pipelineFieldRules2){
         return create(title, alertType, conditions1, conditions2, eventID, eventID2, notificationID, createdAt,
-                creatorUserId, lastModified, pipelineID2, pipelineRuleID2, pipelineFieldRules2);
+                creatorUserId, lastModified, pipelineRuleID2, pipelineFieldRules2);
     }
 	
 	public static AlertRule create(
@@ -125,10 +119,9 @@ public abstract class AlertRule {
             DateTime createdAt,
             String creatorUserId,
             DateTime lastModified,
-            String pipelineIdentifier2,
             String pipelineRuleIdentifier2,
             List<FieldRule> pipelineFieldRules2) {
 		return new AutoValue_AlertRule(title, alertType, conditions1, conditions2, eventID, eventIdentifier2, notificationID, createdAt,
-                creatorUserId, lastModified, pipelineIdentifier2, pipelineRuleIdentifier2, pipelineFieldRules2);
+                creatorUserId, lastModified, pipelineRuleIdentifier2, pipelineFieldRules2);
 	}
 }

@@ -334,7 +334,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 DateTime.now(),
                 userName,
                 DateTime.now(),
-                pipeline2.getPipelineID(),
                 pipeline2.getPipelineRuleID(),
                 fieldRulesWithList2);
         alertRule = this.alertRuleService.create(alertRule);
@@ -392,6 +391,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         TriggeringConditions previousConditions1 = previousAlert.conditions1();
         TriggeringConditions conditions1 = updateConditions(previousConditions1, alertTitle, streamRequest);
 
+        TriggeringConditions previousConditions2 = previousAlert.conditions2();
         TriggeringConditions conditions2 = null;
 
         // Update stream 2.
@@ -399,7 +399,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String streamID2 = null;
 
         // update pipeline 2
-        this.streamPipelineService.deletePipeline(previousAlert.getSecondPipelineID(), previousAlert.getSecondPipelineRuleID());
+        if (previousConditions2 != null) {
+            this.streamPipelineService.deletePipeline(previousConditions2.pipelineIdentifier(), previousConditions2.pipelineRuleIdentifier());
+        }
         Pipeline pipeline2 = new Pipeline(null, null);
         List<FieldRule> fieldRules2 = null;
         if (stream2 != null) {
@@ -446,7 +448,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 previousAlert.getCreatedAt(),
                 userName,
                 DateTime.now(),
-                pipeline2.getPipelineID(),
                 pipeline2.getPipelineRuleID(),
                 fieldRules2);
         alertRule = this.alertRuleService.update(java.net.URLDecoder.decode(title, ENCODING), alertRule);
@@ -470,6 +471,16 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return Response.accepted().entity(result).build();
     }
 
+    private void deleteTriggeringConditions(TriggeringConditions conditions) {
+        this.streamPipelineService.deleteStreamFromIdentifier(conditions.streamIdentifier());
+        if (conditions.pipelineIdentifier() != null && conditions.pipelineRuleIdentifier() != null) {
+            this.streamPipelineService.deletePipeline(conditions.pipelineIdentifier(), conditions.pipelineRuleIdentifier());
+        }
+        for (FieldRule fieldRule: this.nullSafe(conditions.pipelineFieldRules())) {
+            this.alertListUtilsService.decrementUsage(fieldRule.getValue());
+        }
+    }
+
     @DELETE
     @Path("/{title}")
     @RequiresAuthentication
@@ -488,42 +499,23 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         try {
             AlertRule alertRule = this.alertRuleService.load(alertTitle);
-            TriggeringConditions conditions1 = alertRule.conditions1();
-            this.streamPipelineService.deleteStreamFromIdentifier(conditions1.streamIdentifier());
+            deleteTriggeringConditions(alertRule.conditions1());
 
             TriggeringConditions conditions2 = alertRule.conditions2();
-            //Delete second Stream
             if (conditions2 != null) {
-                this.streamPipelineService.deleteStreamFromIdentifier(conditions2.streamIdentifier());
+                deleteTriggeringConditions(conditions2);
             }
 
             // Delete Event
             if (alertRule.event1() != null && !alertRule.event1().isEmpty()) {
                 this.eventDefinitionService.delete(alertRule.event1());
             }
-            if (alertRule.getNotificationID() != null && !alertRule.getNotificationID().isEmpty()) {
-                // TODO move this down into AlertRuleUtilsService and remove the use for eventNotificationsResource
-                this.eventNotificationsResource.delete(alertRule.getNotificationID(), userContext);
-            }
             if (alertRule.event2() != null && !alertRule.event2().isEmpty()) {
                 this.eventDefinitionService.delete(alertRule.event2());
             }
-
-            // Delete Pipeline
-            if (conditions1.pipelineIdentifier() != null && conditions1.pipelineRuleIdentifier() != null) {
-                this.streamPipelineService.deletePipeline(conditions1.pipelineIdentifier(), conditions1.pipelineRuleIdentifier());
-            }
-
-            if (alertRule.getSecondPipelineID() != null && alertRule.getSecondPipelineRuleID() != null) {
-                this.streamPipelineService.deletePipeline(alertRule.getSecondPipelineID(), alertRule.getSecondPipelineRuleID());
-            }
-
-            //Update list usage
-            for (FieldRule fieldRule : this.nullSafe(conditions1.pipelineFieldRules())) {
-                this.alertListUtilsService.decrementUsage(fieldRule.getValue());
-            }
-            for (FieldRule fieldRule : this.nullSafe(alertRule.getSecondPipelineFieldRules())) {
-                this.alertListUtilsService.decrementUsage(fieldRule.getValue());
+            if (alertRule.getNotificationID() != null && !alertRule.getNotificationID().isEmpty()) {
+                // TODO move this down into AlertRuleUtilsService and remove the use for eventNotificationsResource
+                this.eventNotificationsResource.delete(alertRule.getNotificationID(), userContext);
             }
         } catch (NotFoundException e) {
             LOG.error("Cannot find alert " + alertTitle, e);
