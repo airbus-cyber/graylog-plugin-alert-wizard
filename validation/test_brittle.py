@@ -56,8 +56,9 @@ class TestBrittle(TestCase):
                 self.fail('Event not generated within 60 seconds')
 
         # TODO try to put this test back (seems to work locally but not in continuous integration)
-        @skip
         def test_create_alert_rule_with_list_should_not_generate_event_on_substrings_of_elements_in_list__issue49(self):
+            print(f'Initially: {self._graylog.get_events_count()}')
+
             list_title = 'list'
             self._graylog.create_list(list_title, ['administrator', 'toto', 'root', 'foobar'])
             rule = {
@@ -67,12 +68,18 @@ class TestBrittle(TestCase):
             }
             self._graylog.create_alert_rule_count(list_title, _PERIOD, rule=rule)
 
+            print(f'Before input: {self._graylog.get_events_count()}')
+
             with self._graylog.create_gelf_input() as inputs:
                 inputs.send({'_x': 'admin'})
+                print(f'send: {self._graylog.get_events_count()}')
                 # wait for the period (which is, unfortunately expressed in minutes, so it's quite long a wait)
                 # TODO: should improve the API for better testability
                 time.sleep(60*_PERIOD)
+                print(f'slept: {self._graylog.get_events_count()}')
                 inputs.send({'short_message': 'pop'})
+                print(f'pop: {self._graylog.get_events_count()}')
 
                 time.sleep(60)
+                print(f'before assert: {self._graylog.get_events_count()}')
                 self.assertEqual(0, self._graylog.get_events_count())
