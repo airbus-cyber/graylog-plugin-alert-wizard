@@ -288,7 +288,7 @@ public class Conversions {
 
     // TODO move method to AlertRuleUtils?
     // TODO instead of a String, the type could already be a com.airbus_cyber_security.graylog.events.processor.correlation.checks.OrderType
-    private EventProcessorConfig createCorrelationCondition(String type, String streamID, String streamID2, Map<String, Object> conditionParameter) {
+    EventProcessorConfig createCorrelationCondition(String type, String streamID, String streamID2, Map<String, Object> conditionParameter) {
         OrderType messageOrder;
         if (type.equals("THEN")) {
             messageOrder = OrderType.AFTER;
@@ -451,12 +451,8 @@ public class Conversions {
                 .build();
     }
 
-    public EventProcessorConfig createCondition(String conditionType, Map<String, Object> conditionParameter, String streamIdentifier, String streamIdentifier2) {
-        LOG.debug("Create condition type: {}", conditionType);
-
-        if (conditionType.equals("THEN") || conditionType.equals("AND")) {
-            return createCorrelationCondition(conditionType, streamIdentifier, streamIdentifier2, conditionParameter);
-        } else if (conditionType.equals("STATISTICAL")) {
+    public EventProcessorConfig createCondition(String conditionType, Map<String, Object> conditionParameter, String streamIdentifier) {
+        if (conditionType.equals("STATISTICAL")) {
             return createStatisticalCondition(streamIdentifier, conditionParameter);
         } else {
             return createAggregationCondition(streamIdentifier, conditionParameter);

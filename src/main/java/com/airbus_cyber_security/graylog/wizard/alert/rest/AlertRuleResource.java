@@ -254,7 +254,12 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         if (conditions2 != null) {
             streamIdentifier2 = conditions2.streamIdentifier();
         }
-        EventProcessorConfig configuration = this.conversions.createCondition(conditionType, conditionParameters, conditions1.streamIdentifier(), streamIdentifier2);
+        EventProcessorConfig configuration;
+        if (conditionType.equals("THEN") || conditionType.equals("AND")) {
+            configuration = this.conversions.createCorrelationCondition(conditionType, conditions1.streamIdentifier(), streamIdentifier2, conditionParameters);
+        } else {
+            configuration = this.conversions.createCondition(conditionType, conditionParameters, conditions1.streamIdentifier());
+        }
         return this.eventDefinitionService.createEvent(alertTitle, description, notificationIdentifier, configuration, userContext);
     }
 
@@ -420,7 +425,13 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.notificationService.updateNotification(alertTitle, previousAlert.getNotificationID(), request.getSeverity());
 
         // Create Type
-        EventProcessorConfig configuration = this.conversions.createCondition(request.getConditionType(), request.conditionParameters(), conditions1.streamIdentifier(), streamID2);
+        EventProcessorConfig configuration;
+        String conditionType = request.getConditionType();
+        if (conditionType.equals("THEN") || conditionType.equals("AND")) {
+            configuration = this.conversions.createCorrelationCondition(conditionType, conditions1.streamIdentifier(), streamID2, request.conditionParameters());
+        } else {
+            configuration = this.conversions.createCondition(request.getConditionType(), request.conditionParameters(), conditions1.streamIdentifier());
+        }
 
         // Update Event
         this.eventDefinitionService.updateEvent(alertTitle, request.getDescription(), previousAlert.event1(), configuration);
