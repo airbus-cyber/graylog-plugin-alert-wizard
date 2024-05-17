@@ -263,16 +263,14 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         List<FieldRule> fieldRulesWithList = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration.getFieldRules());
         Stream stream = this.streamPipelineService.createStream(streamConfiguration, title, userName);
 
-        String pipelineIdentifier = null;
-        String pipelineRuleIdentifier = null;
-        if (!fieldRulesWithList.isEmpty()) {
-            PipelineDao pipeline = this.streamPipelineService.createPipeline(title, streamConfiguration.getMatchingType());
-            RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(title, fieldRulesWithList, stream);
-            pipelineIdentifier = pipeline.id();
-            pipelineRuleIdentifier = pipelineRule.id();
+        if (fieldRulesWithList.isEmpty()) {
+            return TriggeringConditions.create(stream.getId(), null, null, fieldRulesWithList);
         }
 
-        return TriggeringConditions.create(stream.getId(), pipelineIdentifier, pipelineRuleIdentifier, fieldRulesWithList);
+        PipelineDao pipeline = this.streamPipelineService.createPipeline(title, streamConfiguration.getMatchingType());
+        RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(title, fieldRulesWithList, stream);
+
+        return TriggeringConditions.create(stream.getId(), pipeline.id(), pipelineRule.id(), fieldRulesWithList);
     }
 
     @POST
@@ -383,11 +381,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.conversions.checkIsValidRequest(request);
 
         AlertRule previousAlert = this.alertRuleService.load(title);
-        String alertTitle = request.getTitle();
         String userName = getCurrentUser().getName();
 
         TriggeringConditions previousConditions1 = previousAlert.conditions1();
-        TriggeringConditions conditions1 = updateTriggeringConditions(previousConditions1, alertTitle, request.getStream());
+        TriggeringConditions conditions1 = updateTriggeringConditions(previousConditions1, title, request.getStream());
 
         TriggeringConditions previousConditions2 = previousAlert.conditions2();
         TriggeringConditions conditions2 = null;
@@ -395,23 +392,12 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         String conditionType = request.getConditionType();
         if (conditionType.equals("THEN") || conditionType.equals("AND") || conditionType.equals("OR")) {
-            Stream stream2;
+            AlertRuleStream streamRequest2 = request.getSecondStream();
+            String title2 = title + "#2";
             if (previousConditions2 != null) {
-                conditions2 = this.updateTriggeringConditions(previousConditions2, alertTitle + "#2", request.getSecondStream());
+                conditions2 = this.updateTriggeringConditions(previousConditions2, title2, streamRequest2);
             } else {
-                // TODO try using createTriggeringConditions instead
-                stream2 = this.streamPipelineService.createStream(request.getSecondStream(), title+"#2", userName);
-
-                List<FieldRule> fieldRules2 = this.streamPipelineService.extractPipelineFieldRules(request.getSecondStream().getFieldRules());
-
-                String matchingType = request.getStream().getMatchingType();
-                if (fieldRules2.isEmpty()) {
-                    conditions2 = TriggeringConditions.create(stream2.getId(), null, null, fieldRules2);
-                } else {
-                    PipelineDao pipeline = this.streamPipelineService.createPipeline(alertTitle + "#2", matchingType);
-                    RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(alertTitle + "#2", fieldRules2, stream2);
-                    conditions2 = TriggeringConditions.create(stream2.getId(), pipeline.id(), pipelineRule.id(), fieldRules2);
-                }
+                conditions2 = this.createTriggeringConditions(streamRequest2, title2, userName);
             }
         } else {
             if (previousConditions2 != null) {
@@ -430,10 +416,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
 
         // update Notification
-        this.notificationService.updateNotification(alertTitle, previousAlert.getNotificationID(), request.getSeverity());
+        this.notificationService.updateNotification(title, previousAlert.getNotificationID(), request.getSeverity());
 
         // Update Event
-        this.eventDefinitionService.updateEvent(alertTitle, request.getDescription(), previousAlert.event1(), configuration);
+        this.eventDefinitionService.updateEvent(title, request.getDescription(), previousAlert.event1(), configuration);
 
         String eventIdentifier2 = previousAlert.event2();
         //Or Condition for Second Stream
@@ -441,10 +427,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             EventProcessorConfig configuration2 = this.conversions.createAggregationCondition(conditions2.streamIdentifier(), request.conditionParameters());
             if (previousAlert.getAlertType().equals("OR")) {
                 // Update Event
-                this.eventDefinitionService.updateEvent(alertTitle + "#2", request.getDescription(), eventIdentifier2, configuration2);
+                this.eventDefinitionService.updateEvent(title + "#2", request.getDescription(), eventIdentifier2, configuration2);
             } else {
                 //Create Event
-                eventIdentifier2 = this.eventDefinitionService.createEvent(alertTitle + "#2", request.getDescription(), previousAlert.getNotificationID(), configuration2, userContext);
+                eventIdentifier2 = this.eventDefinitionService.createEvent(title + "#2", request.getDescription(), previousAlert.getNotificationID(), configuration2, userContext);
             }
         } else if (previousAlert.getAlertType().equals("OR")) {
             //Delete Event
@@ -452,7 +438,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
 
         AlertRule alertRule = AlertRule.create(
-                alertTitle,
+                title,
                 request.getConditionType(),
                 conditions1,
                 conditions2,
