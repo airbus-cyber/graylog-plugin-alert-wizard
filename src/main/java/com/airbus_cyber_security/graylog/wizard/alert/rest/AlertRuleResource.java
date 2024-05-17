@@ -36,6 +36,7 @@ import com.airbus_cyber_security.graylog.wizard.permissions.AlertRuleRestPermiss
 import com.codahale.metrics.annotation.Timed;
 import com.mongodb.MongoException;
 import io.swagger.annotations.*;
+import net.fortuna.ical4j.model.property.Trigger;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.graylog.events.notifications.NotificationDto;
@@ -242,20 +243,23 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         if (pipelineFieldRules.isEmpty()) {
             return new Pipeline(null, null);
         }
-        RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(alertTitle, pipelineFieldRules, stream);
         PipelineDao pipeline = this.streamPipelineService.createPipeline(alertTitle, matchingType);
+        RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(alertTitle, pipelineFieldRules, stream);
         return new Pipeline(pipeline.id(), pipelineRule.id());
     }
 
-    private String createEvent(String alertTitle, String description, String notificationIdentifier, String conditionType, Map<String, Object> conditionParameters, UserContext userContext, String streamIdentifier, String streamIdentifier2) {
-        EventProcessorConfig configuration = this.conversions.createCondition(conditionType, conditionParameters, streamIdentifier, streamIdentifier2);
+    private String createEvent(String alertTitle, String description, String notificationIdentifier, String conditionType, Map<String, Object> conditionParameters, UserContext userContext, TriggeringConditions conditions1, TriggeringConditions conditions2) {
+        // TODO this is a code smell.
+        // TODO should rather start with getting the conditionType, then according to its value, should go on performing different kind of creation/update => then there wouldn't be a null
+        String streamIdentifier2 = null;
+        if (conditions2 != null) {
+            streamIdentifier2 = conditions2.streamIdentifier();
+        }
+        EventProcessorConfig configuration = this.conversions.createCondition(conditionType, conditionParameters, conditions1.streamIdentifier(), streamIdentifier2);
         return this.eventDefinitionService.createEvent(alertTitle, description, notificationIdentifier, configuration, userContext);
     }
 
-    private String createSecondEvent(String alertTitle, String description, String notificationIdentifier, String conditionType, Map<String, Object> conditionParameters, UserContext userContext, String streamIdentifier2) {
-        if (!conditionType.equals("OR")) {
-            return null;
-        }
+    private String createSecondEvent(String alertTitle, String description, String notificationIdentifier, Map<String, Object> conditionParameters, UserContext userContext, String streamIdentifier2) {
         EventProcessorConfig configuration2 = this.conversions.createAggregationCondition(streamIdentifier2, conditionParameters);
         return this.eventDefinitionService.createEvent(alertTitle + "#2", description, notificationIdentifier, configuration2, userContext);
     }
@@ -293,7 +297,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String title = request.getTitle();
         String alertTitle = checkImportPolicyAndGetTitle(title, userContext);
         AlertRuleStream streamConfiguration = request.getStream();
-        AlertRuleStream streamConfiguration2 = request.getSecondStream();
         String severity = request.getSeverity();
         String conditionType = request.getConditionType();
         String description = request.getDescription();
@@ -305,21 +308,18 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         // Create second stream and pipeline
         TriggeringConditions conditions2 = null;
-        String streamIdentifier2 = null;
         List<FieldRule> fieldRulesWithList2 = null;
-        Pipeline pipeline2 = new Pipeline(null, null);
         if (conditionType.equals("THEN") || conditionType.equals("AND") || conditionType.equals("OR")) {
-            Stream stream2 = this.streamPipelineService.createStream(streamConfiguration2, alertTitle + "#2", userName);
-            streamIdentifier2 = stream2.getId();
-            fieldRulesWithList2 = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration2.getFieldRules());
-            pipeline2 = this.createPipelineAndRule(stream2, alertTitle + "#2", fieldRulesWithList2, streamConfiguration.getMatchingType());
-            // TODO try using createTriggeringConditions instead
-            conditions2 = TriggeringConditions.create(streamIdentifier2, pipeline2.getPipelineID(), pipeline2.getPipelineRuleID(), fieldRulesWithList2);
+            conditions2 = this.createTriggeringConditions(streamConfiguration, alertTitle + "#2", userName);
+            fieldRulesWithList2 = conditions2.pipelineFieldRules();
         }
 
         //Create Events
-        String eventIdentifier = createEvent(alertTitle, description, notificationIdentifier, conditionType, conditionParameters, userContext, conditions1.streamIdentifier(), streamIdentifier2);
-        String eventIdentifier2 = createSecondEvent(alertTitle, description, notificationIdentifier, conditionType, conditionParameters, userContext, streamIdentifier2);
+        String eventIdentifier = createEvent(alertTitle, description, notificationIdentifier, conditionType, conditionParameters, userContext, conditions1, conditions2);
+        String eventIdentifier2 = null;
+        if (conditionType.equals("OR")) {
+            eventIdentifier2 = createSecondEvent(alertTitle, description, notificationIdentifier, conditionParameters, userContext, conditions2.streamIdentifier());
+        }
 
         this.clusterEventBus.post(StreamsChangedEvent.create(conditions1.streamIdentifier()));
 
@@ -334,7 +334,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 DateTime.now(),
                 userName,
                 DateTime.now(),
-                pipeline2.getPipelineRuleID(),
                 fieldRulesWithList2);
         alertRule = this.alertRuleService.create(alertRule);
 
@@ -342,8 +341,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         for (FieldRule fieldRule: this.nullSafe(conditions1.pipelineFieldRules())) {
             this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
-        for (FieldRule fieldRule: this.nullSafe(fieldRulesWithList2)) {
-            this.alertListUtilsService.incrementUsage(fieldRule.getValue());
+        if (conditions2 != null) {
+            for (FieldRule fieldRule : this.nullSafe(conditions2.pipelineFieldRules())) {
+                this.alertListUtilsService.incrementUsage(fieldRule.getValue());
+            }
         }
 
         GetDataAlertRule result = this.constructDataAlertRule(alertRule);
@@ -448,7 +449,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 previousAlert.getCreatedAt(),
                 userName,
                 DateTime.now(),
-                pipeline2.getPipelineRuleID(),
                 fieldRules2);
         alertRule = this.alertRuleService.update(java.net.URLDecoder.decode(title, ENCODING), alertRule);
 

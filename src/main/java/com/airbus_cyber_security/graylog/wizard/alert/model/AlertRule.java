@@ -80,11 +80,6 @@ public abstract class AlertRule {
     @Nullable
     public abstract DateTime getLastModified();
 
-    // TODO rename into getSecondPipelineRuleIdentifier
-    @JsonProperty("second pipeline_rule")
-    @Nullable
-    public abstract String getSecondPipelineRuleID();
-
     @JsonProperty("second_pipeline_field_rules")
     @Nullable
     public abstract List<FieldRule> getSecondPipelineFieldRules();
@@ -102,10 +97,9 @@ public abstract class AlertRule {
                                    @JsonProperty("created_at") DateTime createdAt,
                                    @JsonProperty("creator_user_id") String creatorUserId,
                                    @JsonProperty("last_modified") DateTime lastModified,
-                                   @JsonProperty("second pipeline_rule") String pipelineRuleID2,
                                    @JsonProperty("second_pipeline_field_rules") List<FieldRule> pipelineFieldRules2){
         return create(title, alertType, conditions1, conditions2, eventID, eventID2, notificationID, createdAt,
-                creatorUserId, lastModified, pipelineRuleID2, pipelineFieldRules2);
+                creatorUserId, lastModified, pipelineFieldRules2);
     }
 	
 	public static AlertRule create(
@@ -119,9 +113,8 @@ public abstract class AlertRule {
             DateTime createdAt,
             String creatorUserId,
             DateTime lastModified,
-            String pipelineRuleIdentifier2,
             List<FieldRule> pipelineFieldRules2) {
 		return new AutoValue_AlertRule(title, alertType, conditions1, conditions2, eventID, eventIdentifier2, notificationID, createdAt,
-                creatorUserId, lastModified, pipelineRuleIdentifier2, pipelineFieldRules2);
+                creatorUserId, lastModified, pipelineFieldRules2);
 	}
 }
