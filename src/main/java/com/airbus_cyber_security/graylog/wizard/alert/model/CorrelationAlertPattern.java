@@ -36,6 +36,7 @@ public abstract class CorrelationAlertPattern implements AlertPattern {
 
     @JsonProperty(FIELD_CONDITIONS)
     @NotNull
+    // TODO rename into conditions1
     public abstract TriggeringConditions conditions();
 
     public static Builder builder() {

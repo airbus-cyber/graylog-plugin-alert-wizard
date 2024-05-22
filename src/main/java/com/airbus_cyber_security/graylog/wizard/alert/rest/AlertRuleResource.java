@@ -135,15 +135,57 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return this.loadStream(streamIdentifier);
     }
 
+    private boolean isDisabled(AlertPattern alertPattern) {
+        if (alertPattern instanceof CorrelationAlertPattern pattern) {
+            TriggeringConditions conditions = pattern.conditions();
+            Stream stream = this.loadStream(conditions.streamIdentifier());
+            if (stream == null) {
+                return false;
+            }
+            return stream.getDisabled();
+        } else if (alertPattern instanceof DisjunctionAlertPattern pattern) {
+            TriggeringConditions conditions = pattern.conditions();
+            Stream stream = this.loadStream(conditions.streamIdentifier());
+            if (stream == null) {
+                return false;
+            }
+            return stream.getDisabled();
+        } else if (alertPattern instanceof AggregationAlertPattern pattern) {
+            TriggeringConditions conditions = pattern.conditions();
+            Stream stream = this.loadStream(conditions.streamIdentifier());
+            if (stream == null) {
+                return false;
+            }
+            return stream.getDisabled();
+        }
+        return false;
+    }
+
+    private AlertRuleStream constructAlertRuleStream(AlertPattern alertPattern) {
+        if (alertPattern instanceof CorrelationAlertPattern pattern) {
+            TriggeringConditions conditions = pattern.conditions();
+            Stream stream = this.loadStream(conditions.streamIdentifier());
+            return this.conversions.constructAlertRuleStream(stream, conditions.pipelineFieldRules());
+        } else if (alertPattern instanceof DisjunctionAlertPattern pattern) {
+            TriggeringConditions conditions = pattern.conditions();
+            Stream stream = this.loadStream(conditions.streamIdentifier());
+            return this.conversions.constructAlertRuleStream(stream, conditions.pipelineFieldRules());
+        } else if (alertPattern instanceof AggregationAlertPattern pattern) {
+            TriggeringConditions conditions = pattern.conditions();
+            Stream stream = this.loadStream(conditions.streamIdentifier());
+            return this.conversions.constructAlertRuleStream(stream, conditions.pipelineFieldRules());
+        }
+        throw new RuntimeException("Unreachable statement");
+    }
+
     private GetDataAlertRule constructDataAlertRule(AlertRule alert) {
         String eventIdentifier = alert.event1();
         EventDefinitionDto event = this.eventDefinitionService.getEventDefinition(eventIdentifier);
         NotificationDto notification = this.notificationService.get(alert.getNotificationID());
-        TriggeringConditions conditions1 = alert.conditions1();
-        Stream stream = this.loadStream(conditions1.streamIdentifier());
+        AlertPattern pattern = alert.pattern();
         DateTime lastModified = alert.getLastModified();
         Map<String, Object> parametersCondition = this.conversions.getConditionParameters(event.config());
-        AlertRuleStream alertRuleStream = this.conversions.constructAlertRuleStream(stream, conditions1.pipelineFieldRules());
+        AlertRuleStream alertRuleStream = this.constructAlertRuleStream(pattern);
         AlertRuleStream alertRuleStream2 = null;
         TriggeringConditions conditions2 = alert.conditions2();
         if (conditions2 != null) {
@@ -151,11 +193,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             alertRuleStream2 = this.conversions.constructSecondAlertRuleStream(secondStream, conditions2.pipelineFieldRules());
         }
         LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) notification.config();
-
-        boolean isDisabled = false;
-        if (stream != null) {
-            isDisabled = stream.getDisabled();
-        }
+        boolean isDisabled = isDisabled(pattern);
 
         return GetDataAlertRule.create(alert.getTitle(),
                 loggingNotificationConfig.severity().getType(),
@@ -318,7 +356,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 alertTitle,
                 alertType,
                 pattern,
-                pattern.conditions(),
                 conditions2,
                 eventIdentifier,
                 eventIdentifier2,
@@ -484,7 +521,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 title,
                 request.getConditionType(),
                 pattern,
-                pattern.conditions(),
                 conditions2,
                 previousAlert.event1(),
                 eventIdentifier2,
@@ -520,8 +556,16 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     }
 
     private void deleteAlertPattern(AlertPattern alertPattern) {
-        TriggeringConditions conditions = alertPattern.conditions();
-        deleteTriggeringConditions(conditions);
+        if (alertPattern instanceof CorrelationAlertPattern pattern) {
+            TriggeringConditions conditions = pattern.conditions();
+            deleteTriggeringConditions(conditions);
+        } else if (alertPattern instanceof DisjunctionAlertPattern pattern) {
+            TriggeringConditions conditions = pattern.conditions();
+            deleteTriggeringConditions(conditions);
+        } else if (alertPattern instanceof AggregationAlertPattern pattern) {
+            TriggeringConditions conditions = pattern.conditions();
+            deleteTriggeringConditions(conditions);
+        }
     }
 
     @DELETE

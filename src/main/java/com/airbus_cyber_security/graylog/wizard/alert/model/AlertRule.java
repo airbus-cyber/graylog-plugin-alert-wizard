@@ -46,10 +46,6 @@ public abstract class AlertRule {
     @NotNull
     public abstract AlertPattern pattern();
 
-    @JsonProperty("conditions1")
-    @NotNull
-    public abstract TriggeringConditions conditions1();
-
     @JsonProperty("conditions2")
     @Nullable
     public abstract TriggeringConditions conditions2();
@@ -87,7 +83,6 @@ public abstract class AlertRule {
                                    @JsonProperty("title") String title,
                                    @JsonProperty("alert_type") String alertType,
                                    @JsonProperty("alert_pattern") AlertPattern pattern,
-                                   @JsonProperty("conditions1") TriggeringConditions conditions1,
                                    @JsonProperty("conditions2") TriggeringConditions conditions2,
                                    @JsonProperty("event") String eventID,
                                    @JsonProperty("event2") String eventID2,
@@ -95,7 +90,7 @@ public abstract class AlertRule {
                                    @JsonProperty("created_at") DateTime createdAt,
                                    @JsonProperty("creator_user_id") String creatorUserId,
                                    @JsonProperty("last_modified") DateTime lastModified){
-        return create(title, alertType, pattern, conditions1, conditions2, eventID, eventID2, notificationID, createdAt,
+        return create(title, alertType, pattern, conditions2, eventID, eventID2, notificationID, createdAt,
                 creatorUserId, lastModified);
     }
 	
@@ -103,7 +98,6 @@ public abstract class AlertRule {
             String title,
             String alertType,
             AlertPattern pattern,
-            TriggeringConditions conditions1,
             TriggeringConditions conditions2,
             String eventID,
             String eventIdentifier2,
@@ -111,7 +105,7 @@ public abstract class AlertRule {
             DateTime createdAt,
             String creatorUserId,
             DateTime lastModified) {
-		return new AutoValue_AlertRule(title, alertType, pattern, conditions1, conditions2, eventID, eventIdentifier2,
+		return new AutoValue_AlertRule(title, alertType, pattern, conditions2, eventID, eventIdentifier2,
                 notificationID, createdAt, creatorUserId, lastModified);
 	}
 }
