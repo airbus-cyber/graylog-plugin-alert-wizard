@@ -83,7 +83,7 @@ class GraylogRestApi:
         return GelfInput(self, identifier)
 
     # TODO have rule creation return information about the rule
-    def _create_alert_rule(self, title, rule, condition_type, time,
+    def _create_alert_rule(self, title, stream, condition_type, time,
                            threshold_type='>', additional_threshold_type='', additional_threshold=0, second_stream=None,
                            group_by_fields=None, distinct_by='', field='', statistics_function='', description=''):
         if group_by_fields is None:
@@ -105,12 +105,7 @@ class GraylogRestApi:
             'condition_type': condition_type,
             'description': description,
             'severity': 'info',
-            'stream': {
-                'field_rule': [
-                    rule
-                ],
-                'matching_type': 'AND'
-            },
+            'stream': stream,
             'title': title
         }
         if second_stream:
@@ -126,11 +121,15 @@ class GraylogRestApi:
         return response.json()
 
     # TODO have a default value for rule
-    def create_alert_rule_count(self, title, rule, time, description):
-        return self._create_alert_rule(title, rule, 'COUNT', time, description=description)
+    def create_alert_rule_count(self, title, stream, time, description):
+        return self._create_alert_rule(title, stream, 'COUNT', time, description=description)
 
     def create_alert_rule_group_distinct(self, title, rule, group_by_fields, distinct_by, time):
-        return self._create_alert_rule(title, rule, 'GROUP_DISTINCT', time, group_by_fields=group_by_fields, distinct_by=distinct_by)
+        stream = {
+            'field_rule': [rule],
+            'matching_type': 'AND'
+        }
+        return self._create_alert_rule(title, stream, 'GROUP_DISTINCT', time, group_by_fields=group_by_fields, distinct_by=distinct_by)
 
     def create_alert_rule_statistics(self, title, time):
         rule = {
@@ -138,7 +137,11 @@ class GraylogRestApi:
             'type': 1,
             'value': 'b'
         }
-        return self._create_alert_rule(title, rule, 'STATISTICAL', time, field='x', statistics_function='AVG')
+        stream = {
+            'field_rule': [rule],
+            'matching_type': 'AND'
+        }
+        return self._create_alert_rule(title, stream, 'STATISTICAL', time, field='x', statistics_function='AVG')
 
     def create_alert_rule_then(self, title, threshold_type, time):
         rule = {
@@ -156,7 +159,11 @@ class GraylogRestApi:
             ],
             'matching_type': 'AND'
         }
-        return self._create_alert_rule(title, rule, 'THEN', time, threshold_type=threshold_type,
+        stream = {
+            'field_rule': [rule],
+            'matching_type': 'AND'
+        }
+        return self._create_alert_rule(title, stream, 'THEN', time, threshold_type=threshold_type,
                                        additional_threshold_type='>', additional_threshold=0, second_stream=second_stream)
 
     def create_alert_rule_and(self, title, time, additional_threshold=0):
@@ -175,7 +182,11 @@ class GraylogRestApi:
             ],
             'matching_type': 'AND'
         }
-        return self._create_alert_rule(title, rule, 'AND', time, additional_threshold_type='<', additional_threshold=additional_threshold, second_stream=second_stream)
+        stream = {
+            'field_rule': [rule],
+            'matching_type': 'AND'
+        }
+        return self._create_alert_rule(title, stream, 'AND', time, additional_threshold_type='<', additional_threshold=additional_threshold, second_stream=second_stream)
 
     def create_alert_rule_or(self, title, time, description):
         rule = {
@@ -193,7 +204,11 @@ class GraylogRestApi:
             ],
             'matching_type': 'AND'
         }
-        return self._create_alert_rule(title, rule, 'OR', time, description=description, additional_threshold_type='<', second_stream=second_stream)
+        stream = {
+            'field_rule': [rule],
+            'matching_type': 'AND'
+        }
+        return self._create_alert_rule(title, stream, 'OR', time, description=description, additional_threshold_type='<', second_stream=second_stream)
 
     def get_alert_rule(self, name):
         response = self._get(f'plugins/com.airbus_cyber_security.graylog.wizard/alerts/{name}')

@@ -11,6 +11,7 @@
 #   python -m unittest test.Test.test_create_alert_rule_with_list_should_generate_event_when_message_field_is_in_list
 
 from unittest import TestCase
+from unittest import skip
 import time
 from graylog import Graylog
 
@@ -220,3 +221,40 @@ class Test(TestCase):
         second_event_definition_identifier = alert_rule['second_event_definition']
         second_event_definition = self._graylog.get_event_definition(second_event_definition_identifier)
         self.assertEqual('new description', second_event_definition['description'])
+
+    @skip
+    def test_create_and_alert_rule_with_pipeline_condition_should_not_trigger_event_when_only_field_matches_issue119(self):
+        # Create a list (for example the list "users" with 3 users : toto, tata, titi)
+        list_title = 'users'
+        self._graylog.create_list(list_title, ['toto', 'tata', 'titi'])
+
+        # Create a COUNT rule with 2 conditions linked by an AND
+        # 1st condition : field "user" is in list "users"
+        # 2st condition: field "source" match exactly "source123"
+        stream = {
+            'field_rule': [{
+                'field': 'x',
+                'type': 7,
+                'value': list_title
+            }, {
+                'field': 'source',
+                'type': 1,
+                'value': 'source123'
+            }],
+            'matching_type': 'AND'
+        }
+        alert_rule = self._graylog.create_alert_rule_count('A', _PERIOD, stream=stream)
+
+        # Send a log with user=toto and source=sourceABC. It will be placed in the Stream because the pipeline function found the user in the list. So the rule will trigger but it is wrong because "source" is not equal to "source123"
+        # Send a log with user=xxx and source=source123. It will be placed in the Stream beauce the only Stream rule is field "source" match exactly "source123". So the rule will trigger but it is wrong because "user" is not present in the list
+        with self._graylog.create_gelf_input() as inputs:
+                inputs.send({'host': 'source123'})
+                print(f'send: {self._graylog.get_events_count()}')
+                # wait for the period (which is, unfortunately expressed in minutes, so it's quite long a wait)
+                # TODO: should improve the API for better testability
+                time.sleep(60*_PERIOD)
+                print(f'slept for period: {self._graylog.get_events_count()}')
+
+                time.sleep(60)
+                print(f'before assert: {self._graylog.get_events_count()}')
+                self.assertEqual(0, self._graylog.get_events_count())

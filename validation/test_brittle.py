@@ -33,12 +33,15 @@ class TestBrittle(TestCase):
             title = 'list'
             value = 'a'
             self._graylog.create_list(title, [value])
-            rule = {
-                'field': 'x',
-                'type': 7,
-                'value': title
+            stream = {
+                'field_rule': [{
+                    'field': 'x',
+                    'type': 7,
+                    'value': title
+                }],
+                'matching_type': 'AND'
             }
-            self._graylog.create_alert_rule_count(title, _PERIOD, rule=rule)
+            self._graylog.create_alert_rule_count(title, _PERIOD, stream=stream)
             with self._graylog.create_gelf_input() as inputs:
                 inputs.send({'_x': value})
                 # wait for the period (which is, unfortunately expressed in minutes, so it's quite long a wait)
@@ -61,12 +64,15 @@ class TestBrittle(TestCase):
 
             list_title = 'list'
             self._graylog.create_list(list_title, ['administrator', 'toto', 'root', 'foobar'])
-            rule = {
-                'field': 'x',
-                'type': 7,
-                'value': list_title
+            stream = {
+                'field_rule': [{
+                    'field': 'x',
+                    'type': 7,
+                    'value': list_title
+                }],
+                'matching_type': 'AND'
             }
-            self._graylog.create_alert_rule_count(list_title, _PERIOD, rule=rule)
+            self._graylog.create_alert_rule_count(list_title, _PERIOD, stream=stream)
 
             print(f'Before input: {self._graylog.get_events_count()}')
 
