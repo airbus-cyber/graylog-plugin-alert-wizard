@@ -19,7 +19,6 @@ package com.airbus_cyber_security.graylog.wizard.alert.model;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.auto.value.AutoValue;
 import org.joda.time.DateTime;
@@ -31,7 +30,6 @@ import javax.validation.constraints.NotNull;
 // TODO rename ID into Identifier everywhere
 @AutoValue
 @JsonAutoDetect
-@JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class AlertRule {
 
     // TODO should add an identifier and work with it (see Notification or EventDefinition)

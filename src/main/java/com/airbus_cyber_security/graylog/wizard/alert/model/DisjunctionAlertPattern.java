@@ -1,7 +1,42 @@
 package com.airbus_cyber_security.graylog.wizard.alert.model;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.auto.value.AutoValue;
+
+import javax.validation.constraints.NotNull;
+
 /**
  * To encode Or rule: two separate paths (condition -> aggregation event) which trigger the same notification.
  */
-public class DisjunctionAlertPattern implements AlertPattern {
+@AutoValue
+@JsonAutoDetect
+@JsonDeserialize(builder = DisjunctionAlertPattern.Builder.class)
+public abstract class DisjunctionAlertPattern implements AlertPattern {
+    public static final String FIELD_CONDITIONS = "conditions";
+
+    @JsonProperty(FIELD_CONDITIONS)
+    @NotNull
+    public abstract TriggeringConditions conditions();
+
+    public static Builder builder() {
+        return Builder.create();
+    }
+
+    public abstract Builder toBuilder();
+
+    @AutoValue.Builder
+    public static abstract class Builder {
+        @JsonCreator
+        public static Builder create() {
+            return new AutoValue_DisjunctionAlertPattern.Builder();
+        }
+
+        @JsonProperty(FIELD_CONDITIONS)
+        public abstract Builder conditions(TriggeringConditions conditions);
+
+        public abstract DisjunctionAlertPattern build();
+    }
 }

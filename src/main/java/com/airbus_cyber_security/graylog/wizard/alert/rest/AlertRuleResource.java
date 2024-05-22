@@ -43,6 +43,7 @@ import org.graylog.events.processor.EventProcessorConfig;
 import org.graylog.events.rest.EventNotificationsResource;
 import org.graylog.plugins.pipelineprocessor.db.*;
 import org.graylog.security.UserContext;
+import org.graylog2.alerts.Alert;
 import org.graylog2.audit.jersey.AuditEvent;
 import org.graylog2.database.NotFoundException;
 import org.graylog2.events.ClusterEventBus;
@@ -295,10 +296,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         Map<String, Object> conditionParameters = request.conditionParameters();
 
         String notificationIdentifier = this.notificationService.createNotification(alertTitle, severity, userContext);
-
-        AlertPattern pattern = createAlertPattern(alertType);
-
-        TriggeringConditions conditions1 = createTriggeringConditions(streamConfiguration, alertTitle, userName);
+        AlertPattern pattern = createAlertPattern(alertType, streamConfiguration, alertTitle, userName);
 
         // Create second stream and pipeline
         TriggeringConditions conditions2 = null;
@@ -307,19 +305,20 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
 
         //Create Events
-        String eventIdentifier = createEvent(alertTitle, description, notificationIdentifier, alertType, conditionParameters, userContext, conditions1, conditions2);
+        String eventIdentifier = createEvent(alertTitle, description, notificationIdentifier, alertType, conditionParameters, userContext, pattern.conditions(), conditions2);
         String eventIdentifier2 = null;
         if (alertType.equals("OR")) {
             eventIdentifier2 = createSecondEvent(alertTitle, description, notificationIdentifier, conditionParameters, userContext, conditions2.streamIdentifier());
         }
 
-        this.clusterEventBus.post(StreamsChangedEvent.create(conditions1.streamIdentifier()));
+        // TODO can this be done within the createAlertPattern?
+        this.clusterEventBus.post(StreamsChangedEvent.create(pattern.conditions().streamIdentifier()));
 
         AlertRule alertRule = AlertRule.create(
                 alertTitle,
                 alertType,
                 pattern,
-                conditions1,
+                pattern.conditions(),
                 conditions2,
                 eventIdentifier,
                 eventIdentifier2,
@@ -329,10 +328,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 DateTime.now());
         alertRule = this.alertRuleService.create(alertRule);
 
-        //Update list usage
-        for (FieldRule fieldRule: this.nullSafe(conditions1.pipelineFieldRules())) {
-            this.alertListUtilsService.incrementUsage(fieldRule.getValue());
-        }
         if (conditions2 != null) {
             for (FieldRule fieldRule : this.nullSafe(conditions2.pipelineFieldRules())) {
                 this.alertListUtilsService.incrementUsage(fieldRule.getValue());
@@ -343,26 +338,31 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return Response.ok().entity(result).build();
     }
 
-    private AlertPattern createAlertPattern(String alertType) {
-        if (alertType.equals("THEN") || alertType.equals("AND")) {
-            return new CorrelationAlertPattern();
-        }
-        if (alertType.equals("OR")) {
-            return new DisjunctionAlertPattern();
+    private AlertPattern createAlertPattern(String alertType, AlertRuleStream streamConfiguration, String alertTitle, String userName) throws ValidationException {
+        TriggeringConditions conditions = createTriggeringConditions(streamConfiguration, alertTitle, userName);
+        // TODO move this code in createTriggeringConditions!!!
+        for (FieldRule fieldRule: this.nullSafe(conditions.pipelineFieldRules())) {
+            this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
 
-        return new AggregationAlertPattern();
+        if (alertType.equals("THEN") || alertType.equals("AND")) {
+            return CorrelationAlertPattern.builder().conditions(conditions).build();
+        } else if (alertType.equals("OR")) {
+            return DisjunctionAlertPattern.builder().conditions(conditions).build();
+        } else {
+            return AggregationAlertPattern.builder().conditions(conditions).build();
+        }
     }
 
-    private TriggeringConditions updateTriggeringConditions(TriggeringConditions previousConditions, String alertTitle, AlertRuleStream streamRequest) throws ValidationException {
+    private TriggeringConditions updateTriggeringConditions(TriggeringConditions previousConditions, String alertTitle, AlertRuleStream streamConfiguration) throws ValidationException {
         // update stream
         Stream stream = this.loadStream(previousConditions.streamIdentifier());
-        this.streamPipelineService.updateStream(stream, streamRequest, alertTitle);
+        this.streamPipelineService.updateStream(stream, streamConfiguration, alertTitle);
 
         // update pipeline
         this.streamPipelineService.deletePipeline(previousConditions.pipelineIdentifier(), previousConditions.pipelineRuleIdentifier());
 
-        List<FieldRule> fieldRulesWithList = this.streamPipelineService.extractPipelineFieldRules(streamRequest.getFieldRules());
+        List<FieldRule> fieldRulesWithList = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration.getFieldRules());
         if (fieldRulesWithList.isEmpty()) {
             return TriggeringConditions.create(previousConditions.streamIdentifier(),
                     null,
@@ -370,19 +370,31 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                     fieldRulesWithList);
         }
 
-        PipelineDao pipeline = this.streamPipelineService.createPipeline(alertTitle, streamRequest.getMatchingType());
+        PipelineDao pipeline = this.streamPipelineService.createPipeline(alertTitle, streamConfiguration.getMatchingType());
         RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(alertTitle, fieldRulesWithList, stream);
 
         return TriggeringConditions.create(previousConditions.streamIdentifier(), pipeline.id(), pipelineRule.id(),
                 fieldRulesWithList);
     }
 
-    private AlertPattern updateAlertPattern(AlertPattern previousAlertPattern, String previousAlertType, String alertType) {
+    private AlertPattern updateAlertPattern(AlertPattern previousAlertPattern, String previousAlertType, String alertType,
+                                            String alertTitle, AlertRuleStream streamConfiguration, String userName) throws ValidationException {
         if (!previousAlertType.equals(alertType)) {
-            //deleteAlertPattern()
-            return createAlertPattern(alertType);
+            deleteAlertPattern(previousAlertPattern);
+            return createAlertPattern(alertType, streamConfiguration, alertTitle, userName);
         }
-        return previousAlertPattern;
+        TriggeringConditions previousConditions = previousAlertPattern.conditions();
+        TriggeringConditions conditions = updateTriggeringConditions(previousConditions, alertTitle, streamConfiguration);
+
+        if (previousAlertPattern instanceof CorrelationAlertPattern pattern) {
+            return pattern.toBuilder().conditions(conditions).build();
+        } else if (previousAlertPattern instanceof DisjunctionAlertPattern pattern) {
+            return pattern.toBuilder().conditions(conditions).build();
+        } else if (previousAlertPattern instanceof AggregationAlertPattern pattern) {
+            return pattern.toBuilder().conditions(conditions).build();
+        }
+
+        throw new RuntimeException("Unreachable code");
     }
 
     @PUT
@@ -408,10 +420,16 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         String previousAlertType = previousAlert.getAlertType();
         String alertType = request.getConditionType();
-        AlertPattern pattern = updateAlertPattern(previousAlert.pattern(), previousAlertType, alertType);
-
-        TriggeringConditions previousConditions1 = previousAlert.conditions1();
-        TriggeringConditions conditions1 = updateTriggeringConditions(previousConditions1, title, request.getStream());
+        AlertPattern pattern = updateAlertPattern(previousAlert.pattern(), previousAlertType, alertType, title, request.getStream(), userName);
+        // TODO move this down into updateAlertPattern
+        // Decrement list usage
+        for (FieldRule fieldRule: this.nullSafe(pattern.conditions().pipelineFieldRules())) {
+            this.alertListUtilsService.decrementUsage(fieldRule.getValue());
+        }
+        // Increment list usage
+        for (FieldRule fieldRule: this.nullSafe(pattern.conditions().pipelineFieldRules())) {
+            this.alertListUtilsService.incrementUsage(fieldRule.getValue());
+        }
 
         TriggeringConditions previousConditions2 = previousAlert.conditions2();
         TriggeringConditions conditions2 = null;
@@ -438,9 +456,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         // Create Type
         EventProcessorConfig configuration;
         if (alertType.equals("THEN") || alertType.equals("AND")) {
-            configuration = this.conversions.createCorrelationCondition(alertType, conditions1.streamIdentifier(), conditions2.streamIdentifier(), request.conditionParameters());
+            configuration = this.conversions.createCorrelationCondition(alertType, pattern.conditions().streamIdentifier(), conditions2.streamIdentifier(), request.conditionParameters());
         } else {
-            configuration = this.conversions.createCondition(request.getConditionType(), request.conditionParameters(), conditions1.streamIdentifier());
+            configuration = this.conversions.createCondition(request.getConditionType(), request.conditionParameters(), pattern.conditions().streamIdentifier());
         }
 
         // Update Event
@@ -466,7 +484,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 title,
                 request.getConditionType(),
                 pattern,
-                conditions1,
+                pattern.conditions(),
                 conditions2,
                 previousAlert.event1(),
                 eventIdentifier2,
@@ -476,14 +494,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 DateTime.now());
         alertRule = this.alertRuleService.update(java.net.URLDecoder.decode(title, ENCODING), alertRule);
 
-        // Decrement list usage
-        for (FieldRule fieldRule: this.nullSafe(previousConditions1.pipelineFieldRules())) {
-            this.alertListUtilsService.decrementUsage(fieldRule.getValue());
-        }
-        // Increment list usage
-        for (FieldRule fieldRule: this.nullSafe(conditions1.pipelineFieldRules())) {
-            this.alertListUtilsService.incrementUsage(fieldRule.getValue());
-        }
         if (previousConditions2 != null) {
             for (FieldRule fieldRule: this.nullSafe(previousConditions2.pipelineFieldRules())) {
                 this.alertListUtilsService.decrementUsage(fieldRule.getValue());
@@ -509,6 +519,11 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
     }
 
+    private void deleteAlertPattern(AlertPattern alertPattern) {
+        TriggeringConditions conditions = alertPattern.conditions();
+        deleteTriggeringConditions(conditions);
+    }
+
     @DELETE
     @Path("/{title}")
     @RequiresAuthentication
@@ -527,7 +542,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         try {
             AlertRule alertRule = this.alertRuleService.load(alertTitle);
-            deleteTriggeringConditions(alertRule.conditions1());
+            deleteAlertPattern(alertRule.pattern());
 
             TriggeringConditions conditions2 = alertRule.conditions2();
             if (conditions2 != null) {

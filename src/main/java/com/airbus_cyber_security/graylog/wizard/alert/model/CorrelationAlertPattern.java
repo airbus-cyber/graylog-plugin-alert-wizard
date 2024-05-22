@@ -17,8 +17,43 @@
 
 package com.airbus_cyber_security.graylog.wizard.alert.model;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.auto.value.AutoValue;
+
+import javax.validation.constraints.NotNull;
+
 /**
  * To encode AND/THEN rules: two separate conditions which are combined with a correlation event
  */
-public class CorrelationAlertPattern implements AlertPattern {
+@AutoValue
+@JsonAutoDetect
+@JsonDeserialize(builder = CorrelationAlertPattern.Builder.class)
+public abstract class CorrelationAlertPattern implements AlertPattern {
+    public static final String FIELD_CONDITIONS = "conditions";
+
+    @JsonProperty(FIELD_CONDITIONS)
+    @NotNull
+    public abstract TriggeringConditions conditions();
+
+    public static Builder builder() {
+        return Builder.create();
+    }
+
+    public abstract Builder toBuilder();
+
+    @AutoValue.Builder
+    public static abstract class Builder {
+        @JsonCreator
+        public static Builder create() {
+            return new AutoValue_CorrelationAlertPattern.Builder();
+        }
+
+        @JsonProperty(FIELD_CONDITIONS)
+        public abstract Builder conditions(TriggeringConditions conditions);
+
+        public abstract CorrelationAlertPattern build();
+    }
 }
