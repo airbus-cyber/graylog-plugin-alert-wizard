@@ -17,7 +17,6 @@
 
 package com.airbus_cyber_security.graylog.wizard.alert.model;
 
-import com.airbus_cyber_security.graylog.wizard.alert.rest.models.FieldRule;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -27,7 +26,7 @@ import org.joda.time.DateTime;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
-import java.util.List;
+
 
 // TODO rename ID into Identifier everywhere
 @AutoValue
@@ -44,6 +43,10 @@ public abstract class AlertRule {
     @JsonProperty("alert_type")
     @Nullable
     public abstract String getAlertType();
+
+    @JsonProperty("alert_pattern")
+    @NotNull
+    public abstract AlertPattern pattern();
 
     @JsonProperty("conditions1")
     @NotNull
@@ -85,6 +88,7 @@ public abstract class AlertRule {
     public static AlertRule create(@JsonProperty("_id") String objectId,
                                    @JsonProperty("title") String title,
                                    @JsonProperty("alert_type") String alertType,
+                                   @JsonProperty("alert_pattern") AlertPattern pattern,
                                    @JsonProperty("conditions1") TriggeringConditions conditions1,
                                    @JsonProperty("conditions2") TriggeringConditions conditions2,
                                    @JsonProperty("event") String eventID,
@@ -93,13 +97,14 @@ public abstract class AlertRule {
                                    @JsonProperty("created_at") DateTime createdAt,
                                    @JsonProperty("creator_user_id") String creatorUserId,
                                    @JsonProperty("last_modified") DateTime lastModified){
-        return create(title, alertType, conditions1, conditions2, eventID, eventID2, notificationID, createdAt,
+        return create(title, alertType, pattern, conditions1, conditions2, eventID, eventID2, notificationID, createdAt,
                 creatorUserId, lastModified);
     }
 	
 	public static AlertRule create(
             String title,
             String alertType,
+            AlertPattern pattern,
             TriggeringConditions conditions1,
             TriggeringConditions conditions2,
             String eventID,
@@ -108,7 +113,7 @@ public abstract class AlertRule {
             DateTime createdAt,
             String creatorUserId,
             DateTime lastModified) {
-		return new AutoValue_AlertRule(title, alertType, conditions1, conditions2, eventID, eventIdentifier2, notificationID, createdAt,
-                creatorUserId, lastModified);
+		return new AutoValue_AlertRule(title, alertType, pattern, conditions1, conditions2, eventID, eventIdentifier2,
+                notificationID, createdAt, creatorUserId, lastModified);
 	}
 }

@@ -21,8 +21,7 @@ package com.airbus_cyber_security.graylog.wizard.alert.rest;
 import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
 import com.airbus_cyber_security.graylog.wizard.alert.business.*;
 import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleService;
-import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRule;
-import com.airbus_cyber_security.graylog.wizard.alert.model.TriggeringConditions;
+import com.airbus_cyber_security.graylog.wizard.alert.model.*;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
@@ -291,24 +290,26 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String alertTitle = checkImportPolicyAndGetTitle(title, userContext);
         AlertRuleStream streamConfiguration = request.getStream();
         String severity = request.getSeverity();
-        String conditionType = request.getConditionType();
+        String alertType = request.getConditionType();
         String description = request.getDescription();
         Map<String, Object> conditionParameters = request.conditionParameters();
 
         String notificationIdentifier = this.notificationService.createNotification(alertTitle, severity, userContext);
 
+        AlertPattern pattern = createAlertPattern(alertType);
+
         TriggeringConditions conditions1 = createTriggeringConditions(streamConfiguration, alertTitle, userName);
 
         // Create second stream and pipeline
         TriggeringConditions conditions2 = null;
-        if (conditionType.equals("THEN") || conditionType.equals("AND") || conditionType.equals("OR")) {
+        if (alertType.equals("THEN") || alertType.equals("AND") || alertType.equals("OR")) {
             conditions2 = this.createTriggeringConditions(streamConfiguration, alertTitle + "#2", userName);
         }
 
         //Create Events
-        String eventIdentifier = createEvent(alertTitle, description, notificationIdentifier, conditionType, conditionParameters, userContext, conditions1, conditions2);
+        String eventIdentifier = createEvent(alertTitle, description, notificationIdentifier, alertType, conditionParameters, userContext, conditions1, conditions2);
         String eventIdentifier2 = null;
-        if (conditionType.equals("OR")) {
+        if (alertType.equals("OR")) {
             eventIdentifier2 = createSecondEvent(alertTitle, description, notificationIdentifier, conditionParameters, userContext, conditions2.streamIdentifier());
         }
 
@@ -316,7 +317,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         AlertRule alertRule = AlertRule.create(
                 alertTitle,
-                conditionType,
+                alertType,
+                pattern,
                 conditions1,
                 conditions2,
                 eventIdentifier,
@@ -339,6 +341,17 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         GetDataAlertRule result = this.constructDataAlertRule(alertRule);
         return Response.ok().entity(result).build();
+    }
+
+    private AlertPattern createAlertPattern(String alertType) {
+        if (alertType.equals("THEN") || alertType.equals("AND")) {
+            return new CorrelationAlertPattern();
+        }
+        if (alertType.equals("OR")) {
+            return new DisjunctionAlertPattern();
+        }
+
+        return new AggregationAlertPattern();
     }
 
     private TriggeringConditions updateTriggeringConditions(TriggeringConditions previousConditions, String alertTitle, AlertRuleStream streamRequest) throws ValidationException {
@@ -364,6 +377,14 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 fieldRulesWithList);
     }
 
+    private AlertPattern updateAlertPattern(AlertPattern previousAlertPattern, String previousAlertType, String alertType) {
+        if (!previousAlertType.equals(alertType)) {
+            //deleteAlertPattern()
+            return createAlertPattern(alertType);
+        }
+        return previousAlertPattern;
+    }
+
     @PUT
     @Path("/{title}")
     @Timed
@@ -383,6 +404,12 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         AlertRule previousAlert = this.alertRuleService.load(title);
         String userName = getCurrentUser().getName();
 
+        this.notificationService.updateNotification(title, previousAlert.getNotificationID(), request.getSeverity());
+
+        String previousAlertType = previousAlert.getAlertType();
+        String alertType = request.getConditionType();
+        AlertPattern pattern = updateAlertPattern(previousAlert.pattern(), previousAlertType, alertType);
+
         TriggeringConditions previousConditions1 = previousAlert.conditions1();
         TriggeringConditions conditions1 = updateTriggeringConditions(previousConditions1, title, request.getStream());
 
@@ -390,8 +417,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         TriggeringConditions conditions2 = null;
 
 
-        String conditionType = request.getConditionType();
-        if (conditionType.equals("THEN") || conditionType.equals("AND") || conditionType.equals("OR")) {
+        if (alertType.equals("THEN") || alertType.equals("AND") || alertType.equals("OR")) {
             AlertRuleStream streamRequest2 = request.getSecondStream();
             String title2 = title + "#2";
             if (previousConditions2 != null) {
@@ -411,14 +437,11 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         // Create Type
         EventProcessorConfig configuration;
-        if (conditionType.equals("THEN") || conditionType.equals("AND")) {
-            configuration = this.conversions.createCorrelationCondition(conditionType, conditions1.streamIdentifier(), conditions2.streamIdentifier(), request.conditionParameters());
+        if (alertType.equals("THEN") || alertType.equals("AND")) {
+            configuration = this.conversions.createCorrelationCondition(alertType, conditions1.streamIdentifier(), conditions2.streamIdentifier(), request.conditionParameters());
         } else {
             configuration = this.conversions.createCondition(request.getConditionType(), request.conditionParameters(), conditions1.streamIdentifier());
         }
-
-        // update Notification
-        this.notificationService.updateNotification(title, previousAlert.getNotificationID(), request.getSeverity());
 
         // Update Event
         this.eventDefinitionService.updateEvent(title, request.getDescription(), previousAlert.event1(), configuration);
@@ -427,14 +450,14 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         //Or Condition for Second Stream
         if (request.getConditionType().equals("OR")) {
             EventProcessorConfig configuration2 = this.conversions.createAggregationCondition(conditions2.streamIdentifier(), request.conditionParameters());
-            if (previousAlert.getAlertType().equals("OR")) {
+            if (previousAlertType.equals("OR")) {
                 // Update Event
                 this.eventDefinitionService.updateEvent(title + "#2", request.getDescription(), eventIdentifier2, configuration2);
             } else {
                 //Create Event
                 eventIdentifier2 = this.eventDefinitionService.createEvent(title + "#2", request.getDescription(), previousAlert.getNotificationID(), configuration2, userContext);
             }
-        } else if (previousAlert.getAlertType().equals("OR")) {
+        } else if (previousAlertType.equals("OR")) {
             //Delete Event
             this.eventDefinitionService.delete(eventIdentifier2);
         }
@@ -442,6 +465,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         AlertRule alertRule = AlertRule.create(
                 title,
                 request.getConditionType(),
+                pattern,
                 conditions1,
                 conditions2,
                 previousAlert.event1(),
