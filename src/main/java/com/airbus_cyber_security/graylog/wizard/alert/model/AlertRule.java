@@ -46,11 +46,12 @@ public abstract class AlertRule {
     @NotNull
     public abstract AlertPattern pattern();
 
+    // TODO remove this field
     @JsonProperty("event2")
     @Nullable
     public abstract String event2();
 
-    // TODO rename into notification
+    // TODO rename into notificationIdentifier
     @JsonProperty("notification")
     @Nullable
     public abstract String getNotificationID();
@@ -59,7 +60,7 @@ public abstract class AlertRule {
     @Nullable
     public abstract DateTime getCreatedAt();
 
-    // TODO rename int getCreatorUserIdentifier
+    // TODO rename int creatorUserIdentifier
     @JsonProperty("creator_user_id")
     @Nullable
     public abstract String getCreatorUserId();

@@ -313,17 +313,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         AlertPattern pattern = createAlertPattern(notificationIdentifier, request, alertTitle, userContext, userName);
 
         // TODO this is some temporary complex code which should be removed
-        TriggeringConditions conditions2 = null;
-        if (pattern instanceof CorrelationAlertPattern correlationPattern) {
-            conditions2 = correlationPattern.conditions2();
-        } else if (pattern instanceof DisjunctionAlertPattern disjunctionPattern) {
-            conditions2 = disjunctionPattern.conditions2();
-        }
-
-        //Create Events
         String eventIdentifier2 = null;
-        if (alertType.equals("OR")) {
-            eventIdentifier2 = createSecondEvent(alertTitle, description, notificationIdentifier, conditionParameters, userContext, conditions2.streamIdentifier());
+        if (pattern instanceof DisjunctionAlertPattern disjunctionPattern) {
+            eventIdentifier2 = disjunctionPattern.eventIdentifier2();
         }
 
         // TODO can this be done within the createAlertPattern?
@@ -360,7 +352,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         } else if (alertType.equals("OR")) {
             TriggeringConditions conditions2 = createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName);
             String eventIdentifier = createEvent(alertTitle, description, notificationIdentifier, alertType, conditionParameters, userContext, conditions);
-            return DisjunctionAlertPattern.builder().conditions(conditions).conditions2(conditions2).eventIdentifier1(eventIdentifier).build();
+            String eventIdentifier2 = createSecondEvent(alertTitle, description, notificationIdentifier, conditionParameters, userContext, conditions2.streamIdentifier());
+            return DisjunctionAlertPattern.builder()
+                    .conditions(conditions).conditions2(conditions2).eventIdentifier1(eventIdentifier).eventIdentifier2(eventIdentifier2)
+                    .build();
         } else {
             String eventIdentifier = createEvent(alertTitle, description, notificationIdentifier, alertType, conditionParameters, userContext, conditions);
             return AggregationAlertPattern.builder().conditions(conditions).eventIdentifier(eventIdentifier).build();
@@ -422,10 +417,13 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             return previousPattern.toBuilder().conditions(conditions).build();
         } else if (previousAlertPattern instanceof DisjunctionAlertPattern previousPattern) {
             TriggeringConditions previousConditions2 = previousPattern.conditions2();
-            this.updateTriggeringConditions(previousConditions2, title2, streamConfiguration2);
+            TriggeringConditions conditions2 = this.updateTriggeringConditions(previousConditions2, title2, streamConfiguration2);
 
             EventProcessorConfig configuration = this.conversions.createCondition(request.getConditionType(), request.conditionParameters(), conditions.streamIdentifier());
             this.eventDefinitionService.updateEvent(title, request.getDescription(), previousPattern.eventIdentifier1(), configuration);
+
+            EventProcessorConfig configuration2 = this.conversions.createAggregationCondition(conditions2.streamIdentifier(), request.conditionParameters());
+            this.eventDefinitionService.updateEvent(title + "#2", request.getDescription(), previousPattern.eventIdentifier2(), configuration2);
 
             return previousPattern.toBuilder().conditions(conditions).build();
         } else if (previousAlertPattern instanceof AggregationAlertPattern previousPattern) {
@@ -465,27 +463,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 previousAlertType, title, userContext, userName);
 
         // TODO this is some temporary complex code which should be removed
-        TriggeringConditions conditions2 = null;
-        if (pattern instanceof CorrelationAlertPattern correlationPattern) {
-            conditions2 = correlationPattern.conditions2();
-        } else if (pattern instanceof DisjunctionAlertPattern disjunctionPattern) {
-            conditions2 = disjunctionPattern.conditions2();
-        }
-
-        String eventIdentifier2 = previousAlert.event2();
-        //Or Condition for Second Stream
-        if (request.getConditionType().equals("OR")) {
-            EventProcessorConfig configuration2 = this.conversions.createAggregationCondition(conditions2.streamIdentifier(), request.conditionParameters());
-            if (previousAlertType.equals("OR")) {
-                // Update Event
-                this.eventDefinitionService.updateEvent(title + "#2", request.getDescription(), eventIdentifier2, configuration2);
-            } else {
-                //Create Event
-                eventIdentifier2 = this.eventDefinitionService.createEvent(title + "#2", request.getDescription(), previousAlert.getNotificationID(), configuration2, userContext);
-            }
-        } else if (previousAlertType.equals("OR")) {
-            //Delete Event
-            this.eventDefinitionService.delete(eventIdentifier2);
+        String eventIdentifier2 = null;
+        if (pattern instanceof DisjunctionAlertPattern disjunctionPattern) {
+            eventIdentifier2 = disjunctionPattern.eventIdentifier2();
         }
 
         AlertRule alertRule = AlertRule.create(

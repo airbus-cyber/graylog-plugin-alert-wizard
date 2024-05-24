@@ -34,6 +34,7 @@ public abstract class DisjunctionAlertPattern implements AlertPattern {
     public static final String FIELD_CONDITIONS1 = "conditions1";
     public static final String FIELD_CONDITIONS2 = "conditions2";
     public static final String FIELD_EVENT_IDENTIFIER1 = "event_identifier1";
+    public static final String FIELD_EVENT_IDENTIFIER2 = "event_identifier2";
 
     @JsonProperty(FIELD_CONDITIONS1)
     @NotNull
@@ -47,6 +48,10 @@ public abstract class DisjunctionAlertPattern implements AlertPattern {
     @JsonProperty(FIELD_EVENT_IDENTIFIER1)
     @NotNull
     public abstract String eventIdentifier1();
+
+    @JsonProperty(FIELD_EVENT_IDENTIFIER2)
+    @NotNull
+    public abstract String eventIdentifier2();
 
     public static Builder builder() {
         return Builder.create();
@@ -70,6 +75,9 @@ public abstract class DisjunctionAlertPattern implements AlertPattern {
 
         @JsonProperty(FIELD_EVENT_IDENTIFIER1)
         public abstract Builder eventIdentifier1(String eventIdentifier);
+
+        @JsonProperty(FIELD_EVENT_IDENTIFIER2)
+        public abstract Builder eventIdentifier2(String eventIdentifier);
 
         public abstract DisjunctionAlertPattern build();
     }
