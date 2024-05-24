@@ -135,16 +135,17 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     }
 
     private GetDataAlertRule constructDataAlertRule(AlertRule alert) {
-        String eventIdentifier = alert.event1();
-        EventDefinitionDto event = this.eventDefinitionService.getEventDefinition(eventIdentifier);
         NotificationDto notification = this.notificationService.get(alert.getNotificationID());
         AlertPattern alertPattern = alert.pattern();
         DateTime lastModified = alert.getLastModified();
-        Map<String, Object> parametersCondition = this.conversions.getConditionParameters(event.config());
+        EventDefinitionDto event = null;
+        Map<String, Object> parametersCondition = null;
         boolean isDisabled = false;
         AlertRuleStream alertRuleStream = null;
         AlertRuleStream alertRuleStream2 = null;
         if (alertPattern instanceof CorrelationAlertPattern pattern) {
+            event = this.eventDefinitionService.getEventDefinition(pattern.eventIdentifier());
+            parametersCondition = this.conversions.getConditionParameters(event.config());
             TriggeringConditions conditions = pattern.conditions();
             Stream stream = this.loadStream(conditions.streamIdentifier());
             alertRuleStream = this.conversions.constructAlertRuleStream(stream, conditions.pipelineFieldRules());
@@ -155,6 +156,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 isDisabled = stream.getDisabled();
             }
         } else if (alertPattern instanceof DisjunctionAlertPattern pattern) {
+            event = this.eventDefinitionService.getEventDefinition(pattern.eventIdentifier1());
+            parametersCondition = this.conversions.getConditionParameters(event.config());
             TriggeringConditions conditions = pattern.conditions();
             Stream stream = this.loadStream(conditions.streamIdentifier());
             alertRuleStream = this.conversions.constructAlertRuleStream(stream, conditions.pipelineFieldRules());
@@ -165,6 +168,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 isDisabled = stream.getDisabled();
             }
         } else if (alertPattern instanceof AggregationAlertPattern pattern) {
+            event = this.eventDefinitionService.getEventDefinition(pattern.eventIdentifier());
+            parametersCondition = this.conversions.getConditionParameters(event.config());
             TriggeringConditions conditions = pattern.conditions();
             Stream stream = this.loadStream(conditions.streamIdentifier());
             alertRuleStream = this.conversions.constructAlertRuleStream(stream, conditions.pipelineFieldRules());
