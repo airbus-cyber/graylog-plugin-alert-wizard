@@ -172,12 +172,15 @@ public class StreamPipelineService {
 
         Set<String> pipelineIds;
         try {
-            pipelineIds = pipelineStreamConnectionsService.load("000000000000000000000001").pipelineIds();
+            // retrieves the identifiers of the pipelines connected to the default stream
+            pipelineIds = pipelineStreamConnectionsService.load(Stream.DEFAULT_STREAM_ID).pipelineIds();
         } catch (NotFoundException e) {
-            pipelineIds =  new HashSet<>();
+            pipelineIds = new HashSet<>();
         }
+        // add the identifier of the new pipeline
         pipelineIds.add(save.id());
-        pipelineStreamConnectionsService.save(PipelineConnections.create(null, "000000000000000000000001", pipelineIds));
+        // and updates the pipeline connection
+        pipelineStreamConnectionsService.save(PipelineConnections.create(null, Stream.DEFAULT_STREAM_ID, pipelineIds));
 
         LOG.debug("Created new pipeline {}", save);
         return save;
