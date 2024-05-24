@@ -147,7 +147,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         if (alertPattern instanceof CorrelationAlertPattern pattern) {
             event = this.eventDefinitionService.getEventDefinition(pattern.eventIdentifier());
             parametersCondition = this.conversions.getConditionParameters(event.config());
-            TriggeringConditions conditions = pattern.conditions();
+            TriggeringConditions conditions = pattern.conditions1();
             Stream stream = this.loadStream(conditions.streamIdentifier());
             alertRuleStream = this.conversions.constructAlertRuleStream(stream, conditions.pipelineFieldRules());
             TriggeringConditions conditions2 = pattern.conditions2();
@@ -159,7 +159,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         } else if (alertPattern instanceof DisjunctionAlertPattern pattern) {
             event = this.eventDefinitionService.getEventDefinition(pattern.eventIdentifier1());
             parametersCondition = this.conversions.getConditionParameters(event.config());
-            TriggeringConditions conditions = pattern.conditions();
+            TriggeringConditions conditions = pattern.conditions1();
             Stream stream = this.loadStream(conditions.streamIdentifier());
             alertRuleStream = this.conversions.constructAlertRuleStream(stream, conditions.pipelineFieldRules());
             TriggeringConditions conditions2 = pattern.conditions2();
@@ -344,14 +344,14 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             TriggeringConditions conditions2 = createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName);
             EventProcessorConfig configuration = this.conversions.createCorrelationCondition(alertType, conditions.streamIdentifier(), conditions2.streamIdentifier(), conditionParameters);
             String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, notificationIdentifier, configuration, userContext);
-            return CorrelationAlertPattern.builder().conditions(conditions).conditions2(conditions2).eventIdentifier(eventIdentifier).build();
+            return CorrelationAlertPattern.builder().conditions1(conditions).conditions2(conditions2).eventIdentifier(eventIdentifier).build();
         } else if (alertType.equals("OR")) {
             TriggeringConditions conditions2 = createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName);
             String eventIdentifier = createEvent(alertTitle, description, notificationIdentifier, alertType, conditionParameters, userContext, conditions);
             String eventIdentifier2 = createSecondEvent(alertTitle, description, notificationIdentifier, conditionParameters, userContext, conditions2.streamIdentifier());
 
             return DisjunctionAlertPattern.builder()
-                    .conditions(conditions).conditions2(conditions2).eventIdentifier1(eventIdentifier).eventIdentifier2(eventIdentifier2)
+                    .conditions1(conditions).conditions2(conditions2).eventIdentifier1(eventIdentifier).eventIdentifier2(eventIdentifier2)
                     .build();
         } else {
             String eventIdentifier = createEvent(alertTitle, description, notificationIdentifier, alertType, conditionParameters, userContext, conditions);
@@ -403,7 +403,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String title2 = title + "#2";
         // TODO increase readability: extract three methods
         if (previousAlertPattern instanceof CorrelationAlertPattern previousPattern) {
-            TriggeringConditions previousConditions = previousPattern.conditions();
+            TriggeringConditions previousConditions = previousPattern.conditions1();
             TriggeringConditions conditions = updateTriggeringConditions(previousConditions, title, streamConfiguration);
             TriggeringConditions previousConditions2 = previousPattern.conditions2();
             TriggeringConditions conditions2 = this.updateTriggeringConditions(previousConditions2, title2, streamConfiguration2);
@@ -411,9 +411,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             EventProcessorConfig configuration = this.conversions.createCorrelationCondition(alertType, conditions.streamIdentifier(), conditions2.streamIdentifier(), request.conditionParameters());
             this.eventDefinitionService.updateEvent(title, request.getDescription(), previousPattern.eventIdentifier(), configuration);
 
-            return previousPattern.toBuilder().conditions(conditions).build();
+            return previousPattern.toBuilder().conditions1(conditions).build();
         } else if (previousAlertPattern instanceof DisjunctionAlertPattern previousPattern) {
-            TriggeringConditions previousConditions = previousPattern.conditions();
+            TriggeringConditions previousConditions = previousPattern.conditions1();
             TriggeringConditions conditions = updateTriggeringConditions(previousConditions, title, streamConfiguration);
             TriggeringConditions previousConditions2 = previousPattern.conditions2();
             TriggeringConditions conditions2 = this.updateTriggeringConditions(previousConditions2, title2, streamConfiguration2);
@@ -424,7 +424,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             EventProcessorConfig configuration2 = this.conversions.createAggregationCondition(conditions2.streamIdentifier(), request.conditionParameters());
             this.eventDefinitionService.updateEvent(title2, request.getDescription(), previousPattern.eventIdentifier2(), configuration2);
 
-            return previousPattern.toBuilder().conditions(conditions).build();
+            return previousPattern.toBuilder().conditions1(conditions).build();
         } else if (previousAlertPattern instanceof AggregationAlertPattern previousPattern) {
             TriggeringConditions previousConditions = previousPattern.conditions();
             TriggeringConditions conditions = updateTriggeringConditions(previousConditions, title, streamConfiguration);
@@ -497,11 +497,11 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
     private void deleteAlertPattern(AlertPattern alertPattern) {
         if (alertPattern instanceof CorrelationAlertPattern pattern) {
-            deleteTriggeringConditions(pattern.conditions());
+            deleteTriggeringConditions(pattern.conditions1());
             deleteTriggeringConditions(pattern.conditions2());
             deleteEvent(pattern.eventIdentifier());
         } else if (alertPattern instanceof DisjunctionAlertPattern pattern) {
-            deleteTriggeringConditions(pattern.conditions());
+            deleteTriggeringConditions(pattern.conditions1());
             deleteTriggeringConditions(pattern.conditions2());
             deleteEvent(pattern.eventIdentifier1());
             deleteEvent(pattern.eventIdentifier2());
