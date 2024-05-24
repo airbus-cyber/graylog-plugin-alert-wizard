@@ -143,6 +143,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         boolean isDisabled = false;
         AlertRuleStream alertRuleStream = null;
         AlertRuleStream alertRuleStream2 = null;
+        String eventIdentifier2 = null;
         if (alertPattern instanceof CorrelationAlertPattern pattern) {
             event = this.eventDefinitionService.getEventDefinition(pattern.eventIdentifier());
             parametersCondition = this.conversions.getConditionParameters(event.config());
@@ -167,6 +168,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             if (stream != null) {
                 isDisabled = stream.getDisabled();
             }
+            eventIdentifier2 = pattern.eventIdentifier2();
         } else if (alertPattern instanceof AggregationAlertPattern pattern) {
             event = this.eventDefinitionService.getEventDefinition(pattern.eventIdentifier());
             parametersCondition = this.conversions.getConditionParameters(event.config());
@@ -182,7 +184,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return GetDataAlertRule.create(alert.getTitle(),
                 loggingNotificationConfig.severity().getType(),
                 event.id(),
-                alert.event2(),
+                eventIdentifier2,
                 notification.id(),
                 alert.getCreatedAt(),
                 alert.getCreatorUserId(),
