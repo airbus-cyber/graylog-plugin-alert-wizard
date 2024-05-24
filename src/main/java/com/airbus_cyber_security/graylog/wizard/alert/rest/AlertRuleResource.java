@@ -337,20 +337,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         // TODO can this be done within the createAlertPattern?
         this.clusterEventBus.post(StreamsChangedEvent.create(pattern.conditions().streamIdentifier()));
 
-        String eventIdentifier = null;
-        if (pattern instanceof CorrelationAlertPattern correlationPattern) {
-            eventIdentifier = correlationPattern.eventIdentifier();
-        } else if (pattern instanceof DisjunctionAlertPattern disjunctionPattern) {
-            eventIdentifier = disjunctionPattern.eventIdentifier1();
-        } else if (pattern instanceof  AggregationAlertPattern aggregationPattern) {
-            eventIdentifier = aggregationPattern.eventIdentifier();
-        }
-
         AlertRule alertRule = AlertRule.create(
                 alertTitle,
                 alertType,
                 pattern,
-                eventIdentifier,
                 eventIdentifier2,
                 notificationIdentifier,
                 DateTime.now(),
@@ -537,7 +527,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 title,
                 request.getConditionType(),
                 pattern,
-                previousAlert.event1(),
                 eventIdentifier2,
                 previousAlert.getNotificationID(),
                 previousAlert.getCreatedAt(),
@@ -560,18 +549,28 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
     }
 
+    private void deleteEvent(String eventIdentifier) {
+        if (eventIdentifier == null) {
+            return;
+        }
+        this.eventDefinitionService.delete(eventIdentifier);
+    }
+
     private void deleteAlertPattern(AlertPattern alertPattern) {
         if (alertPattern instanceof CorrelationAlertPattern pattern) {
+            deleteEvent(pattern.eventIdentifier());
             TriggeringConditions conditions = pattern.conditions();
             deleteTriggeringConditions(conditions);
             TriggeringConditions conditions2 = pattern.conditions2();
             deleteTriggeringConditions(conditions2);
         } else if (alertPattern instanceof DisjunctionAlertPattern pattern) {
+            deleteEvent(pattern.eventIdentifier1());
             TriggeringConditions conditions = pattern.conditions();
             deleteTriggeringConditions(conditions);
             TriggeringConditions conditions2 = pattern.conditions2();
             deleteTriggeringConditions(conditions2);
         } else if (alertPattern instanceof AggregationAlertPattern pattern) {
+            deleteEvent(pattern.eventIdentifier());
             TriggeringConditions conditions = pattern.conditions();
             deleteTriggeringConditions(conditions);
         }
@@ -598,9 +597,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             deleteAlertPattern(alertRule.pattern());
 
             // Delete Event
-            if (alertRule.event1() != null && !alertRule.event1().isEmpty()) {
-                this.eventDefinitionService.delete(alertRule.event1());
-            }
             if (alertRule.event2() != null && !alertRule.event2().isEmpty()) {
                 this.eventDefinitionService.delete(alertRule.event2());
             }
