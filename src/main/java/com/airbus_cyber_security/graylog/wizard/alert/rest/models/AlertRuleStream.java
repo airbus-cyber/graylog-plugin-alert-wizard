@@ -28,6 +28,7 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
+// TODO could this class be removed by factoring with some class in model? (maybe even at the expense of changing the REST API)
 @AutoValue
 @JsonAutoDetect
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -38,7 +39,9 @@ public abstract class AlertRuleStream {
     @JsonProperty("id")
     @Nullable
     public abstract String getID();
-    
+
+    // the way field rules are to be combined: either "AND" or "OR"
+    // TODO: is it possible to have enums instead (see for instance org.graylog.enterprise.EnterpriseLicenseInfo)
     @JsonProperty("matching_type")
     @NotNull
     public abstract String getMatchingType();

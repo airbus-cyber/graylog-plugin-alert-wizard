@@ -27,6 +27,7 @@ import org.graylog2.database.CollectionName;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
+// TODO should move this class into model
 @AutoValue
 @JsonAutoDetect
 @JsonIgnoreProperties(ignoreUnknown = true)
