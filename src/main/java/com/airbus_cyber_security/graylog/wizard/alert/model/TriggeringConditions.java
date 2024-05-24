@@ -21,6 +21,7 @@ import com.airbus_cyber_security.graylog.wizard.alert.rest.models.FieldRule;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.auto.value.AutoValue;
 
 import javax.annotation.Nullable;
@@ -29,6 +30,7 @@ import java.util.List;
 
 @AutoValue
 @JsonAutoDetect
+@JsonDeserialize(builder = TriggeringConditions.Builder.class)
 public abstract class TriggeringConditions {
     private static final String FIELD_STREAM = "stream";
     private static final String FIELD_PIPELINE = "pipeline";
