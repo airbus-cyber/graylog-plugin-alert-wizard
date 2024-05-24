@@ -309,16 +309,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String userName = getCurrentUser().getName();
         String title = request.getTitle();
         String alertTitle = checkImportPolicyAndGetTitle(title, userContext);
-        String severity = request.getSeverity();
         String alertType = request.getConditionType();
-        String description = request.getDescription();
-        Map<String, Object> conditionParameters = request.conditionParameters();
 
-        String notificationIdentifier = this.notificationService.createNotification(alertTitle, severity, userContext);
+        String notificationIdentifier = this.notificationService.createNotification(alertTitle, request.getSeverity(), userContext);
         AlertPattern pattern = createAlertPattern(notificationIdentifier, request, alertTitle, userContext, userName);
-
-        // TODO can this be done within the createAlertPattern?
-        this.clusterEventBus.post(StreamsChangedEvent.create(pattern.conditions().streamIdentifier()));
 
         AlertRule alertRule = AlertRule.create(
                 alertTitle,
@@ -342,6 +336,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         TriggeringConditions conditions = createTriggeringConditions(request.getStream(), alertTitle, userName);
 
+        // TODO is this necessary? Should it be called just after the stream creation?
+        // And also a second times for the second stream if any?
+        this.clusterEventBus.post(StreamsChangedEvent.create(conditions.streamIdentifier()));
+
         if (alertType.equals("THEN") || alertType.equals("AND")) {
             TriggeringConditions conditions2 = createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName);
             EventProcessorConfig configuration = this.conversions.createCorrelationCondition(alertType, conditions.streamIdentifier(), conditions2.streamIdentifier(), conditionParameters);
@@ -351,11 +349,13 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             TriggeringConditions conditions2 = createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName);
             String eventIdentifier = createEvent(alertTitle, description, notificationIdentifier, alertType, conditionParameters, userContext, conditions);
             String eventIdentifier2 = createSecondEvent(alertTitle, description, notificationIdentifier, conditionParameters, userContext, conditions2.streamIdentifier());
+
             return DisjunctionAlertPattern.builder()
                     .conditions(conditions).conditions2(conditions2).eventIdentifier1(eventIdentifier).eventIdentifier2(eventIdentifier2)
                     .build();
         } else {
             String eventIdentifier = createEvent(alertTitle, description, notificationIdentifier, alertType, conditionParameters, userContext, conditions);
+
             return AggregationAlertPattern.builder().conditions(conditions).eventIdentifier(eventIdentifier).build();
         }
     }
@@ -399,12 +399,12 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             deleteAlertPattern(previousAlertPattern);
             return createAlertPattern(notificationIdentifier, request, title, userContext, userName);
         }
-        TriggeringConditions previousConditions = previousAlertPattern.conditions();
-        TriggeringConditions conditions = updateTriggeringConditions(previousConditions, title, streamConfiguration);
 
         String title2 = title + "#2";
         // TODO increase readability: extract three methods
         if (previousAlertPattern instanceof CorrelationAlertPattern previousPattern) {
+            TriggeringConditions previousConditions = previousPattern.conditions();
+            TriggeringConditions conditions = updateTriggeringConditions(previousConditions, title, streamConfiguration);
             TriggeringConditions previousConditions2 = previousPattern.conditions2();
             TriggeringConditions conditions2 = this.updateTriggeringConditions(previousConditions2, title2, streamConfiguration2);
 
@@ -413,6 +413,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
             return previousPattern.toBuilder().conditions(conditions).build();
         } else if (previousAlertPattern instanceof DisjunctionAlertPattern previousPattern) {
+            TriggeringConditions previousConditions = previousPattern.conditions();
+            TriggeringConditions conditions = updateTriggeringConditions(previousConditions, title, streamConfiguration);
             TriggeringConditions previousConditions2 = previousPattern.conditions2();
             TriggeringConditions conditions2 = this.updateTriggeringConditions(previousConditions2, title2, streamConfiguration2);
 
@@ -420,10 +422,12 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             this.eventDefinitionService.updateEvent(title, request.getDescription(), previousPattern.eventIdentifier1(), configuration);
 
             EventProcessorConfig configuration2 = this.conversions.createAggregationCondition(conditions2.streamIdentifier(), request.conditionParameters());
-            this.eventDefinitionService.updateEvent(title + "#2", request.getDescription(), previousPattern.eventIdentifier2(), configuration2);
+            this.eventDefinitionService.updateEvent(title2, request.getDescription(), previousPattern.eventIdentifier2(), configuration2);
 
             return previousPattern.toBuilder().conditions(conditions).build();
         } else if (previousAlertPattern instanceof AggregationAlertPattern previousPattern) {
+            TriggeringConditions previousConditions = previousPattern.conditions();
+            TriggeringConditions conditions = updateTriggeringConditions(previousConditions, title, streamConfiguration);
             EventProcessorConfig configuration = this.conversions.createCondition(request.getConditionType(), request.conditionParameters(), conditions.streamIdentifier());
             this.eventDefinitionService.updateEvent(title, request.getDescription(), previousPattern.eventIdentifier(), configuration);
 
