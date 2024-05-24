@@ -34,11 +34,16 @@ import javax.validation.constraints.NotNull;
 public abstract class CorrelationAlertPattern implements AlertPattern {
     public static final String FIELD_CONDITIONS1 = "conditions1";
     public static final String FIELD_CONDITIONS2 = "conditions2";
+    public static final String FIELD_EVENT_IDENTIFIER = "event_identifier";
 
     @JsonProperty(FIELD_CONDITIONS1)
     @NotNull
     // TODO rename into conditions1
     public abstract TriggeringConditions conditions();
+
+    @JsonProperty(FIELD_EVENT_IDENTIFIER)
+    @NotNull
+    public abstract String eventIdentifier();
 
     @JsonProperty(FIELD_CONDITIONS2)
     @NotNull
@@ -63,6 +68,9 @@ public abstract class CorrelationAlertPattern implements AlertPattern {
 
         @JsonProperty(FIELD_CONDITIONS2)
         public abstract Builder conditions2(TriggeringConditions conditions);
+
+        @JsonProperty(FIELD_EVENT_IDENTIFIER)
+        public abstract Builder eventIdentifier(String eventIdentifier);
 
         public abstract CorrelationAlertPattern build();
     }

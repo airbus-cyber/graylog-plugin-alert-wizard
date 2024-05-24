@@ -33,10 +33,15 @@ import javax.validation.constraints.NotNull;
 @JsonDeserialize(builder = AggregationAlertPattern.Builder.class)
 public abstract class AggregationAlertPattern implements AlertPattern {
     public static final String FIELD_CONDITIONS = "conditions";
+    public static final String FIELD_EVENT_IDENTIFIER = "event_identifier";
 
     @JsonProperty(FIELD_CONDITIONS)
     @NotNull
     public abstract TriggeringConditions conditions();
+
+    @JsonProperty(FIELD_EVENT_IDENTIFIER)
+    @NotNull
+    public abstract String eventIdentifier();
 
     public static Builder builder() {
         return Builder.create();
@@ -53,6 +58,9 @@ public abstract class AggregationAlertPattern implements AlertPattern {
 
         @JsonProperty(FIELD_CONDITIONS)
         public abstract Builder conditions(TriggeringConditions conditions);
+
+        @JsonProperty(FIELD_EVENT_IDENTIFIER)
+        public abstract Builder eventIdentifier(String eventIdentifier);
 
         public abstract AggregationAlertPattern build();
     }
