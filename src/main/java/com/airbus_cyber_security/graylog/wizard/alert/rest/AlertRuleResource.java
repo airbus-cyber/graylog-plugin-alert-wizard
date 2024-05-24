@@ -314,12 +314,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String notificationIdentifier = this.notificationService.createNotification(alertTitle, severity, userContext);
         AlertPattern pattern = createAlertPattern(notificationIdentifier, request, alertTitle, userContext, userName);
 
-        // TODO this is some temporary complex code which should be removed
-        String eventIdentifier2 = null;
-        if (pattern instanceof DisjunctionAlertPattern disjunctionPattern) {
-            eventIdentifier2 = disjunctionPattern.eventIdentifier2();
-        }
-
         // TODO can this be done within the createAlertPattern?
         this.clusterEventBus.post(StreamsChangedEvent.create(pattern.conditions().streamIdentifier()));
 
@@ -327,7 +321,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 alertTitle,
                 alertType,
                 pattern,
-                eventIdentifier2,
                 notificationIdentifier,
                 DateTime.now(),
                 userName,
@@ -464,17 +457,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         AlertPattern pattern = updateAlertPattern(previousAlert.pattern(), notificationIdentifier, request,
                 previousAlertType, title, userContext, userName);
 
-        // TODO this is some temporary complex code which should be removed
-        String eventIdentifier2 = null;
-        if (pattern instanceof DisjunctionAlertPattern disjunctionPattern) {
-            eventIdentifier2 = disjunctionPattern.eventIdentifier2();
-        }
-
         AlertRule alertRule = AlertRule.create(
                 title,
                 request.getConditionType(),
                 pattern,
-                eventIdentifier2,
                 previousAlert.getNotificationID(),
                 previousAlert.getCreatedAt(),
                 userName,
@@ -538,11 +524,11 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         try {
             AlertRule alertRule = this.alertRuleService.load(alertTitle);
 
+            deleteAlertPattern(alertRule.pattern());
             if (alertRule.getNotificationID() != null && !alertRule.getNotificationID().isEmpty()) {
                 // TODO move this down into AlertRuleUtilsService and remove the use for eventNotificationsResource
                 this.eventNotificationsResource.delete(alertRule.getNotificationID(), userContext);
             }
-            deleteAlertPattern(alertRule.pattern());
         } catch (NotFoundException e) {
             LOG.error("Cannot find alert " + alertTitle, e);
         }

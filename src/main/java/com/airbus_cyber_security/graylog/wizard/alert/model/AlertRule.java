@@ -46,11 +46,6 @@ public abstract class AlertRule {
     @NotNull
     public abstract AlertPattern pattern();
 
-    // TODO remove this field
-    @JsonProperty("event2")
-    @Nullable
-    public abstract String event2();
-
     // TODO rename into notificationIdentifier
     @JsonProperty("notification")
     @Nullable
@@ -75,24 +70,21 @@ public abstract class AlertRule {
                                    @JsonProperty("title") String title,
                                    @JsonProperty("alert_type") String alertType,
                                    @JsonProperty("alert_pattern") AlertPattern pattern,
-                                   @JsonProperty("event2") String eventID2,
                                    @JsonProperty("notification") String notificationID,
                                    @JsonProperty("created_at") DateTime createdAt,
                                    @JsonProperty("creator_user_id") String creatorUserId,
                                    @JsonProperty("last_modified") DateTime lastModified){
-        return create(title, alertType, pattern, eventID2, notificationID, createdAt, creatorUserId, lastModified);
+        return create(title, alertType, pattern, notificationID, createdAt, creatorUserId, lastModified);
     }
 	
 	public static AlertRule create(
             String title,
             String alertType,
             AlertPattern pattern,
-            String eventIdentifier2,
             String notificationID,
             DateTime createdAt,
             String creatorUserId,
             DateTime lastModified) {
-		return new AutoValue_AlertRule(title, alertType, pattern, eventIdentifier2, notificationID, createdAt,
-                creatorUserId, lastModified);
+		return new AutoValue_AlertRule(title, alertType, pattern, notificationID, createdAt, creatorUserId, lastModified);
 	}
 }
