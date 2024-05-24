@@ -505,21 +505,17 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
     private void deleteAlertPattern(AlertPattern alertPattern) {
         if (alertPattern instanceof CorrelationAlertPattern pattern) {
+            deleteTriggeringConditions(pattern.conditions());
+            deleteTriggeringConditions(pattern.conditions2());
             deleteEvent(pattern.eventIdentifier());
-            TriggeringConditions conditions = pattern.conditions();
-            deleteTriggeringConditions(conditions);
-            TriggeringConditions conditions2 = pattern.conditions2();
-            deleteTriggeringConditions(conditions2);
         } else if (alertPattern instanceof DisjunctionAlertPattern pattern) {
+            deleteTriggeringConditions(pattern.conditions());
+            deleteTriggeringConditions(pattern.conditions2());
             deleteEvent(pattern.eventIdentifier1());
-            TriggeringConditions conditions = pattern.conditions();
-            deleteTriggeringConditions(conditions);
-            TriggeringConditions conditions2 = pattern.conditions2();
-            deleteTriggeringConditions(conditions2);
+            deleteEvent(pattern.eventIdentifier2());
         } else if (alertPattern instanceof AggregationAlertPattern pattern) {
+            deleteTriggeringConditions(pattern.conditions());
             deleteEvent(pattern.eventIdentifier());
-            TriggeringConditions conditions = pattern.conditions();
-            deleteTriggeringConditions(conditions);
         }
     }
 
@@ -541,16 +537,12 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         try {
             AlertRule alertRule = this.alertRuleService.load(alertTitle);
-            deleteAlertPattern(alertRule.pattern());
 
-            // Delete Event
-            if (alertRule.event2() != null && !alertRule.event2().isEmpty()) {
-                this.eventDefinitionService.delete(alertRule.event2());
-            }
             if (alertRule.getNotificationID() != null && !alertRule.getNotificationID().isEmpty()) {
                 // TODO move this down into AlertRuleUtilsService and remove the use for eventNotificationsResource
                 this.eventNotificationsResource.delete(alertRule.getNotificationID(), userContext);
             }
+            deleteAlertPattern(alertRule.pattern());
         } catch (NotFoundException e) {
             LOG.error("Cannot find alert " + alertTitle, e);
         }
