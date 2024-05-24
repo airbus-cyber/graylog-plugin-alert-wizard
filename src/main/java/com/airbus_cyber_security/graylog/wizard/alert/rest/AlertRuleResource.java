@@ -149,10 +149,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             parametersCondition = this.conversions.getConditionParameters(event.config());
             TriggeringConditions conditions = pattern.conditions1();
             Stream stream = this.loadStream(conditions.streamIdentifier());
-            alertRuleStream = this.conversions.constructAlertRuleStream(stream, conditions.pipelineFieldRules());
+            alertRuleStream = this.conversions.constructAlertRuleStream(stream, conditions);
             TriggeringConditions conditions2 = pattern.conditions2();
             Stream stream2 = this.loadSecondStream(conditions2.streamIdentifier());
-            alertRuleStream2 = this.conversions.constructSecondAlertRuleStream(stream2, conditions2.pipelineFieldRules());
+            alertRuleStream2 = this.conversions.constructSecondAlertRuleStream(stream2, conditions2);
             if (stream != null) {
                 isDisabled = stream.getDisabled();
             }
@@ -161,10 +161,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             parametersCondition = this.conversions.getConditionParameters(event.config());
             TriggeringConditions conditions = pattern.conditions1();
             Stream stream = this.loadStream(conditions.streamIdentifier());
-            alertRuleStream = this.conversions.constructAlertRuleStream(stream, conditions.pipelineFieldRules());
+            alertRuleStream = this.conversions.constructAlertRuleStream(stream, conditions);
             TriggeringConditions conditions2 = pattern.conditions2();
             Stream stream2 = this.loadSecondStream(conditions2.streamIdentifier());
-            alertRuleStream2 = this.conversions.constructSecondAlertRuleStream(stream2, conditions2.pipelineFieldRules());
+            alertRuleStream2 = this.conversions.constructSecondAlertRuleStream(stream2, conditions2);
             if (stream != null) {
                 isDisabled = stream.getDisabled();
             }
@@ -174,7 +174,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             parametersCondition = this.conversions.getConditionParameters(event.config());
             TriggeringConditions conditions = pattern.conditions();
             Stream stream = this.loadStream(conditions.streamIdentifier());
-            alertRuleStream = this.conversions.constructAlertRuleStream(stream, conditions.pipelineFieldRules());
+            alertRuleStream = this.conversions.constructAlertRuleStream(stream, conditions);
             if (stream != null) {
                 isDisabled = stream.getDisabled();
             }
@@ -276,7 +276,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         List<FieldRule> fieldRulesWithList = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration.getFieldRules());
         Stream stream = this.streamPipelineService.createStream(streamConfiguration, title, userName);
 
-        TriggeringConditions.Builder builder = TriggeringConditions.builder().streamIdentifier(stream.getId()).pipelineFieldRules(fieldRulesWithList);
+        ListOrStreamConditions.Builder builder = ListOrStreamConditions.builder().streamIdentifier(stream.getId()).pipelineFieldRules(fieldRulesWithList);
 
         if (fieldRulesWithList.isEmpty()) {
             return builder.build();
@@ -366,14 +366,16 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.streamPipelineService.updateStream(stream, streamConfiguration, alertTitle);
 
         // update pipeline
-        this.streamPipelineService.deletePipeline(previousConditions.pipelineIdentifier(), previousConditions.pipelineRuleIdentifier());
+        if (previousConditions instanceof ListOrStreamConditions previousListOrStreamConditions) {
+            this.streamPipelineService.deletePipeline(previousListOrStreamConditions.pipelineIdentifier(), previousListOrStreamConditions.pipelineRuleIdentifier());
 
-        for (FieldRule fieldRule: this.nullSafe(previousConditions.pipelineFieldRules())) {
-            this.alertListUtilsService.decrementUsage(fieldRule.getValue());
+            for (FieldRule fieldRule: this.nullSafe(previousListOrStreamConditions.pipelineFieldRules())) {
+                this.alertListUtilsService.decrementUsage(fieldRule.getValue());
+            }
         }
 
         List<FieldRule> fieldRulesWithList = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration.getFieldRules());
-        TriggeringConditions.Builder builder = TriggeringConditions.builder()
+        ListOrStreamConditions.Builder builder = ListOrStreamConditions.builder()
                 .streamIdentifier(previousConditions.streamIdentifier()).pipelineFieldRules(fieldRulesWithList);
         if (fieldRulesWithList.isEmpty()) {
             return builder.build();
@@ -478,13 +480,15 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     }
 
     private void deleteTriggeringConditions(TriggeringConditions conditions) {
-        this.streamPipelineService.deleteStreamFromIdentifier(conditions.streamIdentifier());
-        // TODO is this if really necessary? Try to remove!!!
-        if (conditions.pipelineIdentifier() != null && conditions.pipelineRuleIdentifier() != null) {
-            this.streamPipelineService.deletePipeline(conditions.pipelineIdentifier(), conditions.pipelineRuleIdentifier());
-        }
-        for (FieldRule fieldRule: this.nullSafe(conditions.pipelineFieldRules())) {
-            this.alertListUtilsService.decrementUsage(fieldRule.getValue());
+        if (conditions instanceof ListOrStreamConditions listOrStreamConditions) {
+            this.streamPipelineService.deleteStreamFromIdentifier(listOrStreamConditions.streamIdentifier());
+            // TODO is this if really necessary? Try to remove!!!
+            if (listOrStreamConditions.pipelineIdentifier() != null && listOrStreamConditions.pipelineRuleIdentifier() != null) {
+                this.streamPipelineService.deletePipeline(listOrStreamConditions.pipelineIdentifier(), listOrStreamConditions.pipelineRuleIdentifier());
+            }
+            for (FieldRule fieldRule: this.nullSafe(listOrStreamConditions.pipelineFieldRules())) {
+                this.alertListUtilsService.decrementUsage(fieldRule.getValue());
+            }
         }
     }
 

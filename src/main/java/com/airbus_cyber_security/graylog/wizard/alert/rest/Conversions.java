@@ -17,6 +17,8 @@
 
 package com.airbus_cyber_security.graylog.wizard.alert.rest;
 
+import com.airbus_cyber_security.graylog.wizard.alert.model.ListOrStreamConditions;
+import com.airbus_cyber_security.graylog.wizard.alert.model.TriggeringConditions;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
@@ -243,12 +245,12 @@ public class Conversions {
         }
     }
 
-    AlertRuleStream constructSecondAlertRuleStream(Stream stream, List<FieldRule> secondPipelineFieldRules) {
+    AlertRuleStream constructSecondAlertRuleStream(Stream stream, TriggeringConditions conditions) {
         // TODO should try to remove this check and inline method?
         if (stream == null) {
             return null;
         }
-        return this.constructAlertRuleStream(stream, secondPipelineFieldRules);
+        return this.constructAlertRuleStream(stream, conditions);
     }
 
     private List<FieldRule> getListFieldRule(List<StreamRule> listStreamRule) {
@@ -263,13 +265,17 @@ public class Conversions {
         return listFieldRule;
     }
 
-    AlertRuleStream constructAlertRuleStream(Stream stream, List<FieldRule> pipelineFieldRules) {
+    AlertRuleStream constructAlertRuleStream(Stream stream, TriggeringConditions conditions) {
+        // TODO why is this check necessary?
         if (stream == null) {
             return null;
         }
 
         List<FieldRule> fieldRules = new ArrayList<>();
-        Optional.ofNullable(pipelineFieldRules).ifPresent(fieldRules::addAll);
+        if (conditions instanceof ListOrStreamConditions listOrStreamConditions) {
+            List<FieldRule> pipelineFieldRules = listOrStreamConditions.pipelineFieldRules();
+            Optional.ofNullable(pipelineFieldRules).ifPresent(fieldRules::addAll);
+        }
         Optional.ofNullable(this.getListFieldRule(stream.getStreamRules())).ifPresent(fieldRules::addAll);
         return AlertRuleStream.create(stream.getId(), stream.getMatchingType().toString(), fieldRules);
     }
