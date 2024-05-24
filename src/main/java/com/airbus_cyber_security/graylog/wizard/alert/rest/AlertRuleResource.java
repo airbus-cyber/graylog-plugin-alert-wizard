@@ -375,6 +375,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         // update pipeline
         this.streamPipelineService.deletePipeline(previousConditions.pipelineIdentifier(), previousConditions.pipelineRuleIdentifier());
 
+        for (FieldRule fieldRule: this.nullSafe(previousConditions.pipelineFieldRules())) {
+            this.alertListUtilsService.decrementUsage(fieldRule.getValue());
+        }
+
         List<FieldRule> fieldRulesWithList = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration.getFieldRules());
         if (fieldRulesWithList.isEmpty()) {
             return TriggeringConditions.create(previousConditions.streamIdentifier(),
@@ -386,6 +390,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         PipelineDao pipeline = this.streamPipelineService.createPipeline(alertTitle, streamConfiguration.getMatchingType());
         RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(alertTitle, fieldRulesWithList, stream);
 
+        for (FieldRule fieldRule: fieldRulesWithList) {
+            this.alertListUtilsService.incrementUsage(fieldRule.getValue());
+        }
         return TriggeringConditions.create(previousConditions.streamIdentifier(), pipeline.id(), pipelineRule.id(),
                 fieldRulesWithList);
     }
@@ -408,13 +415,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         if (previousAlertPattern instanceof CorrelationAlertPattern previousPattern) {
             TriggeringConditions previousConditions2 = previousPattern.conditions2();
             TriggeringConditions conditions2 = this.updateTriggeringConditions(previousConditions2, title2, streamConfiguration2);
-            // TODO should move this down into updateTriggeringConditions
-            for (FieldRule fieldRule : this.nullSafe(previousConditions2.pipelineFieldRules())) {
-                this.alertListUtilsService.decrementUsage(fieldRule.getValue());
-            }
-            for (FieldRule fieldRule : this.nullSafe(conditions2.pipelineFieldRules())) {
-                this.alertListUtilsService.incrementUsage(fieldRule.getValue());
-            }
 
             EventProcessorConfig configuration = this.conversions.createCorrelationCondition(alertType, conditions.streamIdentifier(), conditions2.streamIdentifier(), request.conditionParameters());
             this.eventDefinitionService.updateEvent(title, request.getDescription(), previousPattern.eventIdentifier(), configuration);
@@ -422,14 +422,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             return previousPattern.toBuilder().conditions(conditions).build();
         } else if (previousAlertPattern instanceof DisjunctionAlertPattern previousPattern) {
             TriggeringConditions previousConditions2 = previousPattern.conditions2();
-            TriggeringConditions conditions2 = this.updateTriggeringConditions(previousConditions2, title2, streamConfiguration2);
-            // TODO should move this down into updateTriggeringConditions
-            for (FieldRule fieldRule: this.nullSafe(previousConditions2.pipelineFieldRules())) {
-                this.alertListUtilsService.decrementUsage(fieldRule.getValue());
-            }
-            for (FieldRule fieldRule: this.nullSafe(conditions2.pipelineFieldRules())) {
-                this.alertListUtilsService.incrementUsage(fieldRule.getValue());
-            }
+            this.updateTriggeringConditions(previousConditions2, title2, streamConfiguration2);
 
             EventProcessorConfig configuration = this.conversions.createCondition(request.getConditionType(), request.conditionParameters(), conditions.streamIdentifier());
             this.eventDefinitionService.updateEvent(title, request.getDescription(), previousPattern.eventIdentifier1(), configuration);
@@ -470,15 +463,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String previousAlertType = previousAlert.getAlertType();
         AlertPattern pattern = updateAlertPattern(previousAlert.pattern(), notificationIdentifier, request,
                 previousAlertType, title, userContext, userName);
-        // TODO move this down into updateAlertPattern
-        // Decrement list usage
-        for (FieldRule fieldRule: this.nullSafe(pattern.conditions().pipelineFieldRules())) {
-            this.alertListUtilsService.decrementUsage(fieldRule.getValue());
-        }
-        // Increment list usage
-        for (FieldRule fieldRule: this.nullSafe(pattern.conditions().pipelineFieldRules())) {
-            this.alertListUtilsService.incrementUsage(fieldRule.getValue());
-        }
 
         // TODO this is some temporary complex code which should be removed
         TriggeringConditions conditions2 = null;
