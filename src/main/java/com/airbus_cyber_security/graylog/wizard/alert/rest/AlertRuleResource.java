@@ -260,20 +260,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return alertTitle;
     }
 
-    // TODO inline this method
-    private String createEvent(String alertTitle, String description, String notificationIdentifier, String conditionType, Map<String, Object> conditionParameters, UserContext userContext, TriggeringConditions conditions1, TriggeringConditions conditions2) {
-        // TODO this is a code smell.
-        // TODO should rather start with getting the conditionType, then according to its value, should go on performing different kind of creation/update => then there wouldn't be a null
-        String streamIdentifier2 = null;
-        if (conditions2 != null) {
-            streamIdentifier2 = conditions2.streamIdentifier();
-        }
-        EventProcessorConfig configuration;
-        if (conditionType.equals("THEN") || conditionType.equals("AND")) {
-            configuration = this.conversions.createCorrelationCondition(conditionType, conditions1.streamIdentifier(), streamIdentifier2, conditionParameters);
-        } else {
-            configuration = this.conversions.createCondition(conditionType, conditionParameters, conditions1.streamIdentifier());
-        }
+    private String createEvent(String alertTitle, String description, String notificationIdentifier, String alertType, Map<String, Object> conditionParameters, UserContext userContext, TriggeringConditions conditions1) {
+        EventProcessorConfig configuration = this.conversions.createCondition(alertType, conditionParameters, conditions1.streamIdentifier());
         return this.eventDefinitionService.createEvent(alertTitle, description, notificationIdentifier, configuration, userContext);
     }
 
@@ -370,7 +358,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             for (FieldRule fieldRule: this.nullSafe(conditions2.pipelineFieldRules())) {
                 this.alertListUtilsService.incrementUsage(fieldRule.getValue());
             }
-            String eventIdentifier = createEvent(alertTitle, description, notificationIdentifier, alertType, conditionParameters, userContext, conditions, conditions2);
+            EventProcessorConfig configuration = this.conversions.createCorrelationCondition(alertType, conditions.streamIdentifier(), conditions2.streamIdentifier(), conditionParameters);
+            String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, notificationIdentifier, configuration, userContext);
             return CorrelationAlertPattern.builder().conditions(conditions).conditions2(conditions2).eventIdentifier(eventIdentifier).build();
         } else if (alertType.equals("OR")) {
             TriggeringConditions conditions2 = createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName);
@@ -378,10 +367,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             for (FieldRule fieldRule: this.nullSafe(conditions2.pipelineFieldRules())) {
                 this.alertListUtilsService.incrementUsage(fieldRule.getValue());
             }
-            String eventIdentifier = createEvent(alertTitle, description, notificationIdentifier, alertType, conditionParameters, userContext, conditions, conditions2);
+            String eventIdentifier = createEvent(alertTitle, description, notificationIdentifier, alertType, conditionParameters, userContext, conditions);
             return DisjunctionAlertPattern.builder().conditions(conditions).conditions2(conditions2).eventIdentifier1(eventIdentifier).build();
         } else {
-            String eventIdentifier = createEvent(alertTitle, description, notificationIdentifier, alertType, conditionParameters, userContext, conditions, null);
+            String eventIdentifier = createEvent(alertTitle, description, notificationIdentifier, alertType, conditionParameters, userContext, conditions);
             return AggregationAlertPattern.builder().conditions(conditions).eventIdentifier(eventIdentifier).build();
         }
     }
