@@ -30,35 +30,56 @@ import java.util.List;
 @AutoValue
 @JsonAutoDetect
 public abstract class TriggeringConditions {
+    private static final String FIELD_STREAM = "stream";
+    private static final String FIELD_PIPELINE = "pipeline";
+    private static final String FIELD_PIPELINE_RULE_IDENTIFIER = "pipeline_rule";
+    private static final String FIELD_PIPELINE_FIELD_RULES = "pipeline_field_rules";
 
-    @JsonProperty("stream")
+
+    @JsonProperty(FIELD_STREAM)
     @NotNull
     public abstract String streamIdentifier();
 
     // TODO should group these 3 fields into TriggeringConditionsPipeline
-    @JsonProperty("pipeline")
+    @JsonProperty(FIELD_PIPELINE)
     @Nullable
     public abstract String pipelineIdentifier();
 
     // TODO is this really necessary? Can't we get it from the pipeline?
-    @JsonProperty("pipeline_rule")
+    @JsonProperty(FIELD_PIPELINE_RULE_IDENTIFIER)
     @Nullable
     public abstract String pipelineRuleIdentifier();
 
-    @JsonProperty("pipeline_field_rules")
+    @JsonProperty(FIELD_PIPELINE_FIELD_RULES)
     @Nullable
     public abstract List<FieldRule> pipelineFieldRules();
 
-    @JsonCreator
-    public static TriggeringConditions create(@JsonProperty("_id") String objectId,
-                                              @JsonProperty("stream") String streamIdentifier,
-                                              @JsonProperty("pipeline") String pipelineIdentifier,
-                                              @JsonProperty("pipeline_rule") String pipelineRuleIdentifier,
-                                              @JsonProperty("pipeline_field_rules") List<FieldRule> pipelineFieldRules) {
-        return create(streamIdentifier, pipelineIdentifier, pipelineRuleIdentifier, pipelineFieldRules);
+    public static Builder builder() {
+        return Builder.create();
     }
 
-    public static TriggeringConditions create(String streamIdentifier, String pipelineIdentifier, String pipelineRuleIdentifier, List<FieldRule> pipelineFieldRules) {
-        return new AutoValue_TriggeringConditions(streamIdentifier, pipelineIdentifier, pipelineRuleIdentifier, pipelineFieldRules);
+    public abstract Builder toBuilder();
+
+    @AutoValue.Builder
+    public static abstract class Builder {
+        @JsonCreator
+        public static Builder create() {
+            return new AutoValue_TriggeringConditions.Builder();
+        }
+
+        // TODO rename into conditions1
+        @JsonProperty(FIELD_STREAM)
+        public abstract Builder streamIdentifier(String streamIdentifier);
+
+        @JsonProperty(FIELD_PIPELINE)
+        public abstract Builder pipelineIdentifier(String pipelineIdentifier);
+
+        @JsonProperty(FIELD_PIPELINE_RULE_IDENTIFIER)
+        public abstract Builder pipelineRuleIdentifier(String pipelineRuleIdentifier);
+
+        @JsonProperty(FIELD_PIPELINE_FIELD_RULES)
+        public abstract Builder pipelineFieldRules(List<FieldRule> pipelineFieldRules);
+
+        public abstract TriggeringConditions build();
     }
 }

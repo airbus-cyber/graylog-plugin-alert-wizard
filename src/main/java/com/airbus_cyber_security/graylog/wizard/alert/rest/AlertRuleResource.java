@@ -276,8 +276,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         List<FieldRule> fieldRulesWithList = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration.getFieldRules());
         Stream stream = this.streamPipelineService.createStream(streamConfiguration, title, userName);
 
+        TriggeringConditions.Builder builder = TriggeringConditions.builder().streamIdentifier(stream.getId()).pipelineFieldRules(fieldRulesWithList);
+
         if (fieldRulesWithList.isEmpty()) {
-            return TriggeringConditions.create(stream.getId(), null, null, fieldRulesWithList);
+            return builder.build();
         }
 
         PipelineDao pipeline = this.streamPipelineService.createPipeline(title, streamConfiguration.getMatchingType());
@@ -287,7 +289,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
 
-        return TriggeringConditions.create(stream.getId(), pipeline.id(), pipelineRule.id(), fieldRulesWithList);
+        builder.pipelineIdentifier(pipeline.id()).pipelineRuleIdentifier(pipelineRule.id());
+        return builder.build();
     }
 
     @POST
@@ -370,11 +373,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
 
         List<FieldRule> fieldRulesWithList = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration.getFieldRules());
+        TriggeringConditions.Builder builder = TriggeringConditions.builder()
+                .streamIdentifier(previousConditions.streamIdentifier()).pipelineFieldRules(fieldRulesWithList);
         if (fieldRulesWithList.isEmpty()) {
-            return TriggeringConditions.create(previousConditions.streamIdentifier(),
-                    null,
-                    null,
-                    fieldRulesWithList);
+            return builder.build();
         }
 
         PipelineDao pipeline = this.streamPipelineService.createPipeline(alertTitle, streamConfiguration.getMatchingType());
@@ -383,8 +385,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         for (FieldRule fieldRule: fieldRulesWithList) {
             this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
-        return TriggeringConditions.create(previousConditions.streamIdentifier(), pipeline.id(), pipelineRule.id(),
-                fieldRulesWithList);
+        builder.pipelineIdentifier(pipeline.id()).pipelineRuleIdentifier(pipelineRule.id());
+        return builder.build();
     }
 
     private AlertPattern updateAlertPattern(AlertPattern previousAlertPattern, String notificationIdentifier,
