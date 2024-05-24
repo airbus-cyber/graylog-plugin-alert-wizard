@@ -281,6 +281,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         PipelineDao pipeline = this.streamPipelineService.createPipeline(title, streamConfiguration.getMatchingType());
         RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(title, fieldRulesWithList, stream);
 
+        for (FieldRule fieldRule: fieldRulesWithList) {
+            this.alertListUtilsService.incrementUsage(fieldRule.getValue());
+        }
+
         return TriggeringConditions.create(stream.getId(), pipeline.id(), pipelineRule.id(), fieldRulesWithList);
     }
 
@@ -347,26 +351,14 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         Map<String, Object> conditionParameters = request.conditionParameters();
 
         TriggeringConditions conditions = createTriggeringConditions(request.getStream(), alertTitle, userName);
-        // TODO move this code in createTriggeringConditions!!!
-        for (FieldRule fieldRule: this.nullSafe(conditions.pipelineFieldRules())) {
-            this.alertListUtilsService.incrementUsage(fieldRule.getValue());
-        }
 
         if (alertType.equals("THEN") || alertType.equals("AND")) {
             TriggeringConditions conditions2 = createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName);
-            // TODO should move this into createTriggeringConditions method
-            for (FieldRule fieldRule: this.nullSafe(conditions2.pipelineFieldRules())) {
-                this.alertListUtilsService.incrementUsage(fieldRule.getValue());
-            }
             EventProcessorConfig configuration = this.conversions.createCorrelationCondition(alertType, conditions.streamIdentifier(), conditions2.streamIdentifier(), conditionParameters);
             String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, notificationIdentifier, configuration, userContext);
             return CorrelationAlertPattern.builder().conditions(conditions).conditions2(conditions2).eventIdentifier(eventIdentifier).build();
         } else if (alertType.equals("OR")) {
             TriggeringConditions conditions2 = createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName);
-            // TODO should move this into createTriggeringConditions method
-            for (FieldRule fieldRule: this.nullSafe(conditions2.pipelineFieldRules())) {
-                this.alertListUtilsService.incrementUsage(fieldRule.getValue());
-            }
             String eventIdentifier = createEvent(alertTitle, description, notificationIdentifier, alertType, conditionParameters, userContext, conditions);
             return DisjunctionAlertPattern.builder().conditions(conditions).conditions2(conditions2).eventIdentifier1(eventIdentifier).build();
         } else {
