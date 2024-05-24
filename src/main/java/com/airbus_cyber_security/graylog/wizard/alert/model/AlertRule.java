@@ -46,9 +46,8 @@ public abstract class AlertRule {
     @NotNull
     public abstract AlertPattern pattern();
 
-    // TODO can't this be always NotNull?
     @JsonProperty("event")
-    @Nullable
+    @NotNull
     public abstract String event1();
 
     @JsonProperty("event2")
