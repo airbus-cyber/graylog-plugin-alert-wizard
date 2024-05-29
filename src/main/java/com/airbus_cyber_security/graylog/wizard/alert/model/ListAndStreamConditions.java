@@ -27,20 +27,29 @@ import com.google.auto.value.AutoValue;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-// list pipeline -> stream (which is both output and filtering)
+// TODO try to merge all TriggeringConditions with filteringStreamIdentifier, outputStreamIdentifier and pipeline (may be null)
+
+// filtering stream -> list pipeline -> output stream
 @AutoValue
 @JsonAutoDetect
-@JsonDeserialize(builder = ListOrStreamConditions.Builder.class)
-public abstract class ListOrStreamConditions implements TriggeringConditions {
-    private static final String FIELD_STREAM = "stream";
+@JsonDeserialize(builder = ListAndStreamConditions.Builder.class)
+public abstract class ListAndStreamConditions implements TriggeringConditions {
+    private static final String FIELD_FILTERING_STREAM = "filtering_stream";
+    private static final String FIELD_OUTPUT_STREAM = "output_stream";
     private static final String FIELD_PIPELINE = "pipeline";
     private static final String FIELD_PIPELINE_RULE_IDENTIFIER = "pipeline_rule";
     private static final String FIELD_PIPELINE_FIELD_RULES = "pipeline_field_rules";
 
-    @JsonProperty(FIELD_STREAM)
+    // the stream which holds the conditions
+    @JsonProperty(FIELD_FILTERING_STREAM)
     @NotNull
-    public abstract String streamIdentifier();
+    public abstract String filteringStreamIdentifier();
 
+    @JsonProperty(FIELD_OUTPUT_STREAM)
+    @NotNull
+    public abstract String outputStreamIdentifier();
+
+    // TODO extract class Pipeline with the 3 fields pipelineIdentifier, pipelineRuleIdentifier and pipelineFieldRules
     @JsonProperty(FIELD_PIPELINE)
     @NotNull
     public abstract String pipelineIdentifier();
@@ -64,11 +73,14 @@ public abstract class ListOrStreamConditions implements TriggeringConditions {
     public static abstract class Builder {
         @JsonCreator
         public static Builder create() {
-            return new AutoValue_ListOrStreamConditions.Builder();
+            return new AutoValue_ListAndStreamConditions.Builder();
         }
 
-        @JsonProperty(FIELD_STREAM)
-        public abstract Builder streamIdentifier(String streamIdentifier);
+        @JsonProperty(FIELD_FILTERING_STREAM)
+        public abstract Builder filteringStreamIdentifier(String streamIdentifier);
+
+        @JsonProperty(FIELD_OUTPUT_STREAM)
+        public abstract Builder outputStreamIdentifier(String streamIdentifier);
 
         @JsonProperty(FIELD_PIPELINE)
         public abstract Builder pipelineIdentifier(String pipelineIdentifier);
@@ -79,6 +91,6 @@ public abstract class ListOrStreamConditions implements TriggeringConditions {
         @JsonProperty(FIELD_PIPELINE_FIELD_RULES)
         public abstract Builder pipelineFieldRules(List<FieldRule> pipelineFieldRules);
 
-        public abstract ListOrStreamConditions build();
+        public abstract ListAndStreamConditions build();
     }
 }

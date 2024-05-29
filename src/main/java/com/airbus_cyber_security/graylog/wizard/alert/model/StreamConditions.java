@@ -25,6 +25,7 @@ import com.google.auto.value.AutoValue;
 
 import javax.validation.constraints.NotNull;
 
+// no list conditions: only a stream with its filtering conditions
 @AutoValue
 @JsonAutoDetect
 @JsonDeserialize(builder = StreamConditions.Builder.class)

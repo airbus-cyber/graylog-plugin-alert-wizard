@@ -122,7 +122,7 @@ public class StreamPipelineService {
         return rule + ")\n";
     }
 
-    private String createRuleSource(String alertTitle, List<FieldRule> listfieldRule, Stream stream){
+    private String createRuleSource(String alertTitle, List<FieldRule> listfieldRule, String matchingType, Stream targetStream){
         StringBuilder fields = new StringBuilder();
 
         int nbList = 0;
@@ -130,7 +130,7 @@ public class StreamPipelineService {
             if (fieldRule.getType() == 7 || fieldRule.getType() == -7) {
                 if (nbList > 0) {
                     fields.append("  ");
-                    fields.append(stream.getMatchingType());
+                    fields.append(matchingType);
                 }
                 nbList++;
                 boolean negate = (fieldRule.getType() == -7);
@@ -138,14 +138,14 @@ public class StreamPipelineService {
             }
         }
 
-        return "rule \"function " + alertTitle + "\"\nwhen\n" + fields + "then\n  route_to_stream(\"" + alertTitle + "\", \"" + stream.getId() + "\");\nend";
+        return "rule \"function " + alertTitle + "\"\nwhen\n" + fields + "then\n  route_to_stream(\"" + alertTitle + "\", \"" + targetStream.getId() + "\");\nend";
     }
 
-    public RuleDao createPipelineRule(String alertTitle, List<FieldRule> listfieldRule, Stream stream) {
+    public RuleDao createPipelineRule(String alertTitle, List<FieldRule> listfieldRule, String matchingType, Stream targetStream) {
         DateTime now = DateTime.now(DateTimeZone.UTC);
 
         String ruleID = RandomStringUtils.random(RANDOM_COUNT, RANDOM_CHARS);
-        String ruleSource = createRuleSource(alertTitle, listfieldRule, stream);
+        String ruleSource = createRuleSource(alertTitle, listfieldRule, matchingType, targetStream);
         RuleDao cr = RuleDao.create(ruleID, "function " + alertTitle, Description.COMMENT_ALERT_WIZARD, ruleSource, now, now);
 
         return ruleService.save(cr);
@@ -161,24 +161,29 @@ public class StreamPipelineService {
         return "pipeline \""+alertTitle+"\"\nstage 0 match "+match+"\nrule \"function "+alertTitle+"\"\nend";
     }
 
-    public PipelineDao createPipeline(String alertTitle, String matchingType) {
+    public PipelineDao createPipeline(String title, String matchingType) {
+        String inputStreamIdentifier = Stream.DEFAULT_STREAM_ID;
+        return this.createPipeline(title, matchingType, inputStreamIdentifier);
+    }
+
+    public PipelineDao createPipeline(String title, String matchingType, String inputStreamIdentifier) {
         DateTime now = DateTime.now(DateTimeZone.UTC);
 
         String pipelineID = RandomStringUtils.random(RANDOM_COUNT, RANDOM_CHARS);
-        PipelineDao cr = PipelineDao.create(pipelineID, alertTitle, Description.COMMENT_ALERT_WIZARD, createPipelineStringSource(alertTitle, matchingType), now, now);
+        PipelineDao cr = PipelineDao.create(pipelineID, title, Description.COMMENT_ALERT_WIZARD, createPipelineStringSource(title, matchingType), now, now);
         PipelineDao save = pipelineService.save(cr);
 
         Set<String> pipelineIds;
         try {
-            // retrieves the identifiers of the pipelines connected to the default stream
-            pipelineIds = pipelineStreamConnectionsService.load(Stream.DEFAULT_STREAM_ID).pipelineIds();
+            // retrieves the identifiers of the pipelines connected to the input stream
+            pipelineIds = pipelineStreamConnectionsService.load(inputStreamIdentifier).pipelineIds();
         } catch (NotFoundException e) {
             pipelineIds = new HashSet<>();
         }
         // add the identifier of the new pipeline
         pipelineIds.add(save.id());
         // and updates the pipeline connection
-        pipelineStreamConnectionsService.save(PipelineConnections.create(null, Stream.DEFAULT_STREAM_ID, pipelineIds));
+        pipelineStreamConnectionsService.save(PipelineConnections.create(null, inputStreamIdentifier, pipelineIds));
 
         LOG.debug("Created new pipeline {}", save);
         return save;

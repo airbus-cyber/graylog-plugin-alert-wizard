@@ -222,7 +222,6 @@ class Test(TestCase):
         second_event_definition = self._graylog.get_event_definition(second_event_definition_identifier)
         self.assertEqual('new description', second_event_definition['description'])
 
-    @skip
     def test_create_and_alert_rule_with_pipeline_condition_should_not_trigger_event_when_only_field_matches_issue119(self):
         # Create a list (for example the list "users" with 3 users : toto, tata, titi)
         list_title = 'users'

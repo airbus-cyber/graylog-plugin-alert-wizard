@@ -134,6 +134,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         if (conditions instanceof ListOrStreamConditions listOrStreamConditions) {
             return listOrStreamConditions.streamIdentifier();
         }
+        if (conditions instanceof ListAndStreamConditions listAndStreamConditions) {
+            return listAndStreamConditions.outputStreamIdentifier();
+        }
         throw new RuntimeException("Unreachable code");
     }
 
@@ -144,6 +147,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
         if (conditions instanceof ListOrStreamConditions listOrStreamConditions) {
             return listOrStreamConditions.streamIdentifier();
+        }
+        if (conditions instanceof ListAndStreamConditions listAndStreamConditions) {
+            return listAndStreamConditions.filteringStreamIdentifier();
         }
         throw new RuntimeException("Unreachable code");
     }
@@ -280,35 +286,47 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return alertTitle;
     }
 
-    private TriggeringConditions createTriggeringConditionsFromStream(AlertRuleStream streamConfiguration, String title, Stream stream) {
+    private TriggeringConditions createTriggeringConditionsFromStream(AlertRuleStream streamConfiguration, String title,
+                                                                      Stream filteringStream, String userName) throws ValidationException {
         List<FieldRule> fieldRulesWithList = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration.getFieldRules());
 
         if (fieldRulesWithList.isEmpty()) {
-            StreamConditions.Builder builder = StreamConditions.builder().streamIdentifier(stream.getId());
+            StreamConditions.Builder builder = StreamConditions.builder().streamIdentifier(filteringStream.getId());
             return builder.build();
         }
-
-        String matchingType = streamConfiguration.getMatchingType();
-        PipelineDao pipeline = this.streamPipelineService.createPipeline(title, matchingType);
-        RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(title, fieldRulesWithList, stream);
 
         for (FieldRule fieldRule: fieldRulesWithList) {
             this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
 
-        ListOrStreamConditions.Builder builder = ListOrStreamConditions.builder()
-                .streamIdentifier(stream.getId()).pipelineFieldRules(fieldRulesWithList)
-                .pipelineIdentifier(pipeline.id()).pipelineRuleIdentifier(pipelineRule.id());
-        return builder.build();
+        String matchingType = streamConfiguration.getMatchingType();
+        if (matchingType.equals("AND")) {
+            PipelineDao pipeline = this.streamPipelineService.createPipeline(title, matchingType, filteringStream.getId());
+            Stream outputStream = this.streamPipelineService.createStream(matchingType, title + " output", userName);
+            RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(title, fieldRulesWithList, matchingType, outputStream);
+            ListAndStreamConditions.Builder builder = ListAndStreamConditions.builder()
+                    .filteringStreamIdentifier(filteringStream.getId()).pipelineFieldRules(fieldRulesWithList)
+                    .outputStreamIdentifier(outputStream.getId())
+                    .pipelineIdentifier(pipeline.id()).pipelineRuleIdentifier(pipelineRule.id());
+            return builder.build();
+        } else {
+            PipelineDao pipeline = this.streamPipelineService.createPipeline(title, matchingType);
+            RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(title, fieldRulesWithList, matchingType, filteringStream);
+            ListOrStreamConditions.Builder builder = ListOrStreamConditions.builder()
+                    .streamIdentifier(filteringStream.getId()).pipelineFieldRules(fieldRulesWithList)
+                    .pipelineIdentifier(pipeline.id()).pipelineRuleIdentifier(pipelineRule.id());
+            return builder.build();
+        }
     }
 
     private TriggeringConditions createTriggeringConditions(AlertRuleStream streamConfiguration, String title, String userName) throws ValidationException {
         Stream stream = this.streamPipelineService.createStream(streamConfiguration.getMatchingType(), title, userName);
         this.streamPipelineService.createStreamRule(streamConfiguration.getFieldRules(), stream.getId());
-        return createTriggeringConditionsFromStream(streamConfiguration, title, stream);
+        return createTriggeringConditionsFromStream(streamConfiguration, title, stream, userName);
     }
 
-    private TriggeringConditions updateTriggeringConditions(TriggeringConditions previousConditions, String alertTitle, AlertRuleStream streamConfiguration) throws ValidationException {
+    private TriggeringConditions updateTriggeringConditions(TriggeringConditions previousConditions, String alertTitle,
+                                                            AlertRuleStream streamConfiguration, String userName) throws ValidationException {
         // update filtering stream
         String streamIdentifier = this.getTriggeringConditionsFilteringStreamIdentifier(previousConditions);
         Stream stream = this.loadStream(streamIdentifier);
@@ -316,14 +334,14 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         // delete previous pipeline
         if (previousConditions instanceof ListOrStreamConditions previousListOrStreamConditions) {
-            this.streamPipelineService.deletePipeline(previousListOrStreamConditions.pipelineIdentifier(), previousListOrStreamConditions.pipelineRuleIdentifier());
-
-            for (FieldRule fieldRule: this.nullSafe(previousListOrStreamConditions.pipelineFieldRules())) {
-                this.alertListUtilsService.decrementUsage(fieldRule.getValue());
-            }
+            deletePipeline(previousListOrStreamConditions);
+        }
+        if (previousConditions instanceof  ListAndStreamConditions previousListAndStreamConditions) {
+            this.streamPipelineService.deleteStreamFromIdentifier(previousListAndStreamConditions.outputStreamIdentifier());
+            deletePipeline(previousListAndStreamConditions);
         }
 
-        return createTriggeringConditionsFromStream(streamConfiguration, alertTitle, stream);
+        return createTriggeringConditionsFromStream(streamConfiguration, alertTitle, stream, userName);
     }
 
     @POST
@@ -409,12 +427,12 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
 
         String title2 = title + "#2";
-        // TODO increase readability: extract three methods
+        // TODO increase readability: extract three methods?
         if (previousAlertPattern instanceof CorrelationAlertPattern previousPattern) {
             TriggeringConditions previousConditions = previousPattern.conditions1();
-            TriggeringConditions conditions = updateTriggeringConditions(previousConditions, title, streamConfiguration);
+            TriggeringConditions conditions = updateTriggeringConditions(previousConditions, title, streamConfiguration, userName);
             TriggeringConditions previousConditions2 = previousPattern.conditions2();
-            TriggeringConditions conditions2 = this.updateTriggeringConditions(previousConditions2, title2, streamConfiguration2);
+            TriggeringConditions conditions2 = this.updateTriggeringConditions(previousConditions2, title2, streamConfiguration2, userName);
 
             String streamIdentifier = getTriggeringConditionsOutputStreamIdentifier(conditions);
             String streamIdentifier2 = getTriggeringConditionsOutputStreamIdentifier(conditions2);
@@ -424,9 +442,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             return previousPattern.toBuilder().conditions1(conditions).build();
         } else if (previousAlertPattern instanceof DisjunctionAlertPattern previousPattern) {
             TriggeringConditions previousConditions = previousPattern.conditions1();
-            TriggeringConditions conditions = updateTriggeringConditions(previousConditions, title, streamConfiguration);
+            TriggeringConditions conditions = updateTriggeringConditions(previousConditions, title, streamConfiguration, userName);
             TriggeringConditions previousConditions2 = previousPattern.conditions2();
-            TriggeringConditions conditions2 = this.updateTriggeringConditions(previousConditions2, title2, streamConfiguration2);
+            TriggeringConditions conditions2 = this.updateTriggeringConditions(previousConditions2, title2, streamConfiguration2, userName);
 
             String streamIdentifier = this.getTriggeringConditionsOutputStreamIdentifier(conditions);
             EventProcessorConfig configuration = this.conversions.createEventConfiguration(request.getConditionType(), request.conditionParameters(), streamIdentifier);
@@ -439,7 +457,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             return previousPattern.toBuilder().conditions1(conditions).build();
         } else if (previousAlertPattern instanceof AggregationAlertPattern previousPattern) {
             TriggeringConditions previousConditions = previousPattern.conditions();
-            TriggeringConditions conditions = updateTriggeringConditions(previousConditions, title, streamConfiguration);
+            TriggeringConditions conditions = updateTriggeringConditions(previousConditions, title, streamConfiguration, userName);
             String streamIdentifier = this.getTriggeringConditionsOutputStreamIdentifier(conditions);
             EventProcessorConfig configuration = this.conversions.createEventConfiguration(request.getConditionType(), request.conditionParameters(), streamIdentifier);
             this.eventDefinitionService.updateEvent(title, request.getDescription(), previousPattern.eventIdentifier(), configuration);
@@ -495,10 +513,25 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             this.streamPipelineService.deleteStreamFromIdentifier(streamConditions.streamIdentifier());
         } else if (conditions instanceof ListOrStreamConditions listOrStreamConditions) {
             this.streamPipelineService.deleteStreamFromIdentifier(listOrStreamConditions.streamIdentifier());
-            this.streamPipelineService.deletePipeline(listOrStreamConditions.pipelineIdentifier(), listOrStreamConditions.pipelineRuleIdentifier());
-            for (FieldRule fieldRule: this.nullSafe(listOrStreamConditions.pipelineFieldRules())) {
-                this.alertListUtilsService.decrementUsage(fieldRule.getValue());
-            }
+            deletePipeline(listOrStreamConditions);
+        } else if (conditions instanceof ListAndStreamConditions listAndStreamConditions) {
+            this.streamPipelineService.deleteStreamFromIdentifier(listAndStreamConditions.filteringStreamIdentifier());
+            this.streamPipelineService.deleteStreamFromIdentifier(listAndStreamConditions.outputStreamIdentifier());
+            deletePipeline(listAndStreamConditions);
+        }
+    }
+
+    private void deletePipeline(ListOrStreamConditions listOrStreamConditions) {
+        this.streamPipelineService.deletePipeline(listOrStreamConditions.pipelineIdentifier(), listOrStreamConditions.pipelineRuleIdentifier());
+        for (FieldRule fieldRule: this.nullSafe(listOrStreamConditions.pipelineFieldRules())) {
+            this.alertListUtilsService.decrementUsage(fieldRule.getValue());
+        }
+    }
+
+    private void deletePipeline(ListAndStreamConditions listAndStreamConditions) {
+        this.streamPipelineService.deletePipeline(listAndStreamConditions.pipelineIdentifier(), listAndStreamConditions.pipelineRuleIdentifier());
+        for (FieldRule fieldRule: this.nullSafe(listAndStreamConditions.pipelineFieldRules())) {
+            this.alertListUtilsService.decrementUsage(fieldRule.getValue());
         }
     }
 
