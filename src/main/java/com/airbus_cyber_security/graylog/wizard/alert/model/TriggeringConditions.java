@@ -17,7 +17,6 @@
 
 package com.airbus_cyber_security.graylog.wizard.alert.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import javax.validation.constraints.NotNull;
