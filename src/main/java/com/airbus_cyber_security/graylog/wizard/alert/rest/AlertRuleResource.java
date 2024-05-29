@@ -414,7 +414,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             TriggeringConditions previousConditions2 = previousPattern.conditions2();
             TriggeringConditions conditions2 = this.updateTriggeringConditions(previousConditions2, title2, streamConfiguration2);
 
-            EventProcessorConfig configuration = this.conversions.createCorrelationCondition(alertType, conditions.streamIdentifier(), conditions2.streamIdentifier(), request.conditionParameters());
+            String streamIdentifier = getTriggeringConditionsOutputStreamIdentifier(conditions);
+            String streamIdentifier2 = getTriggeringConditionsOutputStreamIdentifier(conditions2);
+            EventProcessorConfig configuration = this.conversions.createCorrelationCondition(alertType, streamIdentifier, streamIdentifier2, request.conditionParameters());
             this.eventDefinitionService.updateEvent(title, request.getDescription(), previousPattern.eventIdentifier(), configuration);
 
             return previousPattern.toBuilder().conditions1(conditions).build();
@@ -424,17 +426,20 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             TriggeringConditions previousConditions2 = previousPattern.conditions2();
             TriggeringConditions conditions2 = this.updateTriggeringConditions(previousConditions2, title2, streamConfiguration2);
 
-            EventProcessorConfig configuration = this.conversions.createEventConfiguration(request.getConditionType(), request.conditionParameters(), conditions.streamIdentifier());
+            String streamIdentifier = this.getTriggeringConditionsOutputStreamIdentifier(conditions);
+            EventProcessorConfig configuration = this.conversions.createEventConfiguration(request.getConditionType(), request.conditionParameters(), streamIdentifier);
             this.eventDefinitionService.updateEvent(title, request.getDescription(), previousPattern.eventIdentifier1(), configuration);
 
-            EventProcessorConfig configuration2 = this.conversions.createAggregationCondition(conditions2.streamIdentifier(), request.conditionParameters());
+            String streamIdentifier2 = this.getTriggeringConditionsOutputStreamIdentifier(conditions2);
+            EventProcessorConfig configuration2 = this.conversions.createAggregationCondition(streamIdentifier2, request.conditionParameters());
             this.eventDefinitionService.updateEvent(title2, request.getDescription(), previousPattern.eventIdentifier2(), configuration2);
 
             return previousPattern.toBuilder().conditions1(conditions).build();
         } else if (previousAlertPattern instanceof AggregationAlertPattern previousPattern) {
             TriggeringConditions previousConditions = previousPattern.conditions();
             TriggeringConditions conditions = updateTriggeringConditions(previousConditions, title, streamConfiguration);
-            EventProcessorConfig configuration = this.conversions.createEventConfiguration(request.getConditionType(), request.conditionParameters(), conditions.streamIdentifier());
+            String streamIdentifier = this.getTriggeringConditionsOutputStreamIdentifier(conditions);
+            EventProcessorConfig configuration = this.conversions.createEventConfiguration(request.getConditionType(), request.conditionParameters(), streamIdentifier);
             this.eventDefinitionService.updateEvent(title, request.getDescription(), previousPattern.eventIdentifier(), configuration);
 
             return previousPattern.toBuilder().conditions(conditions).build();

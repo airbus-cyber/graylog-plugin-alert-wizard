@@ -19,12 +19,7 @@ package com.airbus_cyber_security.graylog.wizard.alert.model;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import javax.validation.constraints.NotNull;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
 public interface TriggeringConditions {
-
-    // this is the output stream identifier
-    @NotNull
-    String streamIdentifier();
 }
