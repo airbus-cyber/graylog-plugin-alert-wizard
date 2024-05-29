@@ -17,8 +17,6 @@
 
 package com.airbus_cyber_security.graylog.wizard.alert.business;
 
-import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRule;
-import com.airbus_cyber_security.graylog.wizard.alert.model.TriggeringConditions;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.database.Description;
@@ -88,7 +86,7 @@ public class StreamPipelineService {
         return (fieldRule.getType() == -7 || fieldRule.getType() == 7);
     }
 
-    private void createStreamRule(List<FieldRule> fieldRules, String streamID) throws ValidationException {
+    public void createStreamRule(List<FieldRule> fieldRules, String streamID) throws ValidationException {
         for (FieldRule fieldRule: fieldRules) {
             if (isListFieldRule(fieldRule)) {
                 continue;
@@ -195,20 +193,17 @@ public class StreamPipelineService {
         }
     }
 
-    public Stream createStream(AlertRuleStream alertRuleStream, String title, String userName) throws ValidationException {
+    public Stream createStream(String matchingType, String title, String userName) throws ValidationException {
         LOG.debug("Create Stream: " + title);
-        CreateStreamRequest cr = CreateStreamRequest.create(title, Description.COMMENT_ALERT_WIZARD,
-                Collections.emptyList(), "", alertRuleStream.getMatchingType(), false, indexSetID);
-        Stream stream = this.streamService.create(cr, userName);
+        CreateStreamRequest request = CreateStreamRequest.create(title, Description.COMMENT_ALERT_WIZARD,
+                Collections.emptyList(), "", matchingType, false, indexSetID);
+        Stream stream = this.streamService.create(request, userName);
         stream.setDisabled(false);
 
         if (!stream.getIndexSet().getConfig().isWritable()) {
             throw new BadRequestException("Assigned index set must be writable!");
         }
-        String streamID = this.streamService.save(stream);
-
-        // Create stream rules.
-        createStreamRule(alertRuleStream.getFieldRules(), streamID);
+        this.streamService.save(stream);
 
         return stream;
     }

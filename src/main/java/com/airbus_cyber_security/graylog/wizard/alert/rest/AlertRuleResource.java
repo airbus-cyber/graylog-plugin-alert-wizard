@@ -288,7 +288,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             return builder.build();
         }
 
-        PipelineDao pipeline = this.streamPipelineService.createPipeline(title, streamConfiguration.getMatchingType());
+        String matchingType = streamConfiguration.getMatchingType();
+        PipelineDao pipeline = this.streamPipelineService.createPipeline(title, matchingType);
         RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(title, fieldRulesWithList, stream);
 
         for (FieldRule fieldRule: fieldRulesWithList) {
@@ -302,7 +303,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     }
 
     private TriggeringConditions createTriggeringConditions(AlertRuleStream streamConfiguration, String title, String userName) throws ValidationException {
-        Stream stream = this.streamPipelineService.createStream(streamConfiguration, title, userName);
+        Stream stream = this.streamPipelineService.createStream(streamConfiguration.getMatchingType(), title, userName);
+        this.streamPipelineService.createStreamRule(streamConfiguration.getFieldRules(), stream.getId());
         return createTriggeringConditionsFromStream(streamConfiguration, title, stream);
     }
 
