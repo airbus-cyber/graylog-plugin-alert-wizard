@@ -44,6 +44,7 @@ public abstract class AlertRuleRequest {
     public abstract String getDescription();
 
     // TODO should be an enum. Possible values: COUNT, GROUP_DISTINCT, STATISTICAL, AND, THEN, OR
+    // TODO: is it possible to have enums instead (see for instance org.graylog.enterprise.EnterpriseLicenseInfo)
     @JsonProperty("condition_type")
     @NotNull
     public abstract String getConditionType();

@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.auto.value.AutoValue;
 import org.graylog2.database.CollectionName;
+import org.graylog2.plugin.streams.Stream;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
@@ -42,10 +43,9 @@ public abstract class AlertRuleStream {
     public abstract String getID();
 
     // the way field rules are to be combined: either "AND" or "OR"
-    // TODO: is it possible to have enums instead (see for instance org.graylog.enterprise.EnterpriseLicenseInfo)
     @JsonProperty("matching_type")
     @NotNull
-    public abstract String getMatchingType();
+    public abstract Stream.MatchingType getMatchingType();
     
     @JsonProperty("field_rule")
     @Nullable
@@ -54,7 +54,7 @@ public abstract class AlertRuleStream {
 
     @JsonCreator
     public static AlertRuleStream create(@JsonProperty("id") String id,
-                                         @JsonProperty("matching_type") String matchingType,
+                                         @JsonProperty("matching_type") Stream.MatchingType matchingType,
                                          @JsonProperty("field_rule") List<FieldRule> fieldRules){
         return new AutoValue_AlertRuleStream(id, matchingType, fieldRules);
     }

@@ -122,7 +122,7 @@ public class StreamPipelineService {
         return rule + ")\n";
     }
 
-    private String createRuleSource(String alertTitle, List<FieldRule> listfieldRule, String matchingType, Stream targetStream){
+    private String createRuleSource(String alertTitle, List<FieldRule> listfieldRule, Stream.MatchingType matchingType, Stream targetStream){
         StringBuilder fields = new StringBuilder();
 
         int nbList = 0;
@@ -130,7 +130,7 @@ public class StreamPipelineService {
             if (fieldRule.getType() == 7 || fieldRule.getType() == -7) {
                 if (nbList > 0) {
                     fields.append("  ");
-                    fields.append(matchingType);
+                    fields.append(matchingType.name());
                 }
                 nbList++;
                 boolean negate = (fieldRule.getType() == -7);
@@ -141,7 +141,7 @@ public class StreamPipelineService {
         return "rule \"function " + alertTitle + "\"\nwhen\n" + fields + "then\n  route_to_stream(\"" + alertTitle + "\", \"" + targetStream.getId() + "\");\nend";
     }
 
-    public RuleDao createPipelineRule(String alertTitle, List<FieldRule> listfieldRule, String matchingType, Stream targetStream) {
+    public RuleDao createPipelineRule(String alertTitle, List<FieldRule> listfieldRule, Stream.MatchingType matchingType, Stream targetStream) {
         DateTime now = DateTime.now(DateTimeZone.UTC);
 
         String ruleID = RandomStringUtils.random(RANDOM_COUNT, RANDOM_CHARS);
@@ -151,9 +151,9 @@ public class StreamPipelineService {
         return ruleService.save(cr);
     }
 
-    private String createPipelineStringSource(String alertTitle, String matchingType) {
+    private String createPipelineStringSource(String alertTitle, Stream.MatchingType matchingType) {
         String match;
-        if (matchingType.equals("OR")) {
+        if (matchingType.equals(Stream.MatchingType.OR)) {
             match="either";
         } else {
             match="all";
@@ -161,12 +161,12 @@ public class StreamPipelineService {
         return "pipeline \""+alertTitle+"\"\nstage 0 match "+match+"\nrule \"function "+alertTitle+"\"\nend";
     }
 
-    public PipelineDao createPipeline(String title, String matchingType) {
+    public PipelineDao createPipeline(String title, Stream.MatchingType matchingType) {
         String inputStreamIdentifier = Stream.DEFAULT_STREAM_ID;
         return this.createPipeline(title, matchingType, inputStreamIdentifier);
     }
 
-    public PipelineDao createPipeline(String title, String matchingType, String inputStreamIdentifier) {
+    public PipelineDao createPipeline(String title, Stream.MatchingType matchingType, String inputStreamIdentifier) {
         DateTime now = DateTime.now(DateTimeZone.UTC);
 
         String pipelineID = RandomStringUtils.random(RANDOM_COUNT, RANDOM_CHARS);
@@ -198,10 +198,10 @@ public class StreamPipelineService {
         }
     }
 
-    public Stream createStream(String matchingType, String title, String userName) throws ValidationException {
+    public Stream createStream(Stream.MatchingType matchingType, String title, String userName) throws ValidationException {
         LOG.debug("Create Stream: " + title);
         CreateStreamRequest request = CreateStreamRequest.create(title, Description.COMMENT_ALERT_WIZARD,
-                Collections.emptyList(), "", matchingType, false, indexSetID);
+                Collections.emptyList(), "", matchingType.name(), false, indexSetID);
         Stream stream = this.streamService.create(request, userName);
         stream.setDisabled(false);
 
@@ -218,7 +218,7 @@ public class StreamPipelineService {
         stream.setTitle(title);
         if (alertRuleStream.getMatchingType() != null) {
             try {
-                stream.setMatchingType(Stream.MatchingType.valueOf(alertRuleStream.getMatchingType()));
+                stream.setMatchingType(alertRuleStream.getMatchingType());
             } catch (IllegalArgumentException e) {
                 throw new BadRequestException("Invalid matching type '" + alertRuleStream.getMatchingType()
                         + "' specified. Should be one of: " + Arrays.toString(Stream.MatchingType.values()));

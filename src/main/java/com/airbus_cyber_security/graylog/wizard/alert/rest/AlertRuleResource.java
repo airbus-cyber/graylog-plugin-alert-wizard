@@ -299,8 +299,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
 
-        String matchingType = streamConfiguration.getMatchingType();
-        if (matchingType.equals("AND")) {
+        Stream.MatchingType matchingType = streamConfiguration.getMatchingType();
+        if (matchingType.equals(Stream.MatchingType.AND)) {
             PipelineDao pipeline = this.streamPipelineService.createPipeline(title, matchingType, filteringStream.getId());
             Stream outputStream = this.streamPipelineService.createStream(matchingType, title + " output", userName);
             RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(title, fieldRulesWithList, matchingType, outputStream);

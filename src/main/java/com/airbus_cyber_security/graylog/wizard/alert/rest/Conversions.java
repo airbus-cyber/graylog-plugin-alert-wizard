@@ -158,7 +158,7 @@ public class Conversions {
     }
 
     private boolean isValidStream(AlertRuleStream stream) {
-        if (stream.getMatchingType().equals("AND") || stream.getMatchingType().equals("OR")) {
+        if (stream.getMatchingType().equals(Stream.MatchingType.AND) || stream.getMatchingType().equals(Stream.MatchingType.OR)) {
             for (FieldRule fieldRule: stream.getFieldRules()) {
                 if (fieldRule.getField() == null || fieldRule.getField().isEmpty() ||
                         fieldRule.getType() < -7 || fieldRule.getType() > 7) {
@@ -270,7 +270,7 @@ public class Conversions {
             Optional.ofNullable(pipelineFieldRules).ifPresent(fieldRules::addAll);
         }
         Optional.ofNullable(this.getListFieldRule(stream.getStreamRules())).ifPresent(fieldRules::addAll);
-        return AlertRuleStream.create(stream.getId(), stream.getMatchingType().toString(), fieldRules);
+        return AlertRuleStream.create(stream.getId(), stream.getMatchingType(), fieldRules);
     }
 
     private String convertThresholdTypeToCorrelation(String thresholdType) {

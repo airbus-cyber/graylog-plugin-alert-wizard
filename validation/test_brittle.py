@@ -53,6 +53,7 @@ class TestBrittle(TestCase):
                 # TODO: try to make this code more readable
                 for i in range(60):
                     events_count = self._graylog.get_events_count()
+                    print(f'events count: {events_count}')
                     if events_count == 1:
                         return
                     time.sleep(1)
