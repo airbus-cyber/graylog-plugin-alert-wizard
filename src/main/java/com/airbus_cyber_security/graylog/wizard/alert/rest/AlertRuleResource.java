@@ -276,9 +276,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         List<FieldRule> fieldRulesWithList = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration.getFieldRules());
         Stream stream = this.streamPipelineService.createStream(streamConfiguration, title, userName);
 
-        ListOrStreamConditions.Builder builder = ListOrStreamConditions.builder().streamIdentifier(stream.getId()).pipelineFieldRules(fieldRulesWithList);
-
         if (fieldRulesWithList.isEmpty()) {
+            StreamConditions.Builder builder = StreamConditions.builder().streamIdentifier(stream.getId());
             return builder.build();
         }
 
@@ -289,7 +288,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
 
-        builder.pipelineIdentifier(pipeline.id()).pipelineRuleIdentifier(pipelineRule.id());
+        ListOrStreamConditions.Builder builder = ListOrStreamConditions.builder()
+                .streamIdentifier(stream.getId()).pipelineFieldRules(fieldRulesWithList)
+                .pipelineIdentifier(pipeline.id()).pipelineRuleIdentifier(pipelineRule.id());
         return builder.build();
     }
 
@@ -375,9 +376,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
 
         List<FieldRule> fieldRulesWithList = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration.getFieldRules());
-        ListOrStreamConditions.Builder builder = ListOrStreamConditions.builder()
-                .streamIdentifier(previousConditions.streamIdentifier()).pipelineFieldRules(fieldRulesWithList);
         if (fieldRulesWithList.isEmpty()) {
+            StreamConditions.Builder builder = StreamConditions.builder().streamIdentifier(previousConditions.streamIdentifier());
             return builder.build();
         }
 
@@ -387,7 +387,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         for (FieldRule fieldRule: fieldRulesWithList) {
             this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
-        builder.pipelineIdentifier(pipeline.id()).pipelineRuleIdentifier(pipelineRule.id());
+        ListOrStreamConditions.Builder builder = ListOrStreamConditions.builder()
+                .streamIdentifier(previousConditions.streamIdentifier()).pipelineFieldRules(fieldRulesWithList)
+                .pipelineIdentifier(pipeline.id()).pipelineRuleIdentifier(pipelineRule.id());
         return builder.build();
     }
 
@@ -480,7 +482,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     }
 
     private void deleteTriggeringConditions(TriggeringConditions conditions) {
-        if (conditions instanceof ListOrStreamConditions listOrStreamConditions) {
+        if (conditions instanceof StreamConditions streamConditions) {
+            this.streamPipelineService.deleteStreamFromIdentifier(streamConditions.streamIdentifier());
+        } else if (conditions instanceof ListOrStreamConditions listOrStreamConditions) {
             this.streamPipelineService.deleteStreamFromIdentifier(listOrStreamConditions.streamIdentifier());
             // TODO is this if really necessary? Try to remove!!!
             if (listOrStreamConditions.pipelineIdentifier() != null && listOrStreamConditions.pipelineRuleIdentifier() != null) {
