@@ -228,7 +228,7 @@ public class StreamPipelineService {
 
         //TODO do it better (don't destroy if update)
         // Destroy existing stream rules
-        for (StreamRule streamRule:stream.getStreamRules()) {
+        for (StreamRule streamRule: stream.getStreamRules()) {
             this.streamRuleService.destroy(streamRule);
         }
         // Create stream rules.

@@ -347,7 +347,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         if (alertType.equals("THEN") || alertType.equals("AND")) {
             TriggeringConditions conditions2 = createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName);
-            EventProcessorConfig configuration = this.conversions.createCorrelationCondition(alertType, conditions.streamIdentifier(), conditions2.streamIdentifier(), conditionParameters);
+            String streamIdentifier = getTriggeringConditionsOutputStreamIdentifier(conditions);
+            String streamIdentifier2 = getTriggeringConditionsOutputStreamIdentifier(conditions2);
+            EventProcessorConfig configuration = this.conversions.createCorrelationCondition(alertType, streamIdentifier, streamIdentifier2, conditionParameters);
             String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, notificationIdentifier, configuration, userContext);
             return CorrelationAlertPattern.builder().conditions1(conditions).conditions2(conditions2).eventIdentifier(eventIdentifier).build();
         } else if (alertType.equals("OR")) {
@@ -355,7 +357,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             String streamIdentifier = this.getTriggeringConditionsOutputStreamIdentifier(conditions);
             EventProcessorConfig configuration = this.conversions.createAggregationCondition(streamIdentifier, conditionParameters);
             String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, notificationIdentifier, configuration, userContext);
-            String streamIdentifier2 = conditions2.streamIdentifier();
+            String streamIdentifier2 = this.getTriggeringConditionsOutputStreamIdentifier(conditions2);
             EventProcessorConfig configuration2 = this.conversions.createAggregationCondition(streamIdentifier2, conditionParameters);
             String eventIdentifier2 = this.eventDefinitionService.createEvent(alertTitle + "#2", description, notificationIdentifier, configuration2, userContext);
 
