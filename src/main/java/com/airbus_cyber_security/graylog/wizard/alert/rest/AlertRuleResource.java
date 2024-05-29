@@ -337,10 +337,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         TriggeringConditions conditions = createTriggeringConditions(request.getStream(), alertTitle, userName);
 
-        // TODO is this necessary? Should it be called just after the stream creation?
-        // And also a second times for the second stream if any?
-        this.clusterEventBus.post(StreamsChangedEvent.create(conditions.streamIdentifier()));
-
         if (alertType.equals("THEN") || alertType.equals("AND")) {
             TriggeringConditions conditions2 = createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName);
             EventProcessorConfig configuration = this.conversions.createCorrelationCondition(alertType, conditions.streamIdentifier(), conditions2.streamIdentifier(), conditionParameters);
