@@ -42,16 +42,16 @@ public abstract class ListOrStreamConditions implements TriggeringConditions {
     public abstract String streamIdentifier();
 
     @JsonProperty(FIELD_PIPELINE)
-    @Nullable
+    @NotNull
     public abstract String pipelineIdentifier();
 
     // TODO is this really necessary? Can't we get it from the pipeline?
     @JsonProperty(FIELD_PIPELINE_RULE_IDENTIFIER)
-    @Nullable
+    @NotNull
     public abstract String pipelineRuleIdentifier();
 
     @JsonProperty(FIELD_PIPELINE_FIELD_RULES)
-    @Nullable
+    @NotNull
     public abstract List<FieldRule> pipelineFieldRules();
 
     public static Builder builder() {
@@ -67,7 +67,6 @@ public abstract class ListOrStreamConditions implements TriggeringConditions {
             return new AutoValue_ListOrStreamConditions.Builder();
         }
 
-        // TODO rename into conditions1
         @JsonProperty(FIELD_STREAM)
         public abstract Builder streamIdentifier(String streamIdentifier);
 

@@ -486,10 +486,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             this.streamPipelineService.deleteStreamFromIdentifier(streamConditions.streamIdentifier());
         } else if (conditions instanceof ListOrStreamConditions listOrStreamConditions) {
             this.streamPipelineService.deleteStreamFromIdentifier(listOrStreamConditions.streamIdentifier());
-            // TODO is this if really necessary? Try to remove!!!
-            if (listOrStreamConditions.pipelineIdentifier() != null && listOrStreamConditions.pipelineRuleIdentifier() != null) {
-                this.streamPipelineService.deletePipeline(listOrStreamConditions.pipelineIdentifier(), listOrStreamConditions.pipelineRuleIdentifier());
-            }
+            this.streamPipelineService.deletePipeline(listOrStreamConditions.pipelineIdentifier(), listOrStreamConditions.pipelineRuleIdentifier());
             for (FieldRule fieldRule: this.nullSafe(listOrStreamConditions.pipelineFieldRules())) {
                 this.alertListUtilsService.decrementUsage(fieldRule.getValue());
             }
