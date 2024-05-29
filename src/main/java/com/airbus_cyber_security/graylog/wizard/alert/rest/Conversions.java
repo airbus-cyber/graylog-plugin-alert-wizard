@@ -245,14 +245,6 @@ public class Conversions {
         }
     }
 
-    AlertRuleStream constructSecondAlertRuleStream(Stream stream, TriggeringConditions conditions) {
-        // TODO should try to remove this check and inline method?
-        if (stream == null) {
-            return null;
-        }
-        return this.constructAlertRuleStream(stream, conditions);
-    }
-
     private List<FieldRule> getListFieldRule(List<StreamRule> listStreamRule) {
         List<FieldRule> listFieldRule = new ArrayList<>();
         for (StreamRule streamRule: listStreamRule) {
@@ -265,6 +257,7 @@ public class Conversions {
         return listFieldRule;
     }
 
+    // TODO inline
     AlertRuleStream constructAlertRuleStream(Stream stream, TriggeringConditions conditions) {
         // TODO why is this check necessary?
         if (stream == null) {
@@ -457,7 +450,7 @@ public class Conversions {
                 .build();
     }
 
-    public EventProcessorConfig createCondition(String conditionType, Map<String, Object> conditionParameter, String streamIdentifier) {
+    public EventProcessorConfig createEventConfiguration(String conditionType, Map<String, Object> conditionParameter, String streamIdentifier) {
         if (conditionType.equals("STATISTICAL")) {
             return createStatisticalCondition(streamIdentifier, conditionParameter);
         } else {

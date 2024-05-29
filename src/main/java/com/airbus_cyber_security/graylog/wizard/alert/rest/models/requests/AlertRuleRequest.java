@@ -43,6 +43,7 @@ public abstract class AlertRuleRequest {
     @NotNull
     public abstract String getDescription();
 
+    // TODO should be an enum. Possible values: COUNT, GROUP_DISTINCT, STATISTICAL, AND, THEN, OR
     @JsonProperty("condition_type")
     @NotNull
     public abstract String getConditionType();

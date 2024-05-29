@@ -51,7 +51,6 @@ import org.graylog2.plugin.rest.PluginRestResource;
 import org.graylog2.plugin.streams.Stream;
 import org.graylog2.shared.rest.resources.RestResource;
 import org.graylog2.streams.StreamService;
-import org.graylog2.streams.events.StreamsChangedEvent;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,13 +126,37 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
     }
 
+    // the output stream into which filtered logs are put
+    private String getTriggeringConditionsOutputStreamIdentifier(TriggeringConditions conditions) {
+        if (conditions instanceof StreamConditions streamConditions) {
+            return streamConditions.streamIdentifier();
+        }
+        if (conditions instanceof ListOrStreamConditions listOrStreamConditions) {
+            return listOrStreamConditions.streamIdentifier();
+        }
+        throw new RuntimeException("Unreachable code");
+    }
+
+    // the stream which carries the conditions to filter the logs
+    private String getTriggeringConditionsFilteringStreamIdentifier(TriggeringConditions conditions) {
+        if (conditions instanceof StreamConditions streamConditions) {
+            return streamConditions.streamIdentifier();
+        }
+        if (conditions instanceof ListOrStreamConditions listOrStreamConditions) {
+            return listOrStreamConditions.streamIdentifier();
+        }
+        throw new RuntimeException("Unreachable code");
+    }
+
     private AlertRuleStream constructAlertRuleStream(TriggeringConditions conditions) {
-        Stream stream = this.loadStream(conditions.streamIdentifier());
+        String streamIdentifier = this.getTriggeringConditionsFilteringStreamIdentifier(conditions);
+        Stream stream = this.loadStream(streamIdentifier);
         return this.conversions.constructAlertRuleStream(stream, conditions);
     }
 
     private boolean isDisabled(TriggeringConditions conditions) {
-        Stream stream = this.loadStream(conditions.streamIdentifier());
+        String streamIdentifier = this.getTriggeringConditionsFilteringStreamIdentifier(conditions);
+        Stream stream = this.loadStream(streamIdentifier);
         if (stream == null) {
             return false;
         }
@@ -257,16 +280,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return alertTitle;
     }
 
-    private String createEvent(String alertTitle, String description, String notificationIdentifier, String alertType, Map<String, Object> conditionParameters, UserContext userContext, TriggeringConditions conditions1) {
-        EventProcessorConfig configuration = this.conversions.createCondition(alertType, conditionParameters, conditions1.streamIdentifier());
-        return this.eventDefinitionService.createEvent(alertTitle, description, notificationIdentifier, configuration, userContext);
-    }
-
-    private String createSecondEvent(String alertTitle, String description, String notificationIdentifier, Map<String, Object> conditionParameters, UserContext userContext, String streamIdentifier2) {
-        EventProcessorConfig configuration2 = this.conversions.createAggregationCondition(streamIdentifier2, conditionParameters);
-        return this.eventDefinitionService.createEvent(alertTitle + "#2", description, notificationIdentifier, configuration2, userContext);
-    }
-
     private TriggeringConditions createTriggeringConditions(AlertRuleStream streamConfiguration, String title, String userName) throws ValidationException {
         List<FieldRule> fieldRulesWithList = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration.getFieldRules());
         Stream stream = this.streamPipelineService.createStream(streamConfiguration, title, userName);
@@ -339,14 +352,20 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             return CorrelationAlertPattern.builder().conditions1(conditions).conditions2(conditions2).eventIdentifier(eventIdentifier).build();
         } else if (alertType.equals("OR")) {
             TriggeringConditions conditions2 = createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName);
-            String eventIdentifier = createEvent(alertTitle, description, notificationIdentifier, alertType, conditionParameters, userContext, conditions);
-            String eventIdentifier2 = createSecondEvent(alertTitle, description, notificationIdentifier, conditionParameters, userContext, conditions2.streamIdentifier());
+            String streamIdentifier = this.getTriggeringConditionsOutputStreamIdentifier(conditions);
+            EventProcessorConfig configuration = this.conversions.createAggregationCondition(streamIdentifier, conditionParameters);
+            String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, notificationIdentifier, configuration, userContext);
+            String streamIdentifier2 = conditions2.streamIdentifier();
+            EventProcessorConfig configuration2 = this.conversions.createAggregationCondition(streamIdentifier2, conditionParameters);
+            String eventIdentifier2 = this.eventDefinitionService.createEvent(alertTitle + "#2", description, notificationIdentifier, configuration2, userContext);
 
             return DisjunctionAlertPattern.builder()
                     .conditions1(conditions).conditions2(conditions2).eventIdentifier1(eventIdentifier).eventIdentifier2(eventIdentifier2)
                     .build();
         } else {
-            String eventIdentifier = createEvent(alertTitle, description, notificationIdentifier, alertType, conditionParameters, userContext, conditions);
+            String streamIdentifier = this.getTriggeringConditionsOutputStreamIdentifier(conditions);
+            EventProcessorConfig configuration1 = this.conversions.createEventConfiguration(alertType, conditionParameters, streamIdentifier);
+            String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, notificationIdentifier, configuration1, userContext);
 
             return AggregationAlertPattern.builder().conditions(conditions).eventIdentifier(eventIdentifier).build();
         }
@@ -413,7 +432,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             TriggeringConditions previousConditions2 = previousPattern.conditions2();
             TriggeringConditions conditions2 = this.updateTriggeringConditions(previousConditions2, title2, streamConfiguration2);
 
-            EventProcessorConfig configuration = this.conversions.createCondition(request.getConditionType(), request.conditionParameters(), conditions.streamIdentifier());
+            EventProcessorConfig configuration = this.conversions.createEventConfiguration(request.getConditionType(), request.conditionParameters(), conditions.streamIdentifier());
             this.eventDefinitionService.updateEvent(title, request.getDescription(), previousPattern.eventIdentifier1(), configuration);
 
             EventProcessorConfig configuration2 = this.conversions.createAggregationCondition(conditions2.streamIdentifier(), request.conditionParameters());
@@ -423,7 +442,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         } else if (previousAlertPattern instanceof AggregationAlertPattern previousPattern) {
             TriggeringConditions previousConditions = previousPattern.conditions();
             TriggeringConditions conditions = updateTriggeringConditions(previousConditions, title, streamConfiguration);
-            EventProcessorConfig configuration = this.conversions.createCondition(request.getConditionType(), request.conditionParameters(), conditions.streamIdentifier());
+            EventProcessorConfig configuration = this.conversions.createEventConfiguration(request.getConditionType(), request.conditionParameters(), conditions.streamIdentifier());
             this.eventDefinitionService.updateEvent(title, request.getDescription(), previousPattern.eventIdentifier(), configuration);
 
             return previousPattern.toBuilder().conditions(conditions).build();
