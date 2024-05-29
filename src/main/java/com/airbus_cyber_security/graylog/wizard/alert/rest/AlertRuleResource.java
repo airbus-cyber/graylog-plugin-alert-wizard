@@ -35,6 +35,7 @@ import com.airbus_cyber_security.graylog.wizard.permissions.AlertRuleRestPermiss
 import com.codahale.metrics.annotation.Timed;
 import com.mongodb.MongoException;
 import io.swagger.annotations.*;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.graylog.events.notifications.NotificationDto;
@@ -286,6 +287,16 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return alertTitle;
     }
 
+    // TODO this should somehow be factored with the code in StreamPipelineService
+    private boolean hasStreamRules(List<FieldRule> fieldRules) {
+        for (FieldRule fieldRule: fieldRules) {
+            if (!this.streamPipelineService.isListFieldRule(fieldRule)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private TriggeringConditions createTriggeringConditionsFromStream(AlertRuleStream streamConfiguration, String title,
                                                                       Stream filteringStream, String userName) throws ValidationException {
         List<FieldRule> fieldRulesWithList = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration.getFieldRules());
@@ -300,7 +311,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
 
         Stream.MatchingType matchingType = streamConfiguration.getMatchingType();
-        if (matchingType.equals(Stream.MatchingType.AND)) {
+        if (matchingType.equals(Stream.MatchingType.AND) && hasStreamRules(streamConfiguration.getFieldRules())) {
             PipelineDao pipeline = this.streamPipelineService.createPipeline(title, matchingType, filteringStream.getId());
             Stream outputStream = this.streamPipelineService.createStream(matchingType, title + " output", userName);
             RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(title, fieldRulesWithList, matchingType, outputStream);

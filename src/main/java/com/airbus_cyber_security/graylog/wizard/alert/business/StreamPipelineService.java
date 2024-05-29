@@ -82,10 +82,12 @@ public class StreamPipelineService {
         this.lookupService = lookupService;
     }
 
-    private boolean isListFieldRule(FieldRule fieldRule) {
+    // TODO should move this somewhere else...
+    public boolean isListFieldRule(FieldRule fieldRule) {
         return (fieldRule.getType() == -7 || fieldRule.getType() == 7);
     }
 
+    // TODO should have only non field rules here
     public void createStreamRule(List<FieldRule> fieldRules, String streamID) throws ValidationException {
         for (FieldRule fieldRule: fieldRules) {
             if (isListFieldRule(fieldRule)) {
