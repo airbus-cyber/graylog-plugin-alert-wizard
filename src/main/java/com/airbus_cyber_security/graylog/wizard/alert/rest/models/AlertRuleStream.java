@@ -36,6 +36,7 @@ import java.util.List;
 public abstract class AlertRuleStream {
 
     // TODO rename into getIdentifier
+    // TODO is this fied really needed?
     @JsonProperty("id")
     @Nullable
     public abstract String getID();

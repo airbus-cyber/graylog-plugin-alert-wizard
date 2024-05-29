@@ -127,11 +127,17 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
     }
 
-    private Stream loadSecondStream(String streamIdentifier)  {
-        if (streamIdentifier == null) {
-            return null;
+    private AlertRuleStream constructAlertRuleStream(TriggeringConditions conditions) {
+        Stream stream = this.loadStream(conditions.streamIdentifier());
+        return this.conversions.constructAlertRuleStream(stream, conditions);
+    }
+
+    private boolean isDisabled(TriggeringConditions conditions) {
+        Stream stream = this.loadStream(conditions.streamIdentifier());
+        if (stream == null) {
+            return false;
         }
-        return this.loadStream(streamIdentifier);
+        return stream.getDisabled();
     }
 
     private GetDataAlertRule constructDataAlertRule(AlertRule alert) {
@@ -147,37 +153,26 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         if (alertPattern instanceof CorrelationAlertPattern pattern) {
             event = this.eventDefinitionService.getEventDefinition(pattern.eventIdentifier());
             parametersCondition = this.conversions.getConditionParameters(event.config());
-            TriggeringConditions conditions = pattern.conditions1();
-            Stream stream = this.loadStream(conditions.streamIdentifier());
-            alertRuleStream = this.conversions.constructAlertRuleStream(stream, conditions);
+            TriggeringConditions conditions1 = pattern.conditions1();
+            alertRuleStream = this.constructAlertRuleStream(conditions1);
             TriggeringConditions conditions2 = pattern.conditions2();
-            Stream stream2 = this.loadSecondStream(conditions2.streamIdentifier());
-            alertRuleStream2 = this.conversions.constructSecondAlertRuleStream(stream2, conditions2);
-            if (stream != null) {
-                isDisabled = stream.getDisabled();
-            }
+            alertRuleStream2 = this.constructAlertRuleStream(conditions2);
+            isDisabled = this.isDisabled(conditions1);
         } else if (alertPattern instanceof DisjunctionAlertPattern pattern) {
             event = this.eventDefinitionService.getEventDefinition(pattern.eventIdentifier1());
             parametersCondition = this.conversions.getConditionParameters(event.config());
             TriggeringConditions conditions = pattern.conditions1();
-            Stream stream = this.loadStream(conditions.streamIdentifier());
-            alertRuleStream = this.conversions.constructAlertRuleStream(stream, conditions);
+            alertRuleStream = this.constructAlertRuleStream(conditions);
             TriggeringConditions conditions2 = pattern.conditions2();
-            Stream stream2 = this.loadSecondStream(conditions2.streamIdentifier());
-            alertRuleStream2 = this.conversions.constructSecondAlertRuleStream(stream2, conditions2);
-            if (stream != null) {
-                isDisabled = stream.getDisabled();
-            }
+            alertRuleStream2 = this.constructAlertRuleStream(conditions2);
+            isDisabled = this.isDisabled(conditions);
             eventIdentifier2 = pattern.eventIdentifier2();
         } else if (alertPattern instanceof AggregationAlertPattern pattern) {
             event = this.eventDefinitionService.getEventDefinition(pattern.eventIdentifier());
             parametersCondition = this.conversions.getConditionParameters(event.config());
             TriggeringConditions conditions = pattern.conditions();
-            Stream stream = this.loadStream(conditions.streamIdentifier());
-            alertRuleStream = this.conversions.constructAlertRuleStream(stream, conditions);
-            if (stream != null) {
-                isDisabled = stream.getDisabled();
-            }
+            alertRuleStream = this.constructAlertRuleStream(conditions);
+            isDisabled = this.isDisabled(conditions);
         }
         LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) notification.config();
 
