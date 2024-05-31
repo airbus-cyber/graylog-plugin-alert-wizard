@@ -18,7 +18,6 @@
 package com.airbus_cyber_security.graylog.wizard.alert.rest;
 
 import com.airbus_cyber_security.graylog.wizard.alert.model.ListAndStreamConditions;
-import com.airbus_cyber_security.graylog.wizard.alert.model.ListOrStreamConditions;
 import com.airbus_cyber_security.graylog.wizard.alert.model.TriggeringConditions;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.FieldRule;
@@ -265,10 +264,6 @@ public class Conversions {
         }
 
         List<FieldRule> fieldRules = new ArrayList<>();
-        if (conditions instanceof ListOrStreamConditions listOrStreamConditions) {
-            List<FieldRule> pipelineFieldRules = listOrStreamConditions.pipeline().fieldRules();
-            Optional.ofNullable(pipelineFieldRules).ifPresent(fieldRules::addAll);
-        }
         if (conditions instanceof ListAndStreamConditions listAndStreamConditions) {
             List<FieldRule> pipelineFieldRules = listAndStreamConditions.pipeline().fieldRules();
             Optional.ofNullable(pipelineFieldRules).ifPresent(fieldRules::addAll);
