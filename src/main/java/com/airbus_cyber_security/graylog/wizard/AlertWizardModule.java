@@ -21,7 +21,7 @@ import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleService;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.AlertRuleResource;
 import com.airbus_cyber_security.graylog.wizard.audit.AlertWizardAuditEventTypes;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfigResource;
-import com.airbus_cyber_security.graylog.wizard.list.AlertListService;
+import com.airbus_cyber_security.graylog.wizard.list.business.AlertListService;
 import com.airbus_cyber_security.graylog.wizard.list.rest.AlertListResource;
 import com.airbus_cyber_security.graylog.wizard.permissions.AlertRuleRestPermissions;
 import org.graylog2.plugin.PluginConfigBean;

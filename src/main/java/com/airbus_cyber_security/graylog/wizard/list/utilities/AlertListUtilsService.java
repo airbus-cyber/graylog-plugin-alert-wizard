@@ -18,7 +18,7 @@
 package com.airbus_cyber_security.graylog.wizard.list.utilities;
 
 import com.airbus_cyber_security.graylog.wizard.list.AlertList;
-import com.airbus_cyber_security.graylog.wizard.list.AlertListService;
+import com.airbus_cyber_security.graylog.wizard.list.business.AlertListService;
 import com.airbus_cyber_security.graylog.wizard.list.rest.models.requests.AlertListRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
