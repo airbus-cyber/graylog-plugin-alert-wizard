@@ -17,7 +17,6 @@
 
 package com.airbus_cyber_security.graylog.wizard.alert.model;
 
-import com.airbus_cyber_security.graylog.wizard.alert.rest.models.FieldRule;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -26,7 +25,6 @@ import com.google.auto.value.AutoValue;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 /**
  * There are 3 possible constructions:
@@ -37,8 +35,8 @@ import java.util.List;
  */
 @AutoValue
 @JsonAutoDetect
-@JsonDeserialize(builder = ListAndStreamConditions.Builder.class)
-public abstract class ListAndStreamConditions {
+@JsonDeserialize(builder = TriggeringConditions.Builder.class)
+public abstract class TriggeringConditions {
     private static final String FIELD_FILTERING_STREAM = "filtering_stream";
     private static final String FIELD_OUTPUT_STREAM = "output_stream";
     private static final String FIELD_PIPELINE = "pipeline";
@@ -67,7 +65,7 @@ public abstract class ListAndStreamConditions {
     public static abstract class Builder {
         @JsonCreator
         public static Builder create() {
-            return new AutoValue_ListAndStreamConditions.Builder();
+            return new AutoValue_TriggeringConditions.Builder();
         }
 
         @JsonProperty(FIELD_FILTERING_STREAM)
@@ -79,6 +77,6 @@ public abstract class ListAndStreamConditions {
         @JsonProperty(FIELD_PIPELINE)
         public abstract Builder pipeline(Pipeline pipeline);
 
-        public abstract ListAndStreamConditions build();
+        public abstract TriggeringConditions build();
     }
 }

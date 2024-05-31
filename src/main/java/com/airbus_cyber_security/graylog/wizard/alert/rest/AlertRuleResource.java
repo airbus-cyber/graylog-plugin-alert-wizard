@@ -127,13 +127,13 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
     }
 
-    private AlertRuleStream constructAlertRuleStream(ListAndStreamConditions conditions) {
+    private AlertRuleStream constructAlertRuleStream(TriggeringConditions conditions) {
         String streamIdentifier = conditions.filteringStreamIdentifier();
         Stream stream = this.loadStream(streamIdentifier);
         return this.conversions.constructAlertRuleStream(stream, conditions);
     }
 
-    private boolean isDisabled(ListAndStreamConditions conditions) {
+    private boolean isDisabled(TriggeringConditions conditions) {
         String streamIdentifier = conditions.filteringStreamIdentifier();
         Stream stream = this.loadStream(streamIdentifier);
         if (stream == null) {
@@ -155,24 +155,24 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         if (alertPattern instanceof CorrelationAlertPattern pattern) {
             event = this.eventDefinitionService.getEventDefinition(pattern.eventIdentifier());
             parametersCondition = this.conversions.getConditionParameters(event.config());
-            ListAndStreamConditions conditions1 = pattern.conditions1();
+            TriggeringConditions conditions1 = pattern.conditions1();
             alertRuleStream = this.constructAlertRuleStream(conditions1);
-            ListAndStreamConditions conditions2 = pattern.conditions2();
+            TriggeringConditions conditions2 = pattern.conditions2();
             alertRuleStream2 = this.constructAlertRuleStream(conditions2);
             isDisabled = this.isDisabled(conditions1);
         } else if (alertPattern instanceof DisjunctionAlertPattern pattern) {
             event = this.eventDefinitionService.getEventDefinition(pattern.eventIdentifier1());
             parametersCondition = this.conversions.getConditionParameters(event.config());
-            ListAndStreamConditions conditions = pattern.conditions1();
+            TriggeringConditions conditions = pattern.conditions1();
             alertRuleStream = this.constructAlertRuleStream(conditions);
-            ListAndStreamConditions conditions2 = pattern.conditions2();
+            TriggeringConditions conditions2 = pattern.conditions2();
             alertRuleStream2 = this.constructAlertRuleStream(conditions2);
             isDisabled = this.isDisabled(conditions);
             eventIdentifier2 = pattern.eventIdentifier2();
         } else if (alertPattern instanceof AggregationAlertPattern pattern) {
             event = this.eventDefinitionService.getEventDefinition(pattern.eventIdentifier());
             parametersCondition = this.conversions.getConditionParameters(event.config());
-            ListAndStreamConditions conditions = pattern.conditions();
+            TriggeringConditions conditions = pattern.conditions();
             alertRuleStream = this.constructAlertRuleStream(conditions);
             isDisabled = this.isDisabled(conditions);
         }
@@ -269,11 +269,11 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return false;
     }
 
-    private ListAndStreamConditions createTriggeringConditionsFromStream(AlertRuleStream streamConfiguration, String title,
+    private TriggeringConditions createTriggeringConditionsFromStream(AlertRuleStream streamConfiguration, String title,
                                                                       Stream filteringStream, String userName) throws ValidationException {
         List<FieldRule> fieldRulesWithList = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration.getFieldRules());
 
-        ListAndStreamConditions.Builder builder = ListAndStreamConditions.builder()
+        TriggeringConditions.Builder builder = TriggeringConditions.builder()
                 .filteringStreamIdentifier(filteringStream.getId());
         if (fieldRulesWithList.isEmpty()) {
             return builder.outputStreamIdentifier(filteringStream.getId()).build();
@@ -302,14 +302,14 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
     }
 
-    private ListAndStreamConditions createTriggeringConditions(AlertRuleStream streamConfiguration, String title, String userName) throws ValidationException {
+    private TriggeringConditions createTriggeringConditions(AlertRuleStream streamConfiguration, String title, String userName) throws ValidationException {
         Stream stream = this.streamPipelineService.createStream(streamConfiguration.getMatchingType(), title, userName);
         this.streamPipelineService.createStreamRule(streamConfiguration.getFieldRules(), stream.getId());
         return createTriggeringConditionsFromStream(streamConfiguration, title, stream, userName);
     }
 
-    private ListAndStreamConditions updateTriggeringConditions(ListAndStreamConditions previousConditions, String alertTitle,
-                                                               AlertRuleStream streamConfiguration, String userName) throws ValidationException {
+    private TriggeringConditions updateTriggeringConditions(TriggeringConditions previousConditions, String alertTitle,
+                                                            AlertRuleStream streamConfiguration, String userName) throws ValidationException {
         // update filtering stream
         String streamIdentifier = previousConditions.filteringStreamIdentifier();
         Stream stream = this.loadStream(streamIdentifier);
@@ -361,7 +361,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                                             UserContext userContext, String userName) throws ValidationException {
         AlertType alertType = request.getConditionType();
 
-        ListAndStreamConditions conditions = createTriggeringConditions(request.getStream(), alertTitle, userName);
+        TriggeringConditions conditions = createTriggeringConditions(request.getStream(), alertTitle, userName);
 
         switch (alertType) {
             case THEN:
@@ -380,11 +380,11 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
     }
 
-    private DisjunctionAlertPattern createDisjunctionAlertPattern(String notificationIdentifier, AlertRuleRequest request, String alertTitle, UserContext userContext, String userName, ListAndStreamConditions conditions) throws ValidationException {
+    private DisjunctionAlertPattern createDisjunctionAlertPattern(String notificationIdentifier, AlertRuleRequest request, String alertTitle, UserContext userContext, String userName, TriggeringConditions conditions) throws ValidationException {
         String description = request.getDescription();
         Map<String, Object> conditionParameters = request.conditionParameters();
 
-        ListAndStreamConditions conditions2 = createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName);
+        TriggeringConditions conditions2 = createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName);
         String streamIdentifier = conditions.outputStreamIdentifier();
         EventProcessorConfig configuration = this.conversions.createAggregationCondition(streamIdentifier, conditionParameters);
         String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, notificationIdentifier, configuration, userContext);
@@ -397,12 +397,12 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 .build();
     }
 
-    private CorrelationAlertPattern createCorrelationAlertPattern(String notificationIdentifier, AlertRuleRequest request, String alertTitle, UserContext userContext, String userName, ListAndStreamConditions conditions) throws ValidationException {
+    private CorrelationAlertPattern createCorrelationAlertPattern(String notificationIdentifier, AlertRuleRequest request, String alertTitle, UserContext userContext, String userName, TriggeringConditions conditions) throws ValidationException {
         String description = request.getDescription();
         AlertType alertType = request.getConditionType();
         Map<String, Object> conditionParameters = request.conditionParameters();
 
-        ListAndStreamConditions conditions2 = createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName);
+        TriggeringConditions conditions2 = createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName);
         String streamIdentifier = conditions.outputStreamIdentifier();
         String streamIdentifier2 = conditions2.outputStreamIdentifier();
         EventProcessorConfig configuration = this.conversions.createCorrelationCondition(alertType, streamIdentifier, streamIdentifier2, conditionParameters);
@@ -424,10 +424,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String title2 = title + "#2";
         // TODO increase readability: extract three methods?
         if (previousAlertPattern instanceof CorrelationAlertPattern previousPattern) {
-            ListAndStreamConditions previousConditions = previousPattern.conditions1();
-            ListAndStreamConditions conditions = updateTriggeringConditions(previousConditions, title, streamConfiguration, userName);
-            ListAndStreamConditions previousConditions2 = previousPattern.conditions2();
-            ListAndStreamConditions conditions2 = this.updateTriggeringConditions(previousConditions2, title2, streamConfiguration2, userName);
+            TriggeringConditions previousConditions = previousPattern.conditions1();
+            TriggeringConditions conditions = updateTriggeringConditions(previousConditions, title, streamConfiguration, userName);
+            TriggeringConditions previousConditions2 = previousPattern.conditions2();
+            TriggeringConditions conditions2 = this.updateTriggeringConditions(previousConditions2, title2, streamConfiguration2, userName);
 
             String streamIdentifier = conditions.outputStreamIdentifier();
             String streamIdentifier2 = conditions2.outputStreamIdentifier();
@@ -436,10 +436,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
             return previousPattern.toBuilder().conditions1(conditions).build();
         } else if (previousAlertPattern instanceof DisjunctionAlertPattern previousPattern) {
-            ListAndStreamConditions previousConditions = previousPattern.conditions1();
-            ListAndStreamConditions conditions = updateTriggeringConditions(previousConditions, title, streamConfiguration, userName);
-            ListAndStreamConditions previousConditions2 = previousPattern.conditions2();
-            ListAndStreamConditions conditions2 = this.updateTriggeringConditions(previousConditions2, title2, streamConfiguration2, userName);
+            TriggeringConditions previousConditions = previousPattern.conditions1();
+            TriggeringConditions conditions = updateTriggeringConditions(previousConditions, title, streamConfiguration, userName);
+            TriggeringConditions previousConditions2 = previousPattern.conditions2();
+            TriggeringConditions conditions2 = this.updateTriggeringConditions(previousConditions2, title2, streamConfiguration2, userName);
 
             String streamIdentifier = conditions.outputStreamIdentifier();
             EventProcessorConfig configuration = this.conversions.createEventConfiguration(request.getConditionType(), request.conditionParameters(), streamIdentifier);
@@ -451,8 +451,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
             return previousPattern.toBuilder().conditions1(conditions).build();
         } else if (previousAlertPattern instanceof AggregationAlertPattern previousPattern) {
-            ListAndStreamConditions previousConditions = previousPattern.conditions();
-            ListAndStreamConditions conditions = updateTriggeringConditions(previousConditions, title, streamConfiguration, userName);
+            TriggeringConditions previousConditions = previousPattern.conditions();
+            TriggeringConditions conditions = updateTriggeringConditions(previousConditions, title, streamConfiguration, userName);
             String streamIdentifier = conditions.outputStreamIdentifier();
             EventProcessorConfig configuration = this.conversions.createEventConfiguration(request.getConditionType(), request.conditionParameters(), streamIdentifier);
             this.eventDefinitionService.updateEvent(title, request.getDescription(), previousPattern.eventIdentifier(), configuration);
@@ -503,7 +503,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return Response.accepted().entity(result).build();
     }
 
-    private void deleteTriggeringConditions(ListAndStreamConditions conditions) {
+    private void deleteTriggeringConditions(TriggeringConditions conditions) {
         this.streamPipelineService.deleteStreamFromIdentifier(conditions.filteringStreamIdentifier());
         if (!conditions.outputStreamIdentifier().equals(conditions.filteringStreamIdentifier())) {
             this.streamPipelineService.deleteStreamFromIdentifier(conditions.outputStreamIdentifier());

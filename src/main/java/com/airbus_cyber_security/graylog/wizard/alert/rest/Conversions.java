@@ -17,7 +17,7 @@
 
 package com.airbus_cyber_security.graylog.wizard.alert.rest;
 
-import com.airbus_cyber_security.graylog.wizard.alert.model.ListAndStreamConditions;
+import com.airbus_cyber_security.graylog.wizard.alert.model.TriggeringConditions;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
@@ -256,7 +256,7 @@ public class Conversions {
     }
 
     // TODO inline
-    AlertRuleStream constructAlertRuleStream(Stream stream, ListAndStreamConditions conditions) {
+    AlertRuleStream constructAlertRuleStream(Stream stream, TriggeringConditions conditions) {
         // TODO why is this check necessary?
         if (stream == null) {
             return null;
