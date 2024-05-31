@@ -129,9 +129,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
     // the output stream into which filtered logs are put
     private String getTriggeringConditionsOutputStreamIdentifier(TriggeringConditions conditions) {
-        if (conditions instanceof StreamConditions streamConditions) {
-            return streamConditions.streamIdentifier();
-        }
         if (conditions instanceof ListAndStreamConditions listAndStreamConditions) {
             return listAndStreamConditions.outputStreamIdentifier();
         }
@@ -140,9 +137,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
     // the stream which carries the conditions to filter the logs
     private String getTriggeringConditionsFilteringStreamIdentifier(TriggeringConditions conditions) {
-        if (conditions instanceof StreamConditions streamConditions) {
-            return streamConditions.streamIdentifier();
-        }
         if (conditions instanceof ListAndStreamConditions listAndStreamConditions) {
             return listAndStreamConditions.filteringStreamIdentifier();
         }
@@ -295,9 +289,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                                                                       Stream filteringStream, String userName) throws ValidationException {
         List<FieldRule> fieldRulesWithList = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration.getFieldRules());
 
+        ListAndStreamConditions.Builder builder = ListAndStreamConditions.builder()
+                .filteringStreamIdentifier(filteringStream.getId());
         if (fieldRulesWithList.isEmpty()) {
-            StreamConditions.Builder builder = StreamConditions.builder().streamIdentifier(filteringStream.getId());
-            return builder.build();
+            return builder.outputStreamIdentifier(filteringStream.getId()).build();
         }
 
         for (FieldRule fieldRule: fieldRulesWithList) {
@@ -312,19 +307,14 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             Pipeline pipeline = Pipeline.builder()
                     .identifier(graylogPipeline.id()).ruleIdentifier(pipelineRule.id()).fieldRules(fieldRulesWithList)
                     .build();
-            return ListAndStreamConditions.builder()
-                    .filteringStreamIdentifier(filteringStream.getId())
-                    .outputStreamIdentifier(outputStream.getId())
-                    .pipeline(pipeline).build();
+            return builder.outputStreamIdentifier(outputStream.getId()).pipeline(pipeline).build();
         } else {
             PipelineDao graylogPipeline = this.streamPipelineService.createPipeline(title, matchingType);
             RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(title, fieldRulesWithList, matchingType, filteringStream);
             Pipeline pipeline = Pipeline.builder()
                     .identifier(graylogPipeline.id()).ruleIdentifier(pipelineRule.id()).fieldRules(fieldRulesWithList)
                     .build();
-            return ListAndStreamConditions.builder()
-                    .filteringStreamIdentifier(filteringStream.getId()).outputStreamIdentifier(filteringStream.getId())
-                    .pipeline(pipeline).build();
+            return builder.outputStreamIdentifier(filteringStream.getId()).pipeline(pipeline).build();
         }
     }
 
@@ -341,9 +331,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         Stream stream = this.loadStream(streamIdentifier);
         this.streamPipelineService.updateStream(stream, streamConfiguration, alertTitle);
 
-        if (previousConditions instanceof  ListAndStreamConditions previousListAndStreamConditions) {
+        if (previousConditions instanceof ListAndStreamConditions previousListAndStreamConditions) {
             this.streamPipelineService.deleteStreamFromIdentifier(previousListAndStreamConditions.outputStreamIdentifier());
-            deletePipeline(previousListAndStreamConditions.pipeline());
+            deletePipelineIfAny(previousListAndStreamConditions.pipeline());
         }
 
         return createTriggeringConditionsFromStream(streamConfiguration, alertTitle, stream, userName);
@@ -531,18 +521,19 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     }
 
     private void deleteTriggeringConditions(TriggeringConditions conditions) {
-        if (conditions instanceof StreamConditions streamConditions) {
-            this.streamPipelineService.deleteStreamFromIdentifier(streamConditions.streamIdentifier());
-        } else if (conditions instanceof ListAndStreamConditions listAndStreamConditions) {
+        if (conditions instanceof ListAndStreamConditions listAndStreamConditions) {
             this.streamPipelineService.deleteStreamFromIdentifier(listAndStreamConditions.filteringStreamIdentifier());
             if (!listAndStreamConditions.outputStreamIdentifier().equals(listAndStreamConditions.filteringStreamIdentifier())) {
                 this.streamPipelineService.deleteStreamFromIdentifier(listAndStreamConditions.outputStreamIdentifier());
             }
-            deletePipeline(listAndStreamConditions.pipeline());
+            deletePipelineIfAny(listAndStreamConditions.pipeline());
         }
     }
 
-    private void deletePipeline(Pipeline pipeline) {
+    private void deletePipelineIfAny(Pipeline pipeline) {
+        if (pipeline == null) {
+            return;
+        }
         this.streamPipelineService.deletePipeline(pipeline.identifier(), pipeline.ruleIdentifier());
         for (FieldRule fieldRule: this.nullSafe(pipeline.fieldRules())) {
             this.alertListUtilsService.decrementUsage(fieldRule.getValue());

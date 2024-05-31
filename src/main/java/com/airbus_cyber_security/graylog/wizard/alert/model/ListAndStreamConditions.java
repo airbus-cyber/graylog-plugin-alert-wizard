@@ -24,12 +24,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.auto.value.AutoValue;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
 // TODO try to merge all TriggeringConditions with filteringStreamIdentifier, outputStreamIdentifier and pipeline (may be null)
 
-// filtering stream -> list pipeline -> output stream
+/**
+ * There are 3 possible constructions:
+ * - if there are no list conditions: filteringStream, filteringStream == outputStream, pipeline == null
+ * - if the conditions matching type is OR (at least one), or if there are no stream conditions:
+ *   pipeline -> filteringStream, filteringStream == outputStream
+ * - if the conditions matching type is AND (all): filteringStream -> pipeline -> outputStream
+ */
 @AutoValue
 @JsonAutoDetect
 @JsonDeserialize(builder = ListAndStreamConditions.Builder.class)
@@ -48,7 +55,7 @@ public abstract class ListAndStreamConditions implements TriggeringConditions {
     public abstract String outputStreamIdentifier();
 
     @JsonProperty(FIELD_PIPELINE)
-    @NotNull
+    @Nullable
     public abstract Pipeline pipeline();
 
     public static Builder builder() {

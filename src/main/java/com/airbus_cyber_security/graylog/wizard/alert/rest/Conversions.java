@@ -265,8 +265,10 @@ public class Conversions {
 
         List<FieldRule> fieldRules = new ArrayList<>();
         if (conditions instanceof ListAndStreamConditions listAndStreamConditions) {
-            List<FieldRule> pipelineFieldRules = listAndStreamConditions.pipeline().fieldRules();
-            Optional.ofNullable(pipelineFieldRules).ifPresent(fieldRules::addAll);
+            if (listAndStreamConditions.pipeline() != null) {
+                List<FieldRule> pipelineFieldRules = listAndStreamConditions.pipeline().fieldRules();
+                Optional.ofNullable(pipelineFieldRules).ifPresent(fieldRules::addAll);
+            }
         }
         Optional.ofNullable(this.getListFieldRule(stream.getStreamRules())).ifPresent(fieldRules::addAll);
         return AlertRuleStream.create(stream.getId(), stream.getMatchingType(), fieldRules);
