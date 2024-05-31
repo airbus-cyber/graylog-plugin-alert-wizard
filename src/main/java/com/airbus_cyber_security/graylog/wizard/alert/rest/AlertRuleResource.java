@@ -312,21 +312,24 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         Stream.MatchingType matchingType = streamConfiguration.getMatchingType();
         if (matchingType.equals(Stream.MatchingType.AND) && hasStreamRules(streamConfiguration.getFieldRules())) {
-            PipelineDao pipeline = this.streamPipelineService.createPipeline(title, matchingType, filteringStream.getId());
+            PipelineDao graylogPipeline = this.streamPipelineService.createPipeline(title, matchingType, filteringStream.getId());
             Stream outputStream = this.streamPipelineService.createStream(matchingType, title + " output", userName);
             RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(title, fieldRulesWithList, matchingType, outputStream);
-            ListAndStreamConditions.Builder builder = ListAndStreamConditions.builder()
-                    .filteringStreamIdentifier(filteringStream.getId()).pipelineFieldRules(fieldRulesWithList)
+            Pipeline pipeline = Pipeline.builder()
+                    .identifier(graylogPipeline.id()).ruleIdentifier(pipelineRule.id()).fieldRules(fieldRulesWithList)
+                    .build();
+            return ListAndStreamConditions.builder()
+                    .filteringStreamIdentifier(filteringStream.getId())
                     .outputStreamIdentifier(outputStream.getId())
-                    .pipelineIdentifier(pipeline.id()).pipelineRuleIdentifier(pipelineRule.id());
-            return builder.build();
+                    .pipeline(pipeline).build();
         } else {
-            PipelineDao pipeline = this.streamPipelineService.createPipeline(title, matchingType);
+            PipelineDao graylogPipeline = this.streamPipelineService.createPipeline(title, matchingType);
             RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(title, fieldRulesWithList, matchingType, filteringStream);
-            ListOrStreamConditions.Builder builder = ListOrStreamConditions.builder()
-                    .streamIdentifier(filteringStream.getId()).pipelineFieldRules(fieldRulesWithList)
-                    .pipelineIdentifier(pipeline.id()).pipelineRuleIdentifier(pipelineRule.id());
-            return builder.build();
+            Pipeline pipeline = Pipeline.builder()
+                    .identifier(graylogPipeline.id()).ruleIdentifier(pipelineRule.id()).fieldRules(fieldRulesWithList)
+                    .build();
+            return ListOrStreamConditions.builder()
+                    .streamIdentifier(filteringStream.getId()).pipeline(pipeline).build();
         }
     }
 
@@ -345,11 +348,11 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         // delete previous pipeline
         if (previousConditions instanceof ListOrStreamConditions previousListOrStreamConditions) {
-            deletePipeline(previousListOrStreamConditions);
+            deletePipeline(previousListOrStreamConditions.pipeline());
         }
         if (previousConditions instanceof  ListAndStreamConditions previousListAndStreamConditions) {
             this.streamPipelineService.deleteStreamFromIdentifier(previousListAndStreamConditions.outputStreamIdentifier());
-            deletePipeline(previousListAndStreamConditions);
+            deletePipeline(previousListAndStreamConditions.pipeline());
         }
 
         return createTriggeringConditionsFromStream(streamConfiguration, alertTitle, stream, userName);
@@ -524,24 +527,17 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             this.streamPipelineService.deleteStreamFromIdentifier(streamConditions.streamIdentifier());
         } else if (conditions instanceof ListOrStreamConditions listOrStreamConditions) {
             this.streamPipelineService.deleteStreamFromIdentifier(listOrStreamConditions.streamIdentifier());
-            deletePipeline(listOrStreamConditions);
+            deletePipeline(listOrStreamConditions.pipeline());
         } else if (conditions instanceof ListAndStreamConditions listAndStreamConditions) {
             this.streamPipelineService.deleteStreamFromIdentifier(listAndStreamConditions.filteringStreamIdentifier());
             this.streamPipelineService.deleteStreamFromIdentifier(listAndStreamConditions.outputStreamIdentifier());
-            deletePipeline(listAndStreamConditions);
+            deletePipeline(listAndStreamConditions.pipeline());
         }
     }
 
-    private void deletePipeline(ListOrStreamConditions listOrStreamConditions) {
-        this.streamPipelineService.deletePipeline(listOrStreamConditions.pipelineIdentifier(), listOrStreamConditions.pipelineRuleIdentifier());
-        for (FieldRule fieldRule: this.nullSafe(listOrStreamConditions.pipelineFieldRules())) {
-            this.alertListUtilsService.decrementUsage(fieldRule.getValue());
-        }
-    }
-
-    private void deletePipeline(ListAndStreamConditions listAndStreamConditions) {
-        this.streamPipelineService.deletePipeline(listAndStreamConditions.pipelineIdentifier(), listAndStreamConditions.pipelineRuleIdentifier());
-        for (FieldRule fieldRule: this.nullSafe(listAndStreamConditions.pipelineFieldRules())) {
+    private void deletePipeline(Pipeline pipeline) {
+        this.streamPipelineService.deletePipeline(pipeline.identifier(), pipeline.ruleIdentifier());
+        for (FieldRule fieldRule: this.nullSafe(pipeline.fieldRules())) {
             this.alertListUtilsService.decrementUsage(fieldRule.getValue());
         }
     }

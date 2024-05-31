@@ -34,8 +34,6 @@ import java.util.List;
 public abstract class ListOrStreamConditions implements TriggeringConditions {
     private static final String FIELD_STREAM = "stream";
     private static final String FIELD_PIPELINE = "pipeline";
-    private static final String FIELD_PIPELINE_RULE_IDENTIFIER = "pipeline_rule";
-    private static final String FIELD_PIPELINE_FIELD_RULES = "pipeline_field_rules";
 
     @JsonProperty(FIELD_STREAM)
     @NotNull
@@ -43,16 +41,7 @@ public abstract class ListOrStreamConditions implements TriggeringConditions {
 
     @JsonProperty(FIELD_PIPELINE)
     @NotNull
-    public abstract String pipelineIdentifier();
-
-    // TODO is this really necessary? Can't we get it from the pipeline?
-    @JsonProperty(FIELD_PIPELINE_RULE_IDENTIFIER)
-    @NotNull
-    public abstract String pipelineRuleIdentifier();
-
-    @JsonProperty(FIELD_PIPELINE_FIELD_RULES)
-    @NotNull
-    public abstract List<FieldRule> pipelineFieldRules();
+    public abstract Pipeline pipeline();
 
     public static Builder builder() {
         return Builder.create();
@@ -71,13 +60,7 @@ public abstract class ListOrStreamConditions implements TriggeringConditions {
         public abstract Builder streamIdentifier(String streamIdentifier);
 
         @JsonProperty(FIELD_PIPELINE)
-        public abstract Builder pipelineIdentifier(String pipelineIdentifier);
-
-        @JsonProperty(FIELD_PIPELINE_RULE_IDENTIFIER)
-        public abstract Builder pipelineRuleIdentifier(String pipelineRuleIdentifier);
-
-        @JsonProperty(FIELD_PIPELINE_FIELD_RULES)
-        public abstract Builder pipelineFieldRules(List<FieldRule> pipelineFieldRules);
+        public abstract Builder pipeline(Pipeline pipeline);
 
         public abstract ListOrStreamConditions build();
     }

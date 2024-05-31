@@ -27,30 +27,26 @@ import com.google.auto.value.AutoValue;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-// TODO try to merge all TriggeringConditions with filteringStreamIdentifier, outputStreamIdentifier and pipeline (may be null)
-
-// filtering stream -> list pipeline -> output stream
 @AutoValue
 @JsonAutoDetect
-@JsonDeserialize(builder = ListAndStreamConditions.Builder.class)
-public abstract class ListAndStreamConditions implements TriggeringConditions {
-    private static final String FIELD_FILTERING_STREAM = "filtering_stream";
-    private static final String FIELD_OUTPUT_STREAM = "output_stream";
-    private static final String FIELD_PIPELINE = "pipeline";
+@JsonDeserialize(builder = Pipeline.Builder.class)
+public abstract class Pipeline implements TriggeringConditions {
+    private static final String FIELD_IDENTIFIER = "identifier";
+    private static final String FIELD_RULE_IDENTIFIER = "rule";
+    private static final String FIELD_FIELD_RULES = "field_rules";
 
-    // the stream which holds the conditions
-    @JsonProperty(FIELD_FILTERING_STREAM)
+    @JsonProperty(FIELD_IDENTIFIER)
     @NotNull
-    public abstract String filteringStreamIdentifier();
+    public abstract String identifier();
 
-    @JsonProperty(FIELD_OUTPUT_STREAM)
+    // TODO is this really necessary? Can't we get it from the pipeline?
+    @JsonProperty(FIELD_RULE_IDENTIFIER)
     @NotNull
-    public abstract String outputStreamIdentifier();
+    public abstract String ruleIdentifier();
 
-    // TODO extract class Pipeline with the 3 fields pipelineIdentifier, pipelineRuleIdentifier and pipelineFieldRules
-    @JsonProperty(FIELD_PIPELINE)
+    @JsonProperty(FIELD_FIELD_RULES)
     @NotNull
-    public abstract Pipeline pipeline();
+    public abstract List<FieldRule> fieldRules();
 
     public static Builder builder() {
         return Builder.create();
@@ -62,18 +58,18 @@ public abstract class ListAndStreamConditions implements TriggeringConditions {
     public static abstract class Builder {
         @JsonCreator
         public static Builder create() {
-            return new AutoValue_ListAndStreamConditions.Builder();
+            return new AutoValue_Pipeline.Builder();
         }
 
-        @JsonProperty(FIELD_FILTERING_STREAM)
-        public abstract Builder filteringStreamIdentifier(String streamIdentifier);
+        @JsonProperty(FIELD_IDENTIFIER)
+        public abstract Builder identifier(String identifier);
 
-        @JsonProperty(FIELD_OUTPUT_STREAM)
-        public abstract Builder outputStreamIdentifier(String streamIdentifier);
+        @JsonProperty(FIELD_RULE_IDENTIFIER)
+        public abstract Builder ruleIdentifier(String ruleIdentifier);
 
-        @JsonProperty(FIELD_PIPELINE)
-        public abstract Builder pipeline(Pipeline pipeline);
+        @JsonProperty(FIELD_FIELD_RULES)
+        public abstract Builder fieldRules(List<FieldRule> fieldRules);
 
-        public abstract ListAndStreamConditions build();
+        public abstract Pipeline build();
     }
 }
