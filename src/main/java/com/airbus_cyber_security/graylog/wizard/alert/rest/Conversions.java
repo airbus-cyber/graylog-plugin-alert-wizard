@@ -17,6 +17,7 @@
 
 package com.airbus_cyber_security.graylog.wizard.alert.rest;
 
+import com.airbus_cyber_security.graylog.wizard.alert.business.FieldRulesUtilities;
 import com.airbus_cyber_security.graylog.wizard.alert.model.TriggeringConditions;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
@@ -40,6 +41,7 @@ import org.graylog2.plugin.streams.StreamRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import java.util.*;
 
@@ -67,6 +69,13 @@ public class Conversions {
     private static final String THRESHOLD = "threshold";
     private static final String THRESHOLD_TYPE_MORE = ">";
     private static final String THRESHOLD_TYPE_LESS = "<";
+
+    private final FieldRulesUtilities fieldRulesUtilities;
+
+    @Inject
+    public Conversions(FieldRulesUtilities fieldRulesUtilities) {
+        this.fieldRulesUtilities = fieldRulesUtilities;
+    }
 
     // TODO should avoid these conversions by always working with ms (from the IHM down to the server)
     private long convertMillisecondsToMinutes(long value) {
@@ -160,8 +169,7 @@ public class Conversions {
     private boolean isValidStream(AlertRuleStream stream) {
         if (stream.getMatchingType().equals(Stream.MatchingType.AND) || stream.getMatchingType().equals(Stream.MatchingType.OR)) {
             for (FieldRule fieldRule: stream.getFieldRules()) {
-                if (fieldRule.getField() == null || fieldRule.getField().isEmpty() ||
-                        fieldRule.getType() < -7 || fieldRule.getType() > 7) {
+                if (!fieldRulesUtilities.isValidFieldRule(fieldRule)) {
                     return false;
                 }
             }

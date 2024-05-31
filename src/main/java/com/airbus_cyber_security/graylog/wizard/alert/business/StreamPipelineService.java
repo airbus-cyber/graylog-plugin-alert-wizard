@@ -62,6 +62,7 @@ public class StreamPipelineService {
     private final PipelineService pipelineService;
     private final LookupService lookupService;
     private final PipelineStreamConnectionsService pipelineStreamConnectionsService;
+    private final FieldRulesUtilities fieldRulesUtilities;
 
     @Inject
     public StreamPipelineService(StreamService streamService,
@@ -71,7 +72,8 @@ public class StreamPipelineService {
                                  RuleService ruleService,
                                  PipelineService pipelineService,
                                  LookupService lookupService,
-                                 PipelineStreamConnectionsService pipelineStreamConnectionsService){
+                                 PipelineStreamConnectionsService pipelineStreamConnectionsService,
+                                 FieldRulesUtilities fieldRulesUtilities) {
         this.streamService = streamService;
         this.streamRuleService = streamRuleService;
         this.clusterEventBus = clusterEventBus;
@@ -80,17 +82,13 @@ public class StreamPipelineService {
         this.pipelineService = pipelineService;
         this.pipelineStreamConnectionsService = pipelineStreamConnectionsService;
         this.lookupService = lookupService;
-    }
-
-    // TODO should move this somewhere else...
-    public boolean isListFieldRule(FieldRule fieldRule) {
-        return (fieldRule.getType() == -7 || fieldRule.getType() == 7);
+        this.fieldRulesUtilities = fieldRulesUtilities;
     }
 
     // TODO should have only non field rules here
     public void createStreamRule(List<FieldRule> fieldRules, String streamID) throws ValidationException {
         for (FieldRule fieldRule: fieldRules) {
-            if (isListFieldRule(fieldRule)) {
+            if (this.fieldRulesUtilities.isListFieldRule(fieldRule)) {
                 continue;
             }
             Map<String, Object> streamRuleData = Maps.newHashMapWithExpectedSize(6);
@@ -129,15 +127,16 @@ public class StreamPipelineService {
 
         int nbList = 0;
         for (FieldRule fieldRule: listfieldRule) {
-            if (fieldRule.getType() == 7 || fieldRule.getType() == -7) {
-                if (nbList > 0) {
-                    fields.append("  ");
-                    fields.append(matchingType.name());
-                }
-                nbList++;
-                boolean negate = (fieldRule.getType() == -7);
-                fields.append(createStringField(fieldRule, negate));
+            if (!this.fieldRulesUtilities.isListFieldRule(fieldRule)) {
+                continue;
             }
+            if (nbList > 0) {
+                fields.append("  ");
+                fields.append(matchingType.name());
+            }
+            nbList++;
+            boolean negate = this.fieldRulesUtilities.hasTypeNotInList(fieldRule);
+            fields.append(createStringField(fieldRule, negate));
         }
 
         return "rule \"function " + alertTitle + "\"\nwhen\n" + fields + "then\n  route_to_stream(\"" + alertTitle + "\", \"" + targetStream.getId() + "\");\nend";
@@ -248,12 +247,14 @@ public class StreamPipelineService {
         }
     }
 
+    // TODO maybe should just split (in Conversions) the fieldRules into stream field rules and list field rules
     public List<FieldRule> extractPipelineFieldRules(List<FieldRule> listFieldRule){
         List<FieldRule> listPipelineFieldRule = new ArrayList<>();
         for (FieldRule fieldRule: listFieldRule) {
-            if (fieldRule.getType() == 7 || fieldRule.getType() == -7) {
-                listPipelineFieldRule.add(fieldRule);
+            if (!this.fieldRulesUtilities.isListFieldRule(fieldRule)) {
+                continue;
             }
+            listPipelineFieldRule.add(fieldRule);
         }
         return listPipelineFieldRule;
     }

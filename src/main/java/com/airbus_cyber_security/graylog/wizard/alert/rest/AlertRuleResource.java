@@ -90,6 +90,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private final StreamPipelineService streamPipelineService;
     private final AlertListUtilsService alertListUtilsService;
     private final NotificationService notificationService;
+    private final FieldRulesUtilities fieldRulesUtilities;
 
     @Inject
     public AlertRuleResource(AlertRuleService alertRuleService,
@@ -101,7 +102,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                              EventNotificationsResource eventNotificationsResource,
                              Conversions conversions,
                              EventDefinitionService eventDefinitionService,
-                             NotificationService notificationService) {
+                             NotificationService notificationService,
+                             FieldRulesUtilities fieldRulesUtilities) {
         // TODO should probably move these fields down into the business namespace
         this.alertRuleService = alertRuleService;
         this.streamService = streamService;
@@ -114,6 +116,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.conversions = conversions;
         this.streamPipelineService = streamPipelineService;
         this.notificationService = notificationService;
+        this.fieldRulesUtilities = fieldRulesUtilities;
     }
 
     private Stream loadStream(String streamIdentifier) {
@@ -259,16 +262,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return alertTitle;
     }
 
-    // TODO this should somehow be factored with the code in StreamPipelineService
-    private boolean hasStreamRules(List<FieldRule> fieldRules) {
-        for (FieldRule fieldRule: fieldRules) {
-            if (!this.streamPipelineService.isListFieldRule(fieldRule)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private TriggeringConditions createTriggeringConditionsFromStream(AlertRuleStream streamConfiguration, String title,
                                                                       Stream filteringStream, String userName) throws ValidationException {
         List<FieldRule> fieldRulesWithList = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration.getFieldRules());
@@ -284,7 +277,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
 
         Stream.MatchingType matchingType = streamConfiguration.getMatchingType();
-        if (matchingType.equals(Stream.MatchingType.AND) && hasStreamRules(streamConfiguration.getFieldRules())) {
+        if (matchingType.equals(Stream.MatchingType.AND) && this.fieldRulesUtilities.hasStreamRules(streamConfiguration.getFieldRules())) {
             PipelineDao graylogPipeline = this.streamPipelineService.createPipeline(title, matchingType, filteringStream.getId());
             Stream outputStream = this.streamPipelineService.createStream(matchingType, title + " output", userName);
             RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(title, fieldRulesWithList, matchingType, outputStream);

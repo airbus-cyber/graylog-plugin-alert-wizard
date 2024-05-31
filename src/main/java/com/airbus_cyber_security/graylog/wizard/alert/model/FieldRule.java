@@ -39,6 +39,7 @@ public abstract class FieldRule {
     @NotNull
     public abstract String getField();
 
+    // TODO this should probably be better as an enum
     @JsonProperty("type")
     public abstract int getType();
 
