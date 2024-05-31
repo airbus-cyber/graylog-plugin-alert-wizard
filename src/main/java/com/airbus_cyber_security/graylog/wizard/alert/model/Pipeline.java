@@ -30,7 +30,7 @@ import java.util.List;
 @AutoValue
 @JsonAutoDetect
 @JsonDeserialize(builder = Pipeline.Builder.class)
-public abstract class Pipeline implements TriggeringConditions {
+public abstract class Pipeline {
     private static final String FIELD_IDENTIFIER = "identifier";
     private static final String FIELD_RULE_IDENTIFIER = "rule";
     private static final String FIELD_FIELD_RULES = "field_rules";

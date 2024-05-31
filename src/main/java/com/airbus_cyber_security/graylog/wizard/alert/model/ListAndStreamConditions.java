@@ -28,8 +28,6 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-// TODO try to merge all TriggeringConditions with filteringStreamIdentifier, outputStreamIdentifier and pipeline (may be null)
-
 /**
  * There are 3 possible constructions:
  * - if there are no list conditions: filteringStream, filteringStream == outputStream, pipeline == null
@@ -40,16 +38,17 @@ import java.util.List;
 @AutoValue
 @JsonAutoDetect
 @JsonDeserialize(builder = ListAndStreamConditions.Builder.class)
-public abstract class ListAndStreamConditions implements TriggeringConditions {
+public abstract class ListAndStreamConditions {
     private static final String FIELD_FILTERING_STREAM = "filtering_stream";
     private static final String FIELD_OUTPUT_STREAM = "output_stream";
     private static final String FIELD_PIPELINE = "pipeline";
 
-    // the stream which holds the conditions
+    // the stream which carries the conditions to filter the logs
     @JsonProperty(FIELD_FILTERING_STREAM)
     @NotNull
     public abstract String filteringStreamIdentifier();
 
+    // the output stream into which filtered logs are put
     @JsonProperty(FIELD_OUTPUT_STREAM)
     @NotNull
     public abstract String outputStreamIdentifier();

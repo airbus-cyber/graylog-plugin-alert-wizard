@@ -37,7 +37,7 @@ public abstract class AggregationAlertPattern implements AlertPattern {
 
     @JsonProperty(FIELD_CONDITIONS)
     @NotNull
-    public abstract TriggeringConditions conditions();
+    public abstract ListAndStreamConditions conditions();
 
     @JsonProperty(FIELD_EVENT_IDENTIFIER)
     @NotNull
@@ -57,7 +57,7 @@ public abstract class AggregationAlertPattern implements AlertPattern {
         }
 
         @JsonProperty(FIELD_CONDITIONS)
-        public abstract Builder conditions(TriggeringConditions conditions);
+        public abstract Builder conditions(ListAndStreamConditions conditions);
 
         @JsonProperty(FIELD_EVENT_IDENTIFIER)
         public abstract Builder eventIdentifier(String eventIdentifier);

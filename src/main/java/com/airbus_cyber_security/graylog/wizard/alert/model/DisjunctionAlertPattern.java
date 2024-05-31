@@ -38,11 +38,11 @@ public abstract class DisjunctionAlertPattern implements AlertPattern {
 
     @JsonProperty(FIELD_CONDITIONS1)
     @NotNull
-    public abstract TriggeringConditions conditions1();
+    public abstract ListAndStreamConditions conditions1();
 
     @JsonProperty(FIELD_CONDITIONS2)
     @NotNull
-    public abstract TriggeringConditions conditions2();
+    public abstract ListAndStreamConditions conditions2();
 
     @JsonProperty(FIELD_EVENT_IDENTIFIER1)
     @NotNull
@@ -66,10 +66,10 @@ public abstract class DisjunctionAlertPattern implements AlertPattern {
         }
 
         @JsonProperty(FIELD_CONDITIONS1)
-        public abstract Builder conditions1(TriggeringConditions conditions1);
+        public abstract Builder conditions1(ListAndStreamConditions conditions1);
 
         @JsonProperty(FIELD_CONDITIONS2)
-        public abstract Builder conditions2(TriggeringConditions conditions2);
+        public abstract Builder conditions2(ListAndStreamConditions conditions2);
 
         @JsonProperty(FIELD_EVENT_IDENTIFIER1)
         public abstract Builder eventIdentifier1(String eventIdentifier);
