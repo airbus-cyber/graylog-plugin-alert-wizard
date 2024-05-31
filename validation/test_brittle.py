@@ -28,7 +28,6 @@ class TestBrittle(TestCase):
             self._graylog.stop()
 
         # TODO try to put this test back (seems to work locally but fails from time to time in continuous integration)
-        #@skip
         def test_create_alert_rule_with_list_should_generate_event_when_message_field_is_in_list(self):
             title = 'list'
             value = 'a'
@@ -57,6 +56,7 @@ class TestBrittle(TestCase):
                     if events_count == 1:
                         return
                     time.sleep(1)
+                print(self._graylog.extract_logs())
                 self.fail('Event not generated within 60 seconds')
 
         # TODO try to put this test back (seems to work locally but not in continuous integration)
