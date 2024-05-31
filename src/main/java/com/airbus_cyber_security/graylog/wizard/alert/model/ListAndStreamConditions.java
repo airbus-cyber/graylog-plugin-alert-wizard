@@ -47,7 +47,6 @@ public abstract class ListAndStreamConditions implements TriggeringConditions {
     @NotNull
     public abstract String outputStreamIdentifier();
 
-    // TODO extract class Pipeline with the 3 fields pipelineIdentifier, pipelineRuleIdentifier and pipelineFieldRules
     @JsonProperty(FIELD_PIPELINE)
     @NotNull
     public abstract Pipeline pipeline();
