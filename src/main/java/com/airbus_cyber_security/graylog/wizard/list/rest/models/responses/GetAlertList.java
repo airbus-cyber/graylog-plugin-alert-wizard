@@ -17,7 +17,7 @@
 
 package com.airbus_cyber_security.graylog.wizard.list.rest.models.responses;
 
-import com.airbus_cyber_security.graylog.wizard.list.AlertList;
+import com.airbus_cyber_security.graylog.wizard.list.model.AlertList;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

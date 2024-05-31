@@ -18,7 +18,7 @@
 package com.airbus_cyber_security.graylog.wizard.list.business;
 
 import com.airbus_cyber_security.graylog.wizard.database.LookupService;
-import com.airbus_cyber_security.graylog.wizard.list.AlertList;
+import com.airbus_cyber_security.graylog.wizard.list.model.AlertList;
 import com.airbus_cyber_security.graylog.wizard.list.bundles.ExportAlertList;
 import com.airbus_cyber_security.graylog.wizard.list.persistence.AlertListCollection;
 import com.airbus_cyber_security.graylog.wizard.list.rest.models.requests.AlertListRequest;

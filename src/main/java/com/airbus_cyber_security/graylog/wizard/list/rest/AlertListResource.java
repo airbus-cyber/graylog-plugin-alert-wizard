@@ -21,7 +21,7 @@ import com.airbus_cyber_security.graylog.wizard.audit.AlertWizardAuditEventTypes
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfigurationService;
 import com.airbus_cyber_security.graylog.wizard.config.rest.ImportPolicyType;
-import com.airbus_cyber_security.graylog.wizard.list.AlertList;
+import com.airbus_cyber_security.graylog.wizard.list.model.AlertList;
 import com.airbus_cyber_security.graylog.wizard.list.business.AlertListService;
 import com.airbus_cyber_security.graylog.wizard.list.bundles.AlertListExporter;
 import com.airbus_cyber_security.graylog.wizard.list.bundles.ExportAlertList;

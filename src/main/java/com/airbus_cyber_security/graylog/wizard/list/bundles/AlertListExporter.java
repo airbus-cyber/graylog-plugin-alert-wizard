@@ -17,7 +17,7 @@
 
 package com.airbus_cyber_security.graylog.wizard.list.bundles;
 
-import com.airbus_cyber_security.graylog.wizard.list.AlertList;
+import com.airbus_cyber_security.graylog.wizard.list.model.AlertList;
 import com.airbus_cyber_security.graylog.wizard.list.business.AlertListService;
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;

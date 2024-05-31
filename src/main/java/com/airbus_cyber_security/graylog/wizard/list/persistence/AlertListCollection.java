@@ -17,8 +17,7 @@
 
 package com.airbus_cyber_security.graylog.wizard.list.persistence;
 
-import com.airbus_cyber_security.graylog.wizard.database.LookupService;
-import com.airbus_cyber_security.graylog.wizard.list.AlertList;
+import com.airbus_cyber_security.graylog.wizard.list.model.AlertList;
 import com.google.common.collect.Lists;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
@@ -30,7 +29,6 @@ import org.mongojack.DBQuery;
 import org.mongojack.JacksonDBCollection;
 
 import javax.inject.Inject;
-import javax.validation.Validator;
 import java.util.List;
 
 public class AlertListCollection {
