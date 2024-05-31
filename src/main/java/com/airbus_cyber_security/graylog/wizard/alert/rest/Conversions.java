@@ -19,7 +19,7 @@ package com.airbus_cyber_security.graylog.wizard.alert.rest;
 
 import com.airbus_cyber_security.graylog.wizard.alert.model.TriggeringConditions;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
-import com.airbus_cyber_security.graylog.wizard.alert.rest.models.FieldRule;
+import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
 import com.airbus_cyber_security.graylog.events.processor.correlation.CorrelationCountProcessorConfig;
 import com.airbus_cyber_security.graylog.events.processor.correlation.checks.OrderType;
