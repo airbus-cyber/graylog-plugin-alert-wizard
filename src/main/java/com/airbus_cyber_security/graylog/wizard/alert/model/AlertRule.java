@@ -40,7 +40,7 @@ public abstract class AlertRule {
 
     @JsonProperty("alert_type")
     @Nullable
-    public abstract String getAlertType();
+    public abstract AlertType getAlertType();
 
     @JsonProperty("alert_pattern")
     @NotNull
@@ -68,7 +68,7 @@ public abstract class AlertRule {
     @JsonCreator
     public static AlertRule create(@JsonProperty("_id") String objectId,
                                    @JsonProperty("title") String title,
-                                   @JsonProperty("alert_type") String alertType,
+                                   @JsonProperty("alert_type") AlertType alertType,
                                    @JsonProperty("alert_pattern") AlertPattern pattern,
                                    @JsonProperty("notification") String notificationID,
                                    @JsonProperty("created_at") DateTime createdAt,
@@ -79,7 +79,7 @@ public abstract class AlertRule {
 	
 	public static AlertRule create(
             String title,
-            String alertType,
+            AlertType alertType,
             AlertPattern pattern,
             String notificationID,
             DateTime createdAt,

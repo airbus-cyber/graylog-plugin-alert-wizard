@@ -25,6 +25,7 @@ import com.airbus_cyber_security.graylog.wizard.alert.model.*;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
+import com.airbus_cyber_security.graylog.wizard.alert.model.AlertType;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetDataAlertRule;
 import com.airbus_cyber_security.graylog.wizard.audit.AlertWizardAuditEventTypes;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
@@ -35,7 +36,6 @@ import com.airbus_cyber_security.graylog.wizard.permissions.AlertRuleRestPermiss
 import com.codahale.metrics.annotation.Timed;
 import com.mongodb.MongoException;
 import io.swagger.annotations.*;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.graylog.events.notifications.NotificationDto;
@@ -374,7 +374,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String userName = getCurrentUser().getName();
         String title = request.getTitle();
         String alertTitle = checkImportPolicyAndGetTitle(title, userContext);
-        String alertType = request.getConditionType();
+        AlertType alertType = request.getConditionType();
 
         String notificationIdentifier = this.notificationService.createNotification(alertTitle, request.getSeverity(), userContext);
         AlertPattern pattern = createAlertPattern(notificationIdentifier, request, alertTitle, userContext, userName);
@@ -395,47 +395,64 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
     private AlertPattern createAlertPattern(String notificationIdentifier, AlertRuleRequest request, String alertTitle,
                                             UserContext userContext, String userName) throws ValidationException {
-        String description = request.getDescription();
-        String alertType = request.getConditionType();
-        Map<String, Object> conditionParameters = request.conditionParameters();
+        AlertType alertType = request.getConditionType();
 
         TriggeringConditions conditions = createTriggeringConditions(request.getStream(), alertTitle, userName);
 
-        if (alertType.equals("THEN") || alertType.equals("AND")) {
-            TriggeringConditions conditions2 = createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName);
-            String streamIdentifier = getTriggeringConditionsOutputStreamIdentifier(conditions);
-            String streamIdentifier2 = getTriggeringConditionsOutputStreamIdentifier(conditions2);
-            EventProcessorConfig configuration = this.conversions.createCorrelationCondition(alertType, streamIdentifier, streamIdentifier2, conditionParameters);
-            String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, notificationIdentifier, configuration, userContext);
-            return CorrelationAlertPattern.builder().conditions1(conditions).conditions2(conditions2).eventIdentifier(eventIdentifier).build();
-        } else if (alertType.equals("OR")) {
-            TriggeringConditions conditions2 = createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName);
-            String streamIdentifier = this.getTriggeringConditionsOutputStreamIdentifier(conditions);
-            EventProcessorConfig configuration = this.conversions.createAggregationCondition(streamIdentifier, conditionParameters);
-            String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, notificationIdentifier, configuration, userContext);
-            String streamIdentifier2 = this.getTriggeringConditionsOutputStreamIdentifier(conditions2);
-            EventProcessorConfig configuration2 = this.conversions.createAggregationCondition(streamIdentifier2, conditionParameters);
-            String eventIdentifier2 = this.eventDefinitionService.createEvent(alertTitle + "#2", description, notificationIdentifier, configuration2, userContext);
+        switch (alertType) {
+            case THEN:
+            case AND:
+                return createCorrelationAlertPattern(notificationIdentifier, request, alertTitle, userContext, userName, conditions);
+            case OR:
+                return createDisjunctionAlertPattern(notificationIdentifier, request, alertTitle, userContext, userName, conditions);
+            default:
+                String description = request.getDescription();
+                Map<String, Object> conditionParameters = request.conditionParameters();
+                String streamIdentifier = this.getTriggeringConditionsOutputStreamIdentifier(conditions);
+                EventProcessorConfig configuration1 = this.conversions.createEventConfiguration(alertType, conditionParameters, streamIdentifier);
+                String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, notificationIdentifier, configuration1, userContext);
 
-            return DisjunctionAlertPattern.builder()
-                    .conditions1(conditions).conditions2(conditions2).eventIdentifier1(eventIdentifier).eventIdentifier2(eventIdentifier2)
-                    .build();
-        } else {
-            String streamIdentifier = this.getTriggeringConditionsOutputStreamIdentifier(conditions);
-            EventProcessorConfig configuration1 = this.conversions.createEventConfiguration(alertType, conditionParameters, streamIdentifier);
-            String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, notificationIdentifier, configuration1, userContext);
-
-            return AggregationAlertPattern.builder().conditions(conditions).eventIdentifier(eventIdentifier).build();
+                return AggregationAlertPattern.builder().conditions(conditions).eventIdentifier(eventIdentifier).build();
         }
     }
 
+    private DisjunctionAlertPattern createDisjunctionAlertPattern(String notificationIdentifier, AlertRuleRequest request, String alertTitle, UserContext userContext, String userName, TriggeringConditions conditions) throws ValidationException {
+        String description = request.getDescription();
+        Map<String, Object> conditionParameters = request.conditionParameters();
+
+        TriggeringConditions conditions2 = createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName);
+        String streamIdentifier = this.getTriggeringConditionsOutputStreamIdentifier(conditions);
+        EventProcessorConfig configuration = this.conversions.createAggregationCondition(streamIdentifier, conditionParameters);
+        String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, notificationIdentifier, configuration, userContext);
+        String streamIdentifier2 = this.getTriggeringConditionsOutputStreamIdentifier(conditions2);
+        EventProcessorConfig configuration2 = this.conversions.createAggregationCondition(streamIdentifier2, conditionParameters);
+        String eventIdentifier2 = this.eventDefinitionService.createEvent(alertTitle + "#2", description, notificationIdentifier, configuration2, userContext);
+
+        return DisjunctionAlertPattern.builder()
+                .conditions1(conditions).conditions2(conditions2).eventIdentifier1(eventIdentifier).eventIdentifier2(eventIdentifier2)
+                .build();
+    }
+
+    private CorrelationAlertPattern createCorrelationAlertPattern(String notificationIdentifier, AlertRuleRequest request, String alertTitle, UserContext userContext, String userName, TriggeringConditions conditions) throws ValidationException {
+        String description = request.getDescription();
+        AlertType alertType = request.getConditionType();
+        Map<String, Object> conditionParameters = request.conditionParameters();
+
+        TriggeringConditions conditions2 = createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName);
+        String streamIdentifier = getTriggeringConditionsOutputStreamIdentifier(conditions);
+        String streamIdentifier2 = getTriggeringConditionsOutputStreamIdentifier(conditions2);
+        EventProcessorConfig configuration = this.conversions.createCorrelationCondition(alertType, streamIdentifier, streamIdentifier2, conditionParameters);
+        String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, notificationIdentifier, configuration, userContext);
+        return CorrelationAlertPattern.builder().conditions1(conditions).conditions2(conditions2).eventIdentifier(eventIdentifier).build();
+    }
+
     private AlertPattern updateAlertPattern(AlertPattern previousAlertPattern, String notificationIdentifier,
-                                            AlertRuleRequest request, String previousAlertType, String title,
+                                            AlertRuleRequest request, AlertType previousAlertType, String title,
                                             UserContext userContext, String userName) throws ValidationException {
         AlertRuleStream streamConfiguration = request.getStream();
         AlertRuleStream streamConfiguration2 = request.getSecondStream();
-        String alertType = request.getConditionType();
-        if (!previousAlertType.equals(alertType)) {
+        AlertType alertType = request.getConditionType();
+        if (previousAlertType != alertType) {
             deleteAlertPattern(previousAlertPattern);
             return createAlertPattern(notificationIdentifier, request, title, userContext, userName);
         }
@@ -504,7 +521,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         this.notificationService.updateNotification(title, notificationIdentifier, request.getSeverity());
 
-        String previousAlertType = previousAlert.getAlertType();
+        AlertType previousAlertType = previousAlert.getAlertType();
         AlertPattern pattern = updateAlertPattern(previousAlert.pattern(), notificationIdentifier, request,
                 previousAlertType, title, userContext, userName);
 

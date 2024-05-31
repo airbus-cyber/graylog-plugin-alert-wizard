@@ -25,6 +25,7 @@ import com.airbus_cyber_security.graylog.wizard.alert.rest.models.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
 import com.airbus_cyber_security.graylog.events.processor.correlation.CorrelationCountProcessorConfig;
 import com.airbus_cyber_security.graylog.events.processor.correlation.checks.OrderType;
+import com.airbus_cyber_security.graylog.wizard.alert.model.AlertType;
 import com.airbus_cyber_security.graylog.wizard.database.Description;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -210,7 +211,7 @@ public class Conversions {
                 isValidStream(secondStream));
     }
 
-    private boolean isValidCondition(String conditionType, Map<String, Object> conditionParameters, AlertRuleStream secondStream) {
+    private boolean isValidCondition(AlertType alertType, Map<String, Object> conditionParameters, AlertRuleStream secondStream) {
         if (!conditionParameters.containsKey(TIME)) {
             LOG.debug("Missing condition parameter: {}", TIME);
             return false;
@@ -223,14 +224,12 @@ public class Conversions {
             LOG.debug("Missing condition parameter: {}", THRESHOLD_TYPE);
             return false;
         }
-        if (conditionType.equals("STATISTICAL")) {
-            return isValidCondStatistical(conditionParameters);
-        } else if (conditionType.equals("THEN") || conditionType.equals("AND")) {
-            return isValidCondCorrelation(conditionParameters, secondStream);
-        } else if (conditionType.equals("OR")) {
-            return isValidCondOr(conditionParameters, secondStream);
-        }
-        return true;
+        return switch (alertType) {
+            case STATISTICAL -> isValidCondStatistical(conditionParameters);
+            case THEN, AND -> isValidCondCorrelation(conditionParameters, secondStream);
+            case OR -> isValidCondOr(conditionParameters, secondStream);
+            default -> true;
+        };
     }
 
     public boolean isValidRequest(AlertRuleRequest request){
@@ -292,9 +291,9 @@ public class Conversions {
 
     // TODO move method to AlertRuleUtils?
     // TODO instead of a String, the type could already be a com.airbus_cyber_security.graylog.events.processor.correlation.checks.OrderType
-    EventProcessorConfig createCorrelationCondition(String type, String streamID, String streamID2, Map<String, Object> conditionParameter) {
+    EventProcessorConfig createCorrelationCondition(AlertType type, String streamID, String streamID2, Map<String, Object> conditionParameter) {
         OrderType messageOrder;
-        if (type.equals("THEN")) {
+        if (type == AlertType.THEN) {
             messageOrder = OrderType.AFTER;
         } else {
             messageOrder = OrderType.ANY;
@@ -455,8 +454,8 @@ public class Conversions {
                 .build();
     }
 
-    public EventProcessorConfig createEventConfiguration(String conditionType, Map<String, Object> conditionParameter, String streamIdentifier) {
-        if (conditionType.equals("STATISTICAL")) {
+    public EventProcessorConfig createEventConfiguration(AlertType alertType, Map<String, Object> conditionParameter, String streamIdentifier) {
+        if (alertType == AlertType.STATISTICAL) {
             return createStatisticalCondition(streamIdentifier, conditionParameter);
         } else {
             return createAggregationCondition(streamIdentifier, conditionParameter);

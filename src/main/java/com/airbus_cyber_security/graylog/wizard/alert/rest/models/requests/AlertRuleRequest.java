@@ -17,6 +17,7 @@
 
 package com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests;
 
+import com.airbus_cyber_security.graylog.wizard.alert.model.AlertType;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -44,10 +45,9 @@ public abstract class AlertRuleRequest {
     public abstract String getDescription();
 
     // TODO should be an enum. Possible values: COUNT, GROUP_DISTINCT, STATISTICAL, AND, THEN, OR
-    // TODO: is it possible to have enums instead (see for instance org.graylog.enterprise.EnterpriseLicenseInfo)
     @JsonProperty("condition_type")
     @NotNull
-    public abstract String getConditionType();
+    public abstract AlertType getConditionType();
 
     // TODO this should be typed (its an union of 3 possibilities)...
     //      maybe see how it is done with graylog notifications org.graylog.events.notifications.EventNotificationConfig
@@ -65,10 +65,10 @@ public abstract class AlertRuleRequest {
     public static AlertRuleRequest create(@JsonProperty("title") String title,
                                              @JsonProperty("severity") String severity,
                                              @JsonProperty("description") String description,
-                                             @JsonProperty("condition_type") String conditionType,
+                                             @JsonProperty("condition_type") AlertType alertType,
                                              @JsonProperty("condition_parameters") Map<String, Object> conditionParameters,
                                              @JsonProperty("stream") AlertRuleStream stream,
                                              @JsonProperty("second_stream") AlertRuleStream stream2) {
-        return new AutoValue_AlertRuleRequest(title, severity, description, conditionType, conditionParameters, stream, stream2);
+        return new AutoValue_AlertRuleRequest(title, severity, description, alertType, conditionParameters, stream, stream2);
     }
 }
