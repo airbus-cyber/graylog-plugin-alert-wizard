@@ -22,7 +22,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.auto.value.AutoValue;
-import org.graylog2.database.CollectionName;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
@@ -30,7 +29,6 @@ import javax.validation.constraints.NotNull;
 @AutoValue
 @JsonAutoDetect
 @JsonIgnoreProperties(ignoreUnknown = true)
-@CollectionName("default_values")
 public abstract class DefaultValues {
 
     @JsonProperty("title")

@@ -22,14 +22,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.auto.value.AutoValue;
-import org.graylog2.database.CollectionName;
 
 import javax.validation.constraints.NotNull;
 
 @AutoValue
 @JsonAutoDetect
 @JsonIgnoreProperties(ignoreUnknown = true)
-@CollectionName("field_wizard")
 public abstract class FieldWizard {
     
 	@JsonProperty("name")
@@ -44,5 +42,4 @@ public abstract class FieldWizard {
                                        @JsonProperty("enabled") boolean enabled){
         return new AutoValue_FieldWizard(name, enabled);
     }
-    
 }
