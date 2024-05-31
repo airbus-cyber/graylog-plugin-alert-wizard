@@ -20,60 +20,55 @@ package com.airbus_cyber_security.graylog.wizard.list.persistence;
 import com.airbus_cyber_security.graylog.wizard.list.model.AlertList;
 import com.google.common.collect.Lists;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
 import org.graylog2.bindings.providers.MongoJackObjectMapperProvider;
-import org.graylog2.database.CollectionName;
 import org.graylog2.database.MongoConnection;
+import org.graylog2.database.PaginatedDbService;
 import org.mongojack.DBCursor;
 import org.mongojack.DBQuery;
-import org.mongojack.JacksonDBCollection;
 
 import javax.inject.Inject;
 import java.util.List;
 
-public class AlertListCollection {
+public class AlertListCollection extends PaginatedDbService<AlertList>  {
 
-    private final JacksonDBCollection<AlertList, String> collection;
+    private static final String COLLECTION_NAME = "wizard_lists";
     private static final String TITLE = "title";
 
     @Inject
     public AlertListCollection(MongoConnection mongoConnection, MongoJackObjectMapperProvider mapperProvider) {
-        String collectionName = AlertList.class.getAnnotation(CollectionName.class).value();
-        // TODO: MongoCollection<Document> collection = mongoConnection.getMongoDatabase().getCollection(collectionName);
-        //       with import com.mongodb.client.MongoCollection;
-        //            import org.bson.Document;
-        DBCollection dbCollection = mongoConnection.getDatabase().getCollection(collectionName);
-        this.collection = JacksonDBCollection.wrap(dbCollection, AlertList.class, String.class, mapperProvider.get());
-        this.collection.createIndex(new BasicDBObject(TITLE, 1), new BasicDBObject("unique", true));
+        super(mongoConnection, mapperProvider, AlertList.class, COLLECTION_NAME);
+        this.db.createIndex(new BasicDBObject(TITLE, 1), new BasicDBObject("unique", true));
     }
 
-    public long count() {
-        return this.collection.count();
+    public AlertList create(AlertList list) {
+        return this.save(list);
     }
 
-    public AlertList insert(AlertList list) {
-        return this.collection.insert(list).getSavedObject();
-    }
-
-    public AlertList findAndModify(String title, AlertList list) {
-        return this.collection.findAndModify(DBQuery.is(TITLE, title), new BasicDBObject(), new BasicDBObject(),
+    public AlertList update(String title, AlertList list) {
+        return this.db.findAndModify(DBQuery.is(TITLE, title), new BasicDBObject(), new BasicDBObject(),
                 false, list, true, false);
     }
 
     public List<AlertList> all() {
-        return toAbstractListType(this.collection.find());
+        try (DBCursor<AlertList> cursor = this.db.find(DBQuery.empty())) {
+            return cursor.toArray();
+        }
     }
 
-    public int remove(String title) {
-        return this.collection.remove(DBQuery.is(TITLE, title)).getN();
+    public long count() {
+        return this.db.count();
     }
 
-    public AlertList load(String listTitle) {
-        return this.collection.findOne(DBQuery.is(TITLE, listTitle));
+    public int destroy(String title) {
+        return this.db.remove(DBQuery.is(TITLE, title)).getN();
+    }
+
+    public AlertList load(String title) {
+        return this.db.findOne(DBQuery.is(TITLE, title));
     }
 
     public boolean isPresent(String title) {
-        return (this.collection.getCount(DBQuery.is(TITLE, title)) > 0);
+        return (this.db.getCount(DBQuery.is(TITLE, title)) > 0);
     }
 
     private List<AlertList> toAbstractListType(List<AlertList> lists) {

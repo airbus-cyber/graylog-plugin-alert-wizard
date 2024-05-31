@@ -110,7 +110,7 @@ public class AlertListService {
         String adapterIdentifier = this.lookupService.createDataAdapter(title, dataAdapterConfiguration);
         this.lookupService.createLookupTable(adapterIdentifier, title);
 
-        return this.collection.insert(list);
+        return this.collection.create(list);
     }
 
     private Path writeCSV(AlertList list) throws IOException {
@@ -136,14 +136,14 @@ public class AlertListService {
             throw new IllegalArgumentException("Specified object failed validation: " + violations);
         }
         this.writeCSV(list);
-        return this.collection.findAndModify(title, list);
+        return this.collection.update(title, list);
     }
 
     public int destroy(String title) throws IOException {
         this.lookupService.deleteLookupTable(title);
         this.lookupService.deleteDataAdapter(title);
         Files.delete(getCSVFilePath(title));
-        return this.collection.remove(title);
+        return this.collection.destroy(title);
     }
 
     private boolean isValidTitle(String title) {

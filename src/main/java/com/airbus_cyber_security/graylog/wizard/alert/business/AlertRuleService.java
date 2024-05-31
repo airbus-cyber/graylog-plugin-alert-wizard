@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Set;
 
 
+// TODO split this into AlertRuleCollection and move it down in the persistence namespace
 public class AlertRuleService extends PaginatedDbService<AlertRule> {
 
 	private static final String COLLECTION_NAME = "wizard_alerts";
