@@ -34,7 +34,6 @@ import java.util.List;
 @AutoValue
 @JsonAutoDetect
 @JsonIgnoreProperties(ignoreUnknown = true)
-@CollectionName("stream")
 public abstract class AlertRuleStream {
 
     // TODO rename into getIdentifier

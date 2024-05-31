@@ -218,13 +218,11 @@ public class StreamPipelineService {
     public void updateStream(Stream stream, AlertRuleStream alertRuleStream, String title) throws ValidationException {
         LOG.debug("Update Stream: " + stream.getId());
         stream.setTitle(title);
-        if (alertRuleStream.getMatchingType() != null) {
-            try {
-                stream.setMatchingType(alertRuleStream.getMatchingType());
-            } catch (IllegalArgumentException e) {
-                throw new BadRequestException("Invalid matching type '" + alertRuleStream.getMatchingType()
-                        + "' specified. Should be one of: " + Arrays.toString(Stream.MatchingType.values()));
-            }
+        try {
+            stream.setMatchingType(alertRuleStream.getMatchingType());
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException("Invalid matching type '" + alertRuleStream.getMatchingType()
+                    + "' specified. Should be one of: " + Arrays.toString(Stream.MatchingType.values()));
         }
         this.streamService.save(stream);
 

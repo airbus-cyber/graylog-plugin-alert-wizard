@@ -22,16 +22,13 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.auto.value.AutoValue;
-import org.graylog2.database.CollectionName;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
-// TODO should move this class into model
 @AutoValue
 @JsonAutoDetect
 @JsonIgnoreProperties(ignoreUnknown = true)
-@CollectionName("field_rule")
 public abstract class FieldRule {
 
 	@JsonProperty("id")
