@@ -31,7 +31,7 @@ public class AlertListExporter {
 
     private final AlertListService alertListService;
 
-    public AlertListExporter(AlertListService alertListService){
+    public AlertListExporter(AlertListService alertListService) {
         this.alertListService = alertListService;
     }
 

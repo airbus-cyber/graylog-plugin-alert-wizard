@@ -19,17 +19,10 @@ package com.airbus_cyber_security.graylog.wizard.list;
 
 import com.airbus_cyber_security.graylog.wizard.database.LookupService;
 import com.airbus_cyber_security.graylog.wizard.list.bundles.ExportAlertList;
+import com.airbus_cyber_security.graylog.wizard.list.persistence.AlertListCollection;
 import com.airbus_cyber_security.graylog.wizard.list.rest.models.requests.AlertListRequest;
-import com.google.common.collect.Lists;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import org.graylog2.bindings.providers.MongoJackObjectMapperProvider;
-import org.graylog2.database.CollectionName;
-import org.graylog2.database.MongoConnection;
 import org.graylog2.lookup.adapters.CSVFileDataAdapter;
-import org.mongojack.DBCursor;
 import org.mongojack.DBQuery;
-import org.mongojack.JacksonDBCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +44,8 @@ public class AlertListService {
     private static final Path LISTS_PATH = Paths.get("/usr/share/graylog/data/alert-lists");
     private static final String KEY_COLUMN = "key";
     private static final String VALUE_COLUMN = "value";
-    private final JacksonDBCollection<AlertList, String> collection;
+
+    private final AlertListCollection collection;
     private final Validator validator;
 
     private final LookupService lookupService;
@@ -59,21 +53,26 @@ public class AlertListService {
     private static final String TITLE = "title";
 
     @Inject
-    public AlertListService(MongoConnection mongoConnection, MongoJackObjectMapperProvider mapperProvider,
-                            Validator validator, LookupService lookupService) {
+    public AlertListService(Validator validator, LookupService lookupService, AlertListCollection collection) {
         this.validator = validator;
         this.lookupService = lookupService;
-        String collectionName = AlertList.class.getAnnotation(CollectionName.class).value();
-        // TODO: MongoCollection<Document> collection = mongoConnection.getMongoDatabase().getCollection(collectionName);
-        //       with import com.mongodb.client.MongoCollection;
-        //            import org.bson.Document;
-        DBCollection dbCollection = mongoConnection.getDatabase().getCollection(collectionName);
-        this.collection = JacksonDBCollection.wrap(dbCollection, AlertList.class, String.class, mapperProvider.get());
-        this.collection.createIndex(new BasicDBObject(TITLE, 1), new BasicDBObject("unique", true));
+        this.collection = collection;
     }
 
     public long count() {
         return this.collection.count();
+    }
+
+    public List<AlertList> all() {
+        return this.collection.all();
+    }
+
+    public AlertList load(String listTitle) {
+        return this.collection.load(listTitle);
+    }
+
+    public boolean isPresent(String title) {
+        return this.collection.isPresent(title);
     }
 
     // TODO should not need this code: the AlertList object should directly return an array of Strings
@@ -112,7 +111,7 @@ public class AlertListService {
         String adapterIdentifier = this.lookupService.createDataAdapter(title, dataAdapterConfiguration);
         this.lookupService.createLookupTable(adapterIdentifier, title);
 
-        return this.collection.insert(list).getSavedObject();
+        return this.collection.insert(list);
     }
 
     private Path writeCSV(AlertList list) throws IOException {
@@ -138,38 +137,14 @@ public class AlertListService {
             throw new IllegalArgumentException("Specified object failed validation: " + violations);
         }
         this.writeCSV(list);
-        return this.collection.findAndModify(DBQuery.is(TITLE, title), new BasicDBObject(), new BasicDBObject(),
-                false, list, true, false);
-    }
-
-    public List<AlertList> all() {
-        return toAbstractListType(this.collection.find());
+        return this.collection.findAndModify(title, list);
     }
 
     public int destroy(String title) throws IOException {
         this.lookupService.deleteLookupTable(title);
         this.lookupService.deleteDataAdapter(title);
         Files.delete(getCSVFilePath(title));
-        return this.collection.remove(DBQuery.is(TITLE, title)).getN();
-    }
-
-    public AlertList load(String listTitle) {
-        return this.collection.findOne(DBQuery.is(TITLE, listTitle));
-    }
-
-    public boolean isPresent(String title) {
-        return (this.collection.getCount(DBQuery.is(TITLE, title)) > 0);
-    }
-
-    private List<AlertList> toAbstractListType(DBCursor<AlertList> lists) {
-        return toAbstractListType(lists.toArray());
-    }
-
-    private List<AlertList> toAbstractListType(List<AlertList> lists) {
-        final List<AlertList> result = Lists.newArrayListWithCapacity(lists.size());
-        result.addAll(lists);
-
-        return result;
+        return this.collection.remove(title);
     }
 
     private boolean isValidTitle(String title) {
