@@ -308,8 +308,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         Stream stream = this.loadStream(streamIdentifier);
         this.streamPipelineService.updateStream(stream, streamConfiguration, alertTitle);
 
-        if (previousConditions.outputStreamIdentifier() != streamIdentifier)
-        this.streamPipelineService.deleteStreamFromIdentifier(previousConditions.outputStreamIdentifier());
+        if (!previousConditions.outputStreamIdentifier().equals(streamIdentifier)) {
+            this.streamPipelineService.deleteStreamFromIdentifier(previousConditions.outputStreamIdentifier());
+        }
         deletePipelineIfAny(previousConditions.pipeline());
 
         return createTriggeringConditionsFromStream(streamConfiguration, alertTitle, stream, userName);
