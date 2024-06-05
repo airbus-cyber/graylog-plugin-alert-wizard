@@ -133,7 +133,6 @@ class Graylog:
         result = 0
         for i in range(total):
             event = response['events'][i]['event']
-            print(event)
             if event['event_definition_type'] == event_definition_type:
                 result += 1
         return result

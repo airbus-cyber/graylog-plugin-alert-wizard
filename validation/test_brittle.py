@@ -10,6 +10,7 @@
 # To execute only one test, suffix with the fully qualified test name. Example:
 #   python -m unittest test_brittle.TestBrittle.test_XXX
 
+import shutil
 from unittest import TestCase
 from unittest import skip
 import time
@@ -20,12 +21,27 @@ _PERIOD = 1
 
 class TestBrittle(TestCase):
 
+        def _print_disk_usage(self):
+            total, used, free = shutil.disk_usage('/')
+
+            print(f'Total: {total // (2**30)} GiB')
+            print(f'Used: {used // (2**30)} GiB')
+            print(f'Free: {free // (2**30)} GiB')
+
         def setUp(self) -> None:
+            print('Before start')
+            self._print_disk_usage()
             self._graylog = Graylog()
             self._graylog.start()
+            print('After start')
+            self._print_disk_usage()
 
         def tearDown(self) -> None:
+            print('Before stop')
+            self._print_disk_usage()
             self._graylog.stop()
+            print('After stop')
+            self._print_disk_usage()
 
         # TODO try to put this test back (seems to work locally but fails from time to time in continuous integration)
         def test_create_alert_rule_with_list_should_generate_event_when_message_field_is_in_list(self):
@@ -98,14 +114,4 @@ class TestBrittle(TestCase):
                 events = self._graylog.get_events()
                 for i in range(events['total_events']):
                     print(events['events'][i])
-                print(self._print_disk_usage())
-                self.assertEqual(0, self._graylog.get_events_count())
-
-        def _print_disk_usage(self):
-            import shutil
-
-            total, used, free = shutil.disk_usage('/')
-
-            print(f'Total: {total // (2**30)} GiB')
-            print(f'Used: {used // (2**30)} GiB')
-            print(f'Free: {free // (2**30)} GiB')
+                self.assertEqual(0, self._graylog.get_events_count('aggregation-v1'))
