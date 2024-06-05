@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [5.2.0](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.1.3...5.2.0)
 ### Bug Fixes
 * Rules where both is in list conditions and other field conditions should match, did not behave correctly ([issue #119](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/119))
+* The list of alert rules could not be displayed after the deletion of an event definition associated to a rule ([issue #117](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/117))
 ### Changes
 * POST plugins/com.airbus_cyber_security.graylog.wizard/alerts and PUT plugins/com.airbus_cyber_security.graylog.wizard/alerts/{title} field condition_type should be not null
 

@@ -115,6 +115,9 @@ class Graylog:
     def update_event_definition(self, event_definition):
         self._api.update_event_definition(event_definition)
 
+    def delete_event_definition(self, identifier):
+        self._api.delete_event_definition(identifier)
+
     def get_notification_with_title(self, title):
         return self._api.get_notification_with_title(title)
 

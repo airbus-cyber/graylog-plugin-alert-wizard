@@ -281,6 +281,9 @@ class GraylogRestApi:
         response = self._get(f'events/definitions/{identifier}')
         return response.json()
 
+    def delete_event_definition(self, identifier):
+        self._delete(f'events/definitions/{identifier}')
+
     def update_event_definition(self, event_definition):
         identifier = event_definition['id']
         self._put(f'events/definitions/{identifier}', event_definition)

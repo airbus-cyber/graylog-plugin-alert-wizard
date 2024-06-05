@@ -11,7 +11,6 @@
 #   python -m unittest test.Test.test_create_alert_rule_with_list_should_generate_event_when_message_field_is_in_list
 
 from unittest import TestCase
-from unittest import skip
 import time
 from graylog import Graylog
 
@@ -147,6 +146,12 @@ class Test(TestCase):
         status_code = self._graylog.get_alert_rules()
         self.assertEqual(200, status_code)
 
+    def test_get_all_rules_should_not_fail_when_an_event_definition_is_deleted_issue117(self):
+        alert_rule = self._graylog.create_alert_rule_count('alert_rule_title', _PERIOD)
+        self._graylog.delete_event_definition(alert_rule['condition'])
+        status_code = self._graylog.get_alert_rules()
+        self.assertEqual(200, status_code)
+
     def test_set_default_backlog_value_should_change_newly_created_event_definition_backlog_value_issue40(self):
         self._graylog.update_alert_wizard_plugin_configuration(backlog_size=1000)
         title = 'aaa'
@@ -248,12 +253,12 @@ class Test(TestCase):
         # Send a log with user=xxx and source=source123. It will be placed in the Stream beauce the only Stream rule is field "source" match exactly "source123". So the rule will trigger but it is wrong because "user" is not present in the list
         with self._graylog.create_gelf_input() as inputs:
                 inputs.send({'host': 'source123'})
-                print(f'send: {self._graylog.get_events_count()}')
+                print(f'send: {self._graylog.get_events_count('aggregation-v1')}/{self._graylog.get_events_count()}')
                 # wait for the period (which is, unfortunately expressed in minutes, so it's quite long a wait)
                 # TODO: should improve the API for better testability
                 time.sleep(60*_PERIOD)
-                print(f'slept for period: {self._graylog.get_events_count()}')
+                print(f'slept for period: {self._graylog.get_events_count('aggregation-v1')}/{self._graylog.get_events_count()}')
 
                 time.sleep(60)
-                print(f'before assert: {self._graylog.get_events_count()}')
-                self.assertEqual(0, self._graylog.get_events_count())
+                print(f'before assert: {self._graylog.get_events_count('aggregation-v1')}/{self._graylog.get_events_count()}')
+                self.assertEqual(0, self._graylog.get_events_count('aggregation-v1'))

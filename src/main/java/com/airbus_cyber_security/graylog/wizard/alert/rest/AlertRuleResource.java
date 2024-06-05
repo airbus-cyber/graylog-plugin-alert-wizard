@@ -149,7 +149,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         NotificationDto notification = this.notificationService.get(alert.getNotificationID());
         AlertPattern alertPattern = alert.pattern();
         DateTime lastModified = alert.getLastModified();
-        EventDefinitionDto event = null;
+        Optional<EventDefinitionDto> event = Optional.empty();
         Map<String, Object> parametersCondition = null;
         boolean isDisabled = false;
         AlertRuleStream alertRuleStream = null;
@@ -157,7 +157,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String eventIdentifier2 = null;
         if (alertPattern instanceof CorrelationAlertPattern pattern) {
             event = this.eventDefinitionService.getEventDefinition(pattern.eventIdentifier());
-            parametersCondition = this.conversions.getConditionParameters(event.config());
+            parametersCondition = getConditionParameters(event);
             TriggeringConditions conditions1 = pattern.conditions1();
             alertRuleStream = this.constructAlertRuleStream(conditions1);
             TriggeringConditions conditions2 = pattern.conditions2();
@@ -165,7 +165,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             isDisabled = this.isDisabled(conditions1);
         } else if (alertPattern instanceof DisjunctionAlertPattern pattern) {
             event = this.eventDefinitionService.getEventDefinition(pattern.eventIdentifier1());
-            parametersCondition = this.conversions.getConditionParameters(event.config());
+            parametersCondition = getConditionParameters(event);
             TriggeringConditions conditions = pattern.conditions1();
             alertRuleStream = this.constructAlertRuleStream(conditions);
             TriggeringConditions conditions2 = pattern.conditions2();
@@ -174,27 +174,42 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             eventIdentifier2 = pattern.eventIdentifier2();
         } else if (alertPattern instanceof AggregationAlertPattern pattern) {
             event = this.eventDefinitionService.getEventDefinition(pattern.eventIdentifier());
-            parametersCondition = this.conversions.getConditionParameters(event.config());
+            parametersCondition = getConditionParameters(event);
             TriggeringConditions conditions = pattern.conditions();
             alertRuleStream = this.constructAlertRuleStream(conditions);
             isDisabled = this.isDisabled(conditions);
         }
         LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) notification.config();
 
+        String eventIdentifier = null;
+        String description = null;
+        if (event.isPresent()) {
+            EventDefinitionDto eventDefinitionDto = event.get();
+            eventIdentifier = eventDefinitionDto.id();
+            description = eventDefinitionDto.description();
+        }
+
         return GetDataAlertRule.create(alert.getTitle(),
                 loggingNotificationConfig.severity().getType(),
-                event.id(),
+                eventIdentifier,
                 eventIdentifier2,
                 notification.id(),
                 alert.getCreatedAt(),
                 alert.getCreatorUserId(),
                 lastModified,
                 isDisabled,
-                event.description(),
+                description,
                 alert.getAlertType(),
                 parametersCondition,
                 alertRuleStream,
                 alertRuleStream2);
+    }
+
+    private Map<String, Object> getConditionParameters(Optional<EventDefinitionDto> event) {
+        if (!event.isPresent()) {
+            return null;
+        }
+        return this.conversions.getConditionParameters(event.get().config());
     }
 
     @GET

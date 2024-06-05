@@ -54,9 +54,8 @@ public class EventDefinitionService {
         this.configurationService = configurationService;
     }
 
-    public EventDefinitionDto getEventDefinition(String eventDefinitionIdentifier) {
-        return this.eventDefinitionService.get(eventDefinitionIdentifier)
-                .orElseThrow(() -> new javax.ws.rs.NotFoundException("Event definition <" + eventDefinitionIdentifier + "> doesn't exist"));
+    public Optional<EventDefinitionDto> getEventDefinition(String eventDefinitionIdentifier) {
+        return this.eventDefinitionService.get(eventDefinitionIdentifier);
     }
 
     private String createEventFromDto(EventDefinitionDto eventDefinition, UserContext userContext) {
@@ -91,7 +90,9 @@ public class EventDefinitionService {
 
     public void updateEvent(String alertTitle, String description, String eventIdentifier, EventProcessorConfig configuration) {
         LOG.debug("Update event: {}, identifier: {}", alertTitle, eventIdentifier);
-        EventDefinitionDto event = this.getEventDefinition(eventIdentifier);
+        EventDefinitionDto event = this.getEventDefinition(eventIdentifier)
+                .orElseThrow(() -> new javax.ws.rs.NotFoundException("Event definition <" + eventIdentifier + "> doesn't exist"));
+
         this.updateEvent(alertTitle, description, event, configuration);
     }
 
