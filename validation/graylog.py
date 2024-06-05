@@ -121,6 +121,10 @@ class Graylog:
     def delete_stream(self, identifier):
         self._api.delete_stream(identifier)
 
-    def get_events_count(self):
-        return self._api.get_events_count()
+    def get_events(self):
+        return self._api.get_events()
 
+
+    def get_events_count(self):
+        response = self.get_events()
+        return response['total_events']

@@ -59,6 +59,7 @@ class TestBrittle(TestCase):
                         return
                     time.sleep(1)
                 print(self._graylog.extract_logs())
+                print(self._graylog.get_events())
                 self.fail('Event not generated within 60 seconds')
 
         # TODO try to put this test back (seems to work locally but not in continuous integration)
@@ -91,4 +92,5 @@ class TestBrittle(TestCase):
 
                 time.sleep(60)
                 print(f'before assert: {self._graylog.get_events_count()}')
+                print(self._graylog.get_events())
                 self.assertEqual(0, self._graylog.get_events_count())
