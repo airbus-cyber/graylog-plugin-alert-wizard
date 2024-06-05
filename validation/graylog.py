@@ -118,8 +118,8 @@ class Graylog:
     def delete_event_definition(self, identifier):
         self._api.delete_event_definition(identifier)
 
-    def get_notification_with_title(self, title):
-        return self._api.get_notification_with_title(title)
+    def get_notification(self, identifier):
+        return self._api.get_notification(identifier)
 
     def delete_stream(self, identifier):
         self._api.delete_stream(identifier)

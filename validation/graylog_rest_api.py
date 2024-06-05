@@ -268,14 +268,9 @@ class GraylogRestApi:
         }
         return self._get(f'system/lookup/tables/{table_name}/query?key={key}', params=params)
 
-    # TODO rename into get_notification_by_title
-    # TODO try to remove this method, should not be necessary (use the notification field on the alert rule to retrieve the notification)
-    def get_notification_with_title(self, title):
-        notifications = self._get('events/notifications')
-        for notification in notifications.json()['notifications']:
-            if notification['title'] == title:
-                return notification
-        raise ValueError('Notification not found')
+    def get_notification(self, identifier):
+        response = self._get(f'events/notifications/{identifier}')
+        return response.json()
 
     def get_event_definition(self, identifier):
         response = self._get(f'events/definitions/{identifier}')

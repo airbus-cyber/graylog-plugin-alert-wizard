@@ -55,8 +55,8 @@ class Test(TestCase):
     def test_default_time_range_in_configuration_should_propagate_into_notification_time_range__issue47(self):
         self._graylog.update_logging_alert_plugin_configuration()
         title = 'alert_rule_title'
-        self._graylog.create_alert_rule_count(title, _PERIOD)
-        notification = self._graylog.get_notification_with_title(title)
+        rule = self._graylog.create_alert_rule_count(title, _PERIOD)
+        notification = self._graylog.get_notification(rule['notification'])
         self.assertEqual(1441, notification['config']['aggregation_time'])
 
     def test_get_alert_rule_should_return_correct_additional_threshold_type__issue34(self):
