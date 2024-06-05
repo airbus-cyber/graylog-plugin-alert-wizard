@@ -45,7 +45,9 @@ class TestBrittle(TestCase):
                 inputs.send({'_x': value})
                 # wait for the period (which is, unfortunately expressed in minutes, so it's quite long a wait)
                 # TODO: should improve the API for better testability
+                print(f'events count before sleep: {self._graylog.get_events_count()}')
                 time.sleep(60*_PERIOD)
+                print(f'events count after sleep: {self._graylog.get_events_count()}')
                 inputs.send({'short_message': 'pop'})
 
                 # wait until the event has propagated through graylog

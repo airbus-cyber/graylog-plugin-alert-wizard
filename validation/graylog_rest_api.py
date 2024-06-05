@@ -27,8 +27,9 @@ class GraylogRestApi:
     def _post(self, path, payload=None):
         url = self._build_url(path)
         response = requests.post(url, json=payload, auth=_AUTH, headers=_HEADERS)
-        print(f'POST {url} {payload} => {response.status_code}')
-        return response
+        body = response.json()
+        print(f'POST {url} {payload} => {response.status_code} {body}')
+        return body
 
     def _delete(self, path):
         url = self._build_url(path)
@@ -79,8 +80,7 @@ class GraylogRestApi:
             'type': 'org.graylog2.inputs.gelf.tcp.GELFTCPInput'
         }
         response = self._post('system/inputs', payload)
-        identifier = response.json()['id']
-        return GelfInput(self, identifier)
+        return GelfInput(self, response['id'])
 
     # TODO have rule creation return information about the rule
     def _create_alert_rule(self, title, stream, condition_type, time,
@@ -112,8 +112,7 @@ class GraylogRestApi:
             alert_rule.update({
                 'second_stream': second_stream
             })
-        response = self._post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
-        return response.json()
+        return self._post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
 
     def update_alert_rule(self, rule):
         title = rule['title']
@@ -290,6 +289,5 @@ class GraylogRestApi:
 
     def get_events_count(self):
         response = self._post('events/search', {})
-        body = response.json()
 
-        return body['total_events']
+        return response['total_events']
