@@ -20,6 +20,7 @@ Perfect for example to configure together and at the same time a stream, an aler
 
 | Wizard Plugin Version | Graylog Version |
 |-----------------------|-----------------|
+| 5.2.x                 | 5.1.x           |
 | 5.1.x                 | 5.1.x           |
 | 5.0.x                 | 5.0.x           |
 | 4.5.x                 | 4.3.x           |
@@ -38,6 +39,14 @@ Perfect for example to configure together and at the same time a stream, an aler
 
 
 ## Upgrading
+
+### Upgrading to 5.2.0
+
+The internal representation of alert rules has been drastically changed. The following migration procedure must be followed:
+1. Export rules from the preceding version,
+2. Delete all rules,
+3. Install version 5.2.0,
+4. Import rules.
 
 ### Upgrading to 5.0.0
 Column `Alerts` on the page displaying rules. This field should be removed from the configuration.
