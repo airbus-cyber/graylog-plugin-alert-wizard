@@ -198,7 +198,7 @@ const AlertRuleList = createReactClass({
     _alertInfoFormatter(alert) {
         let alertValid = true;
         let textColor = '';
-        if (alert.condition === null || alert.condition_parameters === null || alert.stream === null) {
+        if (alert.condition === null || alert.condition_parameters === null || alert.stream === null || alert.notification === null) {
             alertValid = false;
             textColor = 'text-danger';
         } else if (alert.disabled) {

@@ -49,9 +49,8 @@ public class NotificationService {
         this.clusterConfigService = clusterConfigService;
     }
 
-    public NotificationDto get(String notificationIdentifier) {
-        return this.notificationService.get(notificationIdentifier)
-                .orElseThrow(() -> new javax.ws.rs.NotFoundException("Notification " + notificationIdentifier + " doesn't exist"));
+    public Optional<NotificationDto> get(String notificationIdentifier) {
+        return this.notificationService.get(notificationIdentifier);
     }
 
     private String create(NotificationDto notification, UserContext userContext) {
@@ -91,8 +90,9 @@ public class NotificationService {
         return this.create(notification, userContext);
     }
 
-    public void updateNotification(String title, String notificationID, String severity) {
-        NotificationDto notification = this.get(notificationID);
+    public void updateNotification(String title, String notificationIdentifier, String severity) {
+        NotificationDto notification = this.get(notificationIdentifier)
+                .orElseThrow(() -> new javax.ws.rs.NotFoundException("Notification " + notificationIdentifier + " doesn't exist"));
         LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) notification.config();
         if (!loggingNotificationConfig.severity().getType().equals(severity) || !notification.title().equals(title)) {
             LOG.debug("Update Notification " + title);

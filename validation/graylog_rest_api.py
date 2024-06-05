@@ -272,6 +272,9 @@ class GraylogRestApi:
         response = self._get(f'events/notifications/{identifier}')
         return response.json()
 
+    def delete_notification(self, identifier):
+        self._delete(f'events/notifications/{identifier}')
+
     def get_event_definition(self, identifier):
         response = self._get(f'events/definitions/{identifier}')
         return response.json()

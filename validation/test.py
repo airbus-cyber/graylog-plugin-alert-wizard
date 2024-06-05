@@ -152,6 +152,12 @@ class Test(TestCase):
         status_code = self._graylog.get_alert_rules()
         self.assertEqual(200, status_code)
 
+    def test_get_all_rules_should_not_fail_when_a_notification_is_deleted_issue116(self):
+        alert_rule = self._graylog.create_alert_rule_count('alert_rule_title', _PERIOD)
+        self._graylog.delete_notification(alert_rule['notification'])
+        status_code = self._graylog.get_alert_rules()
+        self.assertEqual(200, status_code)
+
     def test_set_default_backlog_value_should_change_newly_created_event_definition_backlog_value_issue40(self):
         self._graylog.update_alert_wizard_plugin_configuration(backlog_size=1000)
         title = 'aaa'

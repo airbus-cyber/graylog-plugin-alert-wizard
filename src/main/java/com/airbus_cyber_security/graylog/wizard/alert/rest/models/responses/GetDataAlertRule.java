@@ -38,9 +38,11 @@ public abstract class GetDataAlertRule {
 	@JsonProperty("title")
 	@NotNull
 	public abstract String getTitle();
-	
+
+	// severity can be null, when the rule is corrupted
+	// this may happen, for instance, when the associated notification has been manually deleted
 	@JsonProperty("severity")
-	@NotNull
+	@Nullable
 	public abstract String getSeverity();
 
     @JsonProperty("description")

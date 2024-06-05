@@ -121,6 +121,9 @@ class Graylog:
     def get_notification(self, identifier):
         return self._api.get_notification(identifier)
 
+    def delete_notification(self, identifier):
+        self._api.delete_notification(identifier)
+
     def delete_stream(self, identifier):
         self._api.delete_stream(identifier)
 

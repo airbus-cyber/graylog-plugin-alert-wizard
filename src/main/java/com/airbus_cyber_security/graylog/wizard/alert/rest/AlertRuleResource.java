@@ -146,7 +146,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     }
 
     private GetDataAlertRule constructDataAlertRule(AlertRule alert) {
-        NotificationDto notification = this.notificationService.get(alert.getNotificationID());
         AlertPattern alertPattern = alert.pattern();
         DateTime lastModified = alert.getLastModified();
         Optional<EventDefinitionDto> event = Optional.empty();
@@ -179,7 +178,15 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             alertRuleStream = this.constructAlertRuleStream(conditions);
             isDisabled = this.isDisabled(conditions);
         }
-        LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) notification.config();
+        Optional<NotificationDto> notification = this.notificationService.get(alert.getNotificationID());
+        String severity = null;
+        String notificationIdentifier = null;
+        if (notification.isPresent()) {
+            NotificationDto notificationDto = notification.get();
+            LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) notificationDto.config();
+            severity = loggingNotificationConfig.severity().getType();
+            notificationIdentifier = notificationDto.id();
+        }
 
         String eventIdentifier = null;
         String description = null;
@@ -190,10 +197,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
 
         return GetDataAlertRule.create(alert.getTitle(),
-                loggingNotificationConfig.severity().getType(),
+                severity,
                 eventIdentifier,
                 eventIdentifier2,
-                notification.id(),
+                notificationIdentifier,
                 alert.getCreatedAt(),
                 alert.getCreatorUserId(),
                 lastModified,
