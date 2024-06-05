@@ -53,13 +53,15 @@ class TestBrittle(TestCase):
                 # wait until the event has propagated through graylog
                 # TODO: try to make this code more readable
                 for i in range(60):
-                    events_count = self._graylog.get_events_count()
+                    events_count = self._graylog.get_events_count('aggregation-v1')
                     print(f'events count: {events_count}')
                     if events_count == 1:
                         return
                     time.sleep(1)
                 print(self._graylog.extract_logs())
-                print(self._graylog.get_events())
+                events = self._graylog.get_events()
+                for i in range(events['total_events']):
+                    print(events['events'][i])
                 self.fail('Event not generated within 60 seconds')
 
         # TODO try to put this test back (seems to work locally but not in continuous integration)
@@ -93,4 +95,17 @@ class TestBrittle(TestCase):
                 time.sleep(60)
                 print(f'before assert: {self._graylog.get_events_count()}')
                 print(self._graylog.get_events())
+                events = self._graylog.get_events()
+                for i in range(events['total_events']):
+                    print(events['events'][i])
+                print(self._print_disk_usage())
                 self.assertEqual(0, self._graylog.get_events_count())
+
+        def _print_disk_usage(self):
+            import shutil
+
+            total, used, free = shutil.disk_usage('/')
+
+            print(f'Total: {total // (2**30)} GiB')
+            print(f'Used: {used // (2**30)} GiB')
+            print(f'Free: {free // (2**30)} GiB')
