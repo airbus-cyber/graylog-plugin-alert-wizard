@@ -186,7 +186,7 @@ const AlertRuleForm = createReactClass({
         };
         const buttonCancel = (
             <LinkContainer to={Navigation.getWizardRoute()}>
-                <Button><FormattedMessage id= "wizard.cancel" defaultMessage= "Cancel" /></Button>
+                <Button><FormattedMessage id="wizard.cancel" defaultMessage="Cancel" /></Button>
             </LinkContainer>
         );
 
