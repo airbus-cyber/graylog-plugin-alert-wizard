@@ -15,9 +15,8 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-import PropTypes from 'prop-types';
 import React from 'react';
-import createReactClass from 'create-react-class';
+import PropTypes from 'prop-types';
 import { useIntl, FormattedMessage } from 'react-intl';
 
 import { Input, Row, Col } from 'components/bootstrap';
