@@ -88,17 +88,17 @@ class Graylog:
     def create_alert_rule_or(self, title, time, description=''):
         return self._api.create_alert_rule_or(title, time, description)
 
-    def update_alert_rule(self, rule, new_description):
+    def update_alert_rule(self, previousTitle, rule):
         updated_rule = {
             'title': rule['title'],
             'severity': rule['severity'],
-            'description': new_description,
+            'description': rule['description'],
             'condition_type': rule['condition_type'],
             'condition_parameters': rule['condition_parameters'],
             'stream': rule['stream'],
             'second_stream': rule['second_stream']
         }
-        return self._api.update_alert_rule(updated_rule)
+        return self._api.update_alert_rule(previousTitle, updated_rule)
 
     def create_list(self, *args):
         self._api.create_list(*args)

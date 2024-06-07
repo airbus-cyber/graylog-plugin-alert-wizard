@@ -199,7 +199,7 @@ class Test(TestCase):
     def test_update_alert_should_change_the_alert_description__issue102(self):
         title = 'aaa'
         rule = self._graylog.create_alert_rule_count(title, _PERIOD)
-        self._graylog.update_alert_rule(rule, 'new_description')
+        self._graylog.update_alert_rule(title, {**rule, 'description': 'new_description'})
         alert_rule = self._graylog.get_alert_rule(title)
         self.assertEqual('new_description', alert_rule['description'])
 
@@ -217,7 +217,7 @@ class Test(TestCase):
     def test_update_alert_rule_or_should_update_second_event_definition_description__issue102(self):
         title = 'aaa'
         alert_rule = self._graylog.create_alert_rule_or(title, _PERIOD, description='description')
-        self._graylog.update_alert_rule(alert_rule, 'new description')
+        self._graylog.update_alert_rule(title, {**alert_rule, 'description': 'new description'})
         second_event_definition_identifier = alert_rule['second_event_definition']
         second_event_definition = self._graylog.get_event_definition(second_event_definition_identifier)
         self.assertEqual('new description', second_event_definition['description'])
@@ -241,7 +241,7 @@ class Test(TestCase):
             ],
             'matching_type': 'AND'
         }
-        alert_rule = self._graylog.update_alert_rule(alert_rule, 'new description')
+        alert_rule = self._graylog.update_alert_rule(title, {**alert_rule, 'description': 'new description'})
         second_event_definition_identifier = alert_rule['second_event_definition']
         second_event_definition = self._graylog.get_event_definition(second_event_definition_identifier)
         self.assertEqual('new description', second_event_definition['description'])
