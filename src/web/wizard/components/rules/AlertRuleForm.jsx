@@ -88,10 +88,7 @@ const AlertRuleForm = createReactClass({
     _updateAlertField(field, value) {
         const update = ObjectUtils.clone(this.state.alert);
         update[field] = value;
-        this.setState({alert: update});
-        if (field !== "condition_type") {
-            this.setState({isModified: true});
-        }
+        this.setState({alert: update, isModified: true});
         // TODO why is this check necessary???
         if (value === '') {
             this.setState({isValid: false});
