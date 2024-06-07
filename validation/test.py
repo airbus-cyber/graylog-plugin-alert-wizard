@@ -139,26 +139,39 @@ class Test(TestCase):
         logs = self._graylog.extract_logs()
         self.assertNotIn('ERROR', logs)
 
-    def test_get_all_rules_should_not_fail_when_a_stream_is_deleted_issue105(self):
+    def test_get_all_rules_should_not_fail_when_a_stream_is_deleted__issue105(self):
         title = 'aaa'
         alert_rule = self._graylog.create_alert_rule_count(title, _PERIOD)
         self._graylog.delete_stream(alert_rule['stream']['id'])
         status_code = self._graylog.get_alert_rules()
         self.assertEqual(200, status_code)
 
-    def test_get_all_rules_should_not_fail_when_an_event_definition_is_deleted_issue117(self):
+    def test_get_all_rules_should_not_fail_when_an_event_definition_is_deleted__issue117(self):
         alert_rule = self._graylog.create_alert_rule_count('alert_rule_title', _PERIOD)
         self._graylog.delete_event_definition(alert_rule['condition'])
         status_code = self._graylog.get_alert_rules()
         self.assertEqual(200, status_code)
 
-    def test_get_all_rules_should_not_fail_when_a_notification_is_deleted_issue116(self):
+    def test_get_all_rules_should_not_fail_when_a_notification_is_deleted__issue116(self):
         alert_rule = self._graylog.create_alert_rule_count('alert_rule_title', _PERIOD)
         self._graylog.delete_notification(alert_rule['notification'])
         status_code = self._graylog.get_alert_rules()
         self.assertEqual(200, status_code)
 
-    def test_set_default_backlog_value_should_change_newly_created_event_definition_backlog_value_issue40(self):
+    def test_get_all_rules_should_not_fail_after_rule_with_field_rule_without_type_is_created__issue120(self):
+        stream = {
+            'field_rule': [{
+                'field': 'source',
+                'type': '',
+                'value': 'toto'
+            }],
+            'matching_type': 'AND'
+        }
+        self._graylog.create_alert_rule_count('alert_rule_title', _PERIOD, stream=stream)
+        status_code = self._graylog.get_alert_rules()
+        self.assertEqual(200, status_code)
+
+    def test_set_default_backlog_value_should_change_newly_created_event_definition_backlog_value__issue40(self):
         self._graylog.update_alert_wizard_plugin_configuration(backlog_size=1000)
         title = 'aaa'
         alert_rule = self._graylog.create_alert_rule_count(title, _PERIOD)
@@ -167,14 +180,14 @@ class Test(TestCase):
         backlog_size = event_definition['notification_settings']['backlog_size']
         self.assertEqual(1000, backlog_size)
 
-    def test_create_alert_rule_should_set_event_definition_description_issue102(self):
+    def test_create_alert_rule_should_set_event_definition_description__issue102(self):
         title = 'aaa'
         alert_rule = self._graylog.create_alert_rule_count(title, _PERIOD, description='rule_description')
         event_definition_identifier = alert_rule['condition']
         event_definition = self._graylog.get_event_definition(event_definition_identifier)
         self.assertEqual('rule_description', event_definition['description'])
 
-    def test_get_alert_should_return_the_description_of_the_event_definition_issue102(self):
+    def test_get_alert_should_return_the_description_of_the_event_definition__issue102(self):
         title = 'aaa'
         alert_rule = self._graylog.create_alert_rule_count(title, _PERIOD)
         event_definition = self._graylog.get_event_definition(alert_rule['condition'])
@@ -183,7 +196,7 @@ class Test(TestCase):
         alert_rule = self._graylog.get_alert_rule(title)
         self.assertEqual('new_description', alert_rule['description'])
 
-    def test_update_alert_should_change_the_alert_description_issue102(self):
+    def test_update_alert_should_change_the_alert_description__issue102(self):
         title = 'aaa'
         rule = self._graylog.create_alert_rule_count(title, _PERIOD)
         self._graylog.update_alert_rule(rule, 'new_description')
@@ -194,14 +207,14 @@ class Test(TestCase):
         alert_rule = self._graylog.create_alert_rule_or('aaa', _PERIOD)
         self.assertIn('second_event_definition', alert_rule)
 
-    def test_create_alert_rule_or_should_set_second_event_definition_description_issue102(self):
+    def test_create_alert_rule_or_should_set_second_event_definition_description__issue102(self):
         title = 'aaa'
         alert_rule = self._graylog.create_alert_rule_or(title, _PERIOD, description='second rule description')
         second_event_definition_identifier = alert_rule['second_event_definition']
         second_event_definition = self._graylog.get_event_definition(second_event_definition_identifier)
         self.assertEqual('second rule description', second_event_definition['description'])
 
-    def test_update_alert_rule_or_should_update_second_event_definition_description_issue102(self):
+    def test_update_alert_rule_or_should_update_second_event_definition_description__issue102(self):
         title = 'aaa'
         alert_rule = self._graylog.create_alert_rule_or(title, _PERIOD, description='description')
         self._graylog.update_alert_rule(alert_rule, 'new description')
@@ -214,7 +227,7 @@ class Test(TestCase):
         rule = self._graylog.create_alert_rule_count(title, _PERIOD)
         self.assertIsInstance(rule['condition_parameters']['threshold'], int)
 
-    def test_update_alert_rule_count_to_or_should_update_second_event_definition_description_issue102(self):
+    def test_update_alert_rule_count_to_or_should_update_second_event_definition_description__issue102(self):
         title = 'aaa'
         alert_rule = self._graylog.create_alert_rule_count(title, _PERIOD, description='description')
         alert_rule['condition_type'] = 'OR'
@@ -233,7 +246,7 @@ class Test(TestCase):
         second_event_definition = self._graylog.get_event_definition(second_event_definition_identifier)
         self.assertEqual('new description', second_event_definition['description'])
 
-    def test_create_and_alert_rule_with_pipeline_condition_should_not_trigger_event_when_only_field_matches_issue119(self):
+    def test_create_and_alert_rule_with_pipeline_condition_should_not_trigger_event_when_only_field_matches__issue119(self):
         # Create a list (for example the list "users" with 3 users : toto, tata, titi)
         list_title = 'users'
         self._graylog.create_list(list_title, ['toto', 'tata', 'titi'])
@@ -342,3 +355,18 @@ class Test(TestCase):
                 for i in range(events['total_events']):
                     print(events['events'][i])
                 self.assertEqual(0, self._graylog.get_events_count('aggregation-v1'))
+
+        def test_create_alert_rule_without_field_rule_type__issue120(self):
+            print(f'Initially: {self._graylog.get_events_count()}')
+
+            list_title = 'list'
+            self._graylog.create_list(list_title, ['administrator', 'toto', 'root', 'foobar'])
+            stream = {
+                'field_rule': [{
+                    'field': 'x',
+                    'type': 7,
+                    'value': list_title
+                }],
+                'matching_type': 'AND'
+            }
+            self._graylog.create_alert_rule_count(list_title, _PERIOD, stream=stream)

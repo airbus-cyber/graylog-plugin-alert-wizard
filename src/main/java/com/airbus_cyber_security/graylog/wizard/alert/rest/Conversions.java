@@ -167,15 +167,15 @@ public class Conversions {
     }
 
     private boolean isValidStream(AlertRuleStream stream) {
-        if (stream.getMatchingType().equals(Stream.MatchingType.AND) || stream.getMatchingType().equals(Stream.MatchingType.OR)) {
-            for (FieldRule fieldRule: stream.getFieldRules()) {
-                if (!fieldRulesUtilities.isValidFieldRule(fieldRule)) {
-                    return false;
-                }
-            }
-            return true;
+        if (!stream.getMatchingType().equals(Stream.MatchingType.AND) && !stream.getMatchingType().equals(Stream.MatchingType.OR)) {
+            return false;
         }
-        return false;
+        for (FieldRule fieldRule: stream.getFieldRules()) {
+            if (!fieldRulesUtilities.isValidFieldRule(fieldRule)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private boolean isValidStatThresholdType(String thresholdType) {

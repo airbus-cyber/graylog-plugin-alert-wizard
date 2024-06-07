@@ -44,7 +44,7 @@ public class FieldRulesUtilities {
         if (fieldRule.getType() > 7) {
             return false;
         }
-        return true;
+        return fieldRule.getType() != 0;
     }
 
     public boolean hasStreamRules(List<FieldRule> fieldRules) {

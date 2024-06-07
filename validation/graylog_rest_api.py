@@ -82,12 +82,9 @@ class GraylogRestApi:
         identifier = response.json()['id']
         return GelfInput(self, identifier)
 
-    # TODO have rule creation return information about the rule
     def _create_alert_rule(self, title, stream, condition_type, time,
                            threshold_type='>', additional_threshold_type='', additional_threshold=0, second_stream=None,
-                           group_by_fields=None, distinct_by='', field='', statistics_function='', description=''):
-        if group_by_fields is None:
-            group_by_fields = []
+                           group_by_fields=[], distinct_by='', field='', statistics_function='', description=''):
         alert_rule = {
             'condition_parameters': {
                 'additional_threshold': additional_threshold,
