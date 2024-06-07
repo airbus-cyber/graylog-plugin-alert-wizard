@@ -64,7 +64,6 @@ const AlertRuleForm = createReactClass({
             isValid: false,
             time: time,
             time_type: time_type,
-            contentComponent: <Spinner/>,
         };
     },
     _destructureTime(time) {
@@ -120,24 +119,22 @@ const AlertRuleForm = createReactClass({
         }
     },
     _selectContentComponent() {
-        // TODO try to avoid this clone here!!!!
-        let alert = ObjectUtils.clone(this.state.alert);
-        switch (alert.condition_type) {
+        switch (this.state.alert.condition_type) {
             case 'COUNT':
-                return (<CountCondition onUpdate={this._updateAlertField} alert={alert} message={this.state.message}
+                return (<CountCondition onUpdate={this._updateAlertField} alert={this.state.alert} message={this.state.message}
                                         matchData={this.state.matchData} />);
             case 'GROUP_DISTINCT':
-                return (<GroupDistinctCondition onUpdate={this._updateAlertField} alert={alert} message={this.state.message}
+                return (<GroupDistinctCondition onUpdate={this._updateAlertField} alert={this.state.alert} message={this.state.message}
                                                 matchData={this.state.matchData} />);
             case 'STATISTICAL':
-                return (<StatisticsCondition onUpdate={this._updateAlertField} alert={alert} message={this.state.message}
+                return (<StatisticsCondition onUpdate={this._updateAlertField} alert={this.state.alert} message={this.state.message}
                                              matchData={this.state.matchData} />);
             case 'THEN':
             case 'AND':
-                return (<CorrelationCondition onUpdate={this._updateAlertField} onUpdateAlert={this._updateAlert} alert={alert}
+                return (<CorrelationCondition onUpdate={this._updateAlertField} onUpdateAlert={this._updateAlert} alert={this.state.alert}
                                               message={this.state.message} matchData={this.state.matchData} />);
             case 'OR':
-                return (<OrCondition onUpdate={this._updateAlertField} alert={alert} message={this.state.message}
+                return (<OrCondition onUpdate={this._updateAlertField} alert={this.state.alert} message={this.state.message}
                                      matchData={this.state.matchData} />);
             default:
                 return (<div/>);
@@ -148,7 +145,6 @@ const AlertRuleForm = createReactClass({
             return;
         }
         this._updateAlertField('condition_type', selectedKey);
-        alert.condition_type = selectedKey;
     },
     
     render() {
