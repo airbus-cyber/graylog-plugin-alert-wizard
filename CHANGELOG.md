@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 * The list of alert rules could not be displayed after the deletion of a notification associated to a rule ([issue #116](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/116))
 * The list of alert rules could not be displayed after the deletion of an event definition associated to a rule ([issue #117](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/117))
 * The list of alert rules could not be displayed after an alert with a field condition without the type is created ([issue #120](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/120))
+* The save button did not enable when changing the rule type ([issue #114](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/114))
 ### Changes
 * POST plugins/com.airbus_cyber_security.graylog.wizard/alerts and PUT plugins/com.airbus_cyber_security.graylog.wizard/alerts/{title} field condition_type should be not null
 * When an alert is corrupted (for instance when the associated notification has been manually deleted), the severity field returned by the REST routes may be null
