@@ -95,7 +95,7 @@ const AlertRuleForm = createReactClass({
         } else {
             this._checkAlert(update);
         }
-    },  
+    },
     _updateAlert(alert) {
         this.setState({alert: alert});
         this.setState({isModified: true});
@@ -119,49 +119,36 @@ const AlertRuleForm = createReactClass({
             this.setState({matchData: undefined});
         }
     },
-    _handleSelect(selectedKey) {
+    _selectContentComponent() {
+        // TODO try to avoid this clone here!!!!
         let alert = ObjectUtils.clone(this.state.alert);
-        if (alert.condition_type !== selectedKey) {
-            this._updateAlertField("condition_type", selectedKey);
-            alert.condition_type = selectedKey;
-        }
-
-        switch (selectedKey) {
+        switch (alert.condition_type) {
             case 'COUNT':
-                this.setState({
-                    contentComponent: <CountCondition onUpdate={this._updateAlertField} alert={alert} message={this.state.message}
-                        matchData={this.state.matchData} />
-                });
-                break;
+                return (<CountCondition onUpdate={this._updateAlertField} alert={alert} message={this.state.message}
+                                        matchData={this.state.matchData} />);
             case 'GROUP_DISTINCT':
-                this.setState({
-                    contentComponent: <GroupDistinctCondition onUpdate={this._updateAlertField} alert={alert} message={this.state.message} 
-                        matchData={this.state.matchData} />
-                });
-                break;
+                return (<GroupDistinctCondition onUpdate={this._updateAlertField} alert={alert} message={this.state.message}
+                                                matchData={this.state.matchData} />);
             case 'STATISTICAL':
-                this.setState({
-                    contentComponent: <StatisticsCondition onUpdate={this._updateAlertField} alert={alert} message={this.state.message}
-                        matchData={this.state.matchData} />
-                });
-                break;
+                return (<StatisticsCondition onUpdate={this._updateAlertField} alert={alert} message={this.state.message}
+                                             matchData={this.state.matchData} />);
             case 'THEN':
             case 'AND':
-                this.setState({
-                    contentComponent: <CorrelationCondition onUpdate={this._updateAlertField} onUpdateAlert={this._updateAlert} alert={alert}
-                        message={this.state.message} matchData={this.state.matchData} />
-                });
-                break;
+                return (<CorrelationCondition onUpdate={this._updateAlertField} onUpdateAlert={this._updateAlert} alert={alert}
+                                              message={this.state.message} matchData={this.state.matchData} />);
             case 'OR':
-                this.setState({
-                    contentComponent: <OrCondition onUpdate={this._updateAlertField} alert={alert} message={this.state.message}
-                        matchData={this.state.matchData} />
-                });
-                break;
+                return (<OrCondition onUpdate={this._updateAlertField} alert={alert} message={this.state.message}
+                                     matchData={this.state.matchData} />);
             default:
-                this.setState({contentComponent: <div/>});
-                break;
+                return (<div/>);
         }
+    },
+    _handleSelect(selectedKey) {
+        if (this.state.alert.condition_type === selectedKey) {
+            return;
+        }
+        this._updateAlertField('condition_type', selectedKey);
+        alert.condition_type = selectedKey;
     },
     
     render() {
@@ -225,6 +212,8 @@ const AlertRuleForm = createReactClass({
                 </Nav>
             );
 
+        const contentComponent = this._selectContentComponent();
+
         return (
             <div>
                 <Row>
@@ -244,7 +233,7 @@ const AlertRuleForm = createReactClass({
                         <form className="form-inline">
                             <TitleSeverity onUpdate={this._updateAlertField} title={this.state.alert.title} severity={this.state.alert.severity} />
                             <br/>
-                            {this.state.contentComponent}
+                            {contentComponent}
                         </form>
                         {actions}
                     </Col>
