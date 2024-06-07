@@ -35,6 +35,7 @@ import CorrelationCondition from 'wizard/components/conditions/CorrelationCondit
 import OrCondition from 'wizard/components/conditions/OrCondition'
 import CountCondition from 'wizard/components/conditions/CountCondition'
 import TitleSeverity from 'wizard/components/inputs/TitleSeverity';
+import AlertValidation from 'wizard/logic/AlertValidation';
 
 import styles from './AlertRuleForm.css';
 
@@ -101,46 +102,10 @@ const AlertRuleForm = createReactClass({
     _updateAlert(alert) {
         this.setState({alert: alert});
         this.setState({isModified: true});
-    },  
-    _isRuleValid(rule) {
-        // TODO simplify this condition...
-        if (!(rule.field !== '' &&
-                (rule.type === 5 || rule.type === -5) ||
-                rule.field !== '' && rule.value !== '' &&
-                (rule.type === 1 || rule.type === -1 ||
-                    rule.type === 2 || rule.type === -2 ||
-                    rule.type === 3 || rule.type === -3 ||
-                    rule.type === 4 || rule.type === -4 ||
-                    rule.type === 6 || rule.type === -6) &&
-                    (rule.type === 7 || rule.type === -7) ||
-                rule.field !== '' && rule.value !== '')) {
-            return false;
-        }
-        return true;
     },
-    _isFieldRulesValid(stream) {
-        for (let i = 0; i < stream.field_rule.length; i++) {
-            if (!this._isRuleValid(stream.field_rule[i])){
-                return false;
-            }
-        }
-        return true;
-    },
-    
-    _isAlertValid(alert){
-        if (alert.title !== '' &&
-            alert.stream.matching_type !== '' &&
-            alert.stream.field_rule.length > 0 &&
-            alert.condition_parameters.time !== null &&
-            alert.condition_parameters.threshold_type !== '' &&
-            alert.condition_parameters.threshold !== null && !isNaN(alert.condition_parameters.threshold) &&
-            this._isFieldRulesValid(alert.stream)) {
-                return true;
-            }
-        return false
-    },
+
     _checkAlert(alert) {
-        let isFormValid = this._isAlertValid(alert);
+        let isFormValid = AlertValidation.isAlertValid(alert);
         if (this.state.isValid !== isFormValid) {
             this.setState({isValid: isFormValid});
         }
