@@ -56,7 +56,7 @@ const UpdateAlertPage = ({params}) => {
 
     const _update = (alert) => {
         // TODO simplify parameters here (only one necessary and the code in AlertRuleStore)
-        AlertRuleActions.update(alert.title, alert).then((response) => {
+        AlertRuleActions.update(params.alertRuleTitle, alert).then((response) => {
             if (response !== true) {
                 return;
             }
