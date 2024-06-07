@@ -18,79 +18,58 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
+import { useIntl, FormattedMessage } from 'react-intl';
+
 import { Input, Row, Col } from 'components/bootstrap';
 import { Select } from 'components/common';
-import { injectIntl, FormattedMessage } from 'react-intl';
 
-// TODO convert to a functional component
-const TitleSeverity = createReactClass({
-    displayName: 'TitleSeverity',
+const _AVAILABLE_SEVERITY_TYPES = [
+    {value: 'info', label: <FormattedMessage id="wizard.info" defaultMessage="Info" />},
+    {value: 'low', label: <FormattedMessage id="wizard.low" defaultMessage="Low" />},
+    {value: 'medium', label: <FormattedMessage id="wizard.medium" defaultMessage="Medium" />},
+    {value: 'high', label: <FormattedMessage id="wizard.high" defaultMessage="High" />},
+];
 
-    propTypes: {
-        onUpdate: PropTypes.func,
-    },   
-    getDefaultProps() {
-        return {
-            title: '',
-            severity: '',
-        };
-    },
-    getInitialState() {
-        return {
-            title: this.props.title,
-            severity: this.props.severity,
-        };
-    },
-    _onTitleChanged() {
-        return e => {
-            this.setState({title: e.target.value});
-            this.props.onUpdate('title', e.target.value);
-        };
-    },
-   
-    _availableSeverityTypes() {
-        return [
-            {value: 'info', label: <FormattedMessage id="wizard.info" defaultMessage="Info" />},
-            {value: 'low', label: <FormattedMessage id="wizard.low" defaultMessage="Low" />},
-            {value: 'medium', label: <FormattedMessage id="wizard.medium" defaultMessage="Medium" />},
-            {value: 'high', label: <FormattedMessage id="wizard.high" defaultMessage="High" />},
-        ];
-    },
-    _onSeverityTypeSelect(id) {
-        this.setState({severity: id});
-        this.props.onUpdate('severity', id)
-    },
-    
-    render() {
-        const { intl } = this.props;
+const TitleSeverity = ({title, severity, onUpdate}) => {
+    const intl = useIntl();
 
-        return (
-            <Row>
-                <Col md={2} style={{ marginTop: 10, marginBottom: 0 }}>
-                    <label className="pull-right"><FormattedMessage id="wizard.titleSeverity" defaultMessage="Alert Title and Severity" /></label>
-                </Col>
-                <Col md={10}>
-                    <Input style={{borderTopRightRadius: '0px', borderBottomRightRadius: '0px', height:'36px', width:'450px'}}
-                           ref="title" id="title" name="title" type="text"
-                           onChange={this._onTitleChanged()}
-                           defaultValue={this.state.title}/>
-                    <Input ref="severity" id="severity" name="severity">
-                        <div style={{width:'150px'}}>
-                        <Select
-                            value={this.state.severity}
-                            options={this._availableSeverityTypes()}
-                            matchProp="value"
-                            onChange={this._onSeverityTypeSelect}
-                            clearable={false}
-                            placeholder={intl.formatMessage({id: "wizard.select", defaultMessage: "Select..."})}
-                        />
-                        </div>
-                    </Input>
-                </Col>
-            </Row>
-        );
-        
-    },
-});
+    const _onTitleChanged = (value) => {
+        onUpdate('title', value);
+    };
 
-export default injectIntl(TitleSeverity);
+    const _onSeverityTypeChanged = (value) => {
+        onUpdate('severity', value);
+    };
+
+    return (
+        <Row>
+            <Col md={2} style={{ marginTop: 10, marginBottom: 0 }}>
+                <label className="pull-right"><FormattedMessage id="wizard.titleSeverity" defaultMessage="Alert Title and Severity" /></label>
+            </Col>
+            <Col md={10}>
+                <Input style={{borderTopRightRadius: '0px', borderBottomRightRadius: '0px', height:'36px', width:'450px'}}
+                       id="title" name="title" type="text"
+                       onChange={(e) => _onTitleChanged(e.target.value)}
+                       defaultValue={title}/>
+                <Input id="severity" name="severity">
+                    <div style={{width:'150px'}}>
+                    <Select
+                        value={severity}
+                        options={_AVAILABLE_SEVERITY_TYPES}
+                        matchProp="value"
+                        onChange={_onSeverityTypeChanged}
+                        clearable={false}
+                        placeholder={intl.formatMessage({id: "wizard.select", defaultMessage: "Select..."})}
+                    />
+                    </div>
+                </Input>
+            </Col>
+        </Row>
+    );
+}
+
+TitleSeverity.propTypes = {
+    onUpdate: PropTypes.func,
+};
+
+export default TitleSeverity;
