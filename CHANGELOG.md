@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [5.2.0](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.1.3...5.2.0)
+## [5.2.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/5.1.3...5.2.0)
 ### Bug Fixes
 * Rules where both is in list conditions and other field conditions should match, did not behave correctly ([issue #119](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/119))
 * The list of alert rules could not be displayed after the deletion of a notification associated to a rule ([issue #116](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/116))
@@ -13,11 +13,11 @@ All notable changes to this project will be documented in this file.
 * POST plugins/com.airbus_cyber_security.graylog.wizard/alerts and PUT plugins/com.airbus_cyber_security.graylog.wizard/alerts/{title} field condition_type should be not null
 * When an alert is corrupted (for instance when the associated notification has been manually deleted), the severity field returned by the REST routes may be null
 
-## [5.1.3](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.1.2...5.1.3)
+## [5.1.3](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/5.1.2...5.1.3)
 ### Bug Fixes
 * Update graylog-plugin-logging-alert dependency to [5.1.2](https://github.com/airbus-cyber/graylog-plugin-logging-alert/blob/5.1.2/CHANGELOG.md)
 
-## [5.1.2](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.1.1...5.1.2)
+## [5.1.2](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/5.1.1...5.1.2)
 ### Bug Fixes
 * Fixed layout of buttons in several pages ([issue #121](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/121))
 * Clicking the delete button of a condition was always deleting the last condition ([issue #74](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/74))
@@ -26,17 +26,17 @@ All notable changes to this project will be documented in this file.
 * Update graylog-plugin-correlation-count dependency to [5.1.1](https://github.com/airbus-cyber/graylog-plugin-correlation-count/blob/5.1.1/CHANGELOG.md)
 * Update graylog-plugin-logging-alert dependency to [5.1.1](https://github.com/airbus-cyber/graylog-plugin-logging-alert/blob/5.1.1/CHANGELOG.md)
 
-## [5.1.1](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.1.0...5.1.1)
+## [5.1.1](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/5.1.0...5.1.1)
 ### Bug Fixes
 * Stack-trace when hovering over the user in the table of alert rules. The tooltip is now shown on the header only
 * Incorrect field being updated when a condition of type "is present in list" is selected during rule creation
 * Fixed highlighting of AND, THEN and OR conditions in dark mode
 
-## [5.1.0](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/5.0.0...5.1.0)
+## [5.1.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/5.0.0...5.1.0)
 ### Features
 * Add compatibility with [Graylog 5.1](https://www.graylog.org/post/announcing-graylog-v5-1/)
 
-## [5.0.0](https://github.com/airbus-cyber/graylog-plugin-logging-alert/compare/4.5.0...5.0.0)
+## [5.0.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/4.5.0...5.0.0)
 ### Features
 * Add compatibility with [Graylog 5.0](https://www.graylog.org/post/announcing-graylog-v5-0-8/)
 ### Changes
