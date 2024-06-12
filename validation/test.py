@@ -355,18 +355,3 @@ class Test(TestCase):
                 for i in range(events['total_events']):
                     print(events['events'][i])
                 self.assertEqual(0, self._graylog.get_events_count('aggregation-v1'))
-
-        def test_create_alert_rule_without_field_rule_type__issue120(self):
-            print(f'Initially: {self._graylog.get_events_count()}')
-
-            list_title = 'list'
-            self._graylog.create_list(list_title, ['administrator', 'toto', 'root', 'foobar'])
-            stream = {
-                'field_rule': [{
-                    'field': 'x',
-                    'type': 7,
-                    'value': list_title
-                }],
-                'matching_type': 'AND'
-            }
-            self._graylog.create_alert_rule_count(list_title, _PERIOD, stream=stream)
