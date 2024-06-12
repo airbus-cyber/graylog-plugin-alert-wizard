@@ -25,8 +25,7 @@ import ControlledTableList from 'components/common/ControlledTableList';
 
 const AlertRuleSelectionList = ({alertRules, emptyMessage, onRuleSelectionChanged}) => {
     const [alertTitlesFilter, setAlertTitlesFilter] = useState('');
-    // TODO simplify
-    const [state, setState] = useState({selectedAlertTitles: new Set()});
+    const [selectedAlertTitles, setSelectedAlertTitles] = useState(new Set());
 
     const onSearch = (filter) => {
         setAlertTitlesFilter(filter);
@@ -37,14 +36,14 @@ const AlertRuleSelectionList = ({alertRules, emptyMessage, onRuleSelectionChange
     };
 
     const handleRuleSelect = (event, title) => {
-        const { selectedAlertTitles } = state;
+        let newSelection = selectedAlertTitles
         if (event.target.checked) {
-            selectedAlertTitles.add(title);
+            newSelection.add(title);
         } else {
-            selectedAlertTitles.delete(title);
+            newSelection.delete(title);
         }
-        setState({ selectedAlertTitles: selectedAlertTitles });
-        onRuleSelectionChanged(selectedAlertTitles);
+        setSelectedAlertTitles(newSelection);
+        onRuleSelectionChanged(newSelection);
     };
 
     const formatAlertRule = (alertRule) => {
@@ -53,20 +52,12 @@ const AlertRuleSelectionList = ({alertRules, emptyMessage, onRuleSelectionChange
             <ControlledTableList.Item key={`alertRule_${alertRule.title}`}>
                 <Input id={`alertRule_${alertRule.title}`}
                        type="checkbox"
-                       checked={state.selectedAlertTitles.has(alertRule.title)}
+                       checked={selectedAlertTitles.has(alertRule.title)}
                        onChange={event => handleRuleSelect(event, alertRule.title)}
                        label={alertRule.title} />
                 <p className="description" style={{'margin-left': '20px'}}>{alertRule.description}</p>
             </ControlledTableList.Item>
         );
-    };
-
-    // TODO remove function: write directly formattedAlertRules = ...
-    const formatAlertRules = () => {
-        return alertRules
-            .sort((rule1, rule2) => rule1.title.localeCompare(rule2.title))
-            .filter(rule => rule.title.includes(alertTitlesFilter))
-            .map(formatAlertRule);
     };
 
     const toggleSelectAll = (event) => {
@@ -75,14 +66,19 @@ const AlertRuleSelectionList = ({alertRules, emptyMessage, onRuleSelectionChange
             alertRules.forEach(rule => newSelection.add(rule.title))
         }
 
-        setState({ selectedAlertTitles: newSelection });
+        setSelectedAlertTitles(newSelection);
         onRuleSelectionChanged(newSelection);
     };
 
     // TODO create a method instead
     let alerts
     if (alertRules && alertRules.length !== 0) {
-        const selectedItemsCount = state.selectedAlertTitles.size
+        const formattedAlertRules = alertRules
+            .sort((rule1, rule2) => rule1.title.localeCompare(rule2.title))
+            .filter(rule => rule.title.includes(alertTitlesFilter))
+            .map(formatAlertRule);
+
+        const selectedItemsCount = selectedAlertTitles.size
         const label = <FormattedMessage id="wizard.selected"
                                         defaultMessage="{ruleCount, plural, =0 {Select all} =1 {One rule selected} other {# rules selected}}"
                                         values={{ruleCount: selectedItemsCount}} />
@@ -98,7 +94,7 @@ const AlertRuleSelectionList = ({alertRules, emptyMessage, onRuleSelectionChange
                     />
 
                 </ControlledTableList.Header>
-                {formatAlertRules()}
+                {formattedAlertRules}
             </ControlledTableList>
         )
     } else {
