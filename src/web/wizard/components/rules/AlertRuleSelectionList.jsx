@@ -16,7 +16,7 @@
  */
 
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 import { SearchForm } from 'components/common';
@@ -26,6 +26,10 @@ import ControlledTableList from 'components/common/ControlledTableList';
 const AlertRuleSelectionList = ({alertRules, emptyMessage, onRuleSelectionChanged}) => {
     const [alertTitlesFilter, setAlertTitlesFilter] = useState('');
     const [selectedAlertTitles, setSelectedAlertTitles] = useState(new Set());
+
+    useEffect(() => {
+        setSelectedAlertTitles(new Set());
+    }, [alertRules])
 
     const onSearch = (filter) => {
         setAlertTitlesFilter(filter);

@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 * The list of alert rules could not be displayed after an alert with a field condition without the type is created ([issue #120](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/120))
 * The save button did not enable when changing the rule type ([issue #114](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/114))
 * The save button was enabled without the second block of conditions being filled for rules of type THEN, AND and OR ([issue #86](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/86))
+* In rule export, the selected rules count is reset when another set of rules is imported ([issue #88](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/88))
 ### Changes
 * POST plugins/com.airbus_cyber_security.graylog.wizard/alerts and PUT plugins/com.airbus_cyber_security.graylog.wizard/alerts/{title} field condition_type should be not null
 * When an alert is corrupted (for instance when the associated notification has been manually deleted), the severity field returned by the REST routes may be null
