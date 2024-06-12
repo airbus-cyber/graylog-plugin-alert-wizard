@@ -64,6 +64,15 @@ export default {
         if (!_isFieldRulesValid(alert.stream.field_rule)) {
             return false;
         }
+        if (alert.condition_type === 'THEN' && !_isFieldRulesValid(alert.second_stream.field_rule)) {
+            return false;
+        }
+        if (alert.condition_type === 'AND' && !_isFieldRulesValid(alert.second_stream.field_rule)) {
+            return false;
+        }
+        if (alert.condition_type === 'OR' && !_isFieldRulesValid(alert.second_stream.field_rule)) {
+            return false;
+        }
         return true;
     }
 }

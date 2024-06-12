@@ -18,7 +18,7 @@
 import AlertValidation from './AlertValidation'
 
 describe('AlertValidation.isAlertValid', () => {
-    it('should not work', () => {
+    it('should not fail', () => {
         const alert = {
             title: 'a',
             condition_parameters: {
@@ -59,4 +59,34 @@ describe('AlertValidation.isAlertValid', () => {
         const result = AlertValidation.isAlertValid(alert);
         expect(result).toBe(false);
     });
+
+    it('should validate second stream rule when condition type is THEN', () => {
+        const alert = {
+            title: 'a',
+            condition_type: 'THEN',
+            condition_parameters: {
+                threshold_type: '>',
+                threshold: 0,
+                time: 1,
+            },
+            stream: {
+                matching_type: 'AND',
+                field_rule: [{
+                    field: 'a',
+                    type: '1',
+                    value: 'a'
+                }]
+            },
+            second_stream: {
+                matching_type: 'AND',
+                field_rule: [{
+                    field: '',
+                    type: '',
+                    value: ''
+                }]
+            },
+        };
+        const result = AlertValidation.isAlertValid(alert);
+        expect(result).toBe(false);
+    })
 });
