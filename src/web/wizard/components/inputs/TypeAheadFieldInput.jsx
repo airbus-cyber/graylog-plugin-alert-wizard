@@ -28,12 +28,28 @@ import ApiRoutes from 'routing/ApiRoutes';
 import { qualifyUrl } from 'util/URLUtils';
 import fetch from 'logic/rest/FetchProvider';
 
-// TODO should try to remove this component.
+// TODO should try to remove this component and rather report the issues with this component to Graylog, so that they fix it
 //      this is taken and modified from the graylog TypeAheadFieldInput which has a bug when switching the theme
 //      see https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/118
+// TODO maybe in more recent versions of Graylog this will be fixed?
 const TypeAheadFieldInput = ({defaultValue, onChange}) => {
     const theme = useTheme();
     const fieldInput = useRef(null);
+
+    // TODO The state was added, because otherwise onChange would be called in a context
+    //      where it does not have access the the current value of other states (the context of the jquery event)
+    //      and then when the value of the typeahead field is changed, the other associated inputs of a field rule are cleared :(
+    //      so, instead of directly calling the onChange callback, we set the event value
+    //      and then the effect will call the onChange callback in a context where it works...
+    //   => this bug should be reported to Graylog
+    const [event, setEvent] = useState();
+
+    useEffect(() => {
+        if (event === undefined) {
+            return;
+        }
+        onChange(event);
+    }, [event]);
 
     useEffect(() => {
         fetch('GET', qualifyUrl(ApiRoutes.SystemApiController.fields().url))
@@ -53,7 +69,7 @@ const TypeAheadFieldInput = ({defaultValue, onChange}) => {
         const fieldFormGroup = ReactDOM.findDOMNode(fieldInput.current);
 
         $(fieldFormGroup).on('typeahead:change typeahead:selected', (event) => {
-            onChange(event);
+            setEvent(event);
         });
 
         return () => {
@@ -75,27 +91,4 @@ const TypeAheadFieldInput = ({defaultValue, onChange}) => {
     );
 }
 
-
-// TODO this is a hack, because it seems the callback provided to the TypeAheadFieldInput is called in a context
-//      where it does not have access the the current value of other states
-//      so, instead of directly calling the onChange callback, we set the event value
-//      and then the effect will call the onChange callback in a context where it works...
-//   => try to pinpoint the bug and report to Graylog/or try to use some other widget (react-bootstrap-typeahead)/or try to implement own
-const TypeAheadFieldInputWrapper = ({ defaultValue, onChange }) => {
-    const [event, setEvent] = useState();
-
-    const _onChangeWrapper = () => {
-        if (event === undefined) {
-            return;
-        }
-        onChange(event);
-    }
-
-    useEffect(_onChangeWrapper, [event]);
-
-    return (
-        <TypeAheadFieldInput defaultValue={defaultValue} onChange={setEvent} />
-    )
-}
-
-export default TypeAheadFieldInputWrapper;
+export default TypeAheadFieldInput;
