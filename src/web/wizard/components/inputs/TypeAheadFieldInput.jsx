@@ -16,13 +16,8 @@
  */
 
 import React from 'react';
-import { useEffect, useState } from 'react';
-
-import { withTheme } from 'styled-components';
-import { themePropTypes } from 'theme';
-import isEqual from 'lodash/isEqual';
-
-import PropTypes from 'prop-types';
+import { useEffect, useState, useRef } from 'react';
+import { useTheme } from 'styled-components';
 import ReactDOM from 'react-dom';
 import $ from 'jquery';
 import 'typeahead.js';
@@ -36,100 +31,50 @@ import fetch from 'logic/rest/FetchProvider';
 // TODO should try to remove this component.
 //      this is taken and modified from the graylog TypeAheadFieldInput which has a bug when switching the theme
 //      see https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/118
-class TypeAheadFieldInput extends React.Component {
-    static propTypes = {
-        onChange: PropTypes.func,
-        theme: themePropTypes.isRequired,
-    };
+const TypeAheadFieldInput = ({defaultValue, onChange}) => {
+    const theme = useTheme();
+    const fieldInput = useRef(null);
 
-    static defaultProps = {
-        onChange: () => {},
-    };
-
-    startTypeahead() {
-        const fieldInput = $(this.fieldInput.getInputDOMNode());
-
-        fieldInput.typeahead({
-            hint: true,
-            highlight: true,
-            minLength: 1,
-        }, {
-            name: 'fields',
-            displayKey: 'value',
-            source: this.source,
+    useEffect(() => {
+        fetch('GET', qualifyUrl(ApiRoutes.SystemApiController.fields().url))
+        .then((data) => {
+            $(fieldInput.current.getInputDOMNode()).typeahead({
+                hint: true,
+                highlight: true,
+                minLength: 1,
+            }, {
+                name: 'fields',
+                displayKey: 'value',
+                source: UniversalSearch.substringMatcher(data.fields, 'value', 6),
+            });
         });
-    }
 
-    stopTypeahead() {
-        const fieldInput = $(this.fieldInput.getInputDOMNode());
+        // eslint-disable-next-line react/no-find-dom-node
+        const fieldFormGroup = ReactDOM.findDOMNode(fieldInput.current);
 
-        fieldInput.typeahead('destroy');
-    }
+        $(fieldFormGroup).on('typeahead:change typeahead:selected', (event) => {
+            onChange(event);
+        });
 
-    componentDidMount() {
-        if (this.fieldInput) {
-            const { onChange } = this.props;
+        return () => {
+            $(fieldInput.current.getInputDOMNode()).typeahead('destroy');
 
-            fetch('GET', qualifyUrl(ApiRoutes.SystemApiController.fields().url))
-            .then((data) => {
-                this.source = UniversalSearch.substringMatcher(data.fields, 'value', 6)
-                this.startTypeahead();
-            });
-
-            const fieldInput = $(this.fieldInput.getInputDOMNode());
             // eslint-disable-next-line react/no-find-dom-node
-            const fieldFormGroup = ReactDOM.findDOMNode(this.fieldInput);
-
-            $(fieldFormGroup).on('typeahead:change typeahead:selected', (event) => {
-                if (onChange) {
-                    onChange(event);
-                }
-            });
-        }
-    }
-
-    componentDidUpdate(prevProps) {
-        if (!isEqual(this.props.theme, prevProps.theme)) {
-            const fieldInput = $(this.fieldInput.getInputDOMNode());
-
-            fieldInput.typeahead('destroy');
-            fieldInput.typeahead({
-                  hint: true,
-                  highlight: true,
-                  minLength: 1,
-              }, {
-                  name: 'fields',
-                  displayKey: 'value',
-                  source: this.source,
-              });
-        }
-    }
-
-    componentWillUnmount() {
-        if (this.fieldInput) {
-            this.stopTypeahead();
-
-            const fieldInput = $(this.fieldInput.getInputDOMNode());
-            // eslint-disable-next-line react/no-find-dom-node
-            const fieldFormGroup = ReactDOM.findDOMNode(this.fieldInput);
+            const fieldFormGroup = ReactDOM.findDOMNode(fieldInput.current);
 
             $(fieldFormGroup).off('typeahead:change typeahead:selected');
         }
-    }
+    }, [theme]);
 
-    render() {
-        const { defaultValue } = this.props;
 
-        return (
-            <Input id="field-input" type="text" required name="field"
-                   ref={(fieldInput) => { this.fieldInput = fieldInput; }}
-                   wrapperClassName="typeahead-wrapper"
-                   defaultValue={defaultValue} />
-        );
-    }
+    return (
+        <Input id="field-input" type="text" required name="field"
+               ref={fieldInput}
+               wrapperClassName="typeahead-wrapper"
+               defaultValue={defaultValue} />
+    );
 }
 
-const TypeAheadFieldInputWithTheme = withTheme(TypeAheadFieldInput);
 
 // TODO this is a hack, because it seems the callback provided to the TypeAheadFieldInput is called in a context
 //      where it does not have access the the current value of other states
@@ -149,7 +94,7 @@ const TypeAheadFieldInputWrapper = ({ defaultValue, onChange }) => {
     useEffect(_onChangeWrapper, [event]);
 
     return (
-        <TypeAheadFieldInputWithTheme defaultValue={defaultValue} onChange={setEvent} />
+        <TypeAheadFieldInput defaultValue={defaultValue} onChange={setEvent} />
     )
 }
 
