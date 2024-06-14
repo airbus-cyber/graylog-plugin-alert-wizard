@@ -55,6 +55,10 @@ jest.mock('logic/rest/FetchProvider', () => {
     })
 });
 
+jest.mock('./TypeAheadFieldInput', () => {
+    return () => <></>;
+});
+
 describe('<FieldRuleList>', () => {
     it('should not fail', async () => {
         const rules = [{
