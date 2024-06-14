@@ -24,7 +24,6 @@ import isEqual from 'lodash/isEqual';
 
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
-import Immutable from 'immutable';
 import $ from 'jquery';
 import 'typeahead.js';
 
@@ -39,18 +38,12 @@ import fetch from 'logic/rest/FetchProvider';
 //      see https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/118
 class TypeAheadFieldInput extends React.Component {
   static propTypes = {
-    label: PropTypes.string,
     onChange: PropTypes.func,
-    onBlur: PropTypes.func,
-    error: PropTypes.string,
     theme: themePropTypes.isRequired,
   };
 
   static defaultProps = {
-    label: undefined,
     onChange: () => {},
-    onBlur: () => {},
-    error: undefined,
   };
 
 
@@ -122,24 +115,14 @@ class TypeAheadFieldInput extends React.Component {
     }
   }
 
-  _getFilteredProps = () => {
-    let props = Immutable.fromJS(this.props);
-    props = props.delete('onChange');
-
-    return props.toJS();
-  };
-
   render() {
-    const { label, error, onBlur } = this.props;
+    const { defaultValue } = this.props;
 
     return (
       <Input id="field-input" type="text" required name="field"
              ref={(fieldInput) => { this.fieldInput = fieldInput; }}
-             label={label}
-             onBlur={onBlur}
-             error={error}
              wrapperClassName="typeahead-wrapper"
-             {...this._getFilteredProps()} />
+             defaultValue={defaultValue} />
     );
   }
 }
