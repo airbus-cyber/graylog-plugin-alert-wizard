@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 * The save button did not enable when changing the rule type ([issue #114](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/114))
 * The save button was enabled without the second block of conditions being filled for rules of type THEN, AND and OR ([issue #86](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/86))
 * In rule export, the selected rules count is reset when another set of rules is imported ([issue #88](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/88))
+* Switching the theme did not change the style of the typeahead field input ([issue #118](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/118))
 * Update graylog-plugin-logging-alert dependency to [5.1.3](https://github.com/airbus-cyber/graylog-plugin-logging-alert/blob/5.1.3/CHANGELOG.md)
 ### Changes
 * POST plugins/com.airbus_cyber_security.graylog.wizard/alerts and PUT plugins/com.airbus_cyber_security.graylog.wizard/alerts/{title} field condition_type should be not null
