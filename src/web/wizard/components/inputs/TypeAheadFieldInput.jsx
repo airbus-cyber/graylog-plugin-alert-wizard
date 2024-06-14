@@ -39,9 +39,7 @@ import fetch from 'logic/rest/FetchProvider';
 //      see https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/118
 class TypeAheadFieldInput extends React.Component {
   static propTypes = {
-    id: PropTypes.string.isRequired,
     label: PropTypes.string,
-    autoFocus: PropTypes.bool,
     onChange: PropTypes.func,
     onBlur: PropTypes.func,
     error: PropTypes.string,
@@ -49,7 +47,6 @@ class TypeAheadFieldInput extends React.Component {
   };
 
   static defaultProps = {
-    autoFocus: false,
     label: undefined,
     onChange: () => {},
     onBlur: () => {},
@@ -59,7 +56,7 @@ class TypeAheadFieldInput extends React.Component {
 
   componentDidMount() {
     if (this.fieldInput) {
-      const { autoFocus, onChange } = this.props;
+      const { onChange } = this.props;
       const fieldInput = $(this.fieldInput.getInputDOMNode());
 
       fetch('GET', qualifyUrl(ApiRoutes.SystemApiController.fields().url))
@@ -78,11 +75,6 @@ class TypeAheadFieldInput extends React.Component {
                 source: UniversalSearch.substringMatcher(data.fields, 'value', 6),
               },
             );
-
-            if (autoFocus) {
-              fieldInput.focus();
-              fieldInput.typeahead('close');
-            }
           },
         );
 
@@ -138,10 +130,10 @@ class TypeAheadFieldInput extends React.Component {
   };
 
   render() {
-    const { id, label, error, onBlur } = this.props;
+    const { label, error, onBlur } = this.props;
 
     return (
-      <Input id={id}
+      <Input id="field-input" type="text" required name="field"
              ref={(fieldInput) => { this.fieldInput = fieldInput; }}
              label={label}
              onBlur={onBlur}
@@ -159,7 +151,7 @@ const TypeAheadFieldInputWithTheme = withTheme(TypeAheadFieldInput);
 //      so, instead of directly calling the onChange callback, we set the event value
 //      and then the effect will call the onChange callback in a context where it works...
 //   => try to pinpoint the bug and report to Graylog/or try to use some other widget (react-bootstrap-typeahead)/or try to implement own
-const TypeAheadFieldInputWrapper = ({id, type, required, name, defaultValue, onChange, autoFocus}) => {
+const TypeAheadFieldInputWrapper = ({ defaultValue, onChange }) => {
     const [event, setEvent] = useState();
 
     const _onChangeWrapper = () => {
@@ -172,7 +164,7 @@ const TypeAheadFieldInputWrapper = ({id, type, required, name, defaultValue, onC
     useEffect(_onChangeWrapper, [event]);
 
     return (
-        <TypeAheadFieldInputWithTheme id={id} type={type} required={required} name={name} defaultValue={defaultValue} onChange={setEvent} autoFocus={autoFocus} />
+        <TypeAheadFieldInputWithTheme defaultValue={defaultValue} onChange={setEvent} />
     )
 }
 
