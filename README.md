@@ -165,10 +165,12 @@ MyUser must be a user with admin rights
 
 ## Build
 
-This project is using Maven 3 and requires Java 8 or higher.
+Refer to this [Dockerfile](https://github.com/airbus-cyber/graylog-plugin-logging-alert/blob/master/build_docker/Dockerfile) to use the correct version of Java and Maven.
 
 * Clone this repository.
-* Run `mvn package` to build a JAR file.
+* Clone [graylog2-server](https://github.com/Graylog2/graylog2-server) repository next to this repository.
+* Build Graylog2-server with `mvn compile -DskipTests=true` (in graylog2-server folder)
+* Run `mvn package` to build a JAR file (in this project folder).
 * Optional: Run `mvn jdeb:jdeb` and `mvn rpm:rpm` to create a DEB and RPM package respectively.
 * Copy generated JAR file in target directory to your Graylog plugin directory.
 * Restart the Graylog.
