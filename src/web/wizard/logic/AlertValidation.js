@@ -29,12 +29,15 @@ function _isRuleValid(rule) {
     return true;
 }
 
-function _isFieldRulesValid(field_rules) {
-    if (field_rules.length <= 0) {
+function _isFieldRulesValid(stream) {
+    if (stream === null) {
+        return true;
+    }
+    if (stream.field_rule.length <= 0) {
         return false;
     }
-    for (let i = 0; i < field_rules.length; i++) {
-        if (!_isRuleValid(field_rules[i])){
+    for (let i = 0; i < stream.field_rule.length; i++) {
+        if (!_isRuleValid(stream.field_rule[i])){
             return false;
         }
     }
@@ -61,16 +64,10 @@ export default {
         if (isNaN(alert.condition_parameters.threshold)) {
             return false;
         }
-        if (!_isFieldRulesValid(alert.stream.field_rule)) {
+        if (!_isFieldRulesValid(alert.stream)) {
             return false;
         }
-        if (alert.condition_type === 'THEN' && !_isFieldRulesValid(alert.second_stream.field_rule)) {
-            return false;
-        }
-        if (alert.condition_type === 'AND' && !_isFieldRulesValid(alert.second_stream.field_rule)) {
-            return false;
-        }
-        if (alert.condition_type === 'OR' && !_isFieldRulesValid(alert.second_stream.field_rule)) {
+        if (['THEN', 'AND', 'OR'].includes(alert.condition_type)  && !_isFieldRulesValid(alert.second_stream)) {
             return false;
         }
         return true;
