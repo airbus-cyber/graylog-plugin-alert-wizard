@@ -44,6 +44,10 @@ public abstract class AlertRuleRequest {
     @NotNull
     public abstract String getDescription();
 
+    @JsonProperty("search_query")
+    @NotNull
+    public abstract String getSearchQuery();
+
     // TODO should be an enum. Possible values: COUNT, GROUP_DISTINCT, STATISTICAL, AND, THEN, OR
     @JsonProperty("condition_type")
     @NotNull
@@ -65,10 +69,11 @@ public abstract class AlertRuleRequest {
     public static AlertRuleRequest create(@JsonProperty("title") String title,
                                              @JsonProperty("severity") String severity,
                                              @JsonProperty("description") String description,
+                                             @JsonProperty("search_query") String searchQuery,
                                              @JsonProperty("condition_type") AlertType alertType,
                                              @JsonProperty("condition_parameters") Map<String, Object> conditionParameters,
                                              @JsonProperty("stream") AlertRuleStream stream,
                                              @JsonProperty("second_stream") AlertRuleStream stream2) {
-        return new AutoValue_AlertRuleRequest(title, severity, description, alertType, conditionParameters, stream, stream2);
+        return new AutoValue_AlertRuleRequest(title, severity, description, searchQuery, alertType, conditionParameters, stream, stream2);
     }
 }

@@ -70,8 +70,8 @@ class Graylog:
     def get_alert_rules(self):
         return self._api.get_alert_rules()
 
-    def create_alert_rule_count(self, title, time, stream=_DEFAULT_STREAM, description=''):
-        return self._api.create_alert_rule_count(title, stream, time, description)
+    def create_alert_rule_count(self, title, time, stream=_DEFAULT_STREAM, description='', search_query=''):
+        return self._api.create_alert_rule_count(title, stream, time, description, search_query)
 
     def create_alert_rule_group_distinct(self, *args):
         return self._api.create_alert_rule_group_distinct(*args)
@@ -93,6 +93,7 @@ class Graylog:
             'title': rule['title'],
             'severity': rule['severity'],
             'description': rule['description'],
+            'search_query': rule['search_query'],
             'condition_type': rule['condition_type'],
             'condition_parameters': rule['condition_parameters'],
             'stream': rule['stream'],

@@ -338,7 +338,7 @@ public class Conversions {
         }
     }
 
-    public EventProcessorConfig createAggregationCondition(String streamIdentifier, Map<String, Object> conditionParameter) {
+    public EventProcessorConfig createAggregationCondition(String streamIdentifier, String searchQuery, Map<String, Object> conditionParameter) {
         List<String> groupByFields = (List<String>) conditionParameter.get(GROUPING_FIELDS);
         String distinctBy = (String) conditionParameter.get(DISTINCT_BY);
 
@@ -368,7 +368,7 @@ public class Conversions {
                 .build();
 
         return AggregationEventProcessorConfig.builder()
-                .query("")
+                .query(searchQuery)
                 .streams(streams)
                 .groupBy(groupByFields)
                 .series(ImmutableList.of(series))
@@ -422,7 +422,7 @@ public class Conversions {
         }
     }
 
-    public EventProcessorConfig createStatisticalCondition(String streamID, Map<String, Object> conditionParameter) {
+    public EventProcessorConfig createStatisticalCondition(String streamID, String searchQuery, Map<String, Object> conditionParameter) {
         String type = conditionParameter.get(TYPE).toString();
         LOG.debug("Begin Stat, type: {}", type);
         // TODO extract method to parse searchWithinMs
@@ -444,7 +444,7 @@ public class Conversions {
                 threshold);
 
         return AggregationEventProcessorConfig.builder()
-                .query("")
+                .query(searchQuery)
                 .streams(new HashSet<>(Collections.singleton(streamID)))
                 .series(ImmutableList.of(serie))
                 .groupBy(ImmutableList.of())
@@ -456,11 +456,11 @@ public class Conversions {
                 .build();
     }
 
-    public EventProcessorConfig createEventConfiguration(AlertType alertType, Map<String, Object> conditionParameter, String streamIdentifier) {
+    public EventProcessorConfig createEventConfiguration(AlertType alertType, Map<String, Object> conditionParameter, String streamIdentifier, String searchQuery) {
         if (alertType == AlertType.STATISTICAL) {
-            return createStatisticalCondition(streamIdentifier, conditionParameter);
+            return createStatisticalCondition(streamIdentifier, searchQuery, conditionParameter);
         } else {
-            return createAggregationCondition(streamIdentifier, conditionParameter);
+            return createAggregationCondition(streamIdentifier, searchQuery, conditionParameter);
         }
     }
 }

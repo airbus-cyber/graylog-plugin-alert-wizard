@@ -84,7 +84,8 @@ class GraylogRestApi:
 
     def _create_alert_rule(self, title, stream, condition_type, time,
                            threshold_type='>', additional_threshold_type='', additional_threshold=0, second_stream=None,
-                           group_by_fields=[], distinct_by='', field='', statistics_function='', description=''):
+                           group_by_fields=[], distinct_by='', field='', statistics_function='', description='',
+                           search_query=''):
         alert_rule = {
             'condition_parameters': {
                 'additional_threshold': additional_threshold,
@@ -101,6 +102,7 @@ class GraylogRestApi:
             },
             'condition_type': condition_type,
             'description': description,
+            'search_query': search_query,
             'severity': 'info',
             'stream': stream,
             'title': title
@@ -117,8 +119,8 @@ class GraylogRestApi:
         return response.json()
 
     # TODO have a default value for rule
-    def create_alert_rule_count(self, title, stream, time, description):
-        return self._create_alert_rule(title, stream, 'COUNT', time, description=description)
+    def create_alert_rule_count(self, title, stream, time, description, search_query):
+        return self._create_alert_rule(title, stream, 'COUNT', time, description=description, search_query=search_query)
 
     def create_alert_rule_group_distinct(self, title, rule, group_by_fields, distinct_by, time):
         stream = {

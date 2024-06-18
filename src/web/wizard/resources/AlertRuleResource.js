@@ -28,6 +28,7 @@ function create(newAlert) {
         title: newAlert.title,
         severity: newAlert.severity,
         description: newAlert.description,
+        search_query: newAlert.search_query,
         condition_type: newAlert.condition_type,
         condition_parameters: newAlert.condition_parameters,
         stream: newAlert.stream,

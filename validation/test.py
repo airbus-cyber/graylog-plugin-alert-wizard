@@ -355,3 +355,19 @@ class Test(TestCase):
                 for i in range(events['total_events']):
                     print(events['events'][i])
                 self.assertEqual(0, self._graylog.get_events_count('aggregation-v1'))
+
+    def test_create_alert_rule_should_set_event_definition_search_query__issue124(self):
+        title = 'aaa'
+        alert_rule = self._graylog.create_alert_rule_count(title, _PERIOD, search_query='query1234')
+        event_definition_identifier = alert_rule['condition']
+        event_definition = self._graylog.get_event_definition(event_definition_identifier)
+        self.assertEqual('query1234', event_definition['config']['query'])
+
+    def test_update_alert_rule_should_set_event_definition_search_query__issue124(self):
+        title = 'aaa'
+        rule = self._graylog.create_alert_rule_count(title, _PERIOD, search_query='query1234')
+        self._graylog.update_alert_rule(title, {**rule, 'search_query': 'new_searchquery'})
+        alert_rule = self._graylog.get_alert_rule(title)
+        event_definition_identifier = alert_rule['condition']
+        event_definition = self._graylog.get_event_definition(event_definition_identifier)
+        self.assertEqual('new_searchquery', event_definition['config']['query'])

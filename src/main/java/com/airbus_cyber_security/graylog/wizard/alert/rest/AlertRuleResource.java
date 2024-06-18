@@ -41,6 +41,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.graylog.events.notifications.NotificationDto;
 import org.graylog.events.processor.EventDefinitionDto;
 import org.graylog.events.processor.EventProcessorConfig;
+import org.graylog.events.processor.aggregation.AggregationEventProcessorConfig;
 import org.graylog.events.rest.EventNotificationsResource;
 import org.graylog.plugins.pipelineprocessor.db.*;
 import org.graylog.security.UserContext;
@@ -190,10 +191,14 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         String eventIdentifier = null;
         String description = null;
+        String searchQuery = null;
         if (event.isPresent()) {
             EventDefinitionDto eventDefinitionDto = event.get();
             eventIdentifier = eventDefinitionDto.id();
             description = eventDefinitionDto.description();
+            if(eventDefinitionDto.config() != null && eventDefinitionDto.config() instanceof AggregationEventProcessorConfig) {
+                searchQuery = ((AggregationEventProcessorConfig) eventDefinitionDto.config()).query();
+            }
         }
 
         return GetDataAlertRule.create(alert.getTitle(),
@@ -206,6 +211,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 lastModified,
                 isDisabled,
                 description,
+                searchQuery,
                 alert.getAlertType(),
                 parametersCondition,
                 alertRuleStream,
@@ -387,9 +393,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 return createDisjunctionAlertPattern(notificationIdentifier, request, alertTitle, userContext, userName, conditions);
             default:
                 String description = request.getDescription();
+                String searchQuery = request.getSearchQuery();
                 Map<String, Object> conditionParameters = request.conditionParameters();
                 String streamIdentifier = conditions.outputStreamIdentifier();
-                EventProcessorConfig configuration1 = this.conversions.createEventConfiguration(alertType, conditionParameters, streamIdentifier);
+                EventProcessorConfig configuration1 = this.conversions.createEventConfiguration(alertType, conditionParameters, streamIdentifier, searchQuery);
                 String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, notificationIdentifier, configuration1, userContext);
 
                 return AggregationAlertPattern.builder().conditions(conditions).eventIdentifier(eventIdentifier).build();
@@ -398,14 +405,15 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
     private DisjunctionAlertPattern createDisjunctionAlertPattern(String notificationIdentifier, AlertRuleRequest request, String alertTitle, UserContext userContext, String userName, TriggeringConditions conditions) throws ValidationException {
         String description = request.getDescription();
+        String searchQuery = request.getSearchQuery();
         Map<String, Object> conditionParameters = request.conditionParameters();
 
         TriggeringConditions conditions2 = createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName);
         String streamIdentifier = conditions.outputStreamIdentifier();
-        EventProcessorConfig configuration = this.conversions.createAggregationCondition(streamIdentifier, conditionParameters);
+        EventProcessorConfig configuration = this.conversions.createAggregationCondition(streamIdentifier, searchQuery, conditionParameters);
         String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, notificationIdentifier, configuration, userContext);
         String streamIdentifier2 = conditions2.outputStreamIdentifier();
-        EventProcessorConfig configuration2 = this.conversions.createAggregationCondition(streamIdentifier2, conditionParameters);
+        EventProcessorConfig configuration2 = this.conversions.createAggregationCondition(streamIdentifier2, searchQuery, conditionParameters);
         String eventIdentifier2 = this.eventDefinitionService.createEvent(alertTitle + "#2", description, notificationIdentifier, configuration2, userContext);
 
         return DisjunctionAlertPattern.builder()
@@ -458,11 +466,11 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             TriggeringConditions conditions2 = this.updateTriggeringConditions(previousConditions2, title2, streamConfiguration2, userName);
 
             String streamIdentifier = conditions.outputStreamIdentifier();
-            EventProcessorConfig configuration = this.conversions.createEventConfiguration(request.getConditionType(), request.conditionParameters(), streamIdentifier);
+            EventProcessorConfig configuration = this.conversions.createEventConfiguration(request.getConditionType(), request.conditionParameters(), streamIdentifier, request.getSearchQuery());
             this.eventDefinitionService.updateEvent(title, request.getDescription(), previousPattern.eventIdentifier1(), configuration);
 
             String streamIdentifier2 = conditions2.outputStreamIdentifier();
-            EventProcessorConfig configuration2 = this.conversions.createAggregationCondition(streamIdentifier2, request.conditionParameters());
+            EventProcessorConfig configuration2 = this.conversions.createAggregationCondition(streamIdentifier2, request.getSearchQuery(), request.conditionParameters());
             this.eventDefinitionService.updateEvent(title2, request.getDescription(), previousPattern.eventIdentifier2(), configuration2);
 
             return previousPattern.toBuilder().conditions1(conditions).build();
@@ -470,7 +478,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             TriggeringConditions previousConditions = previousPattern.conditions();
             TriggeringConditions conditions = updateTriggeringConditions(previousConditions, title, streamConfiguration, userName);
             String streamIdentifier = conditions.outputStreamIdentifier();
-            EventProcessorConfig configuration = this.conversions.createEventConfiguration(request.getConditionType(), request.conditionParameters(), streamIdentifier);
+            EventProcessorConfig configuration = this.conversions.createEventConfiguration(request.getConditionType(), request.conditionParameters(), streamIdentifier, request.getSearchQuery());
             this.eventDefinitionService.updateEvent(title, request.getDescription(), previousPattern.eventIdentifier(), configuration);
 
             return previousPattern.toBuilder().conditions(conditions).build();
