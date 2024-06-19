@@ -22,11 +22,11 @@ import createReactClass from 'create-react-class';
 
 import ObjectUtils from 'util/ObjectUtils';
 
-import TitleSeverity from 'wizard/components/inputs/TitleSeverity';
 import FieldsInput from 'wizard/components/inputs/FieldsInput';
 import TimeRangeInput from 'wizard/components/inputs/TimeRangeInput';
 import StatisticalInput from 'wizard/components/inputs/StatisticalInput';
 import Description from 'wizard/components/inputs/Description';
+import SearchQueryInput from "../inputs/SearchQueryInput";
 
 
 // TODO convert into a functional component
@@ -81,14 +81,16 @@ const StatisticsCondition = createReactClass({
                 <TimeRangeInput onUpdate={this._handleChangeCondition} time={time.toString()} time_type={time_type.toString()} />
                 <br/>
                 <StatisticalInput onUpdate={this._handleChangeCondition} type={this.props.alert.condition_parameters.type}
-                            field={this.props.alert.condition_parameters.field} threshold={this.props.alert.condition_parameters.threshold} 
-                            thresholdType={this.props.alert.condition_parameters.threshold_type} />
+                                  field={this.props.alert.condition_parameters.field} threshold={this.props.alert.condition_parameters.threshold}
+                                  thresholdType={this.props.alert.condition_parameters.threshold_type}/>
+                <br/>
+                <SearchQueryInput onUpdate={this.props.onUpdate} search_query={this.props.alert.search_query}/>
                 <br/>
                 <Description onUpdate={this.props.onUpdate} description={this.props.alert.description}/>
                 <br/>
             </>
         );
-        
+
     },
 });
 

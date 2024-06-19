@@ -20,13 +20,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
 import ObjectUtils from 'util/ObjectUtils';
-import TitleSeverity from 'wizard/components/inputs/TitleSeverity';
 import FieldsInput from 'wizard/components/inputs/FieldsInput';
 import NumberInput from 'wizard/components/inputs/NumberInput';
 import TimeRangeInput from 'wizard/components/inputs/TimeRangeInput';
 import GroupByInput from 'wizard/components/inputs/GroupByInput';
 import DistinctInput from 'wizard/components/inputs/DistinctInput';
 import Description from 'wizard/components/inputs/Description';
+import SearchQueryInput from "../inputs/SearchQueryInput";
 
 const GroupDistinctCondition = createReactClass({
     displayName: 'GroupDistinctCondition',
@@ -85,11 +85,13 @@ const GroupDistinctCondition = createReactClass({
                 <br/>
                 <DistinctInput onUpdate={this._handleChangeCondition} distinct_by={this.props.alert.condition_parameters.distinct_by} />
                 <br/>
+                <SearchQueryInput onUpdate={this.props.onUpdate} search_query={this.props.alert.search_query}/>
+                <br/>
                 <Description onUpdate={this.props.onUpdate} description={this.props.alert.description}/>
                 <br/>
             </>
         );
-        
+
     },
 });
 
