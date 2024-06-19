@@ -293,7 +293,7 @@ public class Conversions {
 
     // TODO move method to AlertRuleUtils?
     // TODO instead of a String, the type could already be a com.airbus_cyber_security.graylog.events.processor.correlation.checks.OrderType
-    EventProcessorConfig createCorrelationCondition(AlertType type, String streamID, String streamID2, Map<String, Object> conditionParameter) {
+    EventProcessorConfig createCorrelationCondition(AlertType type, String streamID, String streamID2, String searchQuery, Map<String, Object> conditionParameter) {
         OrderType messageOrder;
         if (type == AlertType.THEN) {
             messageOrder = OrderType.AFTER;
@@ -321,7 +321,7 @@ public class Conversions {
                 // TODO CorrelationCountProcessorConfig.groupingFields should be of type List (or better just Collection/Iterable) rather than Set
                 .groupingFields((List<String>) conditionParameter.get(GROUPING_FIELDS))
                 .comment(Description.COMMENT_ALERT_WIZARD)
-                .searchQuery("*")
+                .searchQuery(searchQuery)
                 .build();
     }
 

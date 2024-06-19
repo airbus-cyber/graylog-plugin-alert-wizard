@@ -19,6 +19,7 @@
 package com.airbus_cyber_security.graylog.wizard.alert.rest;
 
 import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
+import com.airbus_cyber_security.graylog.events.processor.correlation.CorrelationCountProcessorConfig;
 import com.airbus_cyber_security.graylog.wizard.alert.business.*;
 import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleService;
 import com.airbus_cyber_security.graylog.wizard.alert.model.*;
@@ -196,8 +197,13 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             EventDefinitionDto eventDefinitionDto = event.get();
             eventIdentifier = eventDefinitionDto.id();
             description = eventDefinitionDto.description();
-            if(eventDefinitionDto.config() != null && eventDefinitionDto.config() instanceof AggregationEventProcessorConfig) {
-                searchQuery = ((AggregationEventProcessorConfig) eventDefinitionDto.config()).query();
+            if(eventDefinitionDto.config() != null) {
+                if(eventDefinitionDto.config() instanceof AggregationEventProcessorConfig) {
+                    searchQuery = ((AggregationEventProcessorConfig) eventDefinitionDto.config()).query();
+                }
+                if(eventDefinitionDto.config() instanceof CorrelationCountProcessorConfig) {
+                    searchQuery = ((CorrelationCountProcessorConfig) eventDefinitionDto.config()).searchQuery();
+                }
             }
         }
 
@@ -423,13 +429,14 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
     private CorrelationAlertPattern createCorrelationAlertPattern(String notificationIdentifier, AlertRuleRequest request, String alertTitle, UserContext userContext, String userName, TriggeringConditions conditions) throws ValidationException {
         String description = request.getDescription();
+        String searchQuery = request.getSearchQuery();
         AlertType alertType = request.getConditionType();
         Map<String, Object> conditionParameters = request.conditionParameters();
 
         TriggeringConditions conditions2 = createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName);
         String streamIdentifier = conditions.outputStreamIdentifier();
         String streamIdentifier2 = conditions2.outputStreamIdentifier();
-        EventProcessorConfig configuration = this.conversions.createCorrelationCondition(alertType, streamIdentifier, streamIdentifier2, conditionParameters);
+        EventProcessorConfig configuration = this.conversions.createCorrelationCondition(alertType, streamIdentifier, streamIdentifier2, searchQuery, conditionParameters);
         String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, notificationIdentifier, configuration, userContext);
         return CorrelationAlertPattern.builder().conditions1(conditions).conditions2(conditions2).eventIdentifier(eventIdentifier).build();
     }
@@ -455,7 +462,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
             String streamIdentifier = conditions.outputStreamIdentifier();
             String streamIdentifier2 = conditions2.outputStreamIdentifier();
-            EventProcessorConfig configuration = this.conversions.createCorrelationCondition(alertType, streamIdentifier, streamIdentifier2, request.conditionParameters());
+            EventProcessorConfig configuration = this.conversions.createCorrelationCondition(alertType, streamIdentifier, streamIdentifier2, request.getSearchQuery(), request.conditionParameters());
             this.eventDefinitionService.updateEvent(title, request.getDescription(), previousPattern.eventIdentifier(), configuration);
 
             return previousPattern.toBuilder().conditions1(conditions).build();

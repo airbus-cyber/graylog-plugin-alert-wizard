@@ -29,6 +29,7 @@ import Description from 'wizard/components/inputs/Description';
 import GroupByInput from 'wizard/components/inputs/GroupByInput';
 import IconArrowsV from 'wizard/components/icons/ArrowsV';
 import HighlightedDiv from 'wizard/components/containers/HighlightedDiv';
+import SearchQueryInput from "wizard/components/inputs/SearchQueryInput";
 
 const STREAM = {
     matching_type: '',
@@ -152,11 +153,12 @@ const CorrelationCondition = createReactClass({
                 <br/>
                 <GroupByInput onUpdate={this._handleChangeCondition} grouping_fields={this.state.alert.condition_parameters.grouping_fields} />
                 <br/>
+                <SearchQueryInput onUpdate={this.props.onUpdate} search_query={this.props.alert.search_query}/>
+                <br/>
                 <Description onUpdate={this.props.onUpdate} description={this.state.alert.description}/>
                 <br/>
             </>
         );
-        
     },
 });
 
