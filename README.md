@@ -20,7 +20,7 @@ Perfect for example to configure together and at the same time a stream, an aler
 
 | Wizard Plugin Version | Graylog Version |
 |-----------------------|-----------------|
-| 5.2.x                 | 5.1.x           |
+| 5.2.x                 | 5.1.x (>=5.1.13) |
 | 5.1.x                 | 5.1.x           |
 | 5.0.x                 | 5.0.x           |
 | 4.5.x                 | 4.3.x           |
