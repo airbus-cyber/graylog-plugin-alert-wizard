@@ -33,9 +33,7 @@ describe('AlertValidation.isAlertValid', () => {
                     type: '1',
                     value: 'a'
                 }]
-            },
-            condition_type: 'AND',
-            second_stream: null
+            }
         };
         const result = AlertValidation.isAlertValid(alert);
         expect(result).toBe(true);
