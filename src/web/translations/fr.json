@@ -25,7 +25,7 @@
   "wizard.descripionParameters": "Définir les paramètres de la règle d'alerte",
   "wizard.titleAdvancedParameters": "Paramètres avancés (optionnel)",
   "wizard.titleDescription": "Description (optionnel)",
-  "wizard.titleSearchQuery": "Requête de recherche (optionnel)",
+  "wizard.titleSearchQuery": "Requête de recherche",
   "wizard.descriptionAlert": "Définir la description de la règle d'alerte",
   "wizard.titleSeverity": "Titre et sévérité de l'alerte",
   "wizard.fieldsCondition": "Condition sur les champs",

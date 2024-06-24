@@ -89,6 +89,8 @@ const OrCondition = createReactClass({
         return (
             <>
                 <HighlightedDiv>
+                    <SearchQueryInput onUpdate={this._handleChangeCondition} search_query={this.props.alert.condition_parameters.search_query} />
+                    <br/>
                     <FieldsInput stream={this.props.alert.stream} onSaveStream={this._handleChangeStream} message={this.props.message}
                                     matchData={this.props.matchData} />
                 </HighlightedDiv>
@@ -96,6 +98,8 @@ const OrCondition = createReactClass({
                 <Row style={{ marginBottom: '0px' }}><Col md={2} /><Col md={10}><label><FormattedMessage id= "wizard.or" defaultMessage= "OR" /></label></Col></Row>
                 <br/>
                 <HighlightedDiv>
+                    <SearchQueryInput onUpdate={this._handleChangeCondition} search_query={this.props.alert.condition_parameters.additional_search_query} fieldName='additional_search_query' />
+                    <br/>
                     <FieldsInput stream={this.props.alert.second_stream} onSaveStream={this._handleChangeSecondStream} message={this.props.message} />
                 </HighlightedDiv>
                 <br/>
@@ -103,8 +107,6 @@ const OrCondition = createReactClass({
                                 threshold_type={this.props.alert.condition_parameters.threshold_type} />
                 <br/>
                 <TimeRangeInput onUpdate={this._handleChangeCondition} time={time.toString()} time_type={time_type.toString()} />
-                <br/>
-                <SearchQueryInput onUpdate={this.props.onUpdate} search_query={this.props.alert.search_query}/>
                 <br/>
                 <Description onUpdate={this.props.onUpdate} description={this.props.alert.description}/>
                 <br/>

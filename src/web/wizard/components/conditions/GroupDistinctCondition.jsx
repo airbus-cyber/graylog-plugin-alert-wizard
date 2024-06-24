@@ -73,6 +73,8 @@ const GroupDistinctCondition = createReactClass({
         
         return (
             <>
+                <SearchQueryInput onUpdate={this._handleChangeCondition} search_query={this.props.alert.condition_parameters.search_query}/>
+                <br/>
                 <FieldsInput stream={this.props.alert.stream} onSaveStream={this._handleChangeStream} message={this.props.message}
                                 matchData={this.props.matchData} />
                 <br/>
@@ -84,8 +86,6 @@ const GroupDistinctCondition = createReactClass({
                 <GroupByInput onUpdate={this._handleChangeCondition} grouping_fields={this.props.alert.condition_parameters.grouping_fields} />
                 <br/>
                 <DistinctInput onUpdate={this._handleChangeCondition} distinct_by={this.props.alert.condition_parameters.distinct_by} />
-                <br/>
-                <SearchQueryInput onUpdate={this.props.onUpdate} search_query={this.props.alert.search_query}/>
                 <br/>
                 <Description onUpdate={this.props.onUpdate} description={this.props.alert.description}/>
                 <br/>

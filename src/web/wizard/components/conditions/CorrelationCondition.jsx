@@ -98,8 +98,10 @@ const CorrelationCondition = createReactClass({
         let alert = ObjectUtils.clone(this.state.alert);
         alert.stream = this.state.alert.second_stream ? this.state.alert.second_stream : STREAM;
         alert.second_stream = this.state.alert.stream ? this.state.alert.stream : STREAM;
+        alert.condition_parameters.search_query = this.state.alert.condition_parameters.additional_search_query;
         alert.condition_parameters.threshold = this.state.alert.condition_parameters.additional_threshold;
         alert.condition_parameters.threshold_type = this.state.alert.condition_parameters.additional_threshold_type;
+        alert.condition_parameters.additional_search_query = this.state.alert.condition_parameters.search_query;
         alert.condition_parameters.additional_threshold = this.state.alert.condition_parameters.threshold;
         alert.condition_parameters.additional_threshold_type = this.state.alert.condition_parameters.threshold_type;
         this.setState({alert:alert});
@@ -133,6 +135,8 @@ const CorrelationCondition = createReactClass({
         return (
             <>
                 <HighlightedDiv>
+                    <SearchQueryInput onUpdate={this._handleChangeCondition} search_query={this.props.alert.condition_parameters.search_query}/>
+                    <br/>
                     <FieldsInput stream={this.state.alert.stream} onSaveStream={this._handleChangeStream} message={this.props.message}
                                     matchData={this.props.matchData} />
                     <br/>
@@ -143,6 +147,8 @@ const CorrelationCondition = createReactClass({
                 {label}
                 <br/>
                 <HighlightedDiv>
+                    <SearchQueryInput onUpdate={this._handleChangeCondition} search_query={this.props.alert.condition_parameters.additional_search_query} fieldName='additional_search_query' />
+                    <br/>
                     <FieldsInput stream={this.state.alert.second_stream} onSaveStream={this._handleChangeSecondStream} message={this.props.message} />
                     <br/>
                     <NumberInput onUpdate={this._handleChangeAdditionalNbrCond} threshold={this.state.alert.condition_parameters.additional_threshold}
@@ -152,8 +158,6 @@ const CorrelationCondition = createReactClass({
                 <TimeRangeInput onUpdate={this._handleChangeCondition} time={time.toString()} time_type={time_type.toString()} />
                 <br/>
                 <GroupByInput onUpdate={this._handleChangeCondition} grouping_fields={this.state.alert.condition_parameters.grouping_fields} />
-                <br/>
-                <SearchQueryInput onUpdate={this.props.onUpdate} search_query={this.props.alert.search_query}/>
                 <br/>
                 <Description onUpdate={this.props.onUpdate} description={this.state.alert.description}/>
                 <br/>

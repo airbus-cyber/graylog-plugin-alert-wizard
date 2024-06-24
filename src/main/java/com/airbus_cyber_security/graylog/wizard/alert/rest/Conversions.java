@@ -69,6 +69,8 @@ public class Conversions {
     private static final String THRESHOLD = "threshold";
     private static final String THRESHOLD_TYPE_MORE = ">";
     private static final String THRESHOLD_TYPE_LESS = "<";
+    private static final String SEARCH_QUERY = "search_query";
+    private static final String ADDITIONAL_SEARCH_QUERY = "additional_search_query";
 
     private final FieldRulesUtilities fieldRulesUtilities;
 
@@ -135,11 +137,14 @@ public class Conversions {
                 parametersCondition.put(TIME, this.convertMillisecondsToMinutes(correlationConfig.searchWithinMs()));
                 parametersCondition.put(GROUPING_FIELDS, correlationConfig.groupingFields());
                 parametersCondition.put(GRACE, this.convertMillisecondsToMinutes(correlationConfig.executeEveryMs()));
+                parametersCondition.put(SEARCH_QUERY, correlationConfig.searchQuery());
+                parametersCondition.put(ADDITIONAL_SEARCH_QUERY, correlationConfig.additionalSearchQuery());
                 break;
             case "aggregation-v1":
                 AggregationEventProcessorConfig aggregationConfig = (AggregationEventProcessorConfig) eventConfig;
                 parametersCondition.put(TIME, this.convertMillisecondsToMinutes(aggregationConfig.searchWithinMs()));
                 parametersCondition.put(GRACE, this.convertMillisecondsToMinutes(aggregationConfig.executeEveryMs()));
+                parametersCondition.put(SEARCH_QUERY, aggregationConfig.query());
                 parametersCondition.put(THRESHOLD, convertThreshold(aggregationConfig.conditions().get().expression().get()));
                 parametersCondition.put(THRESHOLD_TYPE, aggregationConfig.conditions().get().expression().get().expr());
                 AggregationSeries series = aggregationConfig.series().get(0);
@@ -293,7 +298,7 @@ public class Conversions {
 
     // TODO move method to AlertRuleUtils?
     // TODO instead of a String, the type could already be a com.airbus_cyber_security.graylog.events.processor.correlation.checks.OrderType
-    EventProcessorConfig createCorrelationCondition(AlertType type, String streamID, String streamID2, String searchQuery, Map<String, Object> conditionParameter) {
+    EventProcessorConfig createCorrelationCondition(AlertType type, String streamID, String streamID2, Map<String, Object> conditionParameter) {
         OrderType messageOrder;
         if (type == AlertType.THEN) {
             messageOrder = OrderType.AFTER;
@@ -302,6 +307,8 @@ public class Conversions {
         }
         String thresholdType = convertThresholdTypeToCorrelation((String) conditionParameter.get(THRESHOLD_TYPE));
         String additionalThresholdType = convertThresholdTypeToCorrelation((String) conditionParameter.get(ADDITIONAL_THRESHOLD_TYPE));
+        String searchQuery = (String) conditionParameter.get(SEARCH_QUERY);
+        String additionalSearchQuery = (String) conditionParameter.get(ADDITIONAL_SEARCH_QUERY);
 
         int threshold = this.accessThreshold(conditionParameter);
 
@@ -322,6 +329,7 @@ public class Conversions {
                 .groupingFields((List<String>) conditionParameter.get(GROUPING_FIELDS))
                 .comment(Description.COMMENT_ALERT_WIZARD)
                 .searchQuery(searchQuery)
+                .additionalSearchQuery(additionalSearchQuery)
                 .build();
     }
 
@@ -338,7 +346,11 @@ public class Conversions {
         }
     }
 
-    public EventProcessorConfig createAggregationCondition(String streamIdentifier, String searchQuery, Map<String, Object> conditionParameter) {
+    public EventProcessorConfig createAggregationCondition(String streamIdentifier, Map<String, Object> conditionParameter) {
+        return createAggregationCondition(streamIdentifier, conditionParameter, false);
+    }
+
+    public EventProcessorConfig createAggregationCondition(String streamIdentifier, Map<String, Object> conditionParameter, boolean useAdditionalSearchQuery) {
         List<String> groupByFields = (List<String>) conditionParameter.get(GROUPING_FIELDS);
         String distinctBy = (String) conditionParameter.get(DISTINCT_BY);
 
@@ -366,6 +378,8 @@ public class Conversions {
         AggregationConditions conditions = AggregationConditions.builder()
                 .expression(expression)
                 .build();
+
+        String searchQuery = useAdditionalSearchQuery ? (String) conditionParameter.get(ADDITIONAL_SEARCH_QUERY) : (String) conditionParameter.get(SEARCH_QUERY);
 
         return AggregationEventProcessorConfig.builder()
                 .query(searchQuery)
@@ -422,7 +436,7 @@ public class Conversions {
         }
     }
 
-    public EventProcessorConfig createStatisticalCondition(String streamID, String searchQuery, Map<String, Object> conditionParameter) {
+    public EventProcessorConfig createStatisticalCondition(String streamID, Map<String, Object> conditionParameter) {
         String type = conditionParameter.get(TYPE).toString();
         LOG.debug("Begin Stat, type: {}", type);
         // TODO extract method to parse searchWithinMs
@@ -443,6 +457,8 @@ public class Conversions {
                 conditionParameter.get(THRESHOLD_TYPE).toString(),
                 threshold);
 
+        String searchQuery = (String) conditionParameter.get(SEARCH_QUERY);
+
         return AggregationEventProcessorConfig.builder()
                 .query(searchQuery)
                 .streams(new HashSet<>(Collections.singleton(streamID)))
@@ -456,11 +472,11 @@ public class Conversions {
                 .build();
     }
 
-    public EventProcessorConfig createEventConfiguration(AlertType alertType, Map<String, Object> conditionParameter, String streamIdentifier, String searchQuery) {
+    public EventProcessorConfig createEventConfiguration(AlertType alertType, Map<String, Object> conditionParameter, String streamIdentifier) {
         if (alertType == AlertType.STATISTICAL) {
-            return createStatisticalCondition(streamIdentifier, searchQuery, conditionParameter);
+            return createStatisticalCondition(streamIdentifier, conditionParameter);
         } else {
-            return createAggregationCondition(streamIdentifier, searchQuery, conditionParameter);
+            return createAggregationCondition(streamIdentifier, conditionParameter);
         }
     }
 }

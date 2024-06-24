@@ -78,15 +78,15 @@ const CountCondition = createReactClass({
         
         return (
             <>
+                <SearchQueryInput onUpdate={this._handleChangeCondition} search_query={this.props.alert.condition_parameters.search_query}/>
+                <br/>
                 <FieldsInput stream={this.props.alert.stream} onSaveStream={this._handleChangeStream} message={this.props.message}
-                                matchData={this.props.matchData} />
+                    matchData={this.props.matchData} />
                 <br/>
                 <NumberInput onUpdate={this._handleChangeCondition} threshold={this.props.alert.condition_parameters.threshold}
                                 threshold_type={this.props.alert.condition_parameters.threshold_type} />
                 <br/>
                 <TimeRangeInput onUpdate={this._handleChangeCondition} time={time.toString()} time_type={time_type.toString()} />
-                <br/>
-                <SearchQueryInput onUpdate={this.props.onUpdate} search_query={this.props.alert.search_query}/>
                 <br/>
                 <Description onUpdate={this.props.onUpdate} description={this.props.alert.description}/>
                 <br/>

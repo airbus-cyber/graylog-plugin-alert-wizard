@@ -49,10 +49,6 @@ public abstract class GetDataAlertRule {
     @Nullable
     public abstract String getDescription();
 
-	@JsonProperty("search_query")
-	@Nullable
-	public abstract String getSearchQuery();
-
     @JsonProperty("condition_type")
     @Nullable
     public abstract AlertType getConditionType();
@@ -115,12 +111,11 @@ public abstract class GetDataAlertRule {
                                           @JsonProperty("created_at") DateTime lastModified,
                                           @JsonProperty("disabled") boolean isDisabled,
                                           @JsonProperty("description") String description,
-										  @JsonProperty("search_query") String searchQuery,
                                           @JsonProperty("condition_type") AlertType alertType,
                                           @JsonProperty("condition_parameters") Map<String, Object> conditionParameters,
                                           @JsonProperty("stream") AlertRuleStream stream,
                                           @JsonProperty("second_stream") AlertRuleStream stream2) {
-		return new AutoValue_GetDataAlertRule(title, severity, description, searchQuery, alertType, conditionParameters, stream, stream2,
+		return new AutoValue_GetDataAlertRule(title, severity, description, alertType, conditionParameters, stream, stream2,
 				eventDefinitionIdentifier, secondEventDefinitionIdentifier, notificationIdentifier, createdAt, creatorUserIdentifier,
 				lastModified, isDisabled);
 	}

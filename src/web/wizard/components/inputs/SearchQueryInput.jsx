@@ -27,20 +27,23 @@ const SearchQueryInput = createReactClass({
 
     propTypes: {
         onUpdate: PropTypes.func,
+        fieldName: PropTypes.string
     },
     getDefaultProps() {
         return {
             search_query:'',
+            fieldName: 'search_query'
         };
     },
     getInitialState() {
         return {
-            search_query:this.props.search_query,
+            search_query: this.props.search_query,
+            fieldName: this.props.fieldName
         };
     },
-    _onValueChanged(field) {
+    _onValueChanged() {
         return e => {
-            this.props.onUpdate(field, e.target.value);
+            this.props.onUpdate(this.props.fieldName, e.target.value);
         };
     },
 
@@ -53,7 +56,7 @@ const SearchQueryInput = createReactClass({
                 <Col md={10}>
                     <Input style={{borderTopRightRadius: '0px', borderBottomRightRadius: '0px', height:'36px', width:'600px'}}
                            id="search_query" name="search_query" type="text"
-                           onChange={this._onValueChanged("search_query")}
+                           onChange={this._onValueChanged()}
                            defaultValue={this.state.search_query}/>
                 </Col>
             </Row>

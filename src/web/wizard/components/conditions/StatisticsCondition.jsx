@@ -75,6 +75,8 @@ const StatisticsCondition = createReactClass({
         
         return (
             <>
+                <SearchQueryInput onUpdate={this._handleChangeCondition} search_query={this.props.alert.condition_parameters.search_query} />
+                <br/>
                 <FieldsInput stream={this.props.alert.stream} onSaveStream={this._handleChangeStream} message={this.props.message}
                             matchData={this.props.matchData} />
                 <br/>
@@ -83,8 +85,6 @@ const StatisticsCondition = createReactClass({
                 <StatisticalInput onUpdate={this._handleChangeCondition} type={this.props.alert.condition_parameters.type}
                                   field={this.props.alert.condition_parameters.field} threshold={this.props.alert.condition_parameters.threshold}
                                   thresholdType={this.props.alert.condition_parameters.threshold_type}/>
-                <br/>
-                <SearchQueryInput onUpdate={this.props.onUpdate} search_query={this.props.alert.search_query}/>
                 <br/>
                 <Description onUpdate={this.props.onUpdate} description={this.props.alert.description}/>
                 <br/>

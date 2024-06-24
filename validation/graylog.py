@@ -131,7 +131,6 @@ class Graylog:
     def get_events(self):
         return self._api.get_events()
 
-
     def get_events_count(self, event_definition_type=None):
         response = self.get_events()
         total = response['total_events']
