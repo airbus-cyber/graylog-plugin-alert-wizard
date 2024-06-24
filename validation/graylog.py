@@ -93,7 +93,6 @@ class Graylog:
             'title': rule['title'],
             'severity': rule['severity'],
             'description': rule['description'],
-            'search_query': rule['search_query'],
             'condition_type': rule['condition_type'],
             'condition_parameters': rule['condition_parameters'],
             'stream': rule['stream'],

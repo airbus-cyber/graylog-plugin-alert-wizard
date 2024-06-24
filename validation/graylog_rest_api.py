@@ -85,9 +85,11 @@ class GraylogRestApi:
     def _create_alert_rule(self, title, stream, condition_type, time,
                            threshold_type='>', additional_threshold_type='', additional_threshold=0, second_stream=None,
                            group_by_fields=[], distinct_by='', field='', statistics_function='', description='',
-                           search_query=''):
+                           search_query='', additional_search_query=''):
         alert_rule = {
             'condition_parameters': {
+                'search_query': search_query,
+                'additional_search_query': additional_search_query,
                 'additional_threshold': additional_threshold,
                 'additional_threshold_type': additional_threshold_type,
                 'backlog': 500,
@@ -102,7 +104,6 @@ class GraylogRestApi:
             },
             'condition_type': condition_type,
             'description': description,
-            'search_query': search_query,
             'severity': 'info',
             'stream': stream,
             'title': title

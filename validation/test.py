@@ -241,6 +241,7 @@ class Test(TestCase):
             ],
             'matching_type': 'AND'
         }
+        alert_rule['condition_parameters']['additional_search_query'] = ''
         alert_rule = self._graylog.update_alert_rule(title, {**alert_rule, 'description': 'new description'})
         second_event_definition_identifier = alert_rule['second_event_definition']
         second_event_definition = self._graylog.get_event_definition(second_event_definition_identifier)
@@ -366,8 +367,10 @@ class Test(TestCase):
     def test_update_alert_rule_should_set_event_definition_search_query__issue124(self):
         title = 'aaa'
         rule = self._graylog.create_alert_rule_count(title, _PERIOD, search_query='query1234')
-        self._graylog.update_alert_rule(title, {**rule, 'search_query': 'new_searchquery'})
+        updated_rule = rule.copy()
+        updated_rule['condition_parameters']['search_query'] = 'new_search_query'
+        self._graylog.update_alert_rule(title, updated_rule)
         alert_rule = self._graylog.get_alert_rule(title)
         event_definition_identifier = alert_rule['condition']
         event_definition = self._graylog.get_event_definition(event_definition_identifier)
-        self.assertEqual('new_searchquery', event_definition['config']['query'])
+        self.assertEqual('new_search_query', event_definition['config']['query'])
