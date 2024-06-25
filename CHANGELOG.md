@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file.
 
 Note : This feature involves an internal updating of the API. The rules must be exported then imported with the new version of the plugin.
 ### Bug Fixes
-* 
+* List can't be deleted ([issue #137](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/137))
 ### Changes
 * 
 
