@@ -65,5 +65,24 @@ export default {
             version: '1.0.0',
             rules: rules
         }
+    },
+
+    fixMissingParameters(alertRule) {
+        if (['COUNT', 'GROUP_DISTINCT', 'STATISTICAL'].includes(alertRule.condition_type)) {
+            if (!alertRule.condition_parameters.search_query) {
+                alertRule.condition_parameters.search_query = '*';
+            }
+        }
+
+        if (['THEN', 'AND', 'OR'].includes(alertRule.condition_type)) {
+            if (!alertRule.condition_parameters.search_query) {
+                alertRule.condition_parameters.search_query = '*';
+            }
+
+            if (!alertRule.condition_parameters.additional_search_query) {
+                alertRule.condition_parameters.additional_search_query = '*';
+            }
+        }
+        return alertRule
     }
 }

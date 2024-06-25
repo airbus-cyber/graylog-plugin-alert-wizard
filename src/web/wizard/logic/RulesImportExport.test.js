@@ -375,7 +375,77 @@ describe('RulesImport.normalizeImportedRules', () => {
             'condition_type': 'STATISTICAL',
             'second_stream': {'matching_type': '', 'field_rule': [], 'id': ''}
         }];
-        const result = RulesImportExport.normalizeImportedRules(rule)
-        expect(result[0].condition_parameters.threshold_type).toBe('>')
+        const result = RulesImportExport.normalizeImportedRules(rule);
+        expect(result[0].condition_parameters.threshold_type).toBe('>');
+    });
+
+    it('should fix search_query for STATISTICAL rules', () => {
+        const rule = {
+            'notification_parameters': {
+                'severity': 'INFO',
+                'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
+                'split_fields': [],
+                'single_notification': false,
+                'aggregation_time': 0,
+                'alert_tag': 'LoggingAlert'
+            },
+            'condition_parameters': {
+                'field': 'x',
+                'grace': 1,
+                'threshold': 1,
+                'threshold_type': '>',
+                'time': 1,
+                'type': 'AVG'
+            },
+            'stream': {
+                'matching_type': 'AND',
+                'field_rule': [{'field': 'a', 'type': 1, 'value': 'a', 'id': '62e7ae768a47ae63221aad48'}],
+                'id': '62e7ae768a47ae63221aad46'
+            },
+            'title': 'statistics',
+            'description': null,
+            'condition_type': 'STATISTICAL',
+            'second_stream': {'matching_type': '', 'field_rule': [], 'id': ''}
+        };
+        const result = RulesImportExport.fixMissingParameters(rule);
+        expect(result.condition_parameters.search_query).toBe('*');
+        expect(result.condition_parameters.additional_search_query).toBe(undefined);
+    });
+
+    it('should fix search_query and additional_search_query for AND rules', () => {
+        const rule = {
+            'notification_parameters': {
+                'severity': 'INFO',
+                'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
+                'split_fields': [],
+                'single_notification': false,
+                'aggregation_time': 0,
+                'alert_tag': 'LoggingAlert'
+            },
+            'condition_parameters': {
+                'grace': 1,
+                'distinction_fields': ['x'],
+                'threshold': 0,
+                'threshold_type': 'LESS',
+                'grouping_fields': [],
+                'time': 1,
+            },
+            'stream': {
+                'matching_type': 'AND',
+                'field_rule': [{'field': 'a', 'type': 1, 'value': 'a', 'id': '62e7ae768a47ae63221aad48'}],
+                'id': '62e7ae768a47ae63221aad46'
+            },
+            'title': 'a',
+            'description': null,
+            'condition_type': 'AND',
+            'second_stream': {
+                'matching_type': 'AND',
+                'field_rule': [{'field': 'a', 'type': 1, 'value': 'a', 'id': '62e7ae768a47ae63221aad49'}],
+                'id': '62e7ae768a47ae63221aad47'
+            }
+        };
+        const result = RulesImportExport.fixMissingParameters(rule);
+        expect(result.condition_parameters.search_query).toBe('*');
+        expect(result.condition_parameters.additional_search_query).toBe('*');
     });
 });
