@@ -32,8 +32,6 @@ import AlertRuleForm from 'wizard/components/rules/AlertRuleForm';
 import AlertRuleResource from 'wizard/resources/AlertRuleResource';
 import WizardConfigurationResource from 'wizard/resources/WizardConfigurationResource';
 import Navigation from 'wizard/routing/Navigation';
-import generateIdentifier from 'wizard/logic/IdentifierSequence';
-
 
 const language = navigator.language.split(/[-_]/)[0];
 
@@ -88,11 +86,11 @@ const NewAlertPage = () => {
             },
             stream: {
                 matching_type: default_values.matching_type,
-                field_rule: [{field: '', type: '', value: '', identifier: generateIdentifier()}],
+                field_rule: [],
             },
             second_stream: {
                 matching_type: default_values.matching_type,
-                field_rule: [{field: '', type: '', value: '', identifier: generateIdentifier()}],
+                field_rule: [],
             }
         };
         componentCreateAlertRule = <AlertRuleForm alert={alert} onSave={_save} />;

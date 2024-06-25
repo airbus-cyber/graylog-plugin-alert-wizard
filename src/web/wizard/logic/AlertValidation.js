@@ -29,8 +29,8 @@ function _isRuleValid(rule) {
     return true;
 }
 
-function _isFieldRulesValid(field_rules) {
-    if (field_rules.length <= 0) {
+function _isFieldRulesValid(search_query, field_rules) {
+    if (search_query === '' && field_rules.length <= 0) {
         return false;
     }
     for (let i = 0; i < field_rules.length; i++) {
@@ -61,16 +61,16 @@ export default {
         if (isNaN(alert.condition_parameters.threshold)) {
             return false;
         }
-        if (!_isFieldRulesValid(alert.stream.field_rule)) {
+        if (!_isFieldRulesValid(alert.condition_parameters.search_query, alert.stream.field_rule)) {
             return false;
         }
-        if (alert.condition_type === 'THEN' && !_isFieldRulesValid(alert.second_stream.field_rule)) {
+        if (alert.condition_type === 'THEN' && !_isFieldRulesValid(alert.condition_parameters.additional_search_query, alert.second_stream.field_rule)) {
             return false;
         }
-        if (alert.condition_type === 'AND' && !_isFieldRulesValid(alert.second_stream.field_rule)) {
+        if (alert.condition_type === 'AND' && !_isFieldRulesValid(alert.condition_parameters.additional_search_query, alert.second_stream.field_rule)) {
             return false;
         }
-        if (alert.condition_type === 'OR' && !_isFieldRulesValid(alert.second_stream.field_rule)) {
+        if (alert.condition_type === 'OR' && !_isFieldRulesValid(alert.condition_parameters.additional_search_query, alert.second_stream.field_rule)) {
             return false;
         }
         return true;
