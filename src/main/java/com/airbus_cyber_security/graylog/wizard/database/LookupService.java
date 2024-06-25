@@ -31,6 +31,7 @@ import org.graylog2.plugin.lookup.LookupDataAdapterConfiguration;
 
 import javax.inject.Inject;
 import java.util.Collection;
+import java.util.Optional;
 
 public class LookupService {
 
@@ -124,11 +125,17 @@ public class LookupService {
 
     public void deleteDataAdapter(String title) {
         String adapterName = this.getDataAdapterName(title);
-        this.dataAdapterService.delete(adapterName);
+        Optional<DataAdapterDto> dataAdapterDto = this.dataAdapterService.get(adapterName);
+        if (dataAdapterDto.isPresent()) {
+            this.dataAdapterService.delete(dataAdapterDto.get().id());
+        }
     }
 
     public void deleteLookupTable(String title) {
         String lookupTableName = this.getLookupTableName(title);
-        this.lookupTableService.delete(lookupTableName);
+        Optional<LookupTableDto> lookupTableDto = this.lookupTableService.get(lookupTableName);
+        if (lookupTableDto.isPresent()) {
+            this.lookupTableService.delete(lookupTableDto.get().id());
+        }
     }
 }
