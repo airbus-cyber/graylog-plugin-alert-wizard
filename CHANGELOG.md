@@ -2,9 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
-## [5.2.1](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/5.2.0...5.2.1)
+## [5.x.x](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/5.2.0...5.2.1)
 ### Features
 * The rule form permits to add Search Query to the event definition description ([issue #124](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/124))
+
+Note : This feature involves an internal updating of the API. The rules must be exported then imported with the new version of the plugin.
 ### Bug Fixes
 * 
 ### Changes
