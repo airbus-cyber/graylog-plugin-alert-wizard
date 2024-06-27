@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.2.1](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/5.2.0...5.2.1)
+### Bug Fixes
+* List can't be deleted ([issue #137](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/137))
+* FIX Plugin compatibility with Graylog 5.1.9
+* Add user notification when he imports rules with distinction_fields as array ([issue #93](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/93))
+
 ## [5.2.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/5.1.3...5.2.0)
 ### Bug Fixes
 * Rules where both is in list conditions and other field conditions should match, did not behave correctly ([issue #119](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/119))
