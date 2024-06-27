@@ -31,7 +31,7 @@ services:
 
   # Graylog: https://hub.docker.com/r/graylog/graylog/
   graylog:
-    image: "graylog/graylog:5.1.13"
+    image: "graylog/graylog:5.1.9"
     container_name: graylog
     links:
       - mongo:mongo
