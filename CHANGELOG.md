@@ -2,15 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
-## [5.x.x](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/5.2.0...5.2.1)
+## [5.3.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/5.2.0...5.3.0)
 ### Features
 * The rule form permits to add Search Query to the event definition description ([issue #124](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/124))
 
 Note : This feature involves an internal updating of the API. The rules must be exported then imported with the new version of the plugin.
+
+## [5.2.1](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/5.2.0...5.2.1)
 ### Bug Fixes
 * List can't be deleted ([issue #137](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/137))
-### Changes
-* 
+* FIX Plugin compatibility with Graylog 5.1.9
+* Add user notification when he imports rules with distinction_fields as array ([issue #93](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/93))
 
 ## [5.2.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/5.1.3...5.2.0)
 ### Bug Fixes

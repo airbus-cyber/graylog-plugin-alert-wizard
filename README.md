@@ -2,7 +2,7 @@
 
 [![Continuous Integration](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/actions/workflows/ci.yml/badge.svg)](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-SSPL-green)](https://www.mongodb.com/licensing/server-side-public-license)
-[![GitHub Release](https://img.shields.io/badge/release-v3.3.0-blue.svg)](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/releases)
+[![GitHub Release](https://img.shields.io/github/v/release/airbus-cyber/graylog-plugin-alert-wizard)](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/releases)
 
 #### Alert Wizard plugin for Graylog to manage the alert rules
 
