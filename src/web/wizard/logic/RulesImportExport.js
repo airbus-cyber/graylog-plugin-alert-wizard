@@ -49,8 +49,22 @@ function normalizeConditionParameters(condition_parameters, rule_name) {
     return result;
 }
 
+function normalizeSearchQueryParameters(alertRule, condition_parameters) {
+    let result = { ...condition_parameters };
+    if (!result.search_query) {
+        result.search_query = '*';
+    }
+
+    if (['THEN', 'AND', 'OR'].includes(alertRule.condition_type) && !result.additional_search_query) {
+        result.additional_search_query = '*';
+    }
+
+    return result;
+}
+
 function normalizeImportedRule(rule) {
     let condition_parameters = normalizeConditionParameters(rule.condition_parameters, rule.title);
+    condition_parameters = normalizeSearchQueryParameters(rule, condition_parameters);
     let severity = rule.notification_parameters.severity;
     return { ...rule, severity, condition_parameters };
 }
@@ -59,33 +73,15 @@ export default {
     normalizeImportedRules(exportData) {
         if (exportData.version === undefined) {
             return exportData.map(normalizeImportedRule);
+        } else {
+            return exportData.rules.map(normalizeImportedRule);
         }
-        return exportData.rules;
     },
 
     createExportDataFromRules(rules) {
         return {
-            version: '1.0.0',
+            version: '1.0.1',
             rules: rules
         }
-    },
-
-    fixMissingParameters(alertRule) {
-        if (['COUNT', 'GROUP_DISTINCT', 'STATISTICAL'].includes(alertRule.condition_type)) {
-            if (!alertRule.condition_parameters.search_query) {
-                alertRule.condition_parameters.search_query = '*';
-            }
-        }
-
-        if (['THEN', 'AND', 'OR'].includes(alertRule.condition_type)) {
-            if (!alertRule.condition_parameters.search_query) {
-                alertRule.condition_parameters.search_query = '*';
-            }
-
-            if (!alertRule.condition_parameters.additional_search_query) {
-                alertRule.condition_parameters.additional_search_query = '*';
-            }
-        }
-        return alertRule
     }
 }

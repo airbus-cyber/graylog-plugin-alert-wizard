@@ -380,7 +380,7 @@ describe('RulesImport.normalizeImportedRules', () => {
     });
 
     it('should fix search_query for STATISTICAL rules', () => {
-        const rule = {
+        const rule = [{
             'notification_parameters': {
                 'severity': 'INFO',
                 'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
@@ -406,14 +406,14 @@ describe('RulesImport.normalizeImportedRules', () => {
             'description': null,
             'condition_type': 'STATISTICAL',
             'second_stream': {'matching_type': '', 'field_rule': [], 'id': ''}
-        };
-        const result = RulesImportExport.fixMissingParameters(rule);
-        expect(result.condition_parameters.search_query).toBe('*');
-        expect(result.condition_parameters.additional_search_query).toBe(undefined);
+        }];
+        const result = RulesImportExport.normalizeImportedRules(rule);
+        expect(result[0].condition_parameters.search_query).toBe('*');
+        expect(result[0].condition_parameters.additional_search_query).toBe(undefined);
     });
 
     it('should fix search_query and additional_search_query for AND rules', () => {
-        const rule = {
+        const rule = [{
             'notification_parameters': {
                 'severity': 'INFO',
                 'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
@@ -443,9 +443,9 @@ describe('RulesImport.normalizeImportedRules', () => {
                 'field_rule': [{'field': 'a', 'type': 1, 'value': 'a', 'id': '62e7ae768a47ae63221aad49'}],
                 'id': '62e7ae768a47ae63221aad47'
             }
-        };
-        const result = RulesImportExport.fixMissingParameters(rule);
-        expect(result.condition_parameters.search_query).toBe('*');
-        expect(result.condition_parameters.additional_search_query).toBe('*');
+        }];
+        const result = RulesImportExport.normalizeImportedRules(rule);
+        expect(result[0].condition_parameters.search_query).toBe('*');
+        expect(result[0].condition_parameters.additional_search_query).toBe('*');
     });
 });

@@ -79,18 +79,17 @@ const ImportAlertPage = createReactClass({
             // TODO should try to add a non-regression test for this quite involved import code
             //      import a rule which has notification with a split fields and check the split fields are present in the system
             //      => set up selenium tests ? :(
-            const fixedRule = RulesImportExport.fixMissingParameters(rule)
-            await AlertRuleActions.create(fixedRule);
+            await AlertRuleActions.create(rule);
                 // TODO should not need to perform this get: create should return the information of the alert
-            const alert = await AlertRuleActions.get(fixedRule.title);
+            const alert = await AlertRuleActions.get(rule.title);
             const notification = {
                 'config': {
-                    ...fixedRule.notification_parameters,
+                    ...rule.notification_parameters,
                     'type': 'logging-alert-notification'
                 },
                 'description': '',
                 'id': alert.notification,
-                'title': fixedRule.title
+                'title': rule.title
             }
             EventNotificationsActions.update(alert.notification, notification);
         }
