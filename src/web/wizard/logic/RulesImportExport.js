@@ -15,6 +15,8 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
+import UserNotification from 'util/UserNotification';
+
 function normalizeThresholdType(threshold_type) {
     if ((threshold_type === 'HIGHER') || (threshold_type === 'MORE')) {
         return '>';
@@ -25,7 +27,7 @@ function normalizeThresholdType(threshold_type) {
     return threshold_type;
 }
 
-function normalizeConditionParameters(condition_parameters) {
+function normalizeConditionParameters(condition_parameters, rule_name) {
     let result = { ...condition_parameters };
     if (condition_parameters.type === 'MEAN') {
         result.type = 'AVG';
@@ -41,13 +43,14 @@ function normalizeConditionParameters(condition_parameters) {
             result.distinct_by = '';
         } else {
             result.distinct_by = condition_parameters.distinction_fields[0];
+            UserNotification.warning('The rule ' + rule_name + ' has multiple distinction_fields, only the first one will be kept ("' + result.distinct_by + '")');
         }
     }
     return result;
 }
 
 function normalizeImportedRule(rule) {
-    let condition_parameters = normalizeConditionParameters(rule.condition_parameters);
+    let condition_parameters = normalizeConditionParameters(rule.condition_parameters, rule.title);
     let severity = rule.notification_parameters.severity;
     return { ...rule, severity, condition_parameters };
 }
