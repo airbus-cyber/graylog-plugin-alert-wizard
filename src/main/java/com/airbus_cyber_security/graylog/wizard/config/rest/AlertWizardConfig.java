@@ -57,7 +57,7 @@ public abstract class AlertWizardConfig {
 	public static AlertWizardConfig defaultConfig() {
 		return builder()
 				.accessFieldOrder(ImmutableList.of(
-						FieldWizard.create("Severity", true),
+						FieldWizard.create("Priority", true),
 						FieldWizard.create("Description", true),
 						FieldWizard.create("Created", true),
 						FieldWizard.create("Last Modified", true),
@@ -65,7 +65,7 @@ public abstract class AlertWizardConfig {
 						FieldWizard.create("Status", true),
 						FieldWizard.create("Rule", false)))
 				.accessDefaultValues(DefaultValues.create("",
-						"info",
+						1,
 						"AND",
 						">",
 						0,

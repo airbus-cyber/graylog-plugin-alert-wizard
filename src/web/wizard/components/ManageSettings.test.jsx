@@ -27,7 +27,7 @@ describe('<ManageSettings>', () => {
             field_order: [{ name: 'User', enabled: true }],
             default_values: {
                 title: 'title',
-                severity: 'info',
+                priority: 1,
                 matching_type: 'AND',
                 threshold_type: '>',
                 threshold: 0,

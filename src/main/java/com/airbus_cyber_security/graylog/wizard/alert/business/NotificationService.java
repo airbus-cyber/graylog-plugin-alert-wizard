@@ -18,7 +18,6 @@
 package com.airbus_cyber_security.graylog.wizard.alert.business;
 
 import com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig;
-import com.airbus_cyber_security.graylog.events.config.SeverityType;
 import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
 import com.airbus_cyber_security.graylog.wizard.database.Description;
 import org.graylog.events.notifications.DBNotificationService;
@@ -75,10 +74,9 @@ public class NotificationService {
         return configuration.accessAggregationTime();
     }
 
-    public String createNotification(String alertTitle, String severity, UserContext userContext) {
+    public String createNotification(String alertTitle, UserContext userContext) {
         LoggingNotificationConfig loggingNotificationConfig = LoggingNotificationConfig.builder()
                 .singleMessage(false)
-                .severity(SeverityType.valueOf(severity.toUpperCase()))
                 .logBody(this.getDefaultLogBody())
                 .aggregationTime(this.getDefaultTime())
                 .build();
@@ -90,23 +88,12 @@ public class NotificationService {
         return this.create(notification, userContext);
     }
 
-    public void updateNotification(String title, String notificationIdentifier, String severity) {
+    public void updateNotification(String title, String notificationIdentifier) {
         NotificationDto notification = this.get(notificationIdentifier)
                 .orElseThrow(() -> new javax.ws.rs.NotFoundException("Notification " + notificationIdentifier + " doesn't exist"));
         LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) notification.config();
-        if (!loggingNotificationConfig.severity().getType().equals(severity) || !notification.title().equals(title)) {
+        if (!notification.title().equals(title)) {
             LOG.debug("Update Notification " + title);
-            if (!loggingNotificationConfig.severity().getType().equals(severity)) {
-                LOG.debug("Update severity, old one: " + loggingNotificationConfig.severity().getType() + " New one: " + severity);
-                loggingNotificationConfig = LoggingNotificationConfig.builder()
-                        .severity(SeverityType.valueOf(severity.toUpperCase()))
-                        .logBody(loggingNotificationConfig.logBody())
-                        .splitFields(loggingNotificationConfig.splitFields())
-                        .aggregationTime(loggingNotificationConfig.aggregationTime())
-                        .alertTag(loggingNotificationConfig.alertTag())
-                        .singleMessage(loggingNotificationConfig.singleMessage())
-                        .build();
-            }
             notification = NotificationDto.builder()
                     .id(notification.id())
                     .config(loggingNotificationConfig)

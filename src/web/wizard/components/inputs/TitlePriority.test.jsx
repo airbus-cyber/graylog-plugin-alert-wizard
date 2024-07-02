@@ -19,12 +19,12 @@ import React from 'react';
 import { render } from 'wrappedTestingLibrary';
 import { IntlProvider } from 'react-intl';
 
-import TitleSeverity from './TitleSeverity';
+import TitlePriority from './TitlePriority';
 
-describe('<TitleSeverity>', () => {
+describe('<TitlePriority>', () => {
     it('should not fail', () => {
         render(<IntlProvider locale="en" >
-                   <TitleSeverity />
+                   <TitlePriority />
                </IntlProvider>);
     });
 });

@@ -63,7 +63,7 @@ public class EventDefinitionService {
         return result.id();
     }
 
-    public String createEvent(String alertTitle, String description, String notificationIdentifier, EventProcessorConfig configuration, UserContext userContext) {
+    public String createEvent(String alertTitle, String description, Integer priority, String notificationIdentifier, EventProcessorConfig configuration, UserContext userContext) {
         LOG.debug("Create Event: " + alertTitle);
         EventNotificationHandler.Config notificationConfiguration = EventNotificationHandler.Config.builder()
                 .notificationId(notificationIdentifier)
@@ -76,7 +76,7 @@ public class EventDefinitionService {
                 .description(description)
                 .config(configuration)
                 .alert(true)
-                .priority(2)
+                .priority(priority)
                 .keySpec(ImmutableList.of())
                 .notifications(ImmutableList.<EventNotificationHandler.Config>builder().add(notificationConfiguration).build())
                 .notificationSettings(EventNotificationSettings.builder()
@@ -88,20 +88,20 @@ public class EventDefinitionService {
         return this.createEventFromDto(eventDefinition, userContext);
     }
 
-    public void updateEvent(String alertTitle, String description, String eventIdentifier, EventProcessorConfig configuration) {
+    public void updateEvent(String alertTitle, String description, Integer priority, String eventIdentifier, EventProcessorConfig configuration) {
         LOG.debug("Update event: {}, identifier: {}", alertTitle, eventIdentifier);
         EventDefinitionDto event = this.getEventDefinition(eventIdentifier)
                 .orElseThrow(() -> new javax.ws.rs.NotFoundException("Event definition <" + eventIdentifier + "> doesn't exist"));
 
-        this.updateEvent(alertTitle, description, event, configuration);
+        this.updateEvent(alertTitle, description, priority, event, configuration);
     }
 
-    private void updateEvent(String title, String description, EventDefinitionDto event, EventProcessorConfig configuration) {
+    private void updateEvent(String title, String description, Integer priority, EventDefinitionDto event, EventProcessorConfig configuration) {
         EventDefinitionDto updatedEvent = EventDefinitionDto.builder()
                 .id(event.id())
                 .title(title)
                 .description(description)
-                .priority(event.priority())
+                .priority(priority)
                 .alert(event.alert())
                 .config(configuration)
                 .fieldSpec(event.fieldSpec())

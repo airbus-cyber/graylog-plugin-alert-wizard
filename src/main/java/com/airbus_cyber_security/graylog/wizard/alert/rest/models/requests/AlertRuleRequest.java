@@ -36,9 +36,9 @@ public abstract class AlertRuleRequest {
     @NotNull
     public abstract String getTitle();
 
-    @JsonProperty("severity")
+    @JsonProperty("priority")
     @NotNull
-    public abstract String getSeverity();
+    public abstract Integer getPriority();
 
     @JsonProperty("description")
     @NotNull
@@ -63,12 +63,12 @@ public abstract class AlertRuleRequest {
 
     @JsonCreator    
     public static AlertRuleRequest create(@JsonProperty("title") String title,
-                                             @JsonProperty("severity") String severity,
+                                             @JsonProperty("priority") Integer priority,
                                              @JsonProperty("description") String description,
                                              @JsonProperty("condition_type") AlertType alertType,
                                              @JsonProperty("condition_parameters") Map<String, Object> conditionParameters,
                                              @JsonProperty("stream") AlertRuleStream stream,
                                              @JsonProperty("second_stream") AlertRuleStream stream2) {
-        return new AutoValue_AlertRuleRequest(title, severity, description, alertType, conditionParameters, stream, stream2);
+        return new AutoValue_AlertRuleRequest(title, priority, description, alertType, conditionParameters, stream, stream2);
     }
 }

@@ -55,7 +55,7 @@ const AlertRuleList = createReactClass({
         const { intl } = this.props;
         const fieldsTitle = {
             title: intl.formatMessage({id: "wizard.title", defaultMessage: "Title"}),
-            severity: intl.formatMessage({id: "wizard.severity", defaultMessage: "Severity"}),
+            priority: intl.formatMessage({id: "wizard.priority", defaultMessage: "Priority"}),
             description: intl.formatMessage({id: "wizard.fieldDescription", defaultMessage: "Description"}),
             created: intl.formatMessage({id: "wizard.created", defaultMessage: "Created"}),
             lastModified: intl.formatMessage({id: "wizard.lastModified", defaultMessage: "Last Modified"}),
@@ -145,7 +145,7 @@ const AlertRuleList = createReactClass({
             const newRule = {
                 title: title,
                 description: description,
-                severity: rule.severity,
+                priority: rule.priority,
                 condition_type: rule.condition_type,
                 condition_parameters: rule.condition_parameters,
                 stream: rule.stream,
@@ -155,17 +155,16 @@ const AlertRuleList = createReactClass({
         });
     },
     
-    _availableSeverityTypes() {
+    _availablePriorityTypes() {
         return [
-            {value: 'info', label: <FormattedMessage id="wizard.info" defaultMessage="Info" />},
-            {value: 'low', label: <FormattedMessage id="wizard.low" defaultMessage="Low" />},
-            {value: 'medium', label: <FormattedMessage id="wizard.medium" defaultMessage="Medium" />},
-            {value: 'high', label: <FormattedMessage id="wizard.high" defaultMessage="High" />},
+            {value: 1, label: <FormattedMessage id="wizard.low" defaultMessage="Low" />},
+            {value: 2, label: <FormattedMessage id="wizard.medium" defaultMessage="Normal" />},
+            {value: 3, label: <FormattedMessage id="wizard.high" defaultMessage="High" />},
         ];
     },
 
-    _getSeverityType(type) {
-        return this._availableSeverityTypes().filter((t) => t.value === type)[0].label;
+    _getPriorityType(type) {
+        return this._availablePriorityTypes().filter((t) => t.value === type)[0].label;
     },
 
     // TODO could simplify this code: return a dictionary instead of a list, move into getInitialState
@@ -181,7 +180,7 @@ const AlertRuleList = createReactClass({
             </OverlayElement>
         );
         return [
-            {value: 'Severity', label: this.state.fieldsTitle.severity},
+            {value: 'Priority', label: this.state.fieldsTitle.priority},
             {value: 'Description', label: this.state.fieldsTitle.description},
             {value: 'Created', label: this.state.fieldsTitle.created},
             {value: 'Last Modified', label: this.state.fieldsTitle.lastModified},
@@ -270,8 +269,8 @@ const AlertRuleList = createReactClass({
         this.props.field_order.map((field) => {
             if (field.enabled) {
                 switch (field.name) {
-                    case 'Severity':
-                        tabFields.push(<td className="limited">{alert.severity ? this._getSeverityType(alert.severity) : ''}</td>);
+                    case 'Priority':
+                        tabFields.push(<td className="limited">{alert.priority ? this._getPriorityType(alert.priority) : ''}</td>);
                         break;
                     case 'Description':
                         tabFields.push(<td className="limited"><span style={{whiteSpace: 'pre-line'}}>{alert.description}</span></td>);
@@ -312,7 +311,7 @@ const AlertRuleList = createReactClass({
     },
 
     render() {
-        const filterKeys = ['title', 'severity', 'created_at', 'last_modified', 'creator_user_id'];
+        const filterKeys = ['title', 'priority', 'created_at', 'last_modified', 'creator_user_id'];
         let headers = [this.state.fieldsTitle.title];
         this.props.field_order.map((field) => {
             if (field.enabled) {

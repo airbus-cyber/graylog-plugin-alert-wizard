@@ -91,7 +91,7 @@ class Graylog:
     def update_alert_rule(self, previousTitle, rule):
         updated_rule = {
             'title': rule['title'],
-            'severity': rule['severity'],
+            'priority': rule['priority'],
             'description': rule['description'],
             'condition_type': rule['condition_type'],
             'condition_parameters': rule['condition_parameters'],

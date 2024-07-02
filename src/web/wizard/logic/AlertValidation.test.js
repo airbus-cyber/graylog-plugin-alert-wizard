@@ -21,6 +21,7 @@ describe('AlertValidation.isAlertValid', () => {
     it('should not fail', () => {
         const alert = {
             title: 'a',
+            priority: 1,
             condition_parameters: {
                 threshold_type: '>',
                 threshold: 0,
@@ -39,9 +40,31 @@ describe('AlertValidation.isAlertValid', () => {
         expect(result).toBe(true);
     });
 
+    it('should not validate alert with missing priority', () => {
+        const alert = {
+            title: 'a',
+            condition_parameters: {
+                threshold_type: '>',
+                threshold: 0,
+                time: 1,
+            },
+            stream: {
+                matching_type: 'AND',
+                field_rule: [{
+                    field: 'a',
+                    type: '1',
+                    value: 'a'
+                }]
+            }
+        };
+        const result = AlertValidation.isAlertValid(alert);
+        expect(result).toBe(false);
+    });
+
     it('should not validate alert with missing field rule type', () => {
         const alert = {
             title: 'a',
+            priority: 1,
             condition_parameters: {
                 threshold_type: '>',
                 threshold: 0,
@@ -63,6 +86,7 @@ describe('AlertValidation.isAlertValid', () => {
     it('should validate second stream rule when condition type is THEN', () => {
         const alert = {
             title: 'a',
+            priority: 1,
             condition_type: 'THEN',
             condition_parameters: {
                 threshold_type: '>',

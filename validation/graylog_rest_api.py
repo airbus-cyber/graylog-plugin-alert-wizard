@@ -104,7 +104,7 @@ class GraylogRestApi:
             },
             'condition_type': condition_type,
             'description': description,
-            'severity': 'info',
+            'priority': 1,
             'stream': stream,
             'title': title
         }
@@ -224,8 +224,7 @@ class GraylogRestApi:
             'field_alert_id': 'id',
             'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
             'overflow_tag': 'LoggingOverflow',
-            'separator': ' | ',
-            'severity': 'LOW'
+            'separator': ' | '
         }
         response = self._put('system/cluster_config/com.airbus_cyber_security.graylog.events.config.LoggingAlertConfig', configuration)
         return response.status_code

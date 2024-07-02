@@ -93,7 +93,7 @@ const AlertRuleStore = Reflux.createStore({
 
         const request = {
             title: newAlert.title,
-            severity: newAlert.severity,
+            priority: newAlert.priority,
             description: newAlert.description,
             condition_type: newAlert.condition_type,
             condition_parameters: newAlert.condition_parameters,
@@ -119,7 +119,7 @@ const AlertRuleStore = Reflux.createStore({
 
         const request = {
             title: updatedAlert.title,
-            severity: updatedAlert.severity,
+            priority: updatedAlert.priority,
             description: updatedAlert.description,
             condition_type: updatedAlert.condition_type,
             condition_parameters: updatedAlert.condition_parameters,

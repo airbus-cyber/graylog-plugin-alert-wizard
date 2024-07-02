@@ -46,6 +46,9 @@ export default {
         if (alert.title === '') {
             return false;
         }
+        if (alert.priority === null || alert.priority === undefined) {
+            return false;
+        }
         if (alert.stream.matching_type === '') {
             return false;
         }

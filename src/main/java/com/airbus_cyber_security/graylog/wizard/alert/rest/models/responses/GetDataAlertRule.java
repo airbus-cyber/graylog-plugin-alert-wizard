@@ -39,11 +39,9 @@ public abstract class GetDataAlertRule {
 	@NotNull
 	public abstract String getTitle();
 
-	// severity can be null, when the rule is corrupted
-	// this may happen, for instance, when the associated notification has been manually deleted
-	@JsonProperty("severity")
+	@JsonProperty("priority")
 	@Nullable
-	public abstract String getSeverity();
+	public abstract Integer getPriority();
 
     @JsonProperty("description")
     @Nullable
@@ -96,7 +94,7 @@ public abstract class GetDataAlertRule {
 
 	@JsonCreator
 	public static GetDataAlertRule create(@JsonProperty("title") String title,
-                                          @JsonProperty("severity") String severity,
+                                          @JsonProperty("priority") Integer priority,
                                           @JsonProperty("condition") String eventDefinitionIdentifier,
 										  @JsonProperty("second_event_definition") String secondEventDefinitionIdentifier,
                                           @JsonProperty("notification") String notificationIdentifier,
@@ -115,7 +113,7 @@ public abstract class GetDataAlertRule {
                                           @JsonProperty("condition_parameters") Map<String, Object> conditionParameters,
                                           @JsonProperty("stream") AlertRuleStream stream,
                                           @JsonProperty("second_stream") AlertRuleStream stream2) {
-		return new AutoValue_GetDataAlertRule(title, severity, description, alertType, conditionParameters, stream, stream2,
+		return new AutoValue_GetDataAlertRule(title, priority, description, alertType, conditionParameters, stream, stream2,
 				eventDefinitionIdentifier, secondEventDefinitionIdentifier, notificationIdentifier, createdAt, creatorUserIdentifier,
 				lastModified, isDisabled);
 	}

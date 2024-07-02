@@ -23,7 +23,6 @@ import { LinkContainer } from 'react-router-bootstrap';
 import { injectIntl, FormattedMessage } from 'react-intl';
 
 import { Button, Col, Row, Nav, NavItem } from 'components/bootstrap';
-import { Spinner } from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import LoaderTabs from 'components/messageloaders/LoaderTabs';
 import StreamsStore from 'stores/streams/StreamsStore';
@@ -34,7 +33,7 @@ import GroupDistinctCondition from 'wizard/components/conditions/GroupDistinctCo
 import CorrelationCondition from 'wizard/components/conditions/CorrelationCondition'
 import OrCondition from 'wizard/components/conditions/OrCondition'
 import CountCondition from 'wizard/components/conditions/CountCondition'
-import TitleSeverity from 'wizard/components/inputs/TitleSeverity';
+import TitlePriority from 'wizard/components/inputs/TitlePriority';
 import AlertValidation from 'wizard/logic/AlertValidation';
 
 import styles from './AlertRuleForm.css';
@@ -227,7 +226,7 @@ const AlertRuleForm = createReactClass({
                         {this.props.navigationToRuleComponents}
                         <p className="description"><FormattedMessage id= "wizard.descripionParameters" defaultMessage= "Define the parameters of the alert rule." /></p>
                         <form className="form-inline">
-                            <TitleSeverity onUpdate={this._updateAlertField} title={this.state.alert.title} severity={this.state.alert.severity} />
+                            <TitlePriority onUpdate={this._updateAlertField} title={this.state.alert.title} priority={this.state.alert.priority} />
                             <br/>
                             {contentComponent}
                         </form>

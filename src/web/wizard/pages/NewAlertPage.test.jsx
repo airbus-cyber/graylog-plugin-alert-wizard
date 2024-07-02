@@ -45,7 +45,7 @@ jest.mock('logic/rest/FetchProvider', () => jest.fn((method, url) => {
         '/plugins/com.airbus_cyber_security.graylog.wizard/config': {
             default_values: {
                 title: 'title',
-                severity: 'info',
+                priority: 1,
                 matching_type: 'AND',
                 threshold_type: '>',
                 threshold: 0,

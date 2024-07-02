@@ -26,7 +26,7 @@ function create(newAlert) {
     const url = URLUtils.qualifyUrl(SOURCE_URL);
     const request = {
         title: newAlert.title,
-        severity: newAlert.severity,
+        priority: newAlert.priority,
         description: newAlert.description,
         condition_type: newAlert.condition_type,
         condition_parameters: newAlert.condition_parameters,

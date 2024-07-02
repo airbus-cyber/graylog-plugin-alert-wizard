@@ -66,7 +66,7 @@ const NewAlertPage = () => {
         const alert = {
             title: default_values.title,
             description: '',
-            severity: default_values.severity,
+            priority: default_values.priority,
             condition_type: 'COUNT',
             condition_parameters: {
                 threshold_type: default_values.threshold_type,

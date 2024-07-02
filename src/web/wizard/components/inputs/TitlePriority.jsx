@@ -22,41 +22,39 @@ import { useIntl, FormattedMessage } from 'react-intl';
 import { Input, Row, Col } from 'components/bootstrap';
 import { Select } from 'components/common';
 
-const _AVAILABLE_SEVERITY_TYPES = [
-    {value: 'info', label: <FormattedMessage id="wizard.info" defaultMessage="Info" />},
-    {value: 'low', label: <FormattedMessage id="wizard.low" defaultMessage="Low" />},
-    {value: 'medium', label: <FormattedMessage id="wizard.medium" defaultMessage="Medium" />},
-    {value: 'high', label: <FormattedMessage id="wizard.high" defaultMessage="High" />},
+const _AVAILABLE_PRIORITY_TYPES = [
+    {value: 1, label: <FormattedMessage id="wizard.low" defaultMessage="Low" />},
+    {value: 2, label: <FormattedMessage id="wizard.medium" defaultMessage="Normal" />},
+    {value: 3, label: <FormattedMessage id="wizard.high" defaultMessage="High" />},
 ];
 
-const TitleSeverity = ({title, severity, onUpdate}) => {
+const TitlePriority = ({title, priority, onUpdate}) => {
     const intl = useIntl();
 
     const _onTitleChanged = (value) => {
         onUpdate('title', value);
     };
 
-    const _onSeverityTypeChanged = (value) => {
-        onUpdate('severity', value);
+    const _onPriorityChanged = (value) => {
+        onUpdate('priority', value);
     };
 
     return (
         <Row>
             <Col md={2} style={{ marginTop: 10, marginBottom: 0 }}>
-                <label className="pull-right"><FormattedMessage id="wizard.titleSeverity" defaultMessage="Alert Title and Severity" /></label>
+                <label className="pull-right"><FormattedMessage id="wizard.titlePriority" defaultMessage="Alert Title and Priority" /></label>
             </Col>
             <Col md={10}>
                 <Input style={{borderTopRightRadius: '0px', borderBottomRightRadius: '0px', height:'36px', width:'450px'}}
                        id="title" name="title" type="text"
                        onChange={(e) => _onTitleChanged(e.target.value)}
                        defaultValue={title}/>
-                <Input id="severity" name="severity">
+                <Input id="priority" name="priority">
                     <div style={{width:'150px'}}>
                     <Select
-                        value={severity}
-                        options={_AVAILABLE_SEVERITY_TYPES}
-                        matchProp="value"
-                        onChange={_onSeverityTypeChanged}
+                        value={priority}
+                        options={_AVAILABLE_PRIORITY_TYPES}
+                        onChange={_onPriorityChanged}
                         clearable={false}
                         placeholder={intl.formatMessage({id: "wizard.select", defaultMessage: "Select..."})}
                     />
@@ -67,8 +65,8 @@ const TitleSeverity = ({title, severity, onUpdate}) => {
     );
 }
 
-TitleSeverity.propTypes = {
+TitlePriority.propTypes = {
     onUpdate: PropTypes.func,
 };
 
-export default TitleSeverity;
+export default TitlePriority;

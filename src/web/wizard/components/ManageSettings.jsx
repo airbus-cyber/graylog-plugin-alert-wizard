@@ -71,7 +71,7 @@ const ManageSettings = createReactClass({
 
     _availableFieldName() {
         return [
-            {value: 'Severity', label: <FormattedMessage id="wizard.severity" defaultMessage="Severity" />},
+            {value: 'Priority', label: <FormattedMessage id="wizard.priority" defaultMessage="Priority" />},
             {value: 'Description', label: <FormattedMessage id="wizard.fieldDescription" defaultMessage="Description" />},
             {value: 'Created', label: <FormattedMessage id="wizard.created" defaultMessage="Created" />},
             {value: 'Last Modified', label: <FormattedMessage id="wizard.lastModified" defaultMessage="Last Modified" />},
@@ -129,12 +129,11 @@ const ManageSettings = createReactClass({
         return !this.state.config;
     },
 
-    _availableSeverityTypes() {
+    _availablePriorityTypes() {
         return [
-            {value: 'info', label: <FormattedMessage id="wizard.info" defaultMessage="Info" />},
-            {value: 'low', label: <FormattedMessage id="wizard.low" defaultMessage="Low" />},
-            {value: 'medium', label: <FormattedMessage id="wizard.medium" defaultMessage="Medium" />},
-            {value: 'high', label: <FormattedMessage id="wizard.high" defaultMessage="High" />},
+            {value: 1, label: <FormattedMessage id="wizard.low" defaultMessage="Low" />},
+            {value: 2, label: <FormattedMessage id="wizard.medium" defaultMessage="Normal" />},
+            {value: 3, label: <FormattedMessage id="wizard.high" defaultMessage="High" />},
         ];
     },
     _availableMatchingType() {
@@ -168,8 +167,8 @@ const ManageSettings = createReactClass({
             this._updateConfig(field, e.target.value);
         };
     },
-    _onSeverityTypeSelect(value) {
-        this._updateConfig('severity', value)
+    _onPriorityTypeSelect(value) {
+        this._updateConfig('priority', value)
     },
     _onMatchingTypeSelect(value) {
         this._updateConfig('matching_type', value)
@@ -275,15 +274,15 @@ const ManageSettings = createReactClass({
                 <Input ref="title" id="title" name="title" type="text" label={<FormattedMessage id ="wizard.title" defaultMessage="Title" />}
                        value={this.state.config.default_values.title} onChange={this._onValueChanged("title")}/>
                 <Input
-                    id="severity"
-                    label={<FormattedMessage id ="wizard.alertSeverity" defaultMessage="Alert Severity" />}
-                    help={<FormattedMessage id ="wizard.descriptionAlertSeverity" defaultMessage="The default severity of logged alerts when adding a new notification" />}
-                    name="severity">
+                    id="priority"
+                    label={<FormattedMessage id ="wizard.alertPriority" defaultMessage="Alert Priority" />}
+                    help={<FormattedMessage id ="wizard.descriptionAlertPriority" defaultMessage="The default priority of logged alerts when adding a new notification" />}
+                    name="priority">
                   <Select placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..." />}
-                          options={this._availableSeverityTypes()}
+                          options={this._availablePriorityTypes()}
                           matchProp="value"
-                          value={this.state.config.default_values.severity}
-                          onChange={this._onSeverityTypeSelect}
+                          value={this.state.config.default_values.priority}
+                          onChange={this._onPriorityTypeSelect}
                           clearable={false}
                   />
                 </Input>     
