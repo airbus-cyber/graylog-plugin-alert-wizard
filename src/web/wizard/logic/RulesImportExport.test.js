@@ -282,10 +282,10 @@ describe('RulesImport.normalizeImportedRules', () => {
         expect(result.length).toBe(1)
     });
 
-    it('should set severity', () => {
+    it('should set priority and remove severity', () => {
        const rule = [{
             'notification_parameters': {
-                'severity': 'INFO',
+                'severity': 'MEDIUM',
                 'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
                 'split_fields': [],
                 'single_notification': false,
@@ -305,13 +305,16 @@ describe('RulesImport.normalizeImportedRules', () => {
                 'field_rule': [{'field': 'a', 'type': 1, 'value': 'a', 'id': '62e7ae768a47ae63221aad48'}],
                 'id': '62e7ae768a47ae63221aad46'
             },
+            'severity': 'MEDIUM',
             'title': 'a',
             'description': null,
             'condition_type': 'COUNT',
             'second_stream': {'matching_type': '', 'field_rule': [], 'id': ''}
         }];
         const result = RulesImportExport.normalizeImportedRules(rule)
-        expect(result[0].severity).toBe('INFO')
+        expect(result[0].priority).toBe(2)
+        expect(result[0].severity).toBe(undefined)
+        expect(result[0].notification_parameters.severity).toBe(undefined)
     });
 
     it('should convert additional threshold type LESS into <', () => {

@@ -62,11 +62,40 @@ function normalizeSearchQueryParameters(alertRule, condition_parameters) {
     return result;
 }
 
+function convertSeverityToPriority(severity) {
+    switch (severity.toUpperCase()) {
+        case "INFO" | "LOW" :
+            return 1;
+        case "MEDIUM" :
+            return 2;
+        case "HIGH" :
+            return 3;
+        default :
+            return 1;
+    }
+}
+
+function normalizePriority(alertRule) {
+    const severity = alertRule.notification_parameters.severity;
+    if(severity) {
+        const priority = convertSeverityToPriority(severity);
+        let result = {...alertRule, priority};
+
+        delete result.notification_parameters.severity;
+        delete result.severity;
+        return result;
+    } else {
+        return alertRule;
+    }
+}
+
 function normalizeImportedRule(rule) {
     let condition_parameters = normalizeConditionParameters(rule.condition_parameters, rule.title);
     condition_parameters = normalizeSearchQueryParameters(rule, condition_parameters);
-    let severity = rule.notification_parameters.severity;
-    return { ...rule, severity, condition_parameters };
+    let normalizedRule = { ...rule, condition_parameters };
+    normalizedRule = normalizePriority(normalizedRule);
+
+    return normalizedRule;
 }
 
 export default {
@@ -80,7 +109,7 @@ export default {
 
     createExportDataFromRules(rules) {
         return {
-            version: '1.0.1',
+            version: '1.0.2',
             rules: rules
         }
     }
