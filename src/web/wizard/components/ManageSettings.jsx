@@ -22,7 +22,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
 import { Button, BootstrapModalForm, Col, FormGroup, Input, Table, Tooltip } from 'components/bootstrap';
-import { Select, SortableList, Spinner, OverlayElement } from 'components/common';
+import { Select, SortableList, Spinner, OverlayElement, IfPermitted } from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import { FormattedMessage } from 'react-intl';
 import FormsUtils from 'util/FormsUtils';
@@ -131,9 +131,9 @@ const ManageSettings = createReactClass({
 
     _availablePriorityTypes() {
         return [
-            {value: 1, label: <FormattedMessage id="wizard.low" defaultMessage="Low" />},
-            {value: 2, label: <FormattedMessage id="wizard.medium" defaultMessage="Normal" />},
-            {value: 3, label: <FormattedMessage id="wizard.high" defaultMessage="High" />},
+            {value: '1', label: <FormattedMessage id="wizard.low" defaultMessage="Low" />},
+            {value: '2', label: <FormattedMessage id="wizard.medium" defaultMessage="Normal" />},
+            {value: '3', label: <FormattedMessage id="wizard.high" defaultMessage="High" />},
         ];
     },
     _availableMatchingType() {
@@ -168,7 +168,7 @@ const ManageSettings = createReactClass({
         };
     },
     _onPriorityTypeSelect(value) {
-        this._updateConfig('priority', value)
+        this._updateConfig('priority', parseInt(value))
     },
     _onMatchingTypeSelect(value) {
         this._updateConfig('matching_type', value)
@@ -210,7 +210,10 @@ const ManageSettings = createReactClass({
 
         return (
             <span>
-        <Button bsStyle="info" onClick={this._openModal}><FormattedMessage id="wizard.manageSettings" defaultMessage="Manage settings" /></Button>
+                <IfPermitted permissions="clusterconfigentry:edit">
+                    <Button bsStyle="info" bsSize="xs" onClick={this._openModal}>Edit configuration</Button>
+                </IfPermitted>
+
         <BootstrapModalForm show={this.state.showModal}
                             title={<FormattedMessage id="wizard.manageWizardSettings" defaultMessage="Manage Wizard settings" />}
                             onSubmitForm={this._saveConfig}
@@ -218,7 +221,7 @@ const ManageSettings = createReactClass({
                             cancelButtonText={<FormattedMessage id="wizard.cancel" defaultMessage="Cancel" />}
                             submitButtonText={<FormattedMessage id="wizard.save" defaultMessage="Save" />}>
             <div>
-              <Col md={6}>                   
+              <Col md={6}>
                 <h3><FormattedMessage id="wizard.order" defaultMessage="Order" /></h3>
                 <p><FormattedMessage id="wizard.descriptionOrder" defaultMessage="Use drag and drop to change the order." /></p>
                 <SortableList items={this._sortableItems()} onMoveItem={this._updateSorting}/>
@@ -265,7 +268,6 @@ const ManageSettings = createReactClass({
                       </div>
                   </OverlayElement>
                 </FormGroup>
-                  
               </Col>
               <Col md={6}> 
                 <h3><FormattedMessage id="wizard.defaultValues" defaultMessage="Default values of the alert rule" /></h3>
@@ -274,6 +276,7 @@ const ManageSettings = createReactClass({
                 <Input ref="title" id="title" name="title" type="text" label={<FormattedMessage id ="wizard.title" defaultMessage="Title" />}
                        value={this.state.config.default_values.title} onChange={this._onValueChanged("title")}/>
                 <Input
+                    ref="priority"
                     id="priority"
                     label={<FormattedMessage id ="wizard.alertPriority" defaultMessage="Alert Priority" />}
                     help={<FormattedMessage id ="wizard.descriptionAlertPriority" defaultMessage="The default priority of logged alerts when adding a new notification" />}
@@ -281,7 +284,7 @@ const ManageSettings = createReactClass({
                   <Select placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..." />}
                           options={this._availablePriorityTypes()}
                           matchProp="value"
-                          value={this.state.config.default_values.priority}
+                          value={this.state.config.default_values.priority? this.state.config.default_values.priority.toString() : ''}
                           onChange={this._onPriorityTypeSelect}
                           clearable={false}
                   />

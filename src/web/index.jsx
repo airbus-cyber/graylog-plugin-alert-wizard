@@ -27,6 +27,7 @@ import NewAlertListPage from './wizard/pages/NewAlertListPage';
 import UpdateListPage from './wizard/pages/UpdateListPage';
 import ImportListPage from './wizard/pages/ImportListPage';
 import ExportListPage from './wizard/pages/ExportListPage';
+import WizardAlertConfig from "./wizard/components/configuration/WizardAlertConfig";
 
 // TODO: think about it, but it seems alerts and lists are two entirely different "realms". If so, split their code in two distinct namespace
 PluginStore.register(new PluginManifest(packageJson, {
@@ -51,6 +52,14 @@ PluginStore.register(new PluginManifest(packageJson, {
                 { path: '/wizard/AlertRules', description: 'Alert Rules' },
                 { path: '/wizard/Lists', description: 'Lists' },
             ],
+        },
+    ],
+
+    systemConfigurations: [
+        {
+            component: WizardAlertConfig,
+            displayName: 'Alert Wizard',
+            configType: 'com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig'
         },
     ],
 }));

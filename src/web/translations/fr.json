@@ -3,7 +3,7 @@
   "wizard.listnotpresent": "n'est pas présente dans la liste",
   "wizard.lists": "Listes",
   "wizard.version": " (version du wizard : {version}).",
-  "wizard.description": "Avec le wizard, vous pouvez configurer les règles d'alerte. Une règle d'alerte consiste en une ou plusieurs streams avec des règles, une condition d'alerte et une notification d'alerte.",
+  "wizard.description": "Avec le wizard, vous pouvez configurer les règles d'alerte. Une règle d'alerte consiste en une ou plusieurs streams avec des règles, une condition d'alerte et une notification d'alerte. ",
   "wizard.documentation": "Plus d'information au sujet des règles d'alerte du wizard dans la documentation",
   "wizard.documentationlist": "Plus d'information au sujet des listes du wizard dans la documentation",
   "wizard.define": "Vous pouvez définir une règle d'alerte.",
