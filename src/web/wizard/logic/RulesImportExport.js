@@ -89,11 +89,20 @@ function normalizePriority(alertRule) {
     }
 }
 
+function normalizeDescription(description) {
+    if(description === null || description === undefined) {
+        return '';
+    }
+
+    return description;
+}
+
 function normalizeImportedRule(rule) {
     let condition_parameters = normalizeConditionParameters(rule.condition_parameters, rule.title);
     condition_parameters = normalizeSearchQueryParameters(rule, condition_parameters);
     let normalizedRule = { ...rule, condition_parameters };
     normalizedRule = normalizePriority(normalizedRule);
+    normalizedRule.description = normalizeDescription(rule.description);
 
     return normalizedRule;
 }
