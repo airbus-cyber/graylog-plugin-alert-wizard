@@ -39,6 +39,8 @@ const AlertRuleSelectionList = ({alertRules, emptyMessage, onRuleSelectionChange
         setAlertTitlesFilter('');
     };
 
+    const onQueryChange = () => { };
+
     const handleRuleSelect = (event, title) => {
         let newSelection = selectedAlertTitles
         if (event.target.checked) {
@@ -75,7 +77,7 @@ const AlertRuleSelectionList = ({alertRules, emptyMessage, onRuleSelectionChange
     };
 
     // TODO create a method instead
-    let alerts
+    let alerts;
     if (alertRules && alertRules.length !== 0) {
         const formattedAlertRules = alertRules
             .sort((rule1, rule2) => rule1.title.localeCompare(rule2.title))
@@ -113,6 +115,7 @@ const AlertRuleSelectionList = ({alertRules, emptyMessage, onRuleSelectionChange
         <>
             <SearchForm onSearch={onSearch}
                         onReset={onReset}
+                        onQueryChange={onQueryChange}
                         searchButtonLabel="Filter"
                         placeholder="Filter alert rules by title..."
                         queryWidth={400}

@@ -20,7 +20,9 @@
 // * pages/ShowMessagePage.tsx
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { Col, Row } from 'components/bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
+import Routes from 'routing/Routes';
+import { Col, Row, Button } from 'components/bootstrap';
 import { IfPermitted, PageHeader, DocumentTitle, Spinner } from 'components/common';
 import AlertRuleList from 'wizard/components/rules/AlertRuleList';
 import { IntlProvider, FormattedMessage } from 'react-intl';
@@ -29,17 +31,12 @@ import messages_fr from 'translations/fr.json';
 import WizardConfigurationResource from 'wizard/resources/WizardConfigurationResource';
 
 const language = navigator.language.split(/[-_]/)[0];
-
 const messages = {
     'fr': messages_fr
 };
 
 const WizardPage = () => {
     const [configuration, setConfiguration] = useState(null);
-
-    const _saveConfiguration = configuration => {
-        WizardConfigurationResource.update(configuration).then(() => setConfiguration(configuration));
-    };
 
     useEffect(() => {
         WizardConfigurationResource.get().then(configuration => {
@@ -54,7 +51,25 @@ const WizardPage = () => {
     return (
         <IntlProvider locale={language} messages={messages[language]}>
             <DocumentTitle title="Alert Rules">
-                <PageHeader title={<FormattedMessage id="wizard.alertsRule" defaultMessage= "Alert Rules" />}>
+                <PageHeader title={<FormattedMessage id="wizard.alertsRule" defaultMessage= "Alert Rules" />} subpage='' actions={(
+                    <IfPermitted permissions="wizard_alerts_rules:read">
+                        <LinkContainer to={Routes.pluginRoute('WIZARD_NEWALERT')} style={{marginRight: '2px'}}>
+                            <Button bsStyle="success" type="submit">
+                                <FormattedMessage id="wizard.create" defaultMessage="Create" />
+                            </Button>
+                        </LinkContainer>
+                        <LinkContainer to={Routes.pluginRoute('WIZARD_IMPORTALERT')} style={{marginRight: '2px'}}>
+                            <Button bsStyle="success" type="submit">
+                                <FormattedMessage id="wizard.import" defaultMessage="Import" />
+                            </Button>
+                        </LinkContainer>
+                        <LinkContainer to={Routes.pluginRoute('WIZARD_EXPORTALERT')}>
+                            <Button bsStyle="success" type="submit">
+                                <FormattedMessage id="wizard.export" defaultMessage="Export" />
+                            </Button>
+                        </LinkContainer>
+                    </IfPermitted>
+                )}>
                     <span>
                     <FormattedMessage id ="wizard.description"
                         defaultMessage="With the wizard, you can manage the alert rules. An alert rule consists of one or more streams with rules, an alert condition and an alert notification. "

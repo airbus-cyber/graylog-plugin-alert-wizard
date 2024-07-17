@@ -327,25 +327,6 @@ const AlertRuleList = createReactClass({
             });
             return (
                 <div>
-                    <div className="pull-right has-bm">
-                        <LinkContainer to={Routes.pluginRoute('WIZARD_NEWALERT')}>
-                            <Button bsStyle="success" type="submit" title={this.state.messages.createAlert}>
-                                <FormattedMessage id="wizard.create" defaultMessage="Create" />
-                            </Button>
-                        </LinkContainer>
-                        {' '}
-                        <LinkContainer to={Routes.pluginRoute('WIZARD_IMPORTALERT')}>
-                            <Button bsStyle="success" type="submit" title={this.state.messages.importAlert}>
-                                <FormattedMessage id="wizard.import" defaultMessage="Import" />
-                            </Button>
-                        </LinkContainer>
-                        {' '}
-                        <LinkContainer to={Routes.pluginRoute('WIZARD_EXPORTALERT')}>
-                            <Button bsStyle="success" type="submit" title={this.state.messages.exportAlert}>
-                                <FormattedMessage id="wizard.export" defaultMessage="Export" />
-                            </Button>
-                        </LinkContainer>
-                    </div>
                     <DataTable id="alert-list"
                                className="table-hover"
                                headers={headers}
