@@ -23,7 +23,6 @@ import { useState, useEffect } from 'react';
 import { Col, Row } from 'components/bootstrap';
 import { IfPermitted, PageHeader, DocumentTitle, Spinner } from 'components/common';
 import AlertRuleList from 'wizard/components/rules/AlertRuleList';
-import ManageSettings from 'wizard/components/ManageSettings';
 import { IntlProvider, FormattedMessage } from 'react-intl';
 import packageJson from '../../../../package.json';
 import messages_fr from 'translations/fr.json';

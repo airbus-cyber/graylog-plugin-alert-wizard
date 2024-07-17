@@ -9,7 +9,10 @@ All notable changes to this project will be documented in this file.
 Note : This feature involves an internal updating of the API. The rules must be exported and deleted then imported with the new version of the plugin.
 ### Changes
 * Remove severity and use event definition priority ([issue #100](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/100))
+* Move wizard configuration in system/configurations ([issue #83](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/83))
 
+### Bug Fixes
+* Import failure when description is null ([issue #132](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/132))
 
 ## [5.2.1](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/5.2.0...5.2.1)
 ### Bug Fixes
