@@ -35,15 +35,21 @@ const AlertRuleBulkActions = ({ selectedAlertRuleIds, setSelectedAlertRuleIds, d
     const ACTION_TEXT = {
         [ACTION_TYPES.DELETE]: {
             dialogTitle: intl.formatMessage({id: 'wizard.delete', defaultMessage: 'Delete'}),
-            dialogBody: (count) => `${count > 1 ? intl.formatMessage({id: "wizard.confirmDeletionPlural", defaultMessage: "Are you sure you want to delete alert rules"}) : intl.formatMessage({id: "wizard.confirmDeletion", defaultMessage: "Are you sure you want to delete alert rule"})}?`
+            dialogBody: (count) => `${count > 1 ? 
+                intl.formatMessage({id: "wizard.confirmDeletionPlural", defaultMessage: "Are you sure you want to delete alert rules"}) :
+                intl.formatMessage({id: "wizard.confirmDeletion", defaultMessage: "Are you sure you want to delete alert rule"})}?`
         },
         [ACTION_TYPES.DISABLE]: {
             dialogTitle: intl.formatMessage({id: 'wizard.disable', defaultMessage: 'Disable'}),
-            dialogBody: (count) => `${count > 1 ? intl.formatMessage({id: "wizard.confirmDisablePlural", defaultMessage: "Are you sure you want to disable alert rules"}) : intl.formatMessage({id: "wizard.confirmDisable", defaultMessage: "Are you sure you want to disable alert rule"})}?`
+            dialogBody: (count) => `${count > 1 ? 
+                intl.formatMessage({id: "wizard.confirmDisablePlural", defaultMessage: "Are you sure you want to disable alert rules"}) :
+                intl.formatMessage({id: "wizard.confirmDisable", defaultMessage: "Are you sure you want to disable alert rule"})}?`
         },
         [ACTION_TYPES.ENABLE]: {
             dialogTitle: intl.formatMessage({id: 'wizard.enable', defaultMessage: 'Enable'}),
-            dialogBody: (count) => `Are you sure you want to enable alert rule?`
+            dialogBody: (count) => `${count > 1 ? 
+                intl.formatMessage({id: "wizard.confirmEnablePlural", defaultMessage: "Are you sure you want to enable alert rules"}) :
+                intl.formatMessage({id: "wizard.confirmEnable", defaultMessage: "Are you sure you want to enable alert rule"})}?`
         }
     };
 
@@ -62,8 +68,7 @@ const AlertRuleBulkActions = ({ selectedAlertRuleIds, setSelectedAlertRuleIds, d
                 updateState({ show: true, type: ACTION_TYPES.DELETE });
                 break;
             case ACTION_TYPES.ENABLE:
-                updateState({ show: false, type: ACTION_TYPES.ENABLE });
-                onAction();
+                updateState({ show: true, type: ACTION_TYPES.ENABLE });
                 break;
             case ACTION_TYPES.DISABLE:
                 updateState({ show: true, type: ACTION_TYPES.DISABLE });
@@ -91,7 +96,8 @@ const AlertRuleBulkActions = ({ selectedAlertRuleIds, setSelectedAlertRuleIds, d
             default:
                 break;
         }
-    }, [actionType, selectedAlertRuleIds]);
+        setSelectedAlertRuleIds([]);
+    }, [actionType, selectedAlertRuleIds, setSelectedAlertRuleIds]);
 
     const handleConfirm = () => {
         onAction();
