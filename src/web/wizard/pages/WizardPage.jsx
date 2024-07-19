@@ -29,6 +29,7 @@ import { IntlProvider, FormattedMessage } from 'react-intl';
 import packageJson from '../../../../package.json';
 import messages_fr from 'translations/fr.json';
 import WizardConfigurationResource from 'wizard/resources/WizardConfigurationResource';
+import AlertRulesContainer from "../components/rules/AlertRulesContainer";
 
 const language = navigator.language.split(/[-_]/)[0];
 const messages = {
@@ -86,7 +87,7 @@ const WizardPage = () => {
                 <Row className="content">
                     <Col md={12}>
                         <IfPermitted permissions="wizard_alerts_rules:read">
-                            <AlertRuleList field_order={configuration.field_order} />
+                            <AlertRulesContainer fieldOrder={configuration.field_order} />
                         </IfPermitted>
                     </Col>
                 </Row>
