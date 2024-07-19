@@ -52,7 +52,7 @@ const WizardPage = () => {
     return (
         <IntlProvider locale={language} messages={messages[language]}>
             <DocumentTitle title="Alert Rules">
-                <PageHeader title={<FormattedMessage id="wizard.alertsRule" defaultMessage= "Alert Rules" />} subpage='' actions={(
+                <PageHeader title={<FormattedMessage id="wizard.alertsRule" defaultMessage= "Alert Rules" />} subpage={false} actions={(
                     <IfPermitted permissions="wizard_alerts_rules:read">
                         <LinkContainer to={Routes.pluginRoute('WIZARD_NEWALERT')} style={{marginRight: '2px'}}>
                             <Button bsStyle="success" type="submit">

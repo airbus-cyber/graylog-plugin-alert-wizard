@@ -25,6 +25,7 @@ import { act } from 'react-dom/test-utils';
 import { render } from 'wrappedTestingLibrary';
 import { StoreMock as MockStore } from 'helpers/mocking';
 import WizardPage from './WizardPage';
+import { BrowserRouter } from 'react-router-dom';
 
 import fetch from 'logic/rest/FetchProvider';
 
@@ -42,6 +43,7 @@ jest.mock('stores/nodes/NodesStore', () => ({
   NodesActions: { list: (...args) => Promise.resolve({ nodes: [] }) },
   NodesStore: MockStore(),
 }));
+jest.mock('routing/Routes', () => ({ pluginRoute: () => '/route' }));
 
 describe('<WizardPage>', () => {
     it('should not fail', async () => {
@@ -52,7 +54,9 @@ describe('<WizardPage>', () => {
         fetch.mockReturnValueOnce(Promise.resolve(configuration))
         // TODO I do not like this await act thing very much, simple syntax? (see: https://kentcdodds.com/blog/fix-the-not-wrapped-in-act-warning)
         await act(async () => {
-            render(<WizardPage />)
+            render(<BrowserRouter>
+                <WizardPage />
+            </BrowserRouter>)
         });
     });
 });
