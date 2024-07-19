@@ -17,7 +17,7 @@
 
 import React from 'react';
 import { useState, useCallback, useEffect } from 'react';
-import { EntityDataTable, NoSearchResult, Timestamp, IfPermitted } from 'components/common';
+import { EntityDataTable, NoSearchResult, Timestamp, IfPermitted, SearchForm } from 'components/common';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Button } from 'components/bootstrap';
 import AlertRuleActions from "../../actions/AlertRuleActions";
@@ -106,6 +106,8 @@ const AlertRulesContainer = ({ fieldOrder }) => {
 
     const [alerts, setAlerts] = useState([]);
     const [elements, setElements] = useState([]);
+    const [fullElements, setFullElements] = useState([]);
+    const [query, setQuery] = useState('');
     const [visibleColumn, setVisibleColumn] = useState([...['title'], ...fieldOrder.filter(field => field.enabled).map((field) => field.name).map((fieldName) => fieldsTitle.find(x => x.config === fieldName).key)]);
 
     const columnDefinitions= fieldsTitle.map(field => {return {id: field.key, title: field.label, sortable: false};});
@@ -143,10 +145,9 @@ const AlertRulesContainer = ({ fieldOrder }) => {
         },
     });
     const onColumnsChange = useCallback((displayedAttributes) => {
-        console.log(displayedAttributes);
         const newVisibleColumns = computeVisibleColumn(fieldOrder, fieldsTitle, displayedAttributes);
         setVisibleColumn(newVisibleColumns);
-    }, []);
+    }, [setVisibleColumn]);
     const renderBulkActions = (
         selectedAlertRuleIds,
         setSelectedAlertRuleIds,
@@ -175,12 +176,25 @@ const AlertRulesContainer = ({ fieldOrder }) => {
         </div>);
     }, []);
 
+    const onSearch = useCallback((newQuery, allElements = null) => {
+        // TODO filter on ['title', 'priority', 'created_at', 'last_modified', 'creator_user_id'];
+        const newElements = allElements ? allElements.filter((elt) => elt.title.includes(newQuery)) : fullElements.filter((elt) => elt.title.includes(newQuery));
+        setElements(newElements);
+        setQuery(newQuery);
+    }, [query, elements]);
+
+    const onReset = useCallback(() => {
+        onSearch('');
+    }, [onSearch]);
+
     const _loadAlertRules = useCallback(() => {
         AlertRuleActions.list().then(newAlerts => {
             setAlerts(newAlerts);
-            setElements(newAlerts.map(_convertAlertToElement));
+            const allElements = newAlerts.map(_convertAlertToElement);
+            setFullElements(allElements);
+            onSearch(query, allElements);
         });
-    }, [alerts, setAlerts, elements, setElements]);
+    }, [alerts, fullElements, onSearch]);
 
     const deleteAlertRules = (alertRulesTitles) => {
         const promises = alertRulesTitles.map(name => AlertRuleActions.deleteByName(name));
@@ -249,24 +263,36 @@ const AlertRulesContainer = ({ fieldOrder }) => {
         }, []);
 
     return (
+        <>
+            <div style={{marginBottom: 5}}>
+                <SearchForm onSearch={onSearch}
+                            onReset={onReset}
+                            placeholder={intl.formatMessage({
+                                id: 'wizard.filter',
+                                defaultMessage: 'Filter alert rules'
+                            })}/>
+            </div>
             <div>
                 {alerts?.length === 0 ? (
-                    <NoSearchResult>No Alert Rule has been found</NoSearchResult>
+                    <NoSearchResult>
+                        <FormattedMessage id="wizard.noAlertFound" defaultMessage="No Alert Rule has been found" />
+                    </NoSearchResult>
                 ) : (
                     <EntityDataTable data={elements}
-                        visibleColumns={visibleColumn}
-                        columnsOrder={visibleColumn}
-                        onColumnsChange={onColumnsChange}
-                        onSortChange={onSortChange}
-                        bulkActions={renderBulkActions}
-                        columnDefinitions={columnDefinitions}
-                        columnRenderers={columnRenderers()}
-                        actionsCellWidth={500}
-                        rowActions={renderAlertRuleActions}
-                        entityAttributesAreCamelCase={false} />
-                        )}
-                    </div>
-                );
+                                     visibleColumns={visibleColumn}
+                                     columnsOrder={visibleColumn}
+                                     onColumnsChange={onColumnsChange}
+                                     onSortChange={onSortChange}
+                                     bulkActions={renderBulkActions}
+                                     columnDefinitions={columnDefinitions}
+                                     columnRenderers={columnRenderers()}
+                                     actionsCellWidth={500}
+                                     rowActions={renderAlertRuleActions}
+                                     entityAttributesAreCamelCase={false}/>
+                )}
+            </div>
+        </>
+    );
 };
 
 export default AlertRulesContainer;

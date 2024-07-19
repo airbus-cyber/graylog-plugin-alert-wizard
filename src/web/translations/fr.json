@@ -19,6 +19,7 @@
   "wizard.title": "Titre",
   "wizard.filterlists": "Filtrer les listes",
   "wizard.filter": "Filtrer les règles d'alerte",
+  "wizard.noAlertFound": "Aucune règle d'alerte n'a été trouvé",
   "wizard.cancel": "Annuler",
   "wizard.save": "Sauvegarder",
   "wizard.titleParameters": "Paramètres de la règle d'alerte",
