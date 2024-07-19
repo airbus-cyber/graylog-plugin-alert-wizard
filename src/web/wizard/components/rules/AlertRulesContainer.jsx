@@ -23,7 +23,7 @@ import { Button } from 'components/bootstrap';
 import AlertRuleActions from "../../actions/AlertRuleActions";
 import { useIntl, FormattedMessage } from "react-intl";
 import AlertRuleBulkActions from "./AlertRuleBulkActions";
-import { toDateObject } from 'util/DateTime';
+import { toDateObject, DATE_TIME_FORMATS } from 'util/DateTime';
 import AlertRuleText from "./AlertRuleText";
 import Routes from 'routing/Routes';
 import ButtonToEventDefinition from "../buttons/ButtonToEventDefinition";
@@ -31,18 +31,6 @@ import ButtonToNotification from "../buttons/ButtonToNotification";
 import AlertRuleCloneForm from "./AlertRuleCloneForm";
 import EventDefinitionResources from "../../resources/EventDefinitionResource";
 import StreamsStore from 'stores/streams/StreamsStore';
-
-function _availablePriorityTypes() {
-    return [
-        {value: 1, label: <FormattedMessage id="wizard.low" defaultMessage="Low" />},
-        {value: 2, label: <FormattedMessage id="wizard.medium" defaultMessage="Normal" />},
-        {value: 3, label: <FormattedMessage id="wizard.high" defaultMessage="High" />},
-    ];
-}
-
-function _getPriorityType(type) {
-    return _availablePriorityTypes().filter((t) => t.value === type)[0].label;
-}
 
 function _convertAlertToElement(alert) {
     let alertValid = true;
@@ -65,7 +53,7 @@ function _convertAlertToElement(alert) {
     return {
         id: alert.title,
         title: alert.title,
-        priority: _getPriorityType(alert.priority),
+        priority: alert.priority,
         description: alert.description,
         created: alert.created_at,
         lastModified: alert.last_modified,
@@ -95,10 +83,18 @@ const AlertRulesContainer = ({ fieldOrder }) => {
         {key: 'status', label: intl.formatMessage({id: "wizard.status", defaultMessage: "Status"}), config: 'Status'},
         {key: 'rule', label: intl.formatMessage({id: "wizard.rule", defaultMessage: "Rule"}), config: 'Rule'}
     ];
+    const availablePriorityTypes = [
+        {value: 1, label: intl.formatMessage({id: "wizard.low", defaultMessage: "Low"})},
+        {value: 2, label: intl.formatMessage({id: "wizard.medium", defaultMessage: "Normal"})},
+        {value: 3, label: intl.formatMessage({id: "wizard.high", defaultMessage: "High"})}
+    ];
+    const getPriorityType = (type) => {
+        return availablePriorityTypes.find((t) => t.value === type).label;
+    }
 
     const [alerts, setAlerts] = useState([]);
+    const [filterElements, setFilterElements] = useState([]);
     const [elements, setElements] = useState([]);
-    const [fullElements, setFullElements] = useState([]);
     const [query, setQuery] = useState('');
     const [visibleColumn, setVisibleColumn] = useState([...['title'], ...fieldOrder.filter(field => field.enabled).map((field) => field.name).map((fieldName) => fieldsTitle.find(x => x.config === fieldName).key)]);
     const [columnOrder, setColumnOrder] = useState([...['title'], ...fieldOrder.map((field) => field.name).map((fieldName) => fieldsTitle.find(x => x.config === fieldName).key)]);
@@ -106,6 +102,9 @@ const AlertRulesContainer = ({ fieldOrder }) => {
     const columnDefinitions= fieldsTitle.map(field => {return {id: field.key, title: field.label, sortable: false};});
     const columnRenderers = () => ({
         attributes: {
+            priority: {
+                renderCell: (_priority) => (<span style={{whiteSpace: 'pre-line'}}>{getPriorityType(_priority)}</span>)
+            },
             description: {
                 renderCell: (_description) => (<span style={{whiteSpace: 'pre-line'}}>{_description}</span>)
             },
@@ -167,26 +166,33 @@ const AlertRulesContainer = ({ fieldOrder }) => {
             {cloneAlert}
         </div>);
     }, []);
+    const _elementMatchQuery = (element, query) => {
+        const matchTitle = element.title.includes(query);
+        const matchUser = element.user.includes(query);
+        const matchPriority = getPriorityType(element.priority).includes(query);
+        const matchCreatedAt = toDateObject(element.created).format(DATE_TIME_FORMATS.default).includes(query);
+        const matchUpdatedAt = toDateObject(element.lastModified).format(DATE_TIME_FORMATS.default).includes(query);
 
+        return matchTitle || matchUser || matchPriority || matchCreatedAt || matchUpdatedAt;
+    }
     const onSearch = useCallback((newQuery, allElements = null) => {
-        // TODO filter on ['title', 'priority', 'created_at', 'last_modified', 'creator_user_id'];
-        const newElements = allElements ? allElements.filter((elt) => elt.title.includes(newQuery)) : fullElements.filter((elt) => elt.title.includes(newQuery));
-        setElements(newElements);
+        const usedElements = allElements ? allElements : elements;
+        const newElements = usedElements.filter((elt) => _elementMatchQuery(elt, newQuery));
+
+        setFilterElements(newElements);
         setQuery(newQuery);
     }, [query, elements]);
 
-    const onReset = useCallback(() => {
-        onSearch('');
-    }, [onSearch]);
+    const onReset = ()=> onSearch('');
 
     const _loadAlertRules = useCallback(() => {
         AlertRuleActions.list().then(newAlerts => {
             setAlerts(newAlerts);
             const allElements = newAlerts.map(_convertAlertToElement);
-            setFullElements(allElements);
+            setElements(allElements);
             onSearch(query, allElements);
         });
-    }, [alerts, fullElements, onSearch]);
+    }, [alerts, elements, query]);
 
     const deleteAlertRules = (alertRulesTitles) => {
         const promises = alertRulesTitles.map(name => AlertRuleActions.deleteByName(name));
@@ -270,7 +276,7 @@ const AlertRulesContainer = ({ fieldOrder }) => {
                         <FormattedMessage id="wizard.noAlertFound" defaultMessage="No Alert Rule has been found" />
                     </NoSearchResult>
                 ) : (
-                    <EntityDataTable data={elements}
+                    <EntityDataTable data={filterElements}
                                      visibleColumns={visibleColumn}
                                      columnsOrder={columnOrder}
                                      onColumnsChange={onColumnsChange}
