@@ -81,14 +81,6 @@ function _convertAlertToElement(alert) {
     };
 }
 
-function computeVisibleColumn(fieldOrder, fieldsTitle, displayedColumns) {
-    const columns = fieldOrder.map((field) => field.name)
-        .map((fieldName) => fieldsTitle.find(x => x.config === fieldName).key)
-        .filter(columnName => displayedColumns.includes(columnName));
-
-    return displayedColumns.includes('title') ? [...['title'], ...columns] : columns;
-}
-
 const AlertRulesContainer = ({ fieldOrder }) => {
 
     const intl = useIntl();
@@ -109,6 +101,7 @@ const AlertRulesContainer = ({ fieldOrder }) => {
     const [fullElements, setFullElements] = useState([]);
     const [query, setQuery] = useState('');
     const [visibleColumn, setVisibleColumn] = useState([...['title'], ...fieldOrder.filter(field => field.enabled).map((field) => field.name).map((fieldName) => fieldsTitle.find(x => x.config === fieldName).key)]);
+    const [columnOrder, setColumnOrder] = useState([...['title'], ...fieldOrder.map((field) => field.name).map((fieldName) => fieldsTitle.find(x => x.config === fieldName).key)]);
 
     const columnDefinitions= fieldsTitle.map(field => {return {id: field.key, title: field.label, sortable: false};});
     const columnRenderers = () => ({
@@ -145,12 +138,11 @@ const AlertRulesContainer = ({ fieldOrder }) => {
         },
     });
     const onColumnsChange = useCallback((displayedAttributes) => {
-        const newVisibleColumns = computeVisibleColumn(fieldOrder, fieldsTitle, displayedAttributes);
-        setVisibleColumn(newVisibleColumns);
-    }, [setVisibleColumn]);
+        setVisibleColumn(displayedAttributes);
+    }, [visibleColumn]);
     const renderBulkActions = (
         selectedAlertRuleIds,
-        setSelectedAlertRuleIds,
+        setSelectedAlertRuleIds
     ) => (
         <AlertRuleBulkActions selectedAlertRuleIds={selectedAlertRuleIds}
                      setSelectedAlertRuleIds={setSelectedAlertRuleIds} deleteAlertRulesFunction={deleteAlertRules}
@@ -280,7 +272,7 @@ const AlertRulesContainer = ({ fieldOrder }) => {
                 ) : (
                     <EntityDataTable data={elements}
                                      visibleColumns={visibleColumn}
-                                     columnsOrder={visibleColumn}
+                                     columnsOrder={columnOrder}
                                      onColumnsChange={onColumnsChange}
                                      onSortChange={onSortChange}
                                      bulkActions={renderBulkActions}
