@@ -8,10 +8,10 @@ class GraylogServer:
         self._log_offset = 0
 
     def start(self):
-        subprocess.run(['docker-compose', 'up', '--detach'], cwd=self._docker_compose_path)
+        subprocess.run(['docker', 'compose', 'up', '--detach'], cwd=self._docker_compose_path)
 
     def extract_all_logs(self):
-        return subprocess.check_output(['docker-compose', 'logs', '--no-color', 'graylog'], cwd=self._docker_compose_path, universal_newlines=True)
+        return subprocess.check_output(['docker', 'compose', 'logs', '--no-color', 'graylog'], cwd=self._docker_compose_path, universal_newlines=True)
 
     def start_logs_capture(self):
         logs = self.extract_all_logs()
@@ -22,5 +22,5 @@ class GraylogServer:
         return logs[self._log_offset:]
 
     def stop(self):
-        subprocess.run(['docker-compose', 'down'], cwd=self._docker_compose_path)
+        subprocess.run(['docker', 'compose', 'down'], cwd=self._docker_compose_path)
         subprocess.run(['docker', 'volume', 'prune', '--force'])
