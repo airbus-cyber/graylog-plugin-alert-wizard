@@ -69,7 +69,7 @@ jobs:
           python -m venv venv
           source venv/bin/activate
           pip install -r requirements.txt
-          docker-compose --project-directory ../runtime pull
+          docker compose --project-directory ../runtime pull
       - name: Execute brittle tests
         working-directory: plugin/validation
         run: |
