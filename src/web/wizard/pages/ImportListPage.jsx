@@ -90,19 +90,18 @@ const ImportListPage = createReactClass({
             <IntlProvider locale={language} messages={messages[language]}>
                 <DocumentTitle title="Import list">
                     <div>
-                        <PageHeader title={<FormattedMessage id= "wizard.importWizardList" defaultMessage= "Wizard: Import lists" />}>
+                        <PageHeader title={<FormattedMessage id= "wizard.importWizardList" defaultMessage= "Wizard: Import lists" />}
+                                    actions={(
+                                        <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
+                                            <Button bsStyle="info"><FormattedMessage id="wizard.backlist" defaultMessage= "Back to lists" /></Button>
+                                        </LinkContainer>
+                                    )}>
                             <span>
                                 <FormattedMessage id= "wizard.importLists" defaultMessage= "You can import a list." />
                             </span>
                             <span>
                                 <FormattedMessage id="wizard.documentationlist"
                                                   defaultMessage= "Read more about Wizard lists in the documentation." />
-                            </span>
-                            <span>
-                                <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
-                                    <Button bsStyle="info"><FormattedMessage id= "wizard.backlist" defaultMessage= "Back to lists" /></Button>
-                                </LinkContainer>
-                                &nbsp;
                             </span>
                         </PageHeader>
                         <Row className="content">

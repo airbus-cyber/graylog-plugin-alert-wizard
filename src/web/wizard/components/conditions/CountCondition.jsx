@@ -42,7 +42,7 @@ const CountCondition = createReactClass({
             alert: ObjectUtils.clone(this.props.alert),
         };
     },
-    _handleChangeCondition(field, value) {
+    _handleChangeCondition(field, value){
         let update = ObjectUtils.clone(this.state.alert);
         if (field === "threshold" || field === "additional_threshold" || field === "time") {
             update.condition_parameters[field] = parseInt(value);

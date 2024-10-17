@@ -53,16 +53,17 @@ import org.graylog2.plugin.streams.Stream;
 import org.graylog2.shared.rest.resources.RestResource;
 import org.graylog2.streams.StreamService;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.inject.Inject;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
@@ -370,9 +371,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 alertType,
                 pattern,
                 notificationIdentifier,
-                DateTime.now(),
+                DateTime.now(DateTimeZone.UTC),
                 userName,
-                DateTime.now());
+                DateTime.now(DateTimeZone.UTC));
         alertRule = this.alertRuleService.create(alertRule);
 
         GetDataAlertRule result = this.constructDataAlertRule(alertRule);
@@ -521,7 +522,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 previousAlert.getNotificationID(),
                 previousAlert.getCreatedAt(),
                 userName,
-                DateTime.now());
+                DateTime.now(DateTimeZone.UTC));
         alertRule = this.alertRuleService.update(java.net.URLDecoder.decode(title, ENCODING), alertRule);
 
         GetDataAlertRule result = this.constructDataAlertRule(alertRule);

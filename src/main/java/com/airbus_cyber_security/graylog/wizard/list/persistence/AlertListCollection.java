@@ -26,7 +26,7 @@ import org.graylog2.database.PaginatedDbService;
 import org.mongojack.DBCursor;
 import org.mongojack.DBQuery;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.List;
 
 public class AlertListCollection extends PaginatedDbService<AlertList>  {

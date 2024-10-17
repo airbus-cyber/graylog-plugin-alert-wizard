@@ -19,7 +19,7 @@ import React from 'react';
 import { Icon } from 'components/common';
 
 const IconRemove = () => {
-    return <Icon name="trash" />
+    return <Icon name="delete" />
 }
 
 export default IconRemove;

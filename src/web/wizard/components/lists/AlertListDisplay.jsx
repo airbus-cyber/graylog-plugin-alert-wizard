@@ -23,7 +23,7 @@ import createReactClass from 'create-react-class';
 import Reflux from 'reflux';
 import { Button, Tooltip } from 'components/bootstrap';
 import { toDateObject } from 'util/DateTime';
-import { DataTable, IfPermitted, OverlayElement, Spinner, Timestamp } from 'components/common';
+import { DataTable, IfPermitted, OverlayTrigger, Spinner, Timestamp } from 'components/common';
 import PermissionsMixin from 'util/PermissionsMixin';
 import Routes from 'routing/Routes';
 import AlertListStore from 'wizard/stores/AlertListStore';
@@ -178,10 +178,14 @@ const AlertListDisplay = createReactClass({
                         break;
                     case 'User':
                         tabFields.push(<td className="limited">
-                            <OverlayElement overlay={tooltipUser} placement="top" useOverlay={true}
-                                            trigger={['hover', 'focus']}>
-                                {list.creator_user_id}
-                            </OverlayElement>
+                            <OverlayTrigger overlay={tooltipUser}
+                                            placement="top"
+                                            trigger={['hover', 'focus']}
+                                            rootClose
+                                            className={''}
+                            >
+                                <span>{list.creator_user_id}</span>
+                            </OverlayTrigger>
                         </td>);
                         break;
                     case 'Usage':

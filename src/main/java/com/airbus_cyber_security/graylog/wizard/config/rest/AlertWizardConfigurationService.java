@@ -18,7 +18,7 @@ package com.airbus_cyber_security.graylog.wizard.config.rest;
 
 import org.graylog2.plugin.cluster.ClusterConfigService;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 
 public class AlertWizardConfigurationService {

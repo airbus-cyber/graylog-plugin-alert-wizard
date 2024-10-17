@@ -70,21 +70,19 @@ const UpdateListPage = createReactClass({
                     <div>
                         <PageHeader title={<FormattedMessage id="wizard.updateList"
                                                              defaultMessage='Wizard: Editing list "{title}"'
-                                                             values={{title: this.state.list.title}}/>}>
-                        <span>
-                            <FormattedMessage id="wizard.definelist" defaultMessage="You can define a list."/>
-                        </span>
+                                                             values={{title: this.state.list.title}}/>}
+                                    actions={(
+                                        <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
+                                            <Button bsStyle="info"><FormattedMessage id="wizard.backlist" defaultMessage= "Back to lists" /></Button>
+                                        </LinkContainer>
+                                    )}>
                             <span>
-                            <FormattedMessage id="wizard.documentationlist"
-                                              defaultMessage="Read more about Wizard lists in the documentation."/>
-                        </span>
-                            <span>
-                            <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
-                                <Button bsStyle="info"><FormattedMessage id="wizard.backlist"
-                                                                         defaultMessage="Back to lists"/></Button>
-                            </LinkContainer>
-                                &nbsp;
-                        </span>
+                                <FormattedMessage id="wizard.definelist" defaultMessage="You can define a list."/>
+                            </span>
+                                <span>
+                                <FormattedMessage id="wizard.documentationlist"
+                                                  defaultMessage="Read more about Wizard lists in the documentation."/>
+                            </span>
                         </PageHeader>
                         <Row className="content">
                             <Col md={12}>

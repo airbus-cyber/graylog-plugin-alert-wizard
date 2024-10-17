@@ -43,15 +43,16 @@ import org.graylog2.plugin.database.ValidationException;
 import org.graylog2.plugin.rest.PluginRestResource;
 import org.graylog2.shared.rest.resources.RestResource;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.inject.Inject;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -155,9 +156,9 @@ public class AlertListResource extends RestResource implements PluginRestResourc
 
         this.alertListService.create(AlertList.create(
                 listTitle,
-                DateTime.now(),
+                DateTime.now(DateTimeZone.UTC),
                 getCurrentUser().getName(),
-                DateTime.now(),
+                DateTime.now(DateTimeZone.UTC),
                 request.getDescription(),
                 0,
                 request.getLists()));
@@ -172,9 +173,9 @@ public class AlertListResource extends RestResource implements PluginRestResourc
 
         this.alertListService.create(AlertList.create(
                 listTitle,
-                DateTime.now(),
+                DateTime.now(DateTimeZone.UTC),
                 getCurrentUser().getName(),
-                DateTime.now(),
+                DateTime.now(DateTimeZone.UTC),
                 alertList.getDescription(),
                 0,
                 alertList.getLists()));
@@ -230,7 +231,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
                         listTitle,
                         oldAlert.getCreatedAt(),
                         getCurrentUser().getName(),
-                        DateTime.now(),
+                        DateTime.now(DateTimeZone.UTC),
                         request.getDescription(),
                         request.getUsage(),
                         request.getLists()));
@@ -257,7 +258,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
         if (alertList.getUsage() <= 0) {
             this.alertListService.destroy(listTitle);
         } else {
-            throw new javax.ws.rs.BadRequestException("List " + listTitle + " used in alert rules");
+            throw new jakarta.ws.rs.BadRequestException("List " + listTitle + " used in alert rules");
         }
     }
 

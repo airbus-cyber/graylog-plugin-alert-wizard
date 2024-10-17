@@ -15,8 +15,8 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-import React from 'react';
-import { render } from 'wrappedTestingLibrary';
+import React  from 'react';
+import { render, act } from 'wrappedTestingLibrary';
 import { StoreMock as MockStore } from 'helpers/mocking';
 import { IntlProvider } from 'react-intl';
 
@@ -89,18 +89,22 @@ jest.mock('./TypeAheadFieldInput', () => {
 });
 
 describe('<FieldRule>', () => {
+
     it('should not fail', async () => {
         const rule = {
+            id: 0,
             field: 'field',
             type: 5,
             value: 'hello'
         };
         const onUpdate = jest.fn();
         const onDelete = jest.fn();
+
         // TODO use screen instead??
-        const subject = render(<IntlProvider locale="en" >
-                   <FieldRule rule={rule} onUpdate={onUpdate} onDelete={onDelete} />
-               </IntlProvider>);
-        await subject.findAllByRole('textbox');
+        await act(async () => {
+            await render(<IntlProvider locale="en" >
+                <FieldRule rule={rule} onUpdate={onUpdate} onDelete={onDelete} />
+            </IntlProvider>);
+        });
     });
 });

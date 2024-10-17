@@ -69,7 +69,6 @@ const FieldsInput = createReactClass({
     getInitialState() {
         return {
             stream: ObjectUtils.clone(this.props.stream),
-            indexSets: undefined,
         };
     },
 

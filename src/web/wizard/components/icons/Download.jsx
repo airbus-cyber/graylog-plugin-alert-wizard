@@ -19,7 +19,7 @@ import React from 'react';
 import { Icon } from 'components/common';
 
 const IconDownload = () => {
-    return <Icon name="cloud-download" />
+    return <Icon name="cloud_download" />
 }
 
 export default IconDownload;

@@ -93,19 +93,18 @@ const ExportListPage = createReactClass({
             <IntlProvider locale={language} messages={messages[language]}>
                 <DocumentTitle title="Export list">
                     <div>
-                        <PageHeader title={<FormattedMessage id= "wizard.exportWizardList" defaultMessage= "Wizard: Export lists" />}>
+                        <PageHeader title={<FormattedMessage id= "wizard.exportWizardList" defaultMessage= "Wizard: Export lists" />}
+                                    actions={(
+                                        <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
+                                            <Button bsStyle="info"><FormattedMessage id="wizard.backlist" defaultMessage= "Back to lists" /></Button>
+                                        </LinkContainer>
+                                    )}>
                             <span>
                                 <FormattedMessage id= "wizard.exportAlertList" defaultMessage= "You can export a list." />
                             </span>
                             <span>
                                 <FormattedMessage id="wizard.documentationlist"
                                                   defaultMessage= "Read more about Wizard lists in the documentation." />
-                            </span>
-                            <span>
-                                <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
-                                    <Button bsStyle="info"><FormattedMessage id= "wizard.backlist" defaultMessage= "Back to lists" /></Button>
-                                </LinkContainer>
-                                &nbsp;
                             </span>
                         </PageHeader>
                         <Row className="content">

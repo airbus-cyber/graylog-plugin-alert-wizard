@@ -83,19 +83,18 @@ const ExportAlertPage = createReactClass({
             <IntlProvider locale={language} messages={messages[language]}> 
                 <DocumentTitle title="Export alert rule">
                     <div>
-                        <PageHeader title={<FormattedMessage id= "wizard.exportWizardAlertRule" defaultMessage= "Wizard: Export alert rules" />}>
+                        <PageHeader title={<FormattedMessage id= "wizard.exportWizardAlertRule" defaultMessage= "Wizard: Export alert rules" />}
+                                    actions={(
+                                        <LinkContainer to={Navigation.getWizardRoute()}>
+                                            <Button bsStyle="info"><FormattedMessage id= "wizard.back" defaultMessage= "Back to alert rules" /></Button>
+                                        </LinkContainer>
+                                    )}>
                             <span>
                                 <FormattedMessage id= "wizard.exportAlertRule" defaultMessage= "You can export an alert rule." />
                             </span>
                             <span>
                                 <FormattedMessage id="wizard.documentation" 
                                 defaultMessage= "Read more about Wizard alert rules in the documentation." />
-                            </span>
-                            <span>
-                                <LinkContainer to={Navigation.getWizardRoute()}>
-                                    <Button bsStyle="info"><FormattedMessage id= "wizard.back" defaultMessage= "Back to alert rules" /></Button>
-                                </LinkContainer>
-                                &nbsp;
                             </span>
                         </PageHeader>
                         <Row className="content">

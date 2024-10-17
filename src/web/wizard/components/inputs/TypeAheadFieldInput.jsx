@@ -54,15 +54,17 @@ const TypeAheadFieldInput = ({defaultValue, onChange}) => {
     useEffect(() => {
         fetch('GET', qualifyUrl(ApiRoutes.SystemApiController.fields().url))
         .then((data) => {
-            $(fieldInput.current.getInputDOMNode()).typeahead({
-                hint: true,
-                highlight: true,
-                minLength: 1,
-            }, {
-                name: 'fields',
-                displayKey: 'value',
-                source: UniversalSearch.substringMatcher(data.fields, 'value', 6),
-            });
+            if(fieldInput.current) {
+                $(fieldInput.current.getInputDOMNode()).typeahead({
+                    hint: true,
+                    highlight: true,
+                    minLength: 1,
+                }, {
+                    name: 'fields',
+                    displayKey: 'value',
+                    source: UniversalSearch.substringMatcher(data.fields, 'value', 6),
+                });
+            }
         });
 
         // eslint-disable-next-line react/no-find-dom-node
@@ -73,12 +75,14 @@ const TypeAheadFieldInput = ({defaultValue, onChange}) => {
         });
 
         return () => {
-            $(fieldInput.current.getInputDOMNode()).typeahead('destroy');
+            if(fieldInput.current) {
+                $(fieldInput.current.getInputDOMNode()).typeahead('destroy');
 
-            // eslint-disable-next-line react/no-find-dom-node
-            const fieldFormGroup = ReactDOM.findDOMNode(fieldInput.current);
+                // eslint-disable-next-line react/no-find-dom-node
+                const fieldFormGroup = ReactDOM.findDOMNode(fieldInput.current);
 
-            $(fieldFormGroup).off('typeahead:change typeahead:selected');
+                $(fieldFormGroup).off('typeahead:change typeahead:selected');
+            }
         }
     }, [theme]);
 

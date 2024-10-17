@@ -19,8 +19,8 @@ import { useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { ConfirmDialog } from 'components/common';
 import { MenuItem } from 'components/bootstrap';
-import StringUtils from 'util/StringUtils';
 import BulkActionsDropdown from 'components/common/EntityDataTable/BulkActionsDropdown';
+import useSelectedEntities from 'components/common/EntityDataTable/hooks/useSelectedEntities';
 
 const ACTION_TYPES = {
     DELETE: 'delete',
@@ -28,7 +28,7 @@ const ACTION_TYPES = {
     ENABLE: 'enable',
 };
 
-const AlertRuleBulkActions = ({ selectedAlertRuleIds, setSelectedAlertRuleIds, deleteAlertRulesFunction, enableAlertRulesFunction, disableAlertRulesFunction }) => {
+const AlertRuleBulkActions = ({ deleteAlertRulesFunction, enableAlertRulesFunction, disableAlertRulesFunction }) => {
 
     const intl = useIntl();
 
@@ -55,7 +55,8 @@ const AlertRuleBulkActions = ({ selectedAlertRuleIds, setSelectedAlertRuleIds, d
 
     const [showDialog, setShowDialog] = useState(false);
     const [actionType, setActionType] = useState(null);
-    const selectedItemsAmount = selectedAlertRuleIds?.length;
+    const { selectedEntities, setSelectedEntities } = useSelectedEntities();
+    const selectedItemsAmount = selectedEntities?.length;
 
     const updateState = ({ show, type }) => {
         setShowDialog(show);
@@ -85,19 +86,19 @@ const AlertRuleBulkActions = ({ selectedAlertRuleIds, setSelectedAlertRuleIds, d
     const onAction = useCallback(() => {
         switch (actionType) {
             case ACTION_TYPES.DELETE:
-                deleteAlertRulesFunction(selectedAlertRuleIds);
+                deleteAlertRulesFunction(selectedEntities);
                 break;
             case ACTION_TYPES.DISABLE:
-                disableAlertRulesFunction(selectedAlertRuleIds);
+                disableAlertRulesFunction(selectedEntities);
                 break;
             case ACTION_TYPES.ENABLE:
-                enableAlertRulesFunction(selectedAlertRuleIds);
+                enableAlertRulesFunction(selectedEntities);
                 break;
             default:
                 break;
         }
-        setSelectedAlertRuleIds([]);
-    }, [actionType, selectedAlertRuleIds, setSelectedAlertRuleIds]);
+        setSelectedEntities([]);
+    }, [actionType, selectedEntities, setSelectedEntities]);
 
     const handleConfirm = () => {
         onAction();
@@ -105,10 +106,12 @@ const AlertRuleBulkActions = ({ selectedAlertRuleIds, setSelectedAlertRuleIds, d
     };
 
     return (
-        <BulkActionsDropdown selectedEntities={selectedAlertRuleIds} setSelectedEntities={setSelectedAlertRuleIds}>
-            <MenuItem onSelect={() => handleAction(ACTION_TYPES.ENABLE)}><FormattedMessage id="wizard.enable" defaultMessage="Enable" /></MenuItem>
-            <MenuItem onSelect={() => handleAction(ACTION_TYPES.DISABLE)}><FormattedMessage id="wizard.disable" defaultMessage="Disable" /></MenuItem>
-            <MenuItem onSelect={() => handleAction(ACTION_TYPES.DELETE)}><FormattedMessage id="wizard.delete" defaultMessage="Delete" /></MenuItem>
+        <>
+            <BulkActionsDropdown>
+                <MenuItem onSelect={() => handleAction(ACTION_TYPES.ENABLE)}><FormattedMessage id="wizard.enable" defaultMessage="Enable" /></MenuItem>
+                <MenuItem onSelect={() => handleAction(ACTION_TYPES.DISABLE)}><FormattedMessage id="wizard.disable" defaultMessage="Disable" /></MenuItem>
+                <MenuItem onSelect={() => handleAction(ACTION_TYPES.DELETE)} variant="danger"><FormattedMessage id="wizard.delete" defaultMessage="Delete"/></MenuItem>
+            </BulkActionsDropdown>
             {showDialog && (
                 <ConfirmDialog title={ACTION_TEXT[actionType]?.dialogTitle}
                                show
@@ -117,7 +120,7 @@ const AlertRuleBulkActions = ({ selectedAlertRuleIds, setSelectedAlertRuleIds, d
                     {ACTION_TEXT[actionType]?.dialogBody(selectedItemsAmount)}
                 </ConfirmDialog>
             )}
-        </BulkActionsDropdown>
+        </>
     );
 };
 

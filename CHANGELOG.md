@@ -2,8 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-## [5.3.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/5.2.0...5.3.0)
+
+## [6.0.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/5.2.1...6.0.0)
 ### Features
+* Add compatibility with [Graylog 6.0](https://www.graylog.org/post/announcing-graylog-v6-0/)
 * Wizard Alert Rule page uses same components as the event definition page ([issue #24](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/24))
 * The rule form permits to add Search Query to the event definition description ([issue #124](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/124))
 

@@ -78,30 +78,25 @@ const UpdateAlertPage = ({params}) => {
     return (
         <IntlProvider locale={language} messages={messages[language]}>
             <DocumentTitle title="Edit alert rule">
-                <div>
-                    <PageHeader title={<FormattedMessage id= "wizard.updateAlertRule"
-                            defaultMessage= 'Wizard: Editing alert rule "{title}"'
-                            values={{title: alert.title }} />} >
-                        <span>
-                            <FormattedMessage id= "wizard.define" defaultMessage= "You can define an alert rule." />
-                        </span>
-                        <span>
-                            <FormattedMessage id="wizard.documentation"
-                            defaultMessage= "Read more about Wizard alert rules in the documentation." />
-                        </span>
-                        <span>
-                            <LinkContainer to={Navigation.getWizardRoute()}>
-                                <Button bsStyle="info"><FormattedMessage id= "wizard.back" defaultMessage= "Back to alert rules" /></Button>
-                            </LinkContainer>
-                            &nbsp;
-                        </span>
-                    </PageHeader>
-                    <Row className="content">
-                        <Col md={12}>
-                            <AlertRuleForm alert={alert} navigationToRuleComponents={navigationToRuleComponents} onSave={_update} />
-                        </Col>
-                    </Row>
-                </div>
+                    <PageHeader title={<FormattedMessage id="wizard.updateAlertRule" defaultMessage='Wizard: Editing alert rule "{title}"' values={{title: alert.title }} />}
+                                actions={(
+                                    <LinkContainer to={Navigation.getWizardRoute()}>
+                                        <Button bsStyle="info"><FormattedMessage id= "wizard.back" defaultMessage= "Back to alert rules" /></Button>
+                                    </LinkContainer>
+                                )}>
+                    <span>
+                        <FormattedMessage id= "wizard.define" defaultMessage= "You can define an alert rule." />
+                    </span>
+                    <span>
+                        <FormattedMessage id="wizard.documentation"
+                                          defaultMessage= "Read more about Wizard alert rules in the documentation." />
+                    </span>
+                </PageHeader>
+                <Row className="content">
+                    <Col md={12}>
+                        <AlertRuleForm alert={alert} navigationToRuleComponents={navigationToRuleComponents} onSave={_update} />
+                    </Col>
+                </Row>
             </DocumentTitle>
         </IntlProvider>
     );

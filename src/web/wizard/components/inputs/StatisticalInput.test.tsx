@@ -29,7 +29,8 @@ describe('<StatisticalInput>', () => {
         const root = render(<IntlProvider locale="fr" messages={messages}>
                                     {sumOfSquares}
                             </IntlProvider>);
-        expect(root.container.textContent).toBe('somme des carrés');
+        const fullContentStr = root.container.innerHTML;
+        expect(fullContentStr.substring(fullContentStr.lastIndexOf('</style>') + 8, fullContentStr.length)).toBe('somme des carrés');
     });
 
     it('should have a correct sum translation', () => {
@@ -37,6 +38,7 @@ describe('<StatisticalInput>', () => {
         const root = render(<IntlProvider locale="fr" messages={messages}>
                                     {sumOfSquares}
                             </IntlProvider>);
-        expect(root.container.textContent).toBe('somme');
+        const fullContentStr = root.container.innerHTML;
+        expect(fullContentStr.substring(fullContentStr.lastIndexOf('</style>') + 8, fullContentStr.length)).toBe('somme');
     });
 });

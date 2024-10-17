@@ -34,15 +34,15 @@ import org.graylog.events.conditions.Expression;
 import org.graylog.events.processor.EventProcessorConfig;
 import org.graylog.events.processor.aggregation.AggregationConditions;
 import org.graylog.events.processor.aggregation.AggregationEventProcessorConfig;
-import org.graylog.events.processor.aggregation.AggregationFunction;
-import org.graylog.events.processor.aggregation.AggregationSeries;
+import org.graylog.plugins.views.search.searchtypes.pivot.SeriesSpec;
+import org.graylog.plugins.views.search.searchtypes.pivot.series.*;
 import org.graylog2.plugin.streams.Stream;
 import org.graylog2.plugin.streams.StreamRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import javax.ws.rs.BadRequestException;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.BadRequestException;
 import java.util.*;
 
 /**
@@ -147,10 +147,10 @@ public class Conversions {
                 parametersCondition.put(SEARCH_QUERY, aggregationConfig.query());
                 parametersCondition.put(THRESHOLD, convertThreshold(aggregationConfig.conditions().get().expression().get()));
                 parametersCondition.put(THRESHOLD_TYPE, aggregationConfig.conditions().get().expression().get().expr());
-                AggregationSeries series = aggregationConfig.series().get(0);
-                parametersCondition.put(TYPE, series.function().toString());
+                SeriesSpec series = aggregationConfig.series().get(0);
+                parametersCondition.put(TYPE, series.type());
                 String distinctBy = "";
-                Optional<String> seriesField = series.field();
+                Optional<String> seriesField = series.statsSubfieldName();
                 if (seriesField.isPresent()) {
                     // TODO think about this, but there is some code smell here...
                     // It is because AggregationEventProcessorConfig is used both for Count and Statistical conditions
@@ -364,15 +364,15 @@ public class Conversions {
         int threshold = this.accessThreshold(conditionParameter);
 
         String identifier = UUID.randomUUID().toString();
-        AggregationSeries.Builder seriesBuilder = AggregationSeries.builder().id(identifier);
+        SeriesSpecBuilder<?,?> seriesBuilder;
 
         if (distinctBy.isEmpty()) {
-            seriesBuilder.function(AggregationFunction.COUNT);
+            seriesBuilder = Count.builder().id(identifier);
         } else {
-            seriesBuilder.function(AggregationFunction.CARD).field(distinctBy);
+            seriesBuilder = Cardinality.builder().id(identifier).field(distinctBy);
         }
 
-        AggregationSeries series = seriesBuilder.build();
+        SeriesSpec series = (SeriesSpec) seriesBuilder.build();
 
         Expression<Boolean> expression = createExpressionFromNumberThreshold(identifier, thresholdType, threshold);
         AggregationConditions conditions = AggregationConditions.builder()
@@ -392,26 +392,26 @@ public class Conversions {
                 .build();
     }
 
-    private AggregationFunction mapTypeToAggregationFunction(String type) {
+    private SeriesSpec createSerieSpec(String type, String identifier, String field) {
         switch (type) {
             case "AVG":
-                return AggregationFunction.AVG;
+                return Average.builder().id(identifier).field(field).build();
             case "MIN":
-                return AggregationFunction.MIN;
+                return Min.builder().id(identifier).field(field).build();
             case "MAX":
-                return AggregationFunction.MAX;
+                return Max.builder().id(identifier).field(field).build();
             case "SUM":
-                return AggregationFunction.SUM;
+                return Sum.builder().id(identifier).field(field).build();
             case "STDDEV":
-                return AggregationFunction.STDDEV;
+                return StdDev.builder().id(identifier).field(field).build();
             case "CARD":
-                return AggregationFunction.CARD;
+                return Cardinality.builder().id(identifier).field(field).build();
             case "COUNT":
-                return AggregationFunction.COUNT;
+                return Count.builder().id(identifier).field(field).build();
             case "SUMOFSQUARES":
-                return AggregationFunction.SUMOFSQUARES;
+                return SumOfSquares.builder().id(identifier).field(field).build();
             case "VARIANCE":
-                return AggregationFunction.VARIANCE;
+                return Variance.builder().id(identifier).field(field).build();
             default:
                 throw new BadRequestException();
         }
@@ -447,11 +447,7 @@ public class Conversions {
         int threshold = this.accessThreshold(conditionParameter);
 
         String identifier = UUID.randomUUID().toString();
-        AggregationSeries serie = AggregationSeries.builder()
-                .id(identifier)
-                .function(mapTypeToAggregationFunction(type))
-                .field(conditionParameter.get(FIELD).toString())
-                .build();
+        SeriesSpec serie = createSerieSpec(type, identifier, conditionParameter.get(FIELD).toString());
 
         Expression<Boolean> expression = createExpressionFromThreshold(identifier,
                 conditionParameter.get(THRESHOLD_TYPE).toString(),

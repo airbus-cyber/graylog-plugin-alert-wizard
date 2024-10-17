@@ -19,7 +19,7 @@ import React from 'react';
 import { Icon } from 'components/common';
 
 const IconAdd = () => {
-    return <Icon name="plus-circle" />
+    return <Icon name="add_circle" />
 }
 
 export default IconAdd;

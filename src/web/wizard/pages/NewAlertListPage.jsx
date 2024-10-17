@@ -29,6 +29,7 @@ import { IntlProvider, FormattedMessage } from 'react-intl';
 import messages_fr from 'translations/fr.json';
 import CreateListFormInput from 'wizard/components/lists/CreateListFormInput';
 import AlertListActions from 'wizard/actions/AlertListActions';
+import Navigation from "../routing/Navigation";
 
 const language = navigator.language.split(/[-_]/)[0];
 
@@ -45,19 +46,18 @@ const NewAlertListPage = () => {
         <IntlProvider locale={language} messages={messages[language]}>
             <DocumentTitle title="New list">
                 <div>
-                    <PageHeader title={<FormattedMessage id="wizard.newList" defaultMessage="Wizard: New list" />}>
+                    <PageHeader title={<FormattedMessage id="wizard.newList" defaultMessage="Wizard: New list" />}
+                                actions={(
+                                    <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
+                                        <Button bsStyle="info"><FormattedMessage id="wizard.backlist" defaultMessage= "Back to lists" /></Button>
+                                    </LinkContainer>
+                                )}>
                         <span>
                             <FormattedMessage id="wizard.definelist" defaultMessage="You can define a list." />
                         </span>
                         <span>
                             <FormattedMessage id="wizard.documentationlist"
                                               defaultMessage= "Read more about Wizard list in the documentation." />
-                        </span>
-                        <span>
-                            <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
-                                <Button bsStyle="info"><FormattedMessage id="wizard.backlist" defaultMessage= "Back to lists" /></Button>
-                            </LinkContainer>
-                            &nbsp;
                         </span>
                     </PageHeader>
                     <Row className="content">

@@ -31,7 +31,7 @@ import org.graylog.security.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.Optional;
 
 // TODO I am not sure to like this name EventDefinitionHandler? EventDefinitionBusiness? EventDefinitionOperations?
@@ -91,7 +91,7 @@ public class EventDefinitionService {
     public void updateEvent(String alertTitle, String description, Integer priority, String eventIdentifier, EventProcessorConfig configuration) {
         LOG.debug("Update event: {}, identifier: {}", alertTitle, eventIdentifier);
         EventDefinitionDto event = this.getEventDefinition(eventIdentifier)
-                .orElseThrow(() -> new javax.ws.rs.NotFoundException("Event definition <" + eventIdentifier + "> doesn't exist"));
+                .orElseThrow(() -> new jakarta.ws.rs.NotFoundException("Event definition <" + eventIdentifier + "> doesn't exist"));
 
         this.updateEvent(alertTitle, description, priority, event, configuration);
     }

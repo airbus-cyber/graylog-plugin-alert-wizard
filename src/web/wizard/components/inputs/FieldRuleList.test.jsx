@@ -72,7 +72,7 @@ describe('<FieldRuleList>', () => {
         const subject = render(<IntlProvider locale="en" >
                    <FieldRuleList fieldRules={rules} onSaveStream={onSaveStream} />
                </IntlProvider>);
-        await subject.findAllByRole('textbox');
+        await subject.findByTitle('Add');
     });
 });
 

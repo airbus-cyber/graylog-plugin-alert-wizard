@@ -19,20 +19,21 @@
 import React from 'react';
 import { render } from 'wrappedTestingLibrary';
 import HighlightedDiv from './HighlightedDiv';
-import noir from 'theme/variants/noir';
+import SawmillSC from '@graylog/sawmill/styled-components';
 import { ThemeProvider } from 'styled-components';
 
 describe('<HighlightedDiv>', () => {
     it('should not fail', () => {
-        const theme = {
-            colors: noir
-        };
+        const theme =  SawmillSC({
+            colorScheme: "dark",
+            other: {},
+        });
         const { getByTestId } = render(
             <ThemeProvider theme={theme} >
                 <HighlightedDiv data-testid="test-identifier" />
             </ThemeProvider>
         );
         const element = getByTestId('test-identifier');
-        expect(element).toHaveStyleRule('background', '#222');
+        expect(element).toHaveStyleRule('background', '#12182B');
     });
 });

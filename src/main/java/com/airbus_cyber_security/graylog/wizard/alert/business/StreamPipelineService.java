@@ -43,8 +43,8 @@ import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import javax.ws.rs.BadRequestException;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.BadRequestException;
 import java.util.*;
 
 // TODO split into StreamService and PipelineService
@@ -97,7 +97,7 @@ public class StreamPipelineService {
                 streamRuleData.put(StreamRuleImpl.FIELD_TYPE, fieldRule.getType());
                 streamRuleData.put(StreamRuleImpl.FIELD_INVERTED, false);
             } else {
-                streamRuleData.put(StreamRuleImpl.FIELD_TYPE, Math.abs(fieldRule.getType()));
+                streamRuleData.put(StreamRuleImpl.FIELD_TYPE, innerAbs(fieldRule.getType()));
                 streamRuleData.put(StreamRuleImpl.FIELD_INVERTED, true);
             }
             streamRuleData.put(StreamRuleImpl.FIELD_FIELD, fieldRule.getField());
@@ -107,6 +107,14 @@ public class StreamPipelineService {
 
             StreamRule newStreamRule = this.streamRuleService.create(streamRuleData);
             this.streamRuleService.save(newStreamRule);
+        }
+    }
+
+    private int innerAbs(int value) {
+        if (value < 0) {
+            return -value;
+        } else {
+            return value;
         }
     }
 
@@ -147,7 +155,7 @@ public class StreamPipelineService {
 
         String ruleID = RandomStringUtils.random(RANDOM_COUNT, RANDOM_CHARS);
         String ruleSource = createRuleSource(alertTitle, listfieldRule, matchingType, targetStream);
-        RuleDao cr = RuleDao.create(ruleID, "function " + alertTitle, Description.COMMENT_ALERT_WIZARD, ruleSource, now, now);
+        RuleDao cr = RuleDao.create(ruleID, "function " + alertTitle, Description.COMMENT_ALERT_WIZARD, ruleSource, now, now, null, null);
 
         return ruleService.save(cr);
     }

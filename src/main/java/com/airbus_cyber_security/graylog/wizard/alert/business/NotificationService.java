@@ -28,7 +28,7 @@ import org.graylog2.plugin.cluster.ClusterConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.Optional;
 
 public class NotificationService {
@@ -90,7 +90,7 @@ public class NotificationService {
 
     public void updateNotification(String title, String notificationIdentifier) {
         NotificationDto notification = this.get(notificationIdentifier)
-                .orElseThrow(() -> new javax.ws.rs.NotFoundException("Notification " + notificationIdentifier + " doesn't exist"));
+                .orElseThrow(() -> new jakarta.ws.rs.NotFoundException("Notification " + notificationIdentifier + " doesn't exist"));
         LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) notification.config();
         if (!notification.title().equals(title)) {
             LOG.debug("Update Notification " + title);

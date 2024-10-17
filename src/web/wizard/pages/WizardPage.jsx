@@ -31,6 +31,7 @@ import messages_fr from 'translations/fr.json';
 import WizardConfigurationResource from 'wizard/resources/WizardConfigurationResource';
 import AlertRulesContainer from "../components/rules/AlertRulesContainer";
 
+
 const language = navigator.language.split(/[-_]/)[0];
 const messages = {
     'fr': messages_fr
@@ -54,21 +55,23 @@ const WizardPage = () => {
             <DocumentTitle title="Alert Rules">
                 <PageHeader title={<FormattedMessage id="wizard.alertsRule" defaultMessage= "Alert Rules" />} subpage={false} actions={(
                     <IfPermitted permissions="wizard_alerts_rules:read">
-                        <LinkContainer to={Routes.pluginRoute('WIZARD_NEWALERT')} style={{marginRight: '2px'}}>
-                            <Button bsStyle="success" type="submit">
-                                <FormattedMessage id="wizard.create" defaultMessage="Create" />
-                            </Button>
-                        </LinkContainer>
-                        <LinkContainer to={Routes.pluginRoute('WIZARD_IMPORTALERT')} style={{marginRight: '2px'}}>
-                            <Button bsStyle="success" type="submit">
-                                <FormattedMessage id="wizard.import" defaultMessage="Import" />
-                            </Button>
-                        </LinkContainer>
-                        <LinkContainer to={Routes.pluginRoute('WIZARD_EXPORTALERT')}>
-                            <Button bsStyle="success" type="submit">
-                                <FormattedMessage id="wizard.export" defaultMessage="Export" />
-                            </Button>
-                        </LinkContainer>
+                        <div style={{display: 'flex', alignItems: 'flex-end', columnGap: '2px'}}>
+                            <LinkContainer to={Routes.pluginRoute('WIZARD_NEWALERT')}>
+                                <Button bsStyle="success" type="submit">
+                                    <FormattedMessage id="wizard.create" defaultMessage="Create" />
+                                </Button>
+                            </LinkContainer>
+                            <LinkContainer to={Routes.pluginRoute('WIZARD_IMPORTALERT')}>
+                                <Button bsStyle="success" type="submit">
+                                    <FormattedMessage id="wizard.import" defaultMessage="Import" />
+                                </Button>
+                            </LinkContainer>
+                            <LinkContainer to={Routes.pluginRoute('WIZARD_EXPORTALERT')}>
+                                <Button bsStyle="success" type="submit">
+                                    <FormattedMessage id="wizard.export" defaultMessage="Export" />
+                                </Button>
+                            </LinkContainer>
+                        </div>
                     </IfPermitted>
                 )}>
                     <span>

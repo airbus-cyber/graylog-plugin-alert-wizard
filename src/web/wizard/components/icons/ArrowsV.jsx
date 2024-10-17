@@ -19,7 +19,7 @@ import React from 'react';
 import { Icon } from 'components/common';
 
 const IconArrowsV = () => {
-    return <Icon name="arrows-v" />
+    return <Icon name="keyboard_arrow_down" />
 }
 
 export default IconArrowsV;

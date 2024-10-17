@@ -22,7 +22,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import createReactClass from 'create-react-class';
 import { Button, BootstrapModalForm, Col, FormGroup, Input, Table, Tooltip } from 'components/bootstrap';
-import { Select, SortableList, Spinner, OverlayElement, IfPermitted } from 'components/common';
+import { Select, SortableList, Spinner, OverlayTrigger, IfPermitted } from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import { FormattedMessage } from 'react-intl';
 import FormsUtils from 'util/FormsUtils';
@@ -243,30 +243,30 @@ const ManageSettings = createReactClass({
                 <h3><FormattedMessage id="wizard.importPolicy" defaultMessage="Import strategy" /></h3>
                 <p><FormattedMessage id="wizard.descriptionImportPolicy" defaultMessage="Choose the action when the alert rule already exists." /></p>
                 <FormGroup>
-                  <OverlayElement overlay={tooltipDoNothing} placement="top" useOverlay={true} trigger={['hover', 'focus']}>
+                  <OverlayTrigger overlay={tooltipDoNothing} placement="top" trigger={['hover', 'focus']} className="" rootClose>
                       <div className="radio">
                         <label>
                           <input type="radio" value="DONOTHING" checked={this.state.config.import_policy === 'DONOTHING'} onChange={this._onRadioChange}/>
                             <FormattedMessage id="wizard.doNothing" defaultMessage="Don't import" />
                         </label>
                       </div>
-                  </OverlayElement>
-                  <OverlayElement overlay={tooltipReplace} placement="top" useOverlay={true} trigger={['hover', 'focus']}>
+                  </OverlayTrigger>
+                  <OverlayTrigger overlay={tooltipReplace} placement="top" trigger={['hover', 'focus']} className="" rootClose>
                       <div className="radio">
                         <label>
                           <input type="radio" value="REPLACE" checked={this.state.config.import_policy === 'REPLACE'} onChange={this._onRadioChange}/>
                             <FormattedMessage id="wizard.replace" defaultMessage="Import and Replace" />
                           </label>
                       </div>
-                  </OverlayElement>
-                  <OverlayElement overlay={tooltipRename} placement="top" useOverlay={true} trigger={['hover', 'focus']}>
+                  </OverlayTrigger>
+                  <OverlayTrigger overlay={tooltipRename} placement="top" trigger={['hover', 'focus']} className="" rootClose>
                       <div className="radio">
                         <label>
                           <input type="radio" value="RENAME" checked={this.state.config.import_policy === 'RENAME'} onChange={this._onRadioChange}/>
                             <FormattedMessage id="wizard.rename" defaultMessage="Import, but keep both alert rules" />
                         </label>
                       </div>
-                  </OverlayElement>
+                  </OverlayTrigger>
                 </FormGroup>
               </Col>
               <Col md={6}> 

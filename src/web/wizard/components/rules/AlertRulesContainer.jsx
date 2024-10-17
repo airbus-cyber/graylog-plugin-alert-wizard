@@ -139,13 +139,10 @@ const AlertRulesContainer = ({ fieldOrder }) => {
     const onColumnsChange = useCallback((displayedAttributes) => {
         setVisibleColumn(displayedAttributes);
     }, [visibleColumn]);
-    const renderBulkActions = (
-        selectedAlertRuleIds,
-        setSelectedAlertRuleIds
-    ) => (
-        <AlertRuleBulkActions selectedAlertRuleIds={selectedAlertRuleIds}
-                     setSelectedAlertRuleIds={setSelectedAlertRuleIds} deleteAlertRulesFunction={deleteAlertRules}
-                              disableAlertRulesFunction={disableAlertRules} enableAlertRulesFunction={enableAlertRules} />
+    const renderBulkActions = () => (
+        <AlertRuleBulkActions deleteAlertRulesFunction={deleteAlertRules}
+                              disableAlertRulesFunction={disableAlertRules}
+                              enableAlertRulesFunction={enableAlertRules} />
     );
     const onSortChange = useCallback(() => {}, []);
     const renderAlertRuleActions = useCallback((element) => {
@@ -281,7 +278,7 @@ const AlertRulesContainer = ({ fieldOrder }) => {
                                      columnsOrder={columnOrder}
                                      onColumnsChange={onColumnsChange}
                                      onSortChange={onSortChange}
-                                     bulkActions={renderBulkActions}
+                                     bulkSelection={{ actions: renderBulkActions() }}
                                      columnDefinitions={columnDefinitions}
                                      columnRenderers={columnRenderers()}
                                      actionsCellWidth={500}

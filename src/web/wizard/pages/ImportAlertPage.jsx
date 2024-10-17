@@ -102,19 +102,18 @@ const ImportAlertPage = createReactClass({
             <IntlProvider locale={language} messages={messages[language]}>    
                 <DocumentTitle title="Import alert rule">
                     <div>
-                        <PageHeader title={<FormattedMessage id="wizard.importWizardAlertRule" defaultMessage="Wizard: Import alert rules" />}>
+                        <PageHeader title={<FormattedMessage id="wizard.importWizardAlertRule" defaultMessage="Wizard: Import alert rules" />}
+                                    actions={(
+                                        <LinkContainer to={Navigation.getWizardRoute()}>
+                                            <Button bsStyle="info"><FormattedMessage id= "wizard.back" defaultMessage= "Back to alert rules" /></Button>
+                                        </LinkContainer>
+                                    )}>
                             <span>
                                 <FormattedMessage id="wizard.importAlertRule" defaultMessage="You can import an alert rule." />
                             </span>
                             <span>
                                 <FormattedMessage id="wizard.documentation"
                                                   defaultMessage= "Read more about Wizard alert rules in the documentation." />
-                            </span>
-                            <span>
-                                <LinkContainer to={Navigation.getWizardRoute()}>
-                                    <Button bsStyle="info"><FormattedMessage id="wizard.back" defaultMessage="Back to alert rules" /></Button>
-                                </LinkContainer>
-                                &nbsp;
                             </span>
                         </PageHeader>
                         <Row className="content"> 
