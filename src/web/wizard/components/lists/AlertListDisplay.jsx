@@ -157,10 +157,7 @@ const AlertListDisplay = createReactClass({
             </div>
         );
 
-        const tooltipUser = (
-            <Tooltip id="default-user-tooltip">
-                <FormattedMessage id ="wizard.tooltipUserList" defaultMessage="The last user who modified the list" />
-            </Tooltip>);
+        const tooltipUser = (<FormattedMessage id ="wizard.tooltipUserList" defaultMessage="The last user who modified the list" />);
 
         let tabFields = [<td className="limited">{list.title}</td>];
         this.props.config.field_order.map((field) => {
@@ -180,10 +177,7 @@ const AlertListDisplay = createReactClass({
                         tabFields.push(<td className="limited">
                             <OverlayTrigger overlay={tooltipUser}
                                             placement="top"
-                                            trigger={['hover', 'focus']}
-                                            rootClose
-                                            className={''}
-                            >
+                                            trigger={['hover', 'focus']}>
                                 <span>{list.creator_user_id}</span>
                             </OverlayTrigger>
                         </td>);

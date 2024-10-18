@@ -192,21 +192,12 @@ const ManageSettings = createReactClass({
         if (this._isLoading()) {
             return <Spinner/>;
         }
+
+        const tooltipReplace = (<FormattedMessage id ="wizard.tooltipReplace" defaultMessage="Replace the alert rule with the one you are importing" />);
         
-        const tooltipReplace = (
-                <Tooltip id="doNothing-tooltip">
-                    <FormattedMessage id ="wizard.tooltipReplace" defaultMessage="Replace the alert rule with the one you are importing" />
-                </Tooltip>);
+        const tooltipDoNothing = (<FormattedMessage id ="wizard.tooltipDoNothing" defaultMessage="No alert rules will be changed" />);
         
-        const tooltipDoNothing = (
-                <Tooltip id="doNothing-tooltip">
-                    <FormattedMessage id ="wizard.tooltipDoNothing" defaultMessage="No alert rules will be changed" />
-                </Tooltip>);
-        
-        const tooltipRename = (
-                <Tooltip id="doNothing-tooltip">
-                    <FormattedMessage id ="wizard.tooltipRename" defaultMessage="The alert rule you are importing will be renamed <title(1)>" />
-                </Tooltip>);
+        const tooltipRename = (<FormattedMessage id ="wizard.tooltipRename" defaultMessage="The alert rule you are importing will be renamed <title(1)>" />);
 
         return (
             <span>
@@ -243,7 +234,7 @@ const ManageSettings = createReactClass({
                 <h3><FormattedMessage id="wizard.importPolicy" defaultMessage="Import strategy" /></h3>
                 <p><FormattedMessage id="wizard.descriptionImportPolicy" defaultMessage="Choose the action when the alert rule already exists." /></p>
                 <FormGroup>
-                  <OverlayTrigger overlay={tooltipDoNothing} placement="top" trigger={['hover', 'focus']} className="" rootClose>
+                  <OverlayTrigger overlay={tooltipDoNothing} placement="top" trigger={['hover', 'focus']}>
                       <div className="radio">
                         <label>
                           <input type="radio" value="DONOTHING" checked={this.state.config.import_policy === 'DONOTHING'} onChange={this._onRadioChange}/>
@@ -251,7 +242,7 @@ const ManageSettings = createReactClass({
                         </label>
                       </div>
                   </OverlayTrigger>
-                  <OverlayTrigger overlay={tooltipReplace} placement="top" trigger={['hover', 'focus']} className="" rootClose>
+                  <OverlayTrigger overlay={tooltipReplace} placement="top" trigger={['hover', 'focus']}>
                       <div className="radio">
                         <label>
                           <input type="radio" value="REPLACE" checked={this.state.config.import_policy === 'REPLACE'} onChange={this._onRadioChange}/>
@@ -259,7 +250,7 @@ const ManageSettings = createReactClass({
                           </label>
                       </div>
                   </OverlayTrigger>
-                  <OverlayTrigger overlay={tooltipRename} placement="top" trigger={['hover', 'focus']} className="" rootClose>
+                  <OverlayTrigger overlay={tooltipRename} placement="top" trigger={['hover', 'focus']}>
                       <div className="radio">
                         <label>
                           <input type="radio" value="RENAME" checked={this.state.config.import_policy === 'RENAME'} onChange={this._onRadioChange}/>
