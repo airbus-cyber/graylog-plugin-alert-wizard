@@ -150,12 +150,15 @@ public class Conversions {
                 SeriesSpec series = aggregationConfig.series().get(0);
                 parametersCondition.put(TYPE, series.type());
                 String distinctBy = "";
-                Optional<String> seriesField = series.statsSubfieldName();
+                Optional<String> seriesField = Optional.empty();
+                if (series instanceof Cardinality) {
+                    seriesField = Optional.of(((Cardinality) series).field());
+                } else if (series instanceof Count) {
+                    seriesField = ((Count) series).field();
+                }
+
                 if (seriesField.isPresent()) {
-                    // TODO think about this, but there is some code smell here...
-                    // It is because AggregationEventProcessorConfig is used both for Count and Statistical conditions
                     distinctBy = seriesField.get();
-                    // TODO should introduce constants here for "field"...
                     parametersCondition.put(FIELD, distinctBy);
                 }
                 parametersCondition.put(GROUPING_FIELDS, aggregationConfig.groupBy());
@@ -392,7 +395,7 @@ public class Conversions {
                 .build();
     }
 
-    private SeriesSpec createSerieSpec(String type, String identifier, String field) {
+    private SeriesSpec createSeriesSpec(String type, String identifier, String field) {
         switch (type) {
             case "AVG":
                 return Average.builder().id(identifier).field(field).build();
@@ -447,7 +450,7 @@ public class Conversions {
         int threshold = this.accessThreshold(conditionParameter);
 
         String identifier = UUID.randomUUID().toString();
-        SeriesSpec serie = createSerieSpec(type, identifier, conditionParameter.get(FIELD).toString());
+        SeriesSpec series = createSeriesSpec(type, identifier, conditionParameter.get(FIELD).toString());
 
         Expression<Boolean> expression = createExpressionFromThreshold(identifier,
                 conditionParameter.get(THRESHOLD_TYPE).toString(),
@@ -458,7 +461,7 @@ public class Conversions {
         return AggregationEventProcessorConfig.builder()
                 .query(searchQuery)
                 .streams(new HashSet<>(Collections.singleton(streamID)))
-                .series(ImmutableList.of(serie))
+                .series(ImmutableList.of(series))
                 .groupBy(ImmutableList.of())
                 .conditions(AggregationConditions.builder()
                         .expression(expression)
