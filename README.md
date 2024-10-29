@@ -41,12 +41,12 @@ Perfect for example to configure together and at the same time a stream, an aler
 
 ## Upgrading
 
-### Upgrading to 5.x.x (TODO : FIX Version before delivery)
+### Upgrading to 5.2.1
 
 The 'search query' parameter of alert rules has been added. The following migration procedure must be followed:
 1. Export rules from the preceding version,
 2. Delete all rules,
-3. Install version 5.x.x,
+3. Install version 5.2.1,
 4. Import rules.
 
 ### Upgrading to 5.2.0

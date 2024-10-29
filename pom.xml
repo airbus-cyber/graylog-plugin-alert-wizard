@@ -86,8 +86,8 @@
         <graylog.version>${project.parent.version}</graylog.version>
         <graylog.plugin-dir>/usr/share/graylog-server/plugin</graylog.plugin-dir>
         <!-- versions -->
-        <graylog-plugin-correlation-count.version>6.0.0-SNAPSHOT</graylog-plugin-correlation-count.version>
-        <graylog-plugin-logging-alert.version>6.0.0-SNAPSHOT</graylog-plugin-logging-alert.version>
+        <graylog-plugin-correlation-count.version>6.0.0</graylog-plugin-correlation-count.version>
+        <graylog-plugin-logging-alert.version>6.0.0</graylog-plugin-logging-alert.version>
         <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
         <opencsv.version>2.4</opencsv.version>
     </properties>
@@ -490,7 +490,7 @@
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
                 <!-- check newest version here: https://central.sonatype.com/artifact/org.sonatype.plugins/nexus-staging-maven-plugin -->
-                <version>1.6.13</version>
+                <version>1.7.0</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>
