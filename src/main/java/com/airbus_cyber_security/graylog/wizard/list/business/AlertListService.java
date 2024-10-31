@@ -103,6 +103,7 @@ public class AlertListService {
                 .keyColumn(KEY_COLUMN)
                 .valueColumn(VALUE_COLUMN)
                 .checkInterval(60)
+                .cidrLookup(false)
                 .caseInsensitiveLookup(false)
                 .build();
 

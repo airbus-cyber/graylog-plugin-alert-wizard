@@ -97,7 +97,7 @@ jobs:
         run: |
           echo -n "$GPG_PRIVATE_KEY" | gpg2 --batch --allow-secret-key-import --import
           gpg2 --export-secret-keys --batch --pinentry-mode loopback --passphrase "$PASSPHRASE" > $HOME/.gnupg/secring.gpg
-          ./mvnw jdeb:jdeb --settings deployment/settings.xml
+          ./mvnw org.vafer:jdeb:jdeb --settings deployment/settings.xml
       - name: Check license headers
         working-directory: plugin
         run: |

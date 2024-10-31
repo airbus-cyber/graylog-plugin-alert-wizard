@@ -273,7 +273,7 @@ const AlertRulesContainer = ({ fieldOrder }) => {
                         <FormattedMessage id="wizard.noAlertFound" defaultMessage="No Alert Rule has been found" />
                     </NoSearchResult>
                 ) : (
-                    <EntityDataTable data={filterElements}
+                    <EntityDataTable
                                      visibleColumns={visibleColumn}
                                      columnsOrder={columnOrder}
                                      onColumnsChange={onColumnsChange}
@@ -282,8 +282,10 @@ const AlertRulesContainer = ({ fieldOrder }) => {
                                      columnDefinitions={columnDefinitions}
                                      columnRenderers={columnRenderers()}
                                      actionsCellWidth={500}
-                                     rowActions={renderAlertRuleActions}
-                                     entityAttributesAreCamelCase={false}/>
+                                     entityActions={renderAlertRuleActions}
+                                     entityAttributesAreCamelCase={false}
+                                     entities={filterElements}
+                    />
                 )}
             </div>
         </>

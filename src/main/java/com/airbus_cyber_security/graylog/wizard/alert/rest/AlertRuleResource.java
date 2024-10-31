@@ -18,9 +18,18 @@
 // TODO should rename package rest into resources
 package com.airbus_cyber_security.graylog.wizard.alert.rest;
 
-import com.airbus_cyber_security.graylog.wizard.alert.business.*;
 import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleService;
-import com.airbus_cyber_security.graylog.wizard.alert.model.*;
+import com.airbus_cyber_security.graylog.wizard.alert.business.EventDefinitionService;
+import com.airbus_cyber_security.graylog.wizard.alert.business.FieldRulesUtilities;
+import com.airbus_cyber_security.graylog.wizard.alert.business.NotificationService;
+import com.airbus_cyber_security.graylog.wizard.alert.business.StreamPipelineService;
+import com.airbus_cyber_security.graylog.wizard.alert.model.AggregationAlertPattern;
+import com.airbus_cyber_security.graylog.wizard.alert.model.AlertPattern;
+import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRule;
+import com.airbus_cyber_security.graylog.wizard.alert.model.CorrelationAlertPattern;
+import com.airbus_cyber_security.graylog.wizard.alert.model.DisjunctionAlertPattern;
+import com.airbus_cyber_security.graylog.wizard.alert.model.Pipeline;
+import com.airbus_cyber_security.graylog.wizard.alert.model.TriggeringConditions;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
@@ -34,7 +43,20 @@ import com.airbus_cyber_security.graylog.wizard.list.utilities.AlertListUtilsSer
 import com.airbus_cyber_security.graylog.wizard.permissions.AlertRuleRestPermissions;
 import com.codahale.metrics.annotation.Timed;
 import com.mongodb.MongoException;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.graylog.events.notifications.NotificationDto;
@@ -42,7 +64,8 @@ import org.graylog.events.processor.EventDefinitionDto;
 import org.graylog.events.processor.EventProcessorConfig;
 import org.graylog.events.processor.aggregation.AggregationEventProcessorConfig;
 import org.graylog.events.rest.EventNotificationsResource;
-import org.graylog.plugins.pipelineprocessor.db.*;
+import org.graylog.plugins.pipelineprocessor.db.PipelineDao;
+import org.graylog.plugins.pipelineprocessor.db.RuleDao;
 import org.graylog.security.UserContext;
 import org.graylog2.audit.jersey.AuditEvent;
 import org.graylog2.database.NotFoundException;
@@ -60,12 +83,16 @@ import org.slf4j.LoggerFactory;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Api(value = "Wizard/Alerts", description = "Management of Wizard alerts rules.")
 @Path("/alerts")

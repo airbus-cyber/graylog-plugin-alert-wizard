@@ -17,7 +17,7 @@
 
 package com.airbus_cyber_security.graylog.wizard.database;
 
-import org.apache.commons.lang3.RandomStringUtils;
+import org.graylog2.database.entities.DefaultEntityScope;
 import org.graylog2.lookup.LookupDefaultMultiValue;
 import org.graylog2.lookup.LookupDefaultSingleValue;
 import org.graylog2.lookup.caches.NullCache;
@@ -30,13 +30,12 @@ import org.graylog2.lookup.dto.LookupTableDto;
 import org.graylog2.plugin.lookup.LookupDataAdapterConfiguration;
 
 import jakarta.inject.Inject;
+
 import java.util.Collection;
 import java.util.Optional;
 
 public class LookupService {
 
-    private static final String RANDOM_CHARS = "0123456789abcdef";
-    private static final int RANDOM_COUNT = 24;
     private final DBDataAdapterService dataAdapterService;
     private final DBCacheService cacheService;
     private final DBLookupTableService lookupTableService;
@@ -50,18 +49,19 @@ public class LookupService {
 
     // source of inspiration org.graylog2.rest.resources.system.lookup.LookupTableResource.createAdapter
     public String createDataAdapter(String title, LookupDataAdapterConfiguration configuration) {
-        String identifier = RandomStringUtils.random(RANDOM_COUNT, RANDOM_CHARS);
 
         // TODO shouldn't use the title here, rather an identifier
         String name = this.getDataAdapterName(title);
         DataAdapterDto dto = DataAdapterDto.builder()
-                // TODO id may be null here and it will be automatically generated? Try it out (and also for the cache and table)!
-                .id(identifier)
                 .title("Alert wizard data adapter for list " + title)
                 .description(Description.COMMENT_ALERT_WIZARD)
                 .name(name)
                 .contentPack(null)
+                .customErrorTTL(null)
+                .customErrorTTLEnabled(null)
+                .customErrorTTLUnit(null)
                 .config(configuration)
+                .scope(DefaultEntityScope.NAME)
                 .build();
 
         DataAdapterDto dataAdapter = this.dataAdapterService.saveAndPostEvent(dto);
@@ -77,17 +77,16 @@ public class LookupService {
             }
         }
 
-        final String cacheID = RandomStringUtils.random(RANDOM_COUNT, RANDOM_CHARS);
-
         NullCache.Config config = NullCache.Config.builder()
-                .type("none")
+                .type(NullCache.NAME)
                 .build();
 
         CacheDto dto = CacheDto.builder()
-                .id(cacheID)
+                .scope(DefaultEntityScope.NAME)
                 .name("wizard-cache")
                 .description(Description.COMMENT_ALERT_WIZARD)
                 .title("wizard cache")
+                .contentPack(null)
                 .config(config)
                 .build();
 
@@ -109,11 +108,13 @@ public class LookupService {
         String name = this.getLookupTableName(title);
 
         LookupTableDto dto = LookupTableDto.builder()
+                .scope(DefaultEntityScope.NAME)
                 .title("Alert wizard lookup table for list " + title)
                 .description(Description.COMMENT_ALERT_WIZARD)
                 .name(name)
                 .cacheId(cacheIdentifier)
                 .dataAdapterId(adapterIdentifier)
+                .contentPack(null)
                 .defaultSingleValue("")
                 .defaultSingleValueType(LookupDefaultSingleValue.Type.NULL)
                 .defaultMultiValue("")
@@ -127,7 +128,7 @@ public class LookupService {
         String adapterName = this.getDataAdapterName(title);
         Optional<DataAdapterDto> dataAdapterDto = this.dataAdapterService.get(adapterName);
         if (dataAdapterDto.isPresent()) {
-            this.dataAdapterService.delete(dataAdapterDto.get().id());
+            this.dataAdapterService.deleteAndPostEvent(dataAdapterDto.get().id());
         }
     }
 
@@ -135,7 +136,7 @@ public class LookupService {
         String lookupTableName = this.getLookupTableName(title);
         Optional<LookupTableDto> lookupTableDto = this.lookupTableService.get(lookupTableName);
         if (lookupTableDto.isPresent()) {
-            this.lookupTableService.delete(lookupTableDto.get().id());
+            this.lookupTableService.deleteAndPostEvent(lookupTableDto.get().id());
         }
     }
 }

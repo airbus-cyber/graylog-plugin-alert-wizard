@@ -24,7 +24,11 @@ import com.airbus_cyber_security.graylog.wizard.database.LookupService;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.bson.types.ObjectId;
-import org.graylog.plugins.pipelineprocessor.db.*;
+import org.graylog.plugins.pipelineprocessor.db.PipelineDao;
+import org.graylog.plugins.pipelineprocessor.db.PipelineService;
+import org.graylog.plugins.pipelineprocessor.db.PipelineStreamConnectionsService;
+import org.graylog.plugins.pipelineprocessor.db.RuleDao;
+import org.graylog.plugins.pipelineprocessor.db.RuleService;
 import org.graylog.plugins.pipelineprocessor.rest.PipelineConnections;
 import org.graylog2.database.NotFoundException;
 import org.graylog2.events.ClusterEventBus;
@@ -33,6 +37,7 @@ import org.graylog2.plugin.database.ValidationException;
 import org.graylog2.plugin.streams.Stream;
 import org.graylog2.plugin.streams.StreamRule;
 import org.graylog2.rest.resources.streams.requests.CreateStreamRequest;
+import org.graylog2.streams.StreamGuardException;
 import org.graylog2.streams.StreamRuleImpl;
 import org.graylog2.streams.StreamRuleService;
 import org.graylog2.streams.StreamService;
@@ -45,7 +50,14 @@ import org.slf4j.LoggerFactory;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.BadRequestException;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 // TODO split into StreamService and PipelineService
 public class StreamPipelineService {
@@ -250,7 +262,7 @@ public class StreamPipelineService {
             this.streamService.destroy(stream);
             this.clusterEventBus.post(StreamsChangedEvent.create(stream.getId()));
             this.clusterEventBus.post(StreamDeletedEvent.create(stream.getId()));
-        } catch(NotFoundException e) {
+        } catch(NotFoundException | StreamGuardException e) {
             LOG.debug("Couldn't find the stream when deleting", e);
         }
     }
