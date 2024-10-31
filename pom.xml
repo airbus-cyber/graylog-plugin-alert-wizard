@@ -337,6 +337,11 @@
                             <failFast>false</failFast>
                             <rules>
                                 <banDuplicatePomDependencyVersions/>
+                                <banDynamicVersions>
+                                    <ignores>
+                                        <ignore>com.airbus-cyber-security.graylog</ignore>
+                                    </ignores>
+                                </banDynamicVersions>
                                 <requireMavenVersion>
                                     <version>[3.9.0,)</version>
                                 </requireMavenVersion>
