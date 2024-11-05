@@ -175,15 +175,17 @@ MyUser must be a user with admin rights
 
 ## Build
 
-Refer to this [Dockerfile](https://github.com/airbus-cyber/graylog-plugin-logging-alert/blob/master/build_docker/Dockerfile) to use the correct version of Java and Maven.
+This project requires Java 17 JDK.
 
 * Clone this repository.
 * Clone [graylog2-server](https://github.com/Graylog2/graylog2-server) repository next to this repository.
-* Build Graylog2-server with `mvn compile -DskipTests=true` (in graylog2-server folder)
-* Run `mvn package` to build a JAR file (in this project folder).
-* Optional: Run `mvn jdeb:jdeb` and `mvn rpm:rpm` to create a DEB and RPM package respectively.
+* Build Graylog2-server with `./mvnw compile -DskipTests=true` (in graylog2-server folder)
+* Run `./mvnw package` to build a JAR file (in this project folder).
+* Optional: Run `./mvnw org.vafer:jdeb:jdeb` and `./mvnw rpm:rpm` to create a DEB and RPM package respectively.
 * Copy generated JAR file in target directory to your Graylog plugin directory.
 * Restart the Graylog.
+
+A docker to build can be generated from [Dockerfile](https://github.com/airbus-cyber/graylog-plugin-logging-alert/blob/master/build_docker/Dockerfile).
 
 ## License
 
