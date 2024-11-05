@@ -16,9 +16,12 @@
  */
 
 import React from 'react';
+import { useState } from 'react';
 import { useIntl, FormattedMessage } from 'react-intl';
 
-import CloneButton from 'wizard/components/buttons/CloneButton';
+import { Input } from 'components/bootstrap';
+import { Button } from 'components/bootstrap';
+import BootstrapModalForm from 'components/bootstrap/BootstrapModalForm';
 
 
 const AlertListCloneForm = ({listTitle, onSubmit}) => {
@@ -29,9 +32,49 @@ const AlertListCloneForm = ({listTitle, onSubmit}) => {
         placeholderTitle: intl.formatMessage({id: "wizard.placeholderCloneTitleList", defaultMessage: "A descriptive name of the new alert list"}),
         modalTitle: <FormattedMessage id="wizard.cloneList" defaultMessage='Cloning List "{title}"' values={{title: listTitle}} />
     };
+    const [state, setState] = useState({title: '', description: ''});
+    const [showConfigModal, setShowConfigModal] = useState(false);
+
+    const openModal = () => {
+        setShowConfigModal(true);
+    };
+
+    const closeModal = () => {
+        setShowConfigModal(false);
+    };
+
+    const submit = () => {
+        onSubmit(listTitle, state.title, state.description);
+        closeModal();
+    };
+
+    const onValueChanged = (event) => {
+        const newState = {
+            ...state,
+            [event.target.name]: event.target.value
+        };
+        setState(newState);
+    };
 
     return (
-        <CloneButton title={listTitle} onSubmit={onSubmit} messages={messages} />
+        <>
+            <Button type="button" bsStyle="info" onClick={openModal} disabled={false} title={messages.infoClone} >
+                <FormattedMessage id="wizard.clone" defaultMessage="Clone" />
+            </Button>
+            <BootstrapModalForm show={showConfigModal}
+                                title={messages.modalTitle}
+                                onCancel={closeModal}
+                                onSubmitForm={submit}
+                                cancelButtonText={<FormattedMessage id="wizard.cancel" defaultMessage="Cancel" />}
+                                submitButtonText={<FormattedMessage id="wizard.save" defaultMessage="Save" />}>
+                <Input id="title" type="text" required label={<FormattedMessage id ="wizard.title" defaultMessage="Title" />} name="title"
+                       placeholder={messages.placeholderTitle}
+                       onChange={onValueChanged} autoFocus />
+                <Input id="description" type="text" label={<FormattedMessage id="wizard.fieldDescription" defaultMessage="Description" />} name="description"
+                       onChange={onValueChanged} />
+
+            </BootstrapModalForm>
+        </>
     );
 };
 

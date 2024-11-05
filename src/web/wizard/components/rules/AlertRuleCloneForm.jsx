@@ -16,10 +16,74 @@
  */
 
 import React from 'react';
+import { useState } from 'react';
 import { useIntl, FormattedMessage } from 'react-intl';
 
-import CloneButton from 'wizard/components/buttons/CloneButton';
+import { Input } from 'components/bootstrap';
+import { Button } from 'components/bootstrap';
+import BootstrapModalForm from 'components/bootstrap/BootstrapModalForm';
 
+// source of inspiration: components/common/URLWhiteListFormModal
+
+const CloneButton = ({title, disabled = false, onSubmit, messages}) => {
+    const [state, setState] = useState({title: '', description: '', shouldCloneNotification: false});
+    const [showConfigModal, setShowConfigModal] = useState(false);
+
+    const openModal = () => {
+        setShowConfigModal(true);
+    };
+
+    const closeModal = () => {
+        setShowConfigModal(false);
+    };
+
+    const submit = () => {
+        onSubmit(title, state.title, state.description, state.shouldCloneNotification);
+        closeModal();
+    };
+
+    const onValueChanged = (event) => {
+        const newState = {
+            ...state,
+            [event.target.name]: event.target.value
+        };
+        setState(newState);
+    };
+
+    const handleUseCronSchedulingChange = (event) => {
+        const newState = {
+            ...state,
+            shouldCloneNotification: event.target.checked
+        };
+        setState(newState);
+    };
+
+    return (
+        <>
+            <Button type="button" bsStyle="info" onClick={openModal} disabled={disabled} title={messages.infoClone} >
+                <FormattedMessage id="wizard.clone" defaultMessage="Clone" />
+            </Button>
+            <BootstrapModalForm show={showConfigModal}
+                                title={messages.modalTitle}
+                                onCancel={closeModal}
+                                onSubmitForm={submit}
+                                cancelButtonText={<FormattedMessage id="wizard.cancel" defaultMessage="Cancel" />}
+                                submitButtonText={<FormattedMessage id="wizard.save" defaultMessage="Save" />}>
+                <Input id="title" type="text" required label={<FormattedMessage id ="wizard.title" defaultMessage="Title" />} name="title"
+                       placeholder={messages.placeholderTitle}
+                       onChange={onValueChanged} autoFocus />
+                <Input id="description" type="text" label={<FormattedMessage id="wizard.fieldDescription" defaultMessage="Description" />} name="description"
+                       onChange={onValueChanged} />
+                <Input id="should-clone-notification"
+                       type="checkbox"
+                       label="Clone notification"
+                       help="When this is checked, cloning will clone the notification too"
+                       checked={state.shouldCloneNotification}
+                       onChange={handleUseCronSchedulingChange} />
+            </BootstrapModalForm>
+        </>
+    );
+};
 
 const AlertRuleCloneForm = ({alertTitle, disabled = false, onSubmit}) => {
     const intl = useIntl();
