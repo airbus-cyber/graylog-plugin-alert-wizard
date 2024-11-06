@@ -27,15 +27,17 @@ import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 
 /**
- * There are 3 possible constructions:
- * - if there are no stream and no list conditions:
- *   filteringStream == outputStream == DEFAULT_STREAM_ID, pipeline == null
- * - if there are no stream conditions and the conditions matching type is AND:
- *   pipeline -> outputStream, filteringStream = DEFAULT_STREAM_ID
- * - if there are no list conditions: filteringStream, filteringStream == outputStream, pipeline == null
- * - if the conditions matching type is OR (at least one), or if there are no stream conditions:
- *   pipeline -> filteringStream, filteringStream == outputStream
- * - if the conditions matching type is AND (all): filteringStream -> pipeline -> outputStream
+ * The filtering stream is the stream which encodes the stream conditions.
+ * The pipeline encodes the list conditions.
+ * The output stream is the stream on which the event feeds.
+ *
+ * There are 4 possible constructions:
+ * - no stream, no list conditions: filteringStream == null, outputStream == DEFAULT_STREAM
+ * - stream conditions only: pipeline == null, filteringStream == outputStream
+ * - list conditions only: pipeline -> outputStream, filteringStream == null
+ * - both stream and list conditions:
+ *     If the conditions matching type is OR (at least one): pipeline -> outputString == filteringStream
+ *     If the conditions matching type is AND (all): filteringStream -> pipeline -> outputStream
  */
 @AutoValue
 @JsonAutoDetect
