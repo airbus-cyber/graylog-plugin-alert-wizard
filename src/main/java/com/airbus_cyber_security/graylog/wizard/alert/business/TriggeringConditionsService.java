@@ -83,6 +83,7 @@ public class TriggeringConditionsService {
         }
 
         Stream.MatchingType matchingType = streamConfiguration.getMatchingType();
+        builder.matchingType(matchingType);
         if (matchingType.equals(Stream.MatchingType.AND) && this.fieldRulesUtilities.hasStreamRules(streamConfiguration.getFieldRules())) {
             PipelineDao graylogPipeline = this.streamPipelineService.createPipeline(title, matchingType, filteringStreamIdentifier);
             Stream outputStream = this.streamPipelineService.createStream(matchingType, title + " output", userName);

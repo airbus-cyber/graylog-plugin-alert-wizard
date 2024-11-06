@@ -25,6 +25,7 @@ import com.google.auto.value.AutoValue;
 
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
+import org.graylog2.plugin.streams.Stream;
 
 /**
  * The filtering stream is the stream which encodes the stream conditions.
@@ -43,9 +44,14 @@ import jakarta.validation.constraints.NotNull;
 @JsonAutoDetect
 @JsonDeserialize(builder = TriggeringConditions.Builder.class)
 public abstract class TriggeringConditions {
+    private static final String FIELD_MATCHING_TYPE = "matching_type";
     private static final String FIELD_FILTERING_STREAM = "filtering_stream";
     private static final String FIELD_OUTPUT_STREAM = "output_stream";
     private static final String FIELD_PIPELINE = "pipeline";
+
+    @JsonProperty(FIELD_MATCHING_TYPE)
+    @NotNull
+    public abstract Stream.MatchingType matchingType();
 
     // the stream which carries the conditions to filter the logs
     @JsonProperty(FIELD_FILTERING_STREAM)
@@ -73,6 +79,9 @@ public abstract class TriggeringConditions {
         public static Builder create() {
             return new AutoValue_TriggeringConditions.Builder();
         }
+
+        @JsonProperty(FIELD_MATCHING_TYPE)
+        public abstract Builder matchingType(Stream.MatchingType matchingType);
 
         @JsonProperty(FIELD_FILTERING_STREAM)
         public abstract Builder filteringStreamIdentifier(String streamIdentifier);

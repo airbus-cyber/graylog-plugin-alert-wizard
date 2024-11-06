@@ -290,18 +290,17 @@ public class Conversions {
 
     // TODO inline
     AlertRuleStream constructAlertRuleStream(Stream stream, TriggeringConditions conditions) {
-        // TODO why is this check necessary?
-        if (stream == null) {
-            return null;
-        }
 
         List<FieldRule> fieldRules = new ArrayList<>();
         if (conditions.pipeline() != null) {
             List<FieldRule> pipelineFieldRules = conditions.pipeline().fieldRules();
-            Optional.ofNullable(pipelineFieldRules).ifPresent(fieldRules::addAll);
+            fieldRules.addAll(pipelineFieldRules);
         }
-        Optional.ofNullable(this.getListFieldRule(stream.getStreamRules())).ifPresent(fieldRules::addAll);
-        return AlertRuleStream.create(stream.getId(), stream.getMatchingType(), fieldRules);
+        if (stream != null) {
+            fieldRules.addAll(this.getListFieldRule(stream.getStreamRules()));
+        }
+        String streamIdentifier = conditions.filteringStreamIdentifier();
+        return AlertRuleStream.create(streamIdentifier, conditions.matchingType(), fieldRules);
     }
 
     private String convertThresholdTypeToCorrelation(String thresholdType) {
