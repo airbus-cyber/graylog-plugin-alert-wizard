@@ -142,7 +142,7 @@ public class StreamPipelineService {
         return rule + ")\n";
     }
 
-    private String createRuleSource(String alertTitle, List<FieldRule> listfieldRule, Stream.MatchingType matchingType, Stream targetStream){
+    private String createRuleSource(String alertTitle, List<FieldRule> listfieldRule, Stream.MatchingType matchingType, String targetStreamIdentifier){
         StringBuilder fields = new StringBuilder();
 
         int nbList = 0;
@@ -159,14 +159,14 @@ public class StreamPipelineService {
             fields.append(createStringField(fieldRule, negate));
         }
 
-        return "rule \"function " + alertTitle + "\"\nwhen\n" + fields + "then\n  route_to_stream(\"" + alertTitle + "\", \"" + targetStream.getId() + "\");\nend";
+        return "rule \"function " + alertTitle + "\"\nwhen\n" + fields + "then\n  route_to_stream(\"" + alertTitle + "\", \"" + targetStreamIdentifier + "\");\nend";
     }
 
     public RuleDao createPipelineRule(String alertTitle, List<FieldRule> listfieldRule, Stream.MatchingType matchingType, Stream targetStream) {
         DateTime now = DateTime.now(DateTimeZone.UTC);
 
         String ruleID = RandomStringUtils.random(RANDOM_COUNT, RANDOM_CHARS);
-        String ruleSource = createRuleSource(alertTitle, listfieldRule, matchingType, targetStream);
+        String ruleSource = createRuleSource(alertTitle, listfieldRule, matchingType, targetStream.getId());
         RuleDao cr = RuleDao.create(ruleID, "function " + alertTitle, Description.COMMENT_ALERT_WIZARD, ruleSource, now, now, null, null);
 
         return ruleService.save(cr);
@@ -180,11 +180,6 @@ public class StreamPipelineService {
             match="all";
         }
         return "pipeline \""+alertTitle+"\"\nstage 0 match "+match+"\nrule \"function "+alertTitle+"\"\nend";
-    }
-
-    public PipelineDao createPipeline(String title, Stream.MatchingType matchingType) {
-        String inputStreamIdentifier = Stream.DEFAULT_STREAM_ID;
-        return this.createPipeline(title, matchingType, inputStreamIdentifier);
     }
 
     public PipelineDao createPipeline(String title, Stream.MatchingType matchingType, String inputStreamIdentifier) {

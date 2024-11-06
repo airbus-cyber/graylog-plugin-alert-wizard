@@ -28,6 +28,10 @@ import jakarta.validation.constraints.NotNull;
 
 /**
  * There are 3 possible constructions:
+ * - if there are no stream and no list conditions:
+ *   filteringStream == outputStream == DEFAULT_STREAM_ID, pipeline == null
+ * - if there are no stream conditions and the conditions matching type is AND:
+ *   pipeline -> outputStream, filteringStream = DEFAULT_STREAM_ID
  * - if there are no list conditions: filteringStream, filteringStream == outputStream, pipeline == null
  * - if the conditions matching type is OR (at least one), or if there are no stream conditions:
  *   pipeline -> filteringStream, filteringStream == outputStream

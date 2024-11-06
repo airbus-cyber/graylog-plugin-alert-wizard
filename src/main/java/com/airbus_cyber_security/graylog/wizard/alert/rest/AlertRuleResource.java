@@ -342,7 +342,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                     .build();
             return builder.outputStreamIdentifier(outputStream.getId()).pipeline(pipeline).build();
         } else {
-            PipelineDao graylogPipeline = this.streamPipelineService.createPipeline(title, matchingType);
+            PipelineDao graylogPipeline = this.streamPipelineService.createPipeline(title, matchingType, Stream.DEFAULT_STREAM_ID);
             RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(title, fieldRulesWithList, matchingType, filteringStream);
             Pipeline pipeline = Pipeline.builder()
                     .identifier(graylogPipeline.id()).ruleIdentifier(pipelineRule.id()).fieldRules(fieldRulesWithList)
