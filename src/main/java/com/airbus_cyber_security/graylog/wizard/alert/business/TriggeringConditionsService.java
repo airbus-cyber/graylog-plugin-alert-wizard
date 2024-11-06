@@ -37,20 +37,24 @@ import java.util.List;
 public class TriggeringConditionsService {
 
     private final StreamPipelineService streamPipelineService;
+    private final StreamFacade streamService;
     private final AlertListUtilsService alertListUtilsService;
     private final FieldRulesUtilities fieldRulesUtilities;
 
     @Inject
-    public TriggeringConditionsService(StreamPipelineService streamPipelineService,
+    public TriggeringConditionsService(StreamFacade streamService,
+                                       StreamPipelineService streamPipelineService,
                                        AlertListUtilsService alertListUtilsService,
                                        FieldRulesUtilities fieldRulesUtilities) {
+        this.streamService = streamService;
         this.streamPipelineService = streamPipelineService;
+
         this.alertListUtilsService = alertListUtilsService;
         this.fieldRulesUtilities = fieldRulesUtilities;
     }
 
     public TriggeringConditions createTriggeringConditions(AlertRuleStream streamConfiguration, String title, String userName) throws ValidationException {
-        Stream filteringStream = this.streamPipelineService.createStream(streamConfiguration.getMatchingType(), title, userName, streamConfiguration.getFieldRules());
+        Stream filteringStream = this.streamService.createStream(streamConfiguration.getMatchingType(), title, userName, streamConfiguration.getFieldRules());
         return createTriggeringConditionsFromStream(streamConfiguration, title, filteringStream.getId(), userName);
     }
 
@@ -59,7 +63,7 @@ public class TriggeringConditionsService {
         // update filtering stream
         String streamIdentifier = previousConditions.filteringStreamIdentifier();
         Stream stream = this.streamPipelineService.loadStream(streamIdentifier);
-        this.streamPipelineService.updateStream(stream, streamConfiguration, alertTitle);
+        this.streamService.updateStream(stream, streamConfiguration, alertTitle);
 
         if (!previousConditions.outputStreamIdentifier().equals(streamIdentifier)) {
             this.streamPipelineService.deleteStreamFromIdentifier(previousConditions.outputStreamIdentifier());
@@ -135,7 +139,7 @@ public class TriggeringConditionsService {
 
         if (!this.fieldRulesUtilities.hasStreamRules(streamConfiguration.getFieldRules())) {
             PipelineDao graylogPipeline = this.streamPipelineService.createPipeline(title, matchingType, Stream.DEFAULT_STREAM_ID);
-            Stream outputStream = this.streamPipelineService.createStream(matchingType, title + " output", userName);
+            Stream outputStream = this.streamService.createStream(matchingType, title + " output", userName);
             RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(title, fieldRulesWithList, matchingType, outputStream.getId());
             Pipeline pipeline = Pipeline.builder()
                     .identifier(graylogPipeline.id()).ruleIdentifier(pipelineRule.id()).fieldRules(fieldRulesWithList)
@@ -150,7 +154,7 @@ public class TriggeringConditionsService {
             return builder.outputStreamIdentifier(filteringStreamIdentifier).pipeline(pipeline).build();
         } else {
             PipelineDao graylogPipeline = this.streamPipelineService.createPipeline(title, matchingType, filteringStreamIdentifier);
-            Stream outputStream = this.streamPipelineService.createStream(matchingType, title + " output", userName);
+            Stream outputStream = this.streamService.createStream(matchingType, title + " output", userName);
             RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(title, fieldRulesWithList, matchingType, outputStream.getId());
             Pipeline pipeline = Pipeline.builder()
                     .identifier(graylogPipeline.id()).ruleIdentifier(pipelineRule.id()).fieldRules(fieldRulesWithList)
