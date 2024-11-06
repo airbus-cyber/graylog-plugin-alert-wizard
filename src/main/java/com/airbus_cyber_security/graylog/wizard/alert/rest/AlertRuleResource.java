@@ -319,13 +319,13 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     }
 
     private TriggeringConditions createTriggeringConditionsFromStream(AlertRuleStream streamConfiguration, String title,
-                                                                      Stream filteringStream, String userName) throws ValidationException {
+                                                                      String filteringStreamIdentifier, String userName) throws ValidationException {
         List<FieldRule> fieldRulesWithList = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration.getFieldRules());
 
         TriggeringConditions.Builder builder = TriggeringConditions.builder()
-                .filteringStreamIdentifier(filteringStream.getId());
+                .filteringStreamIdentifier(filteringStreamIdentifier);
         if (fieldRulesWithList.isEmpty()) {
-            return builder.outputStreamIdentifier(filteringStream.getId()).build();
+            return builder.outputStreamIdentifier(filteringStreamIdentifier).build();
         }
 
         for (FieldRule fieldRule: fieldRulesWithList) {
@@ -334,27 +334,27 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         Stream.MatchingType matchingType = streamConfiguration.getMatchingType();
         if (matchingType.equals(Stream.MatchingType.AND) && this.fieldRulesUtilities.hasStreamRules(streamConfiguration.getFieldRules())) {
-            PipelineDao graylogPipeline = this.streamPipelineService.createPipeline(title, matchingType, filteringStream.getId());
+            PipelineDao graylogPipeline = this.streamPipelineService.createPipeline(title, matchingType, filteringStreamIdentifier);
             Stream outputStream = this.streamPipelineService.createStream(matchingType, title + " output", userName);
-            RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(title, fieldRulesWithList, matchingType, outputStream);
+            RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(title, fieldRulesWithList, matchingType, outputStream.getId());
             Pipeline pipeline = Pipeline.builder()
                     .identifier(graylogPipeline.id()).ruleIdentifier(pipelineRule.id()).fieldRules(fieldRulesWithList)
                     .build();
             return builder.outputStreamIdentifier(outputStream.getId()).pipeline(pipeline).build();
         } else {
             PipelineDao graylogPipeline = this.streamPipelineService.createPipeline(title, matchingType, Stream.DEFAULT_STREAM_ID);
-            RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(title, fieldRulesWithList, matchingType, filteringStream);
+            RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(title, fieldRulesWithList, matchingType, filteringStreamIdentifier);
             Pipeline pipeline = Pipeline.builder()
                     .identifier(graylogPipeline.id()).ruleIdentifier(pipelineRule.id()).fieldRules(fieldRulesWithList)
                     .build();
-            return builder.outputStreamIdentifier(filteringStream.getId()).pipeline(pipeline).build();
+            return builder.outputStreamIdentifier(filteringStreamIdentifier).pipeline(pipeline).build();
         }
     }
 
     private TriggeringConditions createTriggeringConditions(AlertRuleStream streamConfiguration, String title, String userName) throws ValidationException {
         Stream stream = this.streamPipelineService.createStream(streamConfiguration.getMatchingType(), title, userName);
         this.streamPipelineService.createStreamRule(streamConfiguration.getFieldRules(), stream.getId());
-        return createTriggeringConditionsFromStream(streamConfiguration, title, stream, userName);
+        return createTriggeringConditionsFromStream(streamConfiguration, title, stream.getId(), userName);
     }
 
     private TriggeringConditions updateTriggeringConditions(TriggeringConditions previousConditions, String alertTitle,
@@ -369,7 +369,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
         deletePipelineIfAny(previousConditions.pipeline());
 
-        return createTriggeringConditionsFromStream(streamConfiguration, alertTitle, stream, userName);
+        return createTriggeringConditionsFromStream(streamConfiguration, alertTitle, stream.getId(), userName);
     }
 
     @POST

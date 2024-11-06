@@ -162,11 +162,11 @@ public class StreamPipelineService {
         return "rule \"function " + alertTitle + "\"\nwhen\n" + fields + "then\n  route_to_stream(\"" + alertTitle + "\", \"" + targetStreamIdentifier + "\");\nend";
     }
 
-    public RuleDao createPipelineRule(String alertTitle, List<FieldRule> listfieldRule, Stream.MatchingType matchingType, Stream targetStream) {
+    public RuleDao createPipelineRule(String alertTitle, List<FieldRule> listfieldRule, Stream.MatchingType matchingType, String targetStreamIdentifier) {
         DateTime now = DateTime.now(DateTimeZone.UTC);
 
         String ruleID = RandomStringUtils.random(RANDOM_COUNT, RANDOM_CHARS);
-        String ruleSource = createRuleSource(alertTitle, listfieldRule, matchingType, targetStream.getId());
+        String ruleSource = createRuleSource(alertTitle, listfieldRule, matchingType, targetStreamIdentifier);
         RuleDao cr = RuleDao.create(ruleID, "function " + alertTitle, Description.COMMENT_ALERT_WIZARD, ruleSource, now, now, null, null);
 
         return ruleService.save(cr);
