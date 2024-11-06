@@ -273,4 +273,15 @@ public class StreamPipelineService {
         }
         return listPipelineFieldRule;
     }
+
+    public Stream loadStream(String streamIdentifier) {
+        try {
+            return this.streamService.load(streamIdentifier);
+        } catch (NotFoundException e) {
+            // this may happen if the underlying stream was deleted
+            // see test test_get_all_rules_should_not_fail_when_a_stream_is_deleted_issue105 and related issue
+            // TODO in this case, maybe the rule should rather be converted into a corrupted rule than this aspect being handled by the interface?
+            return null;
+        }
+    }
 }

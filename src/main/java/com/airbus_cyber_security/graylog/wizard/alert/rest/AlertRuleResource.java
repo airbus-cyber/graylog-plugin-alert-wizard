@@ -18,20 +18,18 @@
 // TODO should rename package rest into resources
 package com.airbus_cyber_security.graylog.wizard.alert.rest;
 
+import com.airbus_cyber_security.graylog.wizard.alert.business.TriggeringConditionsService;
+import com.airbus_cyber_security.graylog.wizard.alert.business.StreamPipelineService;
 import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleService;
 import com.airbus_cyber_security.graylog.wizard.alert.business.EventDefinitionService;
-import com.airbus_cyber_security.graylog.wizard.alert.business.FieldRulesUtilities;
 import com.airbus_cyber_security.graylog.wizard.alert.business.NotificationService;
-import com.airbus_cyber_security.graylog.wizard.alert.business.StreamPipelineService;
 import com.airbus_cyber_security.graylog.wizard.alert.model.AggregationAlertPattern;
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertPattern;
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRule;
 import com.airbus_cyber_security.graylog.wizard.alert.model.CorrelationAlertPattern;
 import com.airbus_cyber_security.graylog.wizard.alert.model.DisjunctionAlertPattern;
-import com.airbus_cyber_security.graylog.wizard.alert.model.Pipeline;
 import com.airbus_cyber_security.graylog.wizard.alert.model.TriggeringConditions;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
-import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertType;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetDataAlertRule;
@@ -39,7 +37,6 @@ import com.airbus_cyber_security.graylog.wizard.audit.AlertWizardAuditEventTypes
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfigurationService;
 import com.airbus_cyber_security.graylog.wizard.config.rest.ImportPolicyType;
-import com.airbus_cyber_security.graylog.wizard.list.utilities.AlertListUtilsService;
 import com.airbus_cyber_security.graylog.wizard.permissions.AlertRuleRestPermissions;
 import com.codahale.metrics.annotation.Timed;
 import com.mongodb.MongoException;
@@ -64,17 +61,13 @@ import org.graylog.events.processor.EventDefinitionDto;
 import org.graylog.events.processor.EventProcessorConfig;
 import org.graylog.events.processor.aggregation.AggregationEventProcessorConfig;
 import org.graylog.events.rest.EventNotificationsResource;
-import org.graylog.plugins.pipelineprocessor.db.PipelineDao;
-import org.graylog.plugins.pipelineprocessor.db.RuleDao;
 import org.graylog.security.UserContext;
 import org.graylog2.audit.jersey.AuditEvent;
 import org.graylog2.database.NotFoundException;
-import org.graylog2.events.ClusterEventBus;
 import org.graylog2.plugin.database.ValidationException;
 import org.graylog2.plugin.rest.PluginRestResource;
 import org.graylog2.plugin.streams.Stream;
 import org.graylog2.shared.rest.resources.RestResource;
-import org.graylog2.streams.StreamService;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
@@ -88,8 +81,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -104,8 +95,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private static final String ENCODING = "UTF-8";
     private static final String TITLE = "title";
 
-    private final StreamService streamService;
-    private final ClusterEventBus clusterEventBus;
     // TODO try to remove this field => move it down in business
     private final AlertWizardConfigurationService configurationService;
 
@@ -116,57 +105,39 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private final AlertRuleService alertRuleService;
     private final Conversions conversions;
     private final StreamPipelineService streamPipelineService;
-    private final AlertListUtilsService alertListUtilsService;
+    private final TriggeringConditionsService triggeringConditionsService;
     private final NotificationService notificationService;
-    private final FieldRulesUtilities fieldRulesUtilities;
 
     @Inject
     public AlertRuleResource(AlertRuleService alertRuleService,
-                             StreamService streamService,
                              StreamPipelineService streamPipelineService,
-                             ClusterEventBus clusterEventBus,
+                             TriggeringConditionsService triggeringConditionsService,
                              AlertWizardConfigurationService configurationService,
-                             AlertListUtilsService alertListUtilsService,
                              EventNotificationsResource eventNotificationsResource,
                              Conversions conversions,
                              EventDefinitionService eventDefinitionService,
-                             NotificationService notificationService,
-                             FieldRulesUtilities fieldRulesUtilities) {
+                             NotificationService notificationService) {
         // TODO should probably move these fields down into the business namespace
         this.alertRuleService = alertRuleService;
-        this.streamService = streamService;
-        this.clusterEventBus = clusterEventBus;
+        this.triggeringConditionsService = triggeringConditionsService;
         this.configurationService = configurationService;
         this.eventNotificationsResource = eventNotificationsResource;
         this.eventDefinitionService = eventDefinitionService;
 
-        this.alertListUtilsService = alertListUtilsService;
         this.conversions = conversions;
         this.streamPipelineService = streamPipelineService;
         this.notificationService = notificationService;
-        this.fieldRulesUtilities = fieldRulesUtilities;
-    }
-
-    private Stream loadStream(String streamIdentifier) {
-        try {
-            return this.streamService.load(streamIdentifier);
-        } catch (NotFoundException e) {
-            // this may happen if the underlying stream was deleted
-            // see test test_get_all_rules_should_not_fail_when_a_stream_is_deleted_issue105 and related issue
-            // TODO in this case, maybe the rule should rather be converted into a corrupted rule than this aspect being handled by the interface?
-            return null;
-        }
     }
 
     private AlertRuleStream constructAlertRuleStream(TriggeringConditions conditions) {
         String streamIdentifier = conditions.filteringStreamIdentifier();
-        Stream stream = this.loadStream(streamIdentifier);
+        Stream stream = this.streamPipelineService.loadStream(streamIdentifier);
         return this.conversions.constructAlertRuleStream(stream, conditions);
     }
 
     private boolean isDisabled(TriggeringConditions conditions) {
         String streamIdentifier = conditions.filteringStreamIdentifier();
-        Stream stream = this.loadStream(streamIdentifier);
+        Stream stream = this.streamPipelineService.loadStream(streamIdentifier);
         if (stream == null) {
             return false;
         }
@@ -318,59 +289,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return alertTitle;
     }
 
-    private TriggeringConditions createTriggeringConditionsFromStream(AlertRuleStream streamConfiguration, String title,
-                                                                      String filteringStreamIdentifier, String userName) throws ValidationException {
-        List<FieldRule> fieldRulesWithList = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration.getFieldRules());
-
-        TriggeringConditions.Builder builder = TriggeringConditions.builder().filteringStreamIdentifier(filteringStreamIdentifier);
-        if (fieldRulesWithList.isEmpty()) {
-            return builder.outputStreamIdentifier(filteringStreamIdentifier).build();
-        }
-
-        for (FieldRule fieldRule: fieldRulesWithList) {
-            this.alertListUtilsService.incrementUsage(fieldRule.getValue());
-        }
-
-        Stream.MatchingType matchingType = streamConfiguration.getMatchingType();
-        if (matchingType.equals(Stream.MatchingType.AND) && this.fieldRulesUtilities.hasStreamRules(streamConfiguration.getFieldRules())) {
-            PipelineDao graylogPipeline = this.streamPipelineService.createPipeline(title, matchingType, filteringStreamIdentifier);
-            Stream outputStream = this.streamPipelineService.createStream(matchingType, title + " output", userName);
-            RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(title, fieldRulesWithList, matchingType, outputStream.getId());
-            Pipeline pipeline = Pipeline.builder()
-                    .identifier(graylogPipeline.id()).ruleIdentifier(pipelineRule.id()).fieldRules(fieldRulesWithList)
-                    .build();
-            return builder.outputStreamIdentifier(outputStream.getId()).pipeline(pipeline).build();
-        } else {
-            PipelineDao graylogPipeline = this.streamPipelineService.createPipeline(title, matchingType, Stream.DEFAULT_STREAM_ID);
-            RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(title, fieldRulesWithList, matchingType, filteringStreamIdentifier);
-            Pipeline pipeline = Pipeline.builder()
-                    .identifier(graylogPipeline.id()).ruleIdentifier(pipelineRule.id()).fieldRules(fieldRulesWithList)
-                    .build();
-            return builder.outputStreamIdentifier(filteringStreamIdentifier).pipeline(pipeline).build();
-        }
-    }
-
-    private TriggeringConditions createTriggeringConditions(AlertRuleStream streamConfiguration, String title, String userName) throws ValidationException {
-        Stream stream = this.streamPipelineService.createStream(streamConfiguration.getMatchingType(), title, userName);
-        this.streamPipelineService.createStreamRule(streamConfiguration.getFieldRules(), stream.getId());
-        return createTriggeringConditionsFromStream(streamConfiguration, title, stream.getId(), userName);
-    }
-
-    private TriggeringConditions updateTriggeringConditions(TriggeringConditions previousConditions, String alertTitle,
-                                                            AlertRuleStream streamConfiguration, String userName) throws ValidationException {
-        // update filtering stream
-        String streamIdentifier = previousConditions.filteringStreamIdentifier();
-        Stream stream = this.loadStream(streamIdentifier);
-        this.streamPipelineService.updateStream(stream, streamConfiguration, alertTitle);
-
-        if (!previousConditions.outputStreamIdentifier().equals(streamIdentifier)) {
-            this.streamPipelineService.deleteStreamFromIdentifier(previousConditions.outputStreamIdentifier());
-        }
-        deletePipelineIfAny(previousConditions.pipeline());
-
-        return createTriggeringConditionsFromStream(streamConfiguration, alertTitle, stream.getId(), userName);
-    }
-
     @POST
     // TODO is this annotation @Timed necessary? What is it for? Remove?
     @Timed
@@ -410,7 +328,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                                             UserContext userContext, String userName) throws ValidationException {
         AlertType alertType = request.getConditionType();
 
-        TriggeringConditions conditions = createTriggeringConditions(request.getStream(), alertTitle, userName);
+        TriggeringConditions conditions = this.triggeringConditionsService.createTriggeringConditions(request.getStream(), alertTitle, userName);
 
         switch (alertType) {
             case THEN:
@@ -435,7 +353,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         Integer priority = request.getPriority();
         Map<String, Object> conditionParameters = request.conditionParameters();
 
-        TriggeringConditions conditions2 = createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName);
+        TriggeringConditions conditions2 = this.triggeringConditionsService.createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName);
         String streamIdentifier = conditions.outputStreamIdentifier();
         EventProcessorConfig configuration = this.conversions.createAggregationCondition(streamIdentifier, conditionParameters);
         String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, priority, notificationIdentifier, configuration, userContext);
@@ -454,7 +372,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         AlertType alertType = request.getConditionType();
         Map<String, Object> conditionParameters = request.conditionParameters();
 
-        TriggeringConditions conditions2 = createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName);
+        TriggeringConditions conditions2 = this.triggeringConditionsService.createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName);
         String streamIdentifier = conditions.outputStreamIdentifier();
         String streamIdentifier2 = conditions2.outputStreamIdentifier();
         EventProcessorConfig configuration = this.conversions.createCorrelationCondition(alertType, streamIdentifier, streamIdentifier2, conditionParameters);
@@ -477,9 +395,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         // TODO increase readability: extract three methods?
         if (previousAlertPattern instanceof CorrelationAlertPattern previousPattern) {
             TriggeringConditions previousConditions = previousPattern.conditions1();
-            TriggeringConditions conditions = this.updateTriggeringConditions(previousConditions, title, streamConfiguration, userName);
+            TriggeringConditions conditions = this.triggeringConditionsService.updateTriggeringConditions(previousConditions, title, streamConfiguration, userName);
             TriggeringConditions previousConditions2 = previousPattern.conditions2();
-            TriggeringConditions conditions2 = this.updateTriggeringConditions(previousConditions2, title2, streamConfiguration2, userName);
+            TriggeringConditions conditions2 = this.triggeringConditionsService.updateTriggeringConditions(previousConditions2, title2, streamConfiguration2, userName);
 
             String streamIdentifier = conditions.outputStreamIdentifier();
             String streamIdentifier2 = conditions2.outputStreamIdentifier();
@@ -489,9 +407,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             return previousPattern.toBuilder().conditions1(conditions).build();
         } else if (previousAlertPattern instanceof DisjunctionAlertPattern previousPattern) {
             TriggeringConditions previousConditions = previousPattern.conditions1();
-            TriggeringConditions conditions = this.updateTriggeringConditions(previousConditions, title, streamConfiguration, userName);
+            TriggeringConditions conditions = this.triggeringConditionsService.updateTriggeringConditions(previousConditions, title, streamConfiguration, userName);
             TriggeringConditions previousConditions2 = previousPattern.conditions2();
-            TriggeringConditions conditions2 = this.updateTriggeringConditions(previousConditions2, title2, streamConfiguration2, userName);
+            TriggeringConditions conditions2 = this.triggeringConditionsService.updateTriggeringConditions(previousConditions2, title2, streamConfiguration2, userName);
 
             String streamIdentifier = conditions.outputStreamIdentifier();
             EventProcessorConfig configuration = this.conversions.createEventConfiguration(request.getConditionType(), request.conditionParameters(), streamIdentifier);
@@ -504,7 +422,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             return previousPattern.toBuilder().conditions1(conditions).build();
         } else if (previousAlertPattern instanceof AggregationAlertPattern previousPattern) {
             TriggeringConditions previousConditions = previousPattern.conditions();
-            TriggeringConditions conditions = this.updateTriggeringConditions(previousConditions, title, streamConfiguration, userName);
+            TriggeringConditions conditions = this.triggeringConditionsService.updateTriggeringConditions(previousConditions, title, streamConfiguration, userName);
             String streamIdentifier = conditions.outputStreamIdentifier();
             EventProcessorConfig configuration = this.conversions.createEventConfiguration(request.getConditionType(), request.conditionParameters(), streamIdentifier);
             this.eventDefinitionService.updateEvent(title, request.getDescription(), request.getPriority(), previousPattern.eventIdentifier(), configuration);
@@ -555,24 +473,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return Response.accepted().entity(result).build();
     }
 
-    private void deleteTriggeringConditions(TriggeringConditions conditions) {
-        this.streamPipelineService.deleteStreamFromIdentifier(conditions.filteringStreamIdentifier());
-        if (!conditions.outputStreamIdentifier().equals(conditions.filteringStreamIdentifier())) {
-            this.streamPipelineService.deleteStreamFromIdentifier(conditions.outputStreamIdentifier());
-        }
-        deletePipelineIfAny(conditions.pipeline());
-    }
-
-    private void deletePipelineIfAny(Pipeline pipeline) {
-        if (pipeline == null) {
-            return;
-        }
-        this.streamPipelineService.deletePipeline(pipeline.identifier(), pipeline.ruleIdentifier());
-        for (FieldRule fieldRule: this.nullSafe(pipeline.fieldRules())) {
-            this.alertListUtilsService.decrementUsage(fieldRule.getValue());
-        }
-    }
-
     private void deleteEvent(String eventIdentifier) {
         if (eventIdentifier == null) {
             return;
@@ -582,16 +482,16 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
     private void deleteAlertPattern(AlertPattern alertPattern) {
         if (alertPattern instanceof CorrelationAlertPattern pattern) {
-            deleteTriggeringConditions(pattern.conditions1());
-            deleteTriggeringConditions(pattern.conditions2());
+            this.triggeringConditionsService.deleteTriggeringConditions(pattern.conditions1());
+            this.triggeringConditionsService.deleteTriggeringConditions(pattern.conditions2());
             deleteEvent(pattern.eventIdentifier());
         } else if (alertPattern instanceof DisjunctionAlertPattern pattern) {
-            deleteTriggeringConditions(pattern.conditions1());
-            deleteTriggeringConditions(pattern.conditions2());
+            this.triggeringConditionsService.deleteTriggeringConditions(pattern.conditions1());
+            this.triggeringConditionsService.deleteTriggeringConditions(pattern.conditions2());
             deleteEvent(pattern.eventIdentifier1());
             deleteEvent(pattern.eventIdentifier2());
         } else if (alertPattern instanceof AggregationAlertPattern pattern) {
-            deleteTriggeringConditions(pattern.conditions());
+            this.triggeringConditionsService.deleteTriggeringConditions(pattern.conditions());
             deleteEvent(pattern.eventIdentifier());
         }
     }
@@ -625,10 +525,5 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
 
         this.alertRuleService.destroy(alertTitle);
-    }
-
-    // TODO remove this method => should have a more regular code (empty lists instead of null)!!!
-    private <T> Collection<T> nullSafe(Collection<T> c) {
-        return (c == null) ? Collections.<T>emptyList() : c;
     }
 }
