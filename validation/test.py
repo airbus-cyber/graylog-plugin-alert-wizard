@@ -272,19 +272,19 @@ class Test(TestCase):
         # Send a log with user=toto and source=sourceABC. It will be placed in the Stream because the pipeline function found the user in the list. So the rule will trigger but it is wrong because "source" is not equal to "source123"
         # Send a log with user=xxx and source=source123. It will be placed in the Stream beauce the only Stream rule is field "source" match exactly "source123". So the rule will trigger but it is wrong because "user" is not present in the list
         with self._graylog.create_gelf_input() as inputs:
-                inputs.send({'host': 'source123'})
-                aggregation_events_count = self._graylog.get_events_count('aggregation-v1')
-                print(f'send: {aggregation_events_count}/{self._graylog.get_events_count()}')
-                # wait for the period (which is, unfortunately expressed in minutes, so it's quite long a wait)
-                # TODO: should improve the API for better testability
-                time.sleep(60*_PERIOD)
-                aggregation_events_count = self._graylog.get_events_count('aggregation-v1')
-                print(f'slept for period: {aggregation_events_count}/{self._graylog.get_events_count()}')
+            inputs.send({'host': 'source123'})
+            aggregation_events_count = self._graylog.get_events_count('aggregation-v1')
+            print(f'send: {aggregation_events_count}/{self._graylog.get_events_count()}')
+            # wait for the period (which is, unfortunately expressed in minutes, so it's quite long a wait)
+            # TODO: should improve the API for better testability
+            time.sleep(60*_PERIOD)
+            aggregation_events_count = self._graylog.get_events_count('aggregation-v1')
+            print(f'slept for period: {aggregation_events_count}/{self._graylog.get_events_count()}')
 
-                time.sleep(60)
-                aggregation_events_count = self._graylog.get_events_count('aggregation-v1')
-                print(f'before assert: {aggregation_events_count}/{self._graylog.get_events_count()}')
-                self.assertEqual(0, self._graylog.get_events_count('aggregation-v1'))
+            time.sleep(60)
+            aggregation_events_count = self._graylog.get_events_count('aggregation-v1')
+            print(f'before assert: {aggregation_events_count}/{self._graylog.get_events_count()}')
+            self.assertEqual(0, self._graylog.get_events_count('aggregation-v1'))
 
     def test_create_alert_rule_with_list_should_generate_event_when_message_field_is_in_list(self):
         title = 'list'
