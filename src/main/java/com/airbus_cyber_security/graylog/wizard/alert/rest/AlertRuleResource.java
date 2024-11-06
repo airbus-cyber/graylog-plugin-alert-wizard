@@ -22,7 +22,14 @@ import com.airbus_cyber_security.graylog.wizard.alert.business.TriggeringConditi
 import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleService;
 import com.airbus_cyber_security.graylog.wizard.alert.business.EventDefinitionService;
 import com.airbus_cyber_security.graylog.wizard.alert.business.NotificationService;
-import com.airbus_cyber_security.graylog.wizard.alert.model.*;
+import com.airbus_cyber_security.graylog.wizard.alert.model.TriggeringConditions;
+import com.airbus_cyber_security.graylog.wizard.alert.model.AlertPattern;
+import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRule;
+import com.airbus_cyber_security.graylog.wizard.alert.model.AlertType;
+import com.airbus_cyber_security.graylog.wizard.alert.model.AggregationAlertPattern;
+import com.airbus_cyber_security.graylog.wizard.alert.model.CorrelationAlertPattern;
+import com.airbus_cyber_security.graylog.wizard.alert.model.DisjunctionAlertPattern;
+import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetDataAlertRule;

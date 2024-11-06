@@ -55,7 +55,7 @@ public abstract class TriggeringConditions {
 
     // the stream which carries the conditions to filter the logs
     @JsonProperty(FIELD_FILTERING_STREAM)
-    @NotNull
+    @Nullable
     public abstract String filteringStreamIdentifier();
 
     // the output stream into which filtered logs are put
