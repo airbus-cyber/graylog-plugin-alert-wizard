@@ -19,19 +19,12 @@
 package com.airbus_cyber_security.graylog.wizard.alert.rest;
 
 import com.airbus_cyber_security.graylog.wizard.alert.business.TriggeringConditionsService;
-import com.airbus_cyber_security.graylog.wizard.alert.business.StreamPipelineService;
 import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleService;
 import com.airbus_cyber_security.graylog.wizard.alert.business.EventDefinitionService;
 import com.airbus_cyber_security.graylog.wizard.alert.business.NotificationService;
-import com.airbus_cyber_security.graylog.wizard.alert.model.AggregationAlertPattern;
-import com.airbus_cyber_security.graylog.wizard.alert.model.AlertPattern;
-import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRule;
-import com.airbus_cyber_security.graylog.wizard.alert.model.CorrelationAlertPattern;
-import com.airbus_cyber_security.graylog.wizard.alert.model.DisjunctionAlertPattern;
-import com.airbus_cyber_security.graylog.wizard.alert.model.TriggeringConditions;
+import com.airbus_cyber_security.graylog.wizard.alert.model.*;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
-import com.airbus_cyber_security.graylog.wizard.alert.model.AlertType;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetDataAlertRule;
 import com.airbus_cyber_security.graylog.wizard.audit.AlertWizardAuditEventTypes;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
@@ -66,7 +59,6 @@ import org.graylog2.audit.jersey.AuditEvent;
 import org.graylog2.database.NotFoundException;
 import org.graylog2.plugin.database.ValidationException;
 import org.graylog2.plugin.rest.PluginRestResource;
-import org.graylog2.plugin.streams.Stream;
 import org.graylog2.shared.rest.resources.RestResource;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -104,13 +96,11 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
     private final AlertRuleService alertRuleService;
     private final Conversions conversions;
-    private final StreamPipelineService streamPipelineService;
     private final TriggeringConditionsService triggeringConditionsService;
     private final NotificationService notificationService;
 
     @Inject
     public AlertRuleResource(AlertRuleService alertRuleService,
-                             StreamPipelineService streamPipelineService,
                              TriggeringConditionsService triggeringConditionsService,
                              AlertWizardConfigurationService configurationService,
                              EventNotificationsResource eventNotificationsResource,
@@ -125,23 +115,12 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         this.eventDefinitionService = eventDefinitionService;
 
         this.conversions = conversions;
-        this.streamPipelineService = streamPipelineService;
         this.notificationService = notificationService;
     }
 
     private AlertRuleStream constructAlertRuleStream(TriggeringConditions conditions) {
-        String streamIdentifier = conditions.filteringStreamIdentifier();
-        Stream stream = this.streamPipelineService.loadStream(streamIdentifier);
-        return this.conversions.constructAlertRuleStream(stream, conditions);
-    }
-
-    private boolean isDisabled(TriggeringConditions conditions) {
-        String streamIdentifier = conditions.filteringStreamIdentifier();
-        Stream stream = this.streamPipelineService.loadStream(streamIdentifier);
-        if (stream == null) {
-            return false;
-        }
-        return stream.getDisabled();
+        List<FieldRule> fieldRules = this.triggeringConditionsService.getFieldRules(conditions);
+        return AlertRuleStream.create(conditions.filteringStreamIdentifier(), conditions.matchingType(), fieldRules);
     }
 
     private GetDataAlertRule constructDataAlertRule(AlertRule alert) {
@@ -160,7 +139,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             alertRuleStream = this.constructAlertRuleStream(conditions1);
             TriggeringConditions conditions2 = pattern.conditions2();
             alertRuleStream2 = this.constructAlertRuleStream(conditions2);
-            isDisabled = this.isDisabled(conditions1);
+            isDisabled = this.triggeringConditionsService.isDisabled(conditions1);
         } else if (alertPattern instanceof DisjunctionAlertPattern pattern) {
             event = this.eventDefinitionService.getEventDefinition(pattern.eventIdentifier1());
             parametersCondition = getConditionParameters(event);
@@ -168,7 +147,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             alertRuleStream = this.constructAlertRuleStream(conditions);
             TriggeringConditions conditions2 = pattern.conditions2();
             alertRuleStream2 = this.constructAlertRuleStream(conditions2);
-            isDisabled = this.isDisabled(conditions);
+            isDisabled = this.triggeringConditionsService.isDisabled(conditions);
             eventIdentifier2 = pattern.eventIdentifier2();
             completeParametersConditionForDisjunction(parametersCondition, this.eventDefinitionService.getEventDefinition(eventIdentifier2));
         } else if (alertPattern instanceof AggregationAlertPattern pattern) {
@@ -176,7 +155,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             parametersCondition = getConditionParameters(event);
             TriggeringConditions conditions = pattern.conditions();
             alertRuleStream = this.constructAlertRuleStream(conditions);
-            isDisabled = this.isDisabled(conditions);
+            isDisabled = this.triggeringConditionsService.isDisabled(conditions);
         }
         Optional<NotificationDto> notification = this.notificationService.get(alert.getNotificationID());
         String notificationIdentifier = null;

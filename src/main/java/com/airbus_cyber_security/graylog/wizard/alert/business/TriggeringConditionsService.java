@@ -27,7 +27,9 @@ import org.graylog.plugins.pipelineprocessor.db.PipelineDao;
 import org.graylog.plugins.pipelineprocessor.db.RuleDao;
 import org.graylog2.plugin.database.ValidationException;
 import org.graylog2.plugin.streams.Stream;
+import org.graylog2.plugin.streams.StreamRule;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -76,6 +78,20 @@ public class TriggeringConditionsService {
         deletePipelineIfAny(conditions.pipeline());
     }
 
+    public List<FieldRule> getFieldRules(TriggeringConditions conditions) {
+        List<FieldRule> fieldRules = new ArrayList<>();
+        if (conditions.pipeline() != null) {
+            List<FieldRule> pipelineFieldRules = conditions.pipeline().fieldRules();
+            fieldRules.addAll(pipelineFieldRules);
+        }
+        String streamIdentifier = conditions.filteringStreamIdentifier();
+        Stream stream = this.streamPipelineService.loadStream(streamIdentifier);
+        if (stream != null) {
+            fieldRules.addAll(this.getListFieldRule(stream.getStreamRules()));
+        }
+        return fieldRules;
+    }
+
     private void deletePipelineIfAny(Pipeline pipeline) {
         if (pipeline == null) {
             return;
@@ -84,6 +100,15 @@ public class TriggeringConditionsService {
         for (FieldRule fieldRule: this.nullSafe(pipeline.fieldRules())) {
             this.alertListUtilsService.decrementUsage(fieldRule.getValue());
         }
+    }
+
+    public boolean isDisabled(TriggeringConditions conditions) {
+        String streamIdentifier = conditions.filteringStreamIdentifier();
+        Stream stream = this.streamPipelineService.loadStream(streamIdentifier);
+        if (stream == null) {
+            return false;
+        }
+        return stream.getDisabled();
     }
 
     private TriggeringConditions createTriggeringConditionsFromStream(AlertRuleStream streamConfiguration, String title,
@@ -117,6 +142,18 @@ public class TriggeringConditionsService {
                     .build();
             return builder.outputStreamIdentifier(filteringStreamIdentifier).pipeline(pipeline).build();
         }
+    }
+
+    private List<FieldRule> getListFieldRule(List<StreamRule> listStreamRule) {
+        List<FieldRule> listFieldRule = new ArrayList<>();
+        for (StreamRule streamRule: listStreamRule) {
+            if (streamRule.getInverted()) {
+                listFieldRule.add(FieldRule.create(streamRule.getId(), streamRule.getField(), -streamRule.getType().toInteger(), streamRule.getValue()));
+            } else {
+                listFieldRule.add(FieldRule.create(streamRule.getId(), streamRule.getField(), streamRule.getType().toInteger(), streamRule.getValue()));
+            }
+        }
+        return listFieldRule;
     }
 
     // TODO remove this method => should have a more regular code (empty lists instead of null)!!!

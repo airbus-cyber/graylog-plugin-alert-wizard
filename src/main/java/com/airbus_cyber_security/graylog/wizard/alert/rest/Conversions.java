@@ -276,33 +276,6 @@ public class Conversions {
         }
     }
 
-    private List<FieldRule> getListFieldRule(List<StreamRule> listStreamRule) {
-        List<FieldRule> listFieldRule = new ArrayList<>();
-        for (StreamRule streamRule: listStreamRule) {
-            if (streamRule.getInverted()) {
-                listFieldRule.add(FieldRule.create(streamRule.getId(), streamRule.getField(), -streamRule.getType().toInteger(), streamRule.getValue()));
-            } else {
-                listFieldRule.add(FieldRule.create(streamRule.getId(), streamRule.getField(), streamRule.getType().toInteger(), streamRule.getValue()));
-            }
-        }
-        return listFieldRule;
-    }
-
-    // TODO inline
-    AlertRuleStream constructAlertRuleStream(Stream stream, TriggeringConditions conditions) {
-
-        List<FieldRule> fieldRules = new ArrayList<>();
-        if (conditions.pipeline() != null) {
-            List<FieldRule> pipelineFieldRules = conditions.pipeline().fieldRules();
-            fieldRules.addAll(pipelineFieldRules);
-        }
-        if (stream != null) {
-            fieldRules.addAll(this.getListFieldRule(stream.getStreamRules()));
-        }
-        String streamIdentifier = conditions.filteringStreamIdentifier();
-        return AlertRuleStream.create(streamIdentifier, conditions.matchingType(), fieldRules);
-    }
-
     private String convertThresholdTypeToCorrelation(String thresholdType) {
         if (thresholdType.equals(THRESHOLD_TYPE_MORE)) {
             return "MORE";
