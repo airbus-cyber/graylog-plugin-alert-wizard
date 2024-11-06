@@ -98,7 +98,7 @@ public class StreamPipelineService {
     }
 
     // TODO should have only non field rules here
-    public void createStreamRule(List<FieldRule> fieldRules, String streamID) throws ValidationException {
+    private void createStreamRule(List<FieldRule> fieldRules, String streamID) throws ValidationException {
         for (FieldRule fieldRule: fieldRules) {
             if (this.fieldRulesUtilities.isListFieldRule(fieldRule)) {
                 continue;
@@ -212,6 +212,12 @@ public class StreamPipelineService {
         if (ruleID != null && !ruleID.isEmpty()) {
             ruleService.delete(ruleID);
         }
+    }
+
+    public Stream createStream(Stream.MatchingType matchingType, String title, String userName, List<FieldRule> fieldRules) throws ValidationException {
+        Stream stream = this.createStream(matchingType, title, userName);
+        this.createStreamRule(fieldRules, stream.getId());
+        return stream;
     }
 
     public Stream createStream(Stream.MatchingType matchingType, String title, String userName) throws ValidationException {
