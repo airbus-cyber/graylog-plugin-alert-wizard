@@ -117,17 +117,38 @@ public class TriggeringConditionsService {
         List<FieldRule> fieldRulesWithList = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration.getFieldRules());
 
         TriggeringConditions.Builder builder = TriggeringConditions.builder().filteringStreamIdentifier(filteringStreamIdentifier);
+        Stream.MatchingType matchingType = streamConfiguration.getMatchingType();
+        builder.matchingType(matchingType);
         if (fieldRulesWithList.isEmpty()) {
-            return builder.outputStreamIdentifier(filteringStreamIdentifier).build();
+            String outputStreamIdentifier;
+            if (filteringStreamIdentifier == null) {
+                outputStreamIdentifier = Stream.DEFAULT_STREAM_ID;
+            } else {
+                outputStreamIdentifier = filteringStreamIdentifier;
+            }
+            return builder.outputStreamIdentifier(outputStreamIdentifier).build();
         }
 
         for (FieldRule fieldRule: fieldRulesWithList) {
             this.alertListUtilsService.incrementUsage(fieldRule.getValue());
         }
 
-        Stream.MatchingType matchingType = streamConfiguration.getMatchingType();
-        builder.matchingType(matchingType);
-        if (matchingType.equals(Stream.MatchingType.AND) && this.fieldRulesUtilities.hasStreamRules(streamConfiguration.getFieldRules())) {
+        if (!this.fieldRulesUtilities.hasStreamRules(streamConfiguration.getFieldRules())) {
+            PipelineDao graylogPipeline = this.streamPipelineService.createPipeline(title, matchingType, Stream.DEFAULT_STREAM_ID);
+            Stream outputStream = this.streamPipelineService.createStream(matchingType, title + " output", userName);
+            RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(title, fieldRulesWithList, matchingType, outputStream.getId());
+            Pipeline pipeline = Pipeline.builder()
+                    .identifier(graylogPipeline.id()).ruleIdentifier(pipelineRule.id()).fieldRules(fieldRulesWithList)
+                    .build();
+            return builder.outputStreamIdentifier(outputStream.getId()).pipeline(pipeline).build();
+        } else if (matchingType.equals(Stream.MatchingType.OR)) {
+            PipelineDao graylogPipeline = this.streamPipelineService.createPipeline(title, matchingType, Stream.DEFAULT_STREAM_ID);
+            RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(title, fieldRulesWithList, matchingType, filteringStreamIdentifier);
+            Pipeline pipeline = Pipeline.builder()
+                    .identifier(graylogPipeline.id()).ruleIdentifier(pipelineRule.id()).fieldRules(fieldRulesWithList)
+                    .build();
+            return builder.outputStreamIdentifier(filteringStreamIdentifier).pipeline(pipeline).build();
+        } else {
             PipelineDao graylogPipeline = this.streamPipelineService.createPipeline(title, matchingType, filteringStreamIdentifier);
             Stream outputStream = this.streamPipelineService.createStream(matchingType, title + " output", userName);
             RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(title, fieldRulesWithList, matchingType, outputStream.getId());
@@ -135,13 +156,6 @@ public class TriggeringConditionsService {
                     .identifier(graylogPipeline.id()).ruleIdentifier(pipelineRule.id()).fieldRules(fieldRulesWithList)
                     .build();
             return builder.outputStreamIdentifier(outputStream.getId()).pipeline(pipeline).build();
-        } else {
-            PipelineDao graylogPipeline = this.streamPipelineService.createPipeline(title, matchingType, Stream.DEFAULT_STREAM_ID);
-            RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(title, fieldRulesWithList, matchingType, filteringStreamIdentifier);
-            Pipeline pipeline = Pipeline.builder()
-                    .identifier(graylogPipeline.id()).ruleIdentifier(pipelineRule.id()).fieldRules(fieldRulesWithList)
-                    .build();
-            return builder.outputStreamIdentifier(filteringStreamIdentifier).pipeline(pipeline).build();
         }
     }
 
