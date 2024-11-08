@@ -67,28 +67,29 @@ public class TriggeringConditionsService {
         return createTriggeringConditionsFromStream(streamConfiguration, title, filteringStreamIdentifier, userName);
     }
 
+    private String updateFilteringString(TriggeringConditions previousConditions, String title,
+                                         AlertRuleStream streamConfiguration, String userName) throws ValidationException {
+        List<FieldRule> streamFieldRules = this.streamService.getStreamFieldRules(streamConfiguration.getFieldRules());
+        String previousFilteringStreamIdentifier = previousConditions.filteringStreamIdentifier();
+        if (previousFilteringStreamIdentifier == null) {
+            return this.createFilteringStream(streamConfiguration, title, userName);
+        }
+        if (streamFieldRules.isEmpty()) {
+            this.streamPipelineService.deleteStreamFromIdentifier(previousFilteringStreamIdentifier);
+            return null;
+        }
+        Stream stream = this.streamPipelineService.loadStream(previousFilteringStreamIdentifier);
+        this.streamService.updateStream(stream, streamConfiguration, title);
+        return previousFilteringStreamIdentifier;
+    }
+
     public TriggeringConditions updateTriggeringConditions(TriggeringConditions previousConditions, String title,
                                                             AlertRuleStream streamConfiguration, String userName) throws ValidationException {
-        // TODO extract method updateFilteringStream
-        // update filtering stream
-        List<FieldRule> streamFieldRules = this.streamService.getStreamFieldRules(streamConfiguration.getFieldRules());
-        String filteringStreamIdentifier;
-        String previousFilteringStreamIdentifier = previousConditions.filteringStreamIdentifier();
-        if (previousFilteringStreamIdentifier != null) {
-            if (streamFieldRules.isEmpty()) {
-                this.streamPipelineService.deleteStreamFromIdentifier(previousFilteringStreamIdentifier);
-                filteringStreamIdentifier = null;
-            } else {
-                Stream stream = this.streamPipelineService.loadStream(previousFilteringStreamIdentifier);
-                this.streamService.updateStream(stream, streamConfiguration, title);
-                filteringStreamIdentifier = previousFilteringStreamIdentifier;
-            }
-        } else {
-            filteringStreamIdentifier = this.createFilteringStream(streamConfiguration, title, userName);
-        }
+        String filteringStreamIdentifier = this.updateFilteringString(previousConditions, title, streamConfiguration, userName);
 
         // second part of the condition here is probably incorrect...
-        if (previousConditions.outputStreamIdentifier() != null && !previousConditions.outputStreamIdentifier().equals(previousFilteringStreamIdentifier)) {
+        if (previousConditions.outputStreamIdentifier() != null
+                && !previousConditions.outputStreamIdentifier().equals(previousConditions.filteringStreamIdentifier())) {
             this.streamPipelineService.deleteStreamFromIdentifier(previousConditions.outputStreamIdentifier());
         }
         deletePipelineIfAny(previousConditions.pipeline());
