@@ -99,6 +99,17 @@ class TestsFast(TestCase):
         response = self._graylog.update_alert_rule(title, {**rule, 'description': 'new description'})
         self.assertEqual(202, response.status_code)
 
+    def test_update_alert_rule_should_delete_stream_when_removing_conditions(self):
+        title = f'rule_title_{uuid4()}'
+        rule = self._graylog.create_alert_rule_count(title, _PERIOD)
+        stream = {
+            'field_rule': [],
+            'matching_type': 'AND'
+        }
+        self._graylog.update_alert_rule(title, {**rule, 'stream': stream})
+        response = self._api.get_stream(rule['stream']['id'])
+        self.assertEqual(404, response.status_code)
+
     def test_create_list_should_create_data_adapter(self):
         self._graylog.create_list('test', ['a'])
         response = self._graylog.query_data_adapter('alert-wizard-list-data-adapter-test', 'a')
