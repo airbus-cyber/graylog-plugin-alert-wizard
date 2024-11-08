@@ -376,6 +376,34 @@ class TestsFast(TestCase):
         rule = self._api.create_alert_rule_count(title, _PERIOD, stream=stream)
         self.assertIsInstance(rule['condition_parameters']['threshold'], int)
 
+    def test_update_alert_rule_count_to_or_should_update_second_event_definition_description__issue102(self):
+        title = 'aaa'
+        stream = {
+            'field_rule': [{
+                'field': 'source',
+                'type': 1,
+                'value': 'toto'
+            }],
+            'matching_type': 'AND'
+        }
+        alert_rule = self._api.create_alert_rule_count(title, _PERIOD, stream=stream, description='description')
+        alert_rule['condition_type'] = 'OR'
+        alert_rule['second_stream'] = {
+            'field_rule': [
+                {
+                    'field': 'b',
+                    'type': 1,
+                    'value': 'titi'
+                }
+            ],
+            'matching_type': 'AND'
+        }
+        alert_rule['condition_parameters']['additional_search_query'] = ''
+        alert_rule = self._graylog.update_alert_rule(title, {**alert_rule, 'description': 'new description'}).json()
+        second_event_definition_identifier = alert_rule['second_event_definition']
+        second_event_definition = self._graylog.get_event_definition(second_event_definition_identifier)
+        self.assertEqual('new description', second_event_definition['description'])
+
     def test_create_list_should_create_data_adapter(self):
         self._graylog.create_list('test', ['a'])
         response = self._graylog.query_data_adapter('alert-wizard-list-data-adapter-test', 'a')
