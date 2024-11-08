@@ -56,12 +56,6 @@ class Test(TestCase):
         notification = self._graylog.get_notification(rule['notification'])
         self.assertEqual(1441, notification['config']['aggregation_time'])
 
-    def test_get_alert_rule_then_should_have_correct_threshold_type(self):
-        title = 'rule_then'
-        self._graylog.create_alert_rule_then(title, '>', _PERIOD)
-        alert_rule = self._graylog.get_alert_rule(title)
-        self.assertEqual('>', alert_rule['condition_parameters']['threshold_type'])
-
     def test_create_alert_rule_with_same_name_should_not_fail(self):
         title = 'aaa'
         stream = {

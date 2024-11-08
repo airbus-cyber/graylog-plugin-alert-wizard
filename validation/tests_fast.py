@@ -264,6 +264,12 @@ class TestsFast(TestCase):
         logs = self._graylog.extract_logs()
         self.assertNotIn('ERROR', logs)
 
+    def test_get_alert_rule_then_should_have_correct_threshold_type(self):
+        title = 'rule_then'
+        self._graylog.create_alert_rule_then(title, '>', _PERIOD)
+        alert_rule = self._graylog.get_alert_rule(title)
+        self.assertEqual('>', alert_rule['condition_parameters']['threshold_type'])
+
     def test_create_list_should_create_data_adapter(self):
         self._graylog.create_list('test', ['a'])
         response = self._graylog.query_data_adapter('alert-wizard-list-data-adapter-test', 'a')
