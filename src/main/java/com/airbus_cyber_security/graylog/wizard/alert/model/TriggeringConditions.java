@@ -60,7 +60,7 @@ public abstract class TriggeringConditions {
 
     // the output stream into which filtered logs are put
     @JsonProperty(FIELD_OUTPUT_STREAM)
-    @NotNull
+    @Nullable
     public abstract String outputStreamIdentifier();
 
     @JsonProperty(FIELD_PIPELINE)

@@ -70,7 +70,7 @@ public class TriggeringConditionsService {
         Stream stream = this.streamPipelineService.loadStream(streamIdentifier);
         this.streamService.updateStream(stream, streamConfiguration, alertTitle);
 
-        if (!previousConditions.outputStreamIdentifier().equals(streamIdentifier)) {
+        if (previousConditions.outputStreamIdentifier() != null && !previousConditions.outputStreamIdentifier().equals(streamIdentifier)) {
             this.streamPipelineService.deleteStreamFromIdentifier(previousConditions.outputStreamIdentifier());
         }
         deletePipelineIfAny(previousConditions.pipeline());
@@ -82,7 +82,7 @@ public class TriggeringConditionsService {
         if (conditions.filteringStreamIdentifier() != null) {
             this.streamPipelineService.deleteStreamFromIdentifier(conditions.filteringStreamIdentifier());
         }
-        if (!conditions.outputStreamIdentifier().equals(conditions.filteringStreamIdentifier())) {
+        if (conditions.outputStreamIdentifier() != null && !conditions.outputStreamIdentifier().equals(conditions.filteringStreamIdentifier())) {
             this.streamPipelineService.deleteStreamFromIdentifier(conditions.outputStreamIdentifier());
         }
         deletePipelineIfAny(conditions.pipeline());
@@ -131,7 +131,7 @@ public class TriggeringConditionsService {
         if (fieldRulesWithList.isEmpty()) {
             String outputStreamIdentifier;
             if (filteringStreamIdentifier == null) {
-                outputStreamIdentifier = Stream.DEFAULT_STREAM_ID;
+                outputStreamIdentifier = null;
             } else {
                 outputStreamIdentifier = filteringStreamIdentifier;
             }

@@ -31,6 +31,9 @@ class TestsFast(TestCase):
     def tearDownClass(cls) -> None:
         cls._graylog.stop()
 
+    def setUp(self):
+        self._api = self._graylog.access_rest_api()
+
     def test_get_alerts_should_be_found(self):
         status_code = self._graylog.get_alert_rules()
         self.assertEqual(200, status_code)
@@ -74,3 +77,14 @@ class TestsFast(TestCase):
             inputs.send({})
             # we have to wait for the period before the event triggers, then there might be some more processing time
             self._graylog.wait_until_aggregation_event(2*_PERIOD)
+
+    def test_delete_alert_rule_with_no_conditions_should_not_delete_default_stream(self):
+        stream = {
+            'field_rule': [],
+            'matching_type': 'AND'
+        }
+        rule_title = f'rule_title_{uuid4()}'
+        self._graylog.create_alert_rule_count(rule_title, _PERIOD, stream=stream)
+        self._api.delete_alert_rule(rule_title)
+        default_stream = self._api.get_stream('000000000000000000000001')
+        self.assertEqual(200, default_stream.status_code)

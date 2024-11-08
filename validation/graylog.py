@@ -55,6 +55,9 @@ class Graylog:
         self._wait(gelf_input.is_running, 10, sleep_duration=.1)
         return GraylogInputs()
 
+    def access_rest_api(self):
+        return self._api
+
     def update_logging_alert_plugin_configuration(self):
         return self._api.update_logging_alert_plugin_configuration()
     

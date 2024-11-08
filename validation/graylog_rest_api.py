@@ -213,6 +213,9 @@ class GraylogRestApi:
         response = self._get(f'plugins/com.airbus_cyber_security.graylog.wizard/alerts/{name}')
         return response.json()
 
+    def delete_alert_rule(self, name):
+        self._delete(f'plugins/com.airbus_cyber_security.graylog.wizard/alerts/{name}')
+
     def get_alert_rules(self):
         response = self._get('plugins/com.airbus_cyber_security.graylog.wizard/alerts')
         return response.status_code
@@ -283,6 +286,9 @@ class GraylogRestApi:
     def update_event_definition(self, event_definition):
         identifier = event_definition['id']
         self._put(f'events/definitions/{identifier}', event_definition)
+
+    def get_stream(self, identifier):
+        return self._get(f'streams/{identifier}')
 
     def delete_stream(self, identifier):
         self._delete(f'streams/{identifier}')

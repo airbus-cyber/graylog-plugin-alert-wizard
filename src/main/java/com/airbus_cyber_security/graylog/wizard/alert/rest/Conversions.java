@@ -290,7 +290,13 @@ public class Conversions {
 
     // TODO move method to AlertRuleUtils?
     // TODO instead of a String, the type could already be a com.airbus_cyber_security.graylog.events.processor.correlation.checks.OrderType
-    EventProcessorConfig createCorrelationCondition(AlertType type, String streamID, String streamID2, Map<String, Object> conditionParameter) {
+    EventProcessorConfig createCorrelationCondition(AlertType type, String streamIdentifier, String streamIdentifier2, Map<String, Object> conditionParameter) {
+        if (streamIdentifier == null) {
+            streamIdentifier = Stream.DEFAULT_STREAM_ID;
+        }
+        if (streamIdentifier2 == null) {
+            streamIdentifier2 = Stream.DEFAULT_STREAM_ID;
+        }
         OrderType messageOrder;
         if (type == AlertType.THEN) {
             messageOrder = OrderType.AFTER;
@@ -308,10 +314,10 @@ public class Conversions {
         long executeEveryMs = this.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(GRACE).toString()));
 
         return CorrelationCountProcessorConfig.builder()
-                .stream(streamID)
+                .stream(streamIdentifier)
                 .thresholdType(thresholdType)
                 .threshold(threshold)
-                .additionalStream(streamID2)
+                .additionalStream(streamIdentifier2)
                 .additionalThresholdType(additionalThresholdType)
                 .additionalThreshold((int) conditionParameter.get(ADDITIONAL_THRESHOLD))
                 .messagesOrder(messageOrder)
@@ -346,7 +352,6 @@ public class Conversions {
         List<String> groupByFields = (List<String>) conditionParameter.get(GROUPING_FIELDS);
         String distinctBy = (String) conditionParameter.get(DISTINCT_BY);
 
-        Set<String> streams = ImmutableSet.of(streamIdentifier);
         // TODO extract method to parse searchWithinMs
         long searchWithinMs = this.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(TIME).toString()));
         // TODO extract method to parse executeEveryMs
@@ -373,15 +378,17 @@ public class Conversions {
 
         String searchQuery = useAdditionalSearchQuery ? (String) conditionParameter.get(ADDITIONAL_SEARCH_QUERY) : (String) conditionParameter.get(SEARCH_QUERY);
 
-        return AggregationEventProcessorConfig.builder()
+        AggregationEventProcessorConfig.Builder builder = AggregationEventProcessorConfig.builder()
                 .query(searchQuery)
-                .streams(streams)
                 .groupBy(groupByFields)
                 .series(ImmutableList.of(series))
                 .conditions(conditions)
                 .executeEveryMs(executeEveryMs)
-                .searchWithinMs(searchWithinMs)
-                .build();
+                .searchWithinMs(searchWithinMs);
+        if (streamIdentifier != null) {
+            builder.streams(ImmutableSet.of(streamIdentifier));
+        }
+        return  builder.build();
     }
 
     private SeriesSpec createSeriesSpec(String type, String identifier, String field) {
@@ -428,7 +435,7 @@ public class Conversions {
         }
     }
 
-    public EventProcessorConfig createStatisticalCondition(String streamID, Map<String, Object> conditionParameter) {
+    public EventProcessorConfig createStatisticalCondition(String streamIdentifier, Map<String, Object> conditionParameter) {
         String type = conditionParameter.get(TYPE).toString();
         LOG.debug("Begin Stat, type: {}", type);
         // TODO extract method to parse searchWithinMs
@@ -447,17 +454,19 @@ public class Conversions {
 
         String searchQuery = (String) conditionParameter.get(SEARCH_QUERY);
 
-        return AggregationEventProcessorConfig.builder()
+        AggregationEventProcessorConfig.Builder builder = AggregationEventProcessorConfig.builder()
                 .query(searchQuery)
-                .streams(new HashSet<>(Collections.singleton(streamID)))
                 .series(ImmutableList.of(series))
                 .groupBy(ImmutableList.of())
                 .conditions(AggregationConditions.builder()
                         .expression(expression)
                         .build())
                 .searchWithinMs(searchWithinMs)
-                .executeEveryMs(executeEveryMs)
-                .build();
+                .executeEveryMs(executeEveryMs);
+        if (streamIdentifier != null) {
+            builder.streams(ImmutableSet.of(streamIdentifier));
+        }
+        return builder.build();
     }
 
     public EventProcessorConfig createEventConfiguration(AlertType alertType, Map<String, Object> conditionParameter, String streamIdentifier) {
