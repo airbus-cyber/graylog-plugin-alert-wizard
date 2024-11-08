@@ -347,6 +347,13 @@ class TestsFast(TestCase):
         alert_rule = self._graylog.create_alert_rule_or('aaa', _PERIOD)
         self.assertIn('second_event_definition', alert_rule)
 
+    def test_create_alert_rule_or_should_set_second_event_definition_description__issue102(self):
+        title = 'aaa'
+        alert_rule = self._graylog.create_alert_rule_or(title, _PERIOD, description='second rule description')
+        second_event_definition_identifier = alert_rule['second_event_definition']
+        second_event_definition = self._graylog.get_event_definition(second_event_definition_identifier)
+        self.assertEqual('second rule description', second_event_definition['description'])
+
     def test_create_list_should_create_data_adapter(self):
         self._graylog.create_list('test', ['a'])
         response = self._graylog.query_data_adapter('alert-wizard-list-data-adapter-test', 'a')
