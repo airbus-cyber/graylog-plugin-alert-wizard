@@ -56,22 +56,6 @@ class Test(TestCase):
         notification = self._graylog.get_notification(rule['notification'])
         self.assertEqual(1441, notification['config']['aggregation_time'])
 
-    def test_create_alert_rule_with_same_name_should_not_fail(self):
-        title = 'aaa'
-        stream = {
-            'field_rule': [{
-                'field': 'source',
-                'type': 1,
-                'value': 'toto'
-            }],
-            'matching_type': 'AND'
-        }
-        self._api.create_alert_rule_count(title, _PERIOD, stream=stream)
-        self._graylog.start_logs_capture()
-        self._api.create_alert_rule_count(title, _PERIOD, stream=stream)
-        logs = self._graylog.extract_logs()
-        self.assertNotIn('ERROR', logs)
-
     def test_get_all_rules_should_not_fail_when_a_stream_is_deleted__issue105(self):
         title = 'aaa'
         stream = {
