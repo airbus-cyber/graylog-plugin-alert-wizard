@@ -154,6 +154,13 @@ class TestsFast(TestCase):
         response = self._api.get_stream(rule['stream']['id'])
         self.assertEqual(404, response.status_code)
 
+    def test_create_alert_rule_should_set_event_definition_description__issue102(self):
+        title = 'aaa'
+        alert_rule = self._graylog.create_alert_rule_count(title, _PERIOD, description='rule_description')
+        event_definition_identifier = alert_rule['condition']
+        event_definition = self._graylog.get_event_definition(event_definition_identifier)
+        self.assertEqual('rule_description', event_definition['description'])
+
     def test_create_list_should_create_data_adapter(self):
         self._graylog.create_list('test', ['a'])
         response = self._graylog.query_data_adapter('alert-wizard-list-data-adapter-test', 'a')
