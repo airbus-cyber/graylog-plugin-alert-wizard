@@ -77,7 +77,7 @@ jobs:
       - name: Execute backend tests
         working-directory: plugin/validation
         run: |
-          PYTHONUNBUFFERED=true python -m unittest test --verbose
+          PYTHONUNBUFFERED=true python -m unittest --verbose
       - name: Package signed .rpm
         if: endsWith(steps.requestPom.outputs.VERSION,'SNAPSHOT') == false
         working-directory: plugin
