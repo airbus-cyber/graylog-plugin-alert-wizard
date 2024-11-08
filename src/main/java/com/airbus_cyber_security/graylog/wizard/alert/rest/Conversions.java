@@ -353,6 +353,13 @@ public class Conversions {
         return this.createAggregationCondition(streamIdentifier, conditionParameter, ADDITIONAL_SEARCH_QUERY);
     }
 
+    private SeriesSpecBuilder<?, ?> createSeriesBuilder(String identifier, String distinctBy) {
+        if (distinctBy.isEmpty()) {
+            return Count.builder().id(identifier);
+        }
+        return Cardinality.builder().id(identifier).field(distinctBy);
+    }
+
     private EventProcessorConfig createAggregationCondition(String streamIdentifier, Map<String, Object> conditionParameter, String searchQueryField) {
         List<String> groupByFields = (List<String>) conditionParameter.get(GROUPING_FIELDS);
         String distinctBy = (String) conditionParameter.get(DISTINCT_BY);
@@ -366,13 +373,7 @@ public class Conversions {
         int threshold = this.accessThreshold(conditionParameter);
 
         String identifier = UUID.randomUUID().toString();
-        SeriesSpecBuilder<?,?> seriesBuilder;
-
-        if (distinctBy.isEmpty()) {
-            seriesBuilder = Count.builder().id(identifier);
-        } else {
-            seriesBuilder = Cardinality.builder().id(identifier).field(distinctBy);
-        }
+        SeriesSpecBuilder<?,?> seriesBuilder = createSeriesBuilder(identifier, distinctBy);
 
         SeriesSpec series = (SeriesSpec) seriesBuilder.build();
 
