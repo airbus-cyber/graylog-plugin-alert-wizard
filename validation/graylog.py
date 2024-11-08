@@ -146,5 +146,6 @@ class Graylog:
         events_count = self.get_events_count('aggregation-v1')
         return events_count == 1
 
-    def wait_until_aggregation_event(self, wait_duration):
-        self._wait(self._has_aggregation_event, 60*wait_duration)
+    def wait_until_new_event(self, initial_event_count, wait_duration):
+        wait_until_new_event = lambda: self.get_events_count('aggregation-v1') == initial_event_count + 1
+        self._wait(wait_until_new_event, 60*wait_duration)
