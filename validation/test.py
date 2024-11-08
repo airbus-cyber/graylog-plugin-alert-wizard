@@ -56,10 +56,6 @@ class Test(TestCase):
         notification = self._graylog.get_notification(rule['notification'])
         self.assertEqual(1441, notification['config']['aggregation_time'])
 
-    def test_get_config_should_have_a_default_priority_info(self):
-        configuration = self._graylog.get_alert_wizard_plugin_configuration()
-        self.assertEqual(1, configuration['default_values']['priority'])
-
     def test_get_alert_with_group_by_fields_should_contain_the_group_by_fields(self):
         title = 'rule_distinct'
         rule = {

@@ -42,6 +42,10 @@ class TestsFast(TestCase):
         for list in lists['lists']:
             self._api.delete_list(list['title'])
 
+    def test_get_config_should_have_a_default_priority_info(self):
+        configuration = self._graylog.get_alert_wizard_plugin_configuration()
+        self.assertEqual(1, configuration['default_values']['priority'])
+
     def test_get_config_should_have_a_default_time_range_unit_of_minutes__issue62(self):
         configuration = self._graylog.get_alert_wizard_plugin_configuration()
         self.assertEqual(1, configuration['default_values']['time_type'])
