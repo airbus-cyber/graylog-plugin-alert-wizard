@@ -54,8 +54,13 @@ public class TriggeringConditionsService {
     }
 
     public TriggeringConditions createTriggeringConditions(AlertRuleStream streamConfiguration, String title, String userName) throws ValidationException {
-        Stream filteringStream = this.streamService.createStream(streamConfiguration.getMatchingType(), title, userName, streamConfiguration.getFieldRules());
-        return createTriggeringConditionsFromStream(streamConfiguration, title, filteringStream.getId(), userName);
+        List<FieldRule> streamFieldRules = this.streamService.getStreamFieldRules(streamConfiguration.getFieldRules());
+        String filteringStreamIdentifier = null;
+        if (!streamFieldRules.isEmpty()) {
+            Stream filteringStream = this.streamService.createStream(streamConfiguration.getMatchingType(), title, userName, streamFieldRules);
+            filteringStreamIdentifier = filteringStream.getId();
+        }
+        return createTriggeringConditionsFromStream(streamConfiguration, title, filteringStreamIdentifier, userName);
     }
 
     public TriggeringConditions updateTriggeringConditions(TriggeringConditions previousConditions, String alertTitle,

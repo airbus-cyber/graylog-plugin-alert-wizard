@@ -104,14 +104,14 @@ public class StreamFacade {
             this.streamRuleService.destroy(streamRule);
         }
         // Create stream rules.
-        createStreamRule(alertRuleStream.getFieldRules(), stream.getId());
+        List<FieldRule> streamFieldRules = this.getStreamFieldRules(alertRuleStream.getFieldRules());
+        createStreamRule(streamFieldRules, stream.getId());
 
         this.clusterEventBus.post(StreamsChangedEvent.create(stream.getId()));
     }
 
     private void createStreamRule(List<FieldRule> fieldRules, String streamID) throws ValidationException {
-        List<FieldRule> streamFieldRules = this.getStreamFieldRules(fieldRules);
-        for (FieldRule fieldRule: streamFieldRules) {
+        for (FieldRule fieldRule: fieldRules) {
             Map<String, Object> streamRuleData = Maps.newHashMapWithExpectedSize(6);
 
             if (fieldRule.getType() >= 0) {
@@ -131,7 +131,8 @@ public class StreamFacade {
         }
     }
 
-    private List<FieldRule> getStreamFieldRules(List<FieldRule> fieldRules) {
+    // TODO most probably move up (this is a rather a conversion in the rest layer)
+    public List<FieldRule> getStreamFieldRules(List<FieldRule> fieldRules) {
         List<FieldRule> streamFieldRules = new ArrayList<FieldRule>();
         for (FieldRule fieldRule: fieldRules) {
             if (this.fieldRulesUtilities.isListFieldRule(fieldRule)) {

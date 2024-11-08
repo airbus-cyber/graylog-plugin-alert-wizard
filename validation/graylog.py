@@ -141,3 +141,10 @@ class Graylog:
             if event['event_definition_type'] == event_definition_type:
                 result += 1
         return result
+
+    def _has_aggregation_event(self):
+        events_count = self.get_events_count('aggregation-v1')
+        return events_count == 1
+
+    def wait_until_aggregation_event(self, wait_duration):
+        self._wait(self._has_aggregation_event, 60*wait_duration)

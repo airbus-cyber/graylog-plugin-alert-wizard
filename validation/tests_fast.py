@@ -56,3 +56,16 @@ class TestsFast(TestCase):
         self._graylog.create_alert_rule_and(title, _PERIOD, additional_threshold=1)
         retrieved_alert_rule = self._graylog.get_alert_rule(title)
         self.assertEqual(1, retrieved_alert_rule['condition_parameters']['additional_threshold'])
+
+    def test_alert_rule_with_no_conditions_should_trigger__issue139(self):
+        stream = {
+            'field_rule': [],
+            'matching_type': 'AND'
+        }
+        self._graylog.create_alert_rule_count(f'rule_title_{uuid4()}', _PERIOD, stream=stream)
+        # TODO should create a gelf_input when instantiating graylog and delete it at the send
+        #      so that other tests do not fail
+        with self._graylog.create_gelf_input() as inputs:
+            inputs.send({})
+            # we have to wait for the period before the event triggers, then there might be some more processing time
+            self._graylog.wait_until_aggregation_event(2*_PERIOD)

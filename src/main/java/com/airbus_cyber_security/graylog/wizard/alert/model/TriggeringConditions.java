@@ -33,7 +33,7 @@ import org.graylog2.plugin.streams.Stream;
  * The output stream is the stream on which the event feeds.
  *
  * There are 4 possible constructions:
- * - no stream conditions, no list conditions: filteringStream == null, outputStream == DEFAULT_STREAM
+ * - no stream conditions, no list conditions: filteringStream == null, outputStream == null
  * - stream conditions only: pipeline == null, filteringStream == outputStream
  * - list conditions only: pipeline -> outputStream, filteringStream == null
  * - both stream and list conditions:
