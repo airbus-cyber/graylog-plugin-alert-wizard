@@ -38,10 +38,11 @@ class TestsFast(TestCase):
         rules = self._api.get_alert_rules().json()
         for rule in rules:
             self._api.delete_alert_rule(rule['title'])
-
         lists = self._api.get_lists()
         for list in lists['lists']:
             self._api.delete_list(list['title'])
+
+        self._api.delete_gelf_input(self._gelf_input_identifier)
 
     def test_get_config_should_have_a_default_priority_info(self):
         configuration = self._graylog.get_alert_wizard_plugin_configuration()

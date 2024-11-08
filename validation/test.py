@@ -30,6 +30,7 @@ class Test(TestCase):
 
     def tearDown(self) -> None:
         self._graylog.stop()
+        self._api.delete_gelf_input(self._gelf_input_identifier)
 
     def test_put_config_with_time_default_value_should_modify_time_default_value(self):
         default_time = 1441

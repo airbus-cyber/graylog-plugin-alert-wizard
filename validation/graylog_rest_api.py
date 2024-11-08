@@ -84,6 +84,9 @@ class GraylogRestApi:
         response = self._post('system/inputs', payload)
         return response.json()['id']
 
+    def delete_gelf_input(self, identifier):
+        self._delete(f'system/inputs/{identifier}')
+
     def _create_alert_rule(self, title, stream, condition_type, time,
                            threshold_type='>', additional_threshold_type='', additional_threshold=0, second_stream=None,
                            group_by_fields=[], distinct_by='', field='', statistics_function='', description='',
