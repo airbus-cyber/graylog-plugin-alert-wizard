@@ -377,18 +377,17 @@ public class Conversions {
                 .build();
 
         String searchQuery = useAdditionalSearchQuery ? (String) conditionParameter.get(ADDITIONAL_SEARCH_QUERY) : (String) conditionParameter.get(SEARCH_QUERY);
+        Set<String> streams = getStreamsParameterFromOutputStream(streamIdentifier);
 
-        AggregationEventProcessorConfig.Builder builder = AggregationEventProcessorConfig.builder()
+        return AggregationEventProcessorConfig.builder()
                 .query(searchQuery)
+                .streams(streams)
                 .groupBy(groupByFields)
                 .series(ImmutableList.of(series))
                 .conditions(conditions)
                 .executeEveryMs(executeEveryMs)
-                .searchWithinMs(searchWithinMs);
-        if (streamIdentifier != null) {
-            builder.streams(ImmutableSet.of(streamIdentifier));
-        }
-        return  builder.build();
+                .searchWithinMs(searchWithinMs)
+                .build();
     }
 
     private SeriesSpec createSeriesSpec(String type, String identifier, String field) {
@@ -453,20 +452,19 @@ public class Conversions {
                 threshold);
 
         String searchQuery = (String) conditionParameter.get(SEARCH_QUERY);
+        Set<String> streams = getStreamsParameterFromOutputStream(streamIdentifier);
 
-        AggregationEventProcessorConfig.Builder builder = AggregationEventProcessorConfig.builder()
+        return AggregationEventProcessorConfig.builder()
                 .query(searchQuery)
+                .streams(streams)
                 .series(ImmutableList.of(series))
                 .groupBy(ImmutableList.of())
                 .conditions(AggregationConditions.builder()
                         .expression(expression)
                         .build())
                 .searchWithinMs(searchWithinMs)
-                .executeEveryMs(executeEveryMs);
-        if (streamIdentifier != null) {
-            builder.streams(ImmutableSet.of(streamIdentifier));
-        }
-        return builder.build();
+                .executeEveryMs(executeEveryMs)
+                .build();
     }
 
     public EventProcessorConfig createEventConfiguration(AlertType alertType, Map<String, Object> conditionParameter, String streamIdentifier) {
@@ -475,5 +473,12 @@ public class Conversions {
         } else {
             return createAggregationCondition(streamIdentifier, conditionParameter);
         }
+    }
+
+    private Set<String> getStreamsParameterFromOutputStream(String streamIdentifier) {
+        if (streamIdentifier == null) {
+            return Collections.emptySet();
+        }
+        return ImmutableSet.of(streamIdentifier);
     }
 }
