@@ -258,6 +258,12 @@ class TestsFast(TestCase):
         alert_rule = self._graylog.get_alert_rule(title)
         self.assertEqual('', alert_rule['condition_parameters']['distinct_by'])
 
+    def test_create_alert_rule_then_should_not_fail(self):
+        self._graylog.start_logs_capture()
+        self._graylog.create_alert_rule_then('rule_then', '>', _PERIOD)
+        logs = self._graylog.extract_logs()
+        self.assertNotIn('ERROR', logs)
+
     def test_create_list_should_create_data_adapter(self):
         self._graylog.create_list('test', ['a'])
         response = self._graylog.query_data_adapter('alert-wizard-list-data-adapter-test', 'a')
