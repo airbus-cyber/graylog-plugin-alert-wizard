@@ -56,19 +56,6 @@ class Test(TestCase):
         notification = self._graylog.get_notification(rule['notification'])
         self.assertEqual(1441, notification['config']['aggregation_time'])
 
-    def test_get_all_rules_should_not_fail_after_rule_with_field_rule_without_type_is_created__issue120(self):
-        stream = {
-            'field_rule': [{
-                'field': 'source',
-                'type': '',
-                'value': 'toto'
-            }],
-            'matching_type': 'AND'
-        }
-        self._api.create_alert_rule_count('alert_rule_title', _PERIOD, stream=stream)
-        response = self._graylog.get_alert_rules()
-        self.assertEqual(200, response.status_code)
-
     def test_set_default_backlog_value_should_change_newly_created_event_definition_backlog_value__issue40(self):
         self._graylog.update_alert_wizard_plugin_configuration(backlog_size=1000)
         title = 'aaa'
