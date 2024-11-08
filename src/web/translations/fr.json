@@ -212,6 +212,8 @@
   "wizard.variance": "variance",
   "wizard.eventDefinition": "Définition de l'évènement",
   "wizard.notification": "Notification",
-  "wizard.tooltipEventDefinition": "Modifier la défintiion de l'évènement associée à la règle d'alerte",
-  "wizard.tooltipNotification": "Modifier la notification associée à la règle d'alerte"
+  "wizard.tooltipEventDefinition": "Modifier la définition de l'évènement associée à la règle d'alerte",
+  "wizard.tooltipNotification": "Modifier la notification associée à la règle d'alerte",
+  "wizard.cloneNotification": "Dupliquer la notification",
+  "wizard.cloneNotificationHelp": "Si la case est cochée, la notification sera dupliquée"
 }

@@ -76,8 +76,8 @@ const CloneButton = ({title, disabled = false, onSubmit, messages}) => {
                        onChange={onValueChanged} />
                 <Input id="should-clone-notification"
                        type="checkbox"
-                       label="Clone notification"
-                       help="When this is checked, cloning will clone the notification too"
+                       label={<FormattedMessage id ="wizard.cloneNotification" defaultMessage="Clone notification" />}
+                       help={<FormattedMessage id ="wizard.cloneNotificationHelp" defaultMessage="When this is checked, cloning will clone the notification too" />}
                        checked={state.shouldCloneNotification}
                        onChange={handleUseCronSchedulingChange} />
             </BootstrapModalForm>

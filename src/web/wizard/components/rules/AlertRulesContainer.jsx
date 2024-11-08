@@ -238,19 +238,10 @@ const AlertRulesContainer = ({ fieldOrder }) => {
         Promise.all(promises).then(() => {});
     }
 
-    const _onCloneSubmit = (name, title, description) => {
-        AlertRuleActions.get(name).then(rule => {
-            const newRule = {
-                title: title,
-                description: description,
-                priority: rule.priority,
-                condition_type: rule.condition_type,
-                condition_parameters: rule.condition_parameters,
-                stream: rule.stream,
-                second_stream: rule.second_stream
-            }
-            AlertRuleActions.create(newRule).finally(() => _loadAlertRules());
-        });
+    const _onCloneSubmit = (name, title, description, shouldCloneNotification) => {
+        AlertRuleActions.clone(name, title, description, shouldCloneNotification)
+            .then()
+            .finally(() => _loadAlertRules());
     }
 
     useEffect(() => {

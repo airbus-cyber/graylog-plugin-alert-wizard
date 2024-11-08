@@ -113,6 +113,28 @@ const AlertRuleStore = Reflux.createStore({
         AlertRuleActions.create.promise(promise);
     },
 
+    clone(source_title, title, description, shouldCloneNotification) {
+        const url = URLUtils.qualifyUrl(SOURCE_URL + '/clone');
+
+        const request = {
+            source_title: source_title,
+            title: title,
+            description: description,
+            clone_notification: shouldCloneNotification
+        };
+
+        const promise = fetch('POST', url, request)
+            .then(() => {
+                UserNotification.success('Stream successfully created, Alert condition successfully created, Alert notification successfully created');
+                return true;
+            }, error => {
+                UserNotification.error(`Cloning alert rule failed with status: ${error.message}`,
+                    'Could not clone alert rule');
+            });
+
+        AlertRuleActions.clone.promise(promise);
+    },
+
     update(name, updatedAlert) {
         const url = URLUtils.qualifyUrl(SOURCE_URL + '/' + encodeURIComponent(name));
         const method = 'PUT';
