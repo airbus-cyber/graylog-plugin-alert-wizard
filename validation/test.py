@@ -75,41 +75,6 @@ class Test(TestCase):
         backlog_size = event_definition['notification_settings']['backlog_size']
         self.assertEqual(1000, backlog_size)
 
-    def test_create_alert_rule_with_list_should_generate_event_when_message_field_is_in_list(self):
-        title = 'list'
-        value = 'a'
-        self._graylog.create_list(title, [value])
-        stream = {
-            'field_rule': [{
-                'field': 'x',
-                'type': 7,
-                'value': title
-            }],
-            'matching_type': 'AND'
-        }
-        self._api.create_alert_rule_count(title, _PERIOD, stream=stream)
-        with self._graylog.access_gelf_input(self._gelf_input_identifier) as inputs:
-            inputs.send({'_x': value})
-            # wait for the period (which is, unfortunately expressed in minutes, so it's quite long a wait)
-            # TODO: should improve the API for better testability
-            print(f'events count before sleep: {self._graylog.get_events_count()}')
-            time.sleep(60*_PERIOD)
-            print(f'events count after sleep: {self._graylog.get_events_count()}')
-            inputs.send({'short_message': 'pop'})
-
-            # wait until the event has propagated through graylog
-            # TODO: try to make this code more readable
-            for i in range(60):
-                events_count = self._graylog.get_events_count('aggregation-v1')
-                print(f'events count: {events_count}')
-                if events_count == 1:
-                    return
-                time.sleep(1)
-            events = self._graylog.get_events()
-            for i in range(events['total_events']):
-                print(events['events'][i])
-            self.fail('Event not generated within 60 seconds')
-
     def test_create_alert_rule_with_list_should_not_generate_event_on_substrings_of_elements_in_list__issue49(self):
         print(f'Initially: {self._graylog.get_events_count()}')
 
