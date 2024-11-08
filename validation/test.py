@@ -26,6 +26,7 @@ class Test(TestCase):
         self._graylog = Graylog()
         self._graylog.start()
         self._api = self._graylog.access_rest_api()
+        self._gelf_input_identifier = self._api.create_gelf_input()
 
     def tearDown(self) -> None:
         self._graylog.stop()
@@ -157,7 +158,7 @@ class Test(TestCase):
 
         # Send a log with user=toto and source=sourceABC. It will be placed in the Stream because the pipeline function found the user in the list. So the rule will trigger but it is wrong because "source" is not equal to "source123"
         # Send a log with user=xxx and source=source123. It will be placed in the Stream beauce the only Stream rule is field "source" match exactly "source123". So the rule will trigger but it is wrong because "user" is not present in the list
-        with self._graylog.create_gelf_input() as inputs:
+        with self._graylog.access_gelf_input(self._gelf_input_identifier) as inputs:
             inputs.send({'host': 'source123'})
             aggregation_events_count = self._graylog.get_events_count('aggregation-v1')
             print(f'send: {aggregation_events_count}/{self._graylog.get_events_count()}')
@@ -185,7 +186,7 @@ class Test(TestCase):
             'matching_type': 'AND'
         }
         self._api.create_alert_rule_count(title, _PERIOD, stream=stream)
-        with self._graylog.create_gelf_input() as inputs:
+        with self._graylog.access_gelf_input(self._gelf_input_identifier) as inputs:
             inputs.send({'_x': value})
             # wait for the period (which is, unfortunately expressed in minutes, so it's quite long a wait)
             # TODO: should improve the API for better testability
@@ -224,7 +225,7 @@ class Test(TestCase):
 
         print(f'Before input: {self._graylog.get_events_count()}')
 
-        with self._graylog.create_gelf_input() as inputs:
+        with self._graylog.access_gelf_input(self._gelf_input_identifier) as inputs:
             inputs.send({'_x': 'admin'})
             print(f'send: {self._graylog.get_events_count()}')
             # wait for the period (which is, unfortunately expressed in minutes, so it's quite long a wait)

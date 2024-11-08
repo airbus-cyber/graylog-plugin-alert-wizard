@@ -32,6 +32,7 @@ class TestsFast(TestCase):
 
     def setUp(self):
         self._api = self._graylog.access_rest_api()
+        self._gelf_input_identifier = self._api.create_gelf_input()
 
     def tearDown(self):
         rules = self._api.get_alert_rules().json()
@@ -88,7 +89,7 @@ class TestsFast(TestCase):
         self._api.create_alert_rule_count('rule_title', _PERIOD)
         # TODO should create a gelf_input when instantiating graylog and delete it at the send
         #      so that other tests do not fail
-        with self._graylog.create_gelf_input() as inputs:
+        with self._graylog.access_gelf_input(self._gelf_input_identifier) as inputs:
             inputs.send({})
             # we have to wait for the period before the event triggers, then there might be some more processing time
             self._graylog.wait_until_aggregation_event(2*_PERIOD)
