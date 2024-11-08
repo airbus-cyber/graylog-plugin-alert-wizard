@@ -25,6 +25,7 @@ class Test(TestCase):
     def setUp(self) -> None:
         self._graylog = Graylog()
         self._graylog.start()
+        self._api = self._graylog.access_rest_api()
 
     def tearDown(self) -> None:
         self._graylog.stop()
@@ -43,7 +44,15 @@ class Test(TestCase):
     def test_default_time_range_in_configuration_should_propagate_into_notification_time_range__issue47(self):
         self._graylog.update_logging_alert_plugin_configuration()
         title = 'alert_rule_title'
-        rule = self._graylog.create_alert_rule_count(title, _PERIOD)
+        stream = {
+            'field_rule': [{
+                'field': 'source',
+                'type': 1,
+                'value': 'toto'
+            }],
+            'matching_type': 'AND'
+        }
+        rule = self._api.create_alert_rule_count(title, _PERIOD, stream=stream)
         notification = self._graylog.get_notification(rule['notification'])
         self.assertEqual(1441, notification['config']['aggregation_time'])
 
@@ -80,7 +89,15 @@ class Test(TestCase):
 
     def test_get_alert_with_no_distinct_by_should_contain_an_empty_distinct_by_field(self):
         title = 'rule_count'
-        self._graylog.create_alert_rule_count(title, _PERIOD)
+        stream = {
+            'field_rule': [{
+                'field': 'source',
+                'type': 1,
+                'value': 'toto'
+            }],
+            'matching_type': 'AND'
+        }
+        self._api.create_alert_rule_count(title, _PERIOD, stream=stream)
         alert_rule = self._graylog.get_alert_rule(title)
         self.assertEqual('', alert_rule['condition_parameters']['distinct_by'])
    
@@ -98,27 +115,59 @@ class Test(TestCase):
 
     def test_create_alert_rule_with_same_name_should_not_fail(self):
         title = 'aaa'
-        self._graylog.create_alert_rule_count(title, _PERIOD)
+        stream = {
+            'field_rule': [{
+                'field': 'source',
+                'type': 1,
+                'value': 'toto'
+            }],
+            'matching_type': 'AND'
+        }
+        self._api.create_alert_rule_count(title, _PERIOD, stream=stream)
         self._graylog.start_logs_capture()
-        self._graylog.create_alert_rule_count(title, _PERIOD)
+        self._api.create_alert_rule_count(title, _PERIOD, stream=stream)
         logs = self._graylog.extract_logs()
         self.assertNotIn('ERROR', logs)
 
     def test_get_all_rules_should_not_fail_when_a_stream_is_deleted__issue105(self):
         title = 'aaa'
-        alert_rule = self._graylog.create_alert_rule_count(title, _PERIOD)
+        stream = {
+            'field_rule': [{
+                'field': 'source',
+                'type': 1,
+                'value': 'toto'
+            }],
+            'matching_type': 'AND'
+        }
+        alert_rule = self._api.create_alert_rule_count(title, _PERIOD, stream=stream)
         self._graylog.delete_stream(alert_rule['stream']['id'])
         response = self._graylog.get_alert_rules()
         self.assertEqual(200, response.status_code)
 
     def test_get_all_rules_should_not_fail_when_an_event_definition_is_deleted__issue117(self):
-        alert_rule = self._graylog.create_alert_rule_count('alert_rule_title', _PERIOD)
+        stream = {
+            'field_rule': [{
+                'field': 'source',
+                'type': 1,
+                'value': 'toto'
+            }],
+            'matching_type': 'AND'
+        }
+        alert_rule = self._api.create_alert_rule_count('alert_rule_title', _PERIOD, stream=stream)
         self._graylog.delete_event_definition(alert_rule['condition'])
         response = self._graylog.get_alert_rules()
         self.assertEqual(200, response.status_code)
 
     def test_get_all_rules_should_not_fail_when_a_notification_is_deleted__issue116(self):
-        alert_rule = self._graylog.create_alert_rule_count('alert_rule_title', _PERIOD)
+        stream = {
+            'field_rule': [{
+                'field': 'source',
+                'type': 1,
+                'value': 'toto'
+            }],
+            'matching_type': 'AND'
+        }
+        alert_rule = self._api.create_alert_rule_count('alert_rule_title', _PERIOD, stream=stream)
         self._graylog.delete_notification(alert_rule['notification'])
         response = self._graylog.get_alert_rules()
         self.assertEqual(200, response.status_code)
@@ -132,14 +181,22 @@ class Test(TestCase):
             }],
             'matching_type': 'AND'
         }
-        self._graylog.create_alert_rule_count('alert_rule_title', _PERIOD, stream=stream)
+        self._api.create_alert_rule_count('alert_rule_title', _PERIOD, stream=stream)
         response = self._graylog.get_alert_rules()
         self.assertEqual(200, response.status_code)
 
     def test_set_default_backlog_value_should_change_newly_created_event_definition_backlog_value__issue40(self):
         self._graylog.update_alert_wizard_plugin_configuration(backlog_size=1000)
         title = 'aaa'
-        alert_rule = self._graylog.create_alert_rule_count(title, _PERIOD)
+        stream = {
+            'field_rule': [{
+                'field': 'source',
+                'type': 1,
+                'value': 'toto'
+            }],
+            'matching_type': 'AND'
+        }
+        alert_rule = self._api.create_alert_rule_count(title, _PERIOD, stream=stream)
         event_definition_identifier = alert_rule['condition']
         event_definition = self._graylog.get_event_definition(event_definition_identifier)
         backlog_size = event_definition['notification_settings']['backlog_size']
@@ -166,12 +223,28 @@ class Test(TestCase):
 
     def test_create_alert_rule_should_have_an_int_threshold(self):
         title = 'aaa'
-        rule = self._graylog.create_alert_rule_count(title, _PERIOD)
+        stream = {
+            'field_rule': [{
+                'field': 'source',
+                'type': 1,
+                'value': 'toto'
+            }],
+            'matching_type': 'AND'
+        }
+        rule = self._api.create_alert_rule_count(title, _PERIOD, stream=stream)
         self.assertIsInstance(rule['condition_parameters']['threshold'], int)
 
     def test_update_alert_rule_count_to_or_should_update_second_event_definition_description__issue102(self):
         title = 'aaa'
-        alert_rule = self._graylog.create_alert_rule_count(title, _PERIOD, description='description')
+        stream = {
+            'field_rule': [{
+                'field': 'source',
+                'type': 1,
+                'value': 'toto'
+            }],
+            'matching_type': 'AND'
+        }
+        alert_rule = self._api.create_alert_rule_count(title, _PERIOD, stream=stream, description='description')
         alert_rule['condition_type'] = 'OR'
         alert_rule['second_stream'] = {
             'field_rule': [
@@ -209,7 +282,7 @@ class Test(TestCase):
             }],
             'matching_type': 'AND'
         }
-        alert_rule = self._graylog.create_alert_rule_count('A', _PERIOD, stream=stream)
+        alert_rule = self._api.create_alert_rule_count('A', _PERIOD, stream=stream)
 
         # Send a log with user=toto and source=sourceABC. It will be placed in the Stream because the pipeline function found the user in the list. So the rule will trigger but it is wrong because "source" is not equal to "source123"
         # Send a log with user=xxx and source=source123. It will be placed in the Stream beauce the only Stream rule is field "source" match exactly "source123". So the rule will trigger but it is wrong because "user" is not present in the list
@@ -240,7 +313,7 @@ class Test(TestCase):
             }],
             'matching_type': 'AND'
         }
-        self._graylog.create_alert_rule_count(title, _PERIOD, stream=stream)
+        self._api.create_alert_rule_count(title, _PERIOD, stream=stream)
         with self._graylog.create_gelf_input() as inputs:
             inputs.send({'_x': value})
             # wait for the period (which is, unfortunately expressed in minutes, so it's quite long a wait)
@@ -276,7 +349,7 @@ class Test(TestCase):
             }],
             'matching_type': 'AND'
         }
-        self._graylog.create_alert_rule_count(list_title, _PERIOD, stream=stream)
+        self._api.create_alert_rule_count(list_title, _PERIOD, stream=stream)
 
         print(f'Before input: {self._graylog.get_events_count()}')
 
@@ -300,14 +373,30 @@ class Test(TestCase):
 
     def test_create_alert_rule_should_set_event_definition_search_query__issue124(self):
         title = 'aaa'
-        alert_rule = self._graylog.create_alert_rule_count(title, _PERIOD, search_query='query1234')
+        stream = {
+            'field_rule': [{
+                'field': 'source',
+                'type': 1,
+                'value': 'toto'
+            }],
+            'matching_type': 'AND'
+        }
+        alert_rule = self._api.create_alert_rule_count(title, _PERIOD, search_query='query1234', stream=stream)
         event_definition_identifier = alert_rule['condition']
         event_definition = self._graylog.get_event_definition(event_definition_identifier)
         self.assertEqual('query1234', event_definition['config']['query'])
 
     def test_update_alert_rule_should_set_event_definition_search_query__issue124(self):
         title = 'aaa'
-        rule = self._graylog.create_alert_rule_count(title, _PERIOD, search_query='query1234')
+        stream = {
+            'field_rule': [{
+                'field': 'source',
+                'type': 1,
+                'value': 'toto'
+            }],
+            'matching_type': 'AND'
+        }
+        rule = self._api.create_alert_rule_count(title, _PERIOD, search_query='query1234', stream=stream)
         updated_rule = rule.copy()
         updated_rule['condition_parameters']['search_query'] = 'new_search_query'
         self._graylog.update_alert_rule(title, updated_rule)

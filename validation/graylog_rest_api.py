@@ -5,6 +5,10 @@ from gelf_input import GelfInput
 
 _AUTH = ('admin', 'admin')
 _HEADERS = {'X-Requested-By': 'test-program'}
+_DEFAULT_STREAM = {
+    'field_rule': [],
+    'matching_type': 'AND'
+}
 
 
 class GraylogRestApi:
@@ -118,8 +122,7 @@ class GraylogRestApi:
     def update_alert_rule(self, previousTitle, rule):
         return self._put(f'plugins/com.airbus_cyber_security.graylog.wizard/alerts/{previousTitle}', rule)
 
-    # TODO have a default value for rule
-    def create_alert_rule_count(self, title, stream, time, description, search_query):
+    def create_alert_rule_count(self, title, time, description='', search_query='', stream=_DEFAULT_STREAM):
         return self._create_alert_rule(title, stream, 'COUNT', time, description=description, search_query=search_query)
 
     def create_alert_rule_group_distinct(self, title, rule, group_by_fields, distinct_by, time):

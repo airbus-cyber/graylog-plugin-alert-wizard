@@ -47,8 +47,16 @@ class TestsFast(TestCase):
         self.assertEqual(200, response.status_code)
 
     def test_create_alert_rule_should_not_fail(self):
+        stream = {
+            'field_rule': [{
+                'field': 'source',
+                'type': 1,
+                'value': 'toto'
+            }],
+            'matching_type': 'AND'
+        }
         rule_title = 'alert_rule_title'
-        alert_rule = self._graylog.create_alert_rule_count(rule_title, _PERIOD)
+        alert_rule = self._api.create_alert_rule_count(rule_title, _PERIOD, stream=stream)
         self.assertEqual(rule_title, alert_rule['title'])
 
     def test_create_alert_rule_statistics_should_not_fail(self):
@@ -69,11 +77,7 @@ class TestsFast(TestCase):
         self.assertEqual(1, retrieved_alert_rule['condition_parameters']['additional_threshold'])
 
     def test_alert_rule_with_no_conditions_should_trigger__issue139(self):
-        stream = {
-            'field_rule': [],
-            'matching_type': 'AND'
-        }
-        self._graylog.create_alert_rule_count('rule_title', _PERIOD, stream=stream)
+        self._api.create_alert_rule_count('rule_title', _PERIOD)
         # TODO should create a gelf_input when instantiating graylog and delete it at the send
         #      so that other tests do not fail
         with self._graylog.create_gelf_input() as inputs:
@@ -82,29 +86,29 @@ class TestsFast(TestCase):
             self._graylog.wait_until_aggregation_event(2*_PERIOD)
 
     def test_delete_alert_rule_with_no_conditions_should_not_delete_default_stream(self):
-        stream = {
-            'field_rule': [],
-            'matching_type': 'AND'
-        }
         title = 'rule_title'
-        self._graylog.create_alert_rule_count(title, _PERIOD, stream=stream)
+        self._api.create_alert_rule_count(title, _PERIOD)
         self._api.delete_alert_rule(title)
         default_stream = self._api.get_stream('000000000000000000000001')
         self.assertEqual(200, default_stream.status_code)
 
     def test_update_alert_rule_with_no_conditions_should_not_fail(self):
-        stream = {
-            'field_rule': [],
-            'matching_type': 'AND'
-        }
         title = 'rule_title'
-        rule = self._graylog.create_alert_rule_count(title, _PERIOD, stream=stream)
+        rule = self._api.create_alert_rule_count(title, _PERIOD)
         response = self._graylog.update_alert_rule(title, {**rule, 'description': 'new description'})
         self.assertEqual(202, response.status_code)
 
     def test_update_alert_rule_should_not_raise_exception_when_removing_conditions(self):
         title = 'rule_title'
-        rule = self._graylog.create_alert_rule_count(title, _PERIOD)
+        stream = {
+            'field_rule': [{
+                'field': 'source',
+                'type': 1,
+                'value': 'toto'
+            }],
+            'matching_type': 'AND'
+        }
+        rule = self._api.create_alert_rule_count(title, _PERIOD, stream=stream)
         stream = {
             'field_rule': [],
             'matching_type': 'AND'
@@ -116,7 +120,15 @@ class TestsFast(TestCase):
 
     def test_update_alert_rule_should_delete_stream_when_removing_conditions(self):
         title = 'rule_title'
-        rule = self._graylog.create_alert_rule_count(title, _PERIOD)
+        stream = {
+            'field_rule': [{
+                'field': 'source',
+                'type': 1,
+                'value': 'toto'
+            }],
+            'matching_type': 'AND'
+        }
+        rule = self._api.create_alert_rule_count(title, _PERIOD, stream=stream)
         stream = {
             'field_rule': [],
             'matching_type': 'AND'
@@ -141,7 +153,7 @@ class TestsFast(TestCase):
             'matching_type': 'AND'
         }
         title = 'A'
-        rule = self._graylog.create_alert_rule_count(title, _PERIOD, stream=stream)
+        rule = self._api.create_alert_rule_count(title, _PERIOD, stream=stream)
         stream = {
             'field_rule': [{
                 'field': 'x',
@@ -156,14 +168,30 @@ class TestsFast(TestCase):
 
     def test_create_alert_rule_should_set_event_definition_description__issue102(self):
         title = 'aaa'
-        alert_rule = self._graylog.create_alert_rule_count(title, _PERIOD, description='rule_description')
+        stream = {
+            'field_rule': [{
+                'field': 'source',
+                'type': 1,
+                'value': 'toto'
+            }],
+            'matching_type': 'AND'
+        }
+        alert_rule = self._api.create_alert_rule_count(title, _PERIOD, stream=stream, description='rule_description')
         event_definition_identifier = alert_rule['condition']
         event_definition = self._graylog.get_event_definition(event_definition_identifier)
         self.assertEqual('rule_description', event_definition['description'])
 
     def test_get_alert_rule_should_return_the_description_of_the_event_definition__issue102(self):
         title = 'aaa'
-        alert_rule = self._graylog.create_alert_rule_count(title, _PERIOD)
+        stream = {
+            'field_rule': [{
+                'field': 'source',
+                'type': 1,
+                'value': 'toto'
+            }],
+            'matching_type': 'AND'
+        }
+        alert_rule = self._api.create_alert_rule_count(title, _PERIOD, stream=stream)
         event_definition = self._graylog.get_event_definition(alert_rule['condition'])
         event_definition['description'] = 'new_description'
         self._graylog.update_event_definition(event_definition)
@@ -172,7 +200,15 @@ class TestsFast(TestCase):
 
     def test_update_alert_should_change_the_alert_description__issue102(self):
         title = 'aaa'
-        rule = self._graylog.create_alert_rule_count(title, _PERIOD)
+        stream = {
+            'field_rule': [{
+                'field': 'source',
+                'type': 1,
+                'value': 'toto'
+            }],
+            'matching_type': 'AND'
+        }
+        rule = self._api.create_alert_rule_count(title, _PERIOD, stream=stream)
         self._graylog.update_alert_rule(title, {**rule, 'description': 'new_description'})
         alert_rule = self._graylog.get_alert_rule(title)
         self.assertEqual('new_description', alert_rule['description'])
