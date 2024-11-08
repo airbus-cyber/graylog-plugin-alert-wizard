@@ -1,7 +1,6 @@
 import requests
 from urllib import parse
 from requests.exceptions import ConnectionError
-from gelf_input import GelfInput
 
 _AUTH = ('admin', 'admin')
 _HEADERS = {'X-Requested-By': 'test-program'}
@@ -83,8 +82,7 @@ class GraylogRestApi:
             'type': 'org.graylog2.inputs.gelf.tcp.GELFTCPInput'
         }
         response = self._post('system/inputs', payload)
-        identifier = response.json()['id']
-        return GelfInput(self, identifier)
+        return response.json()['id']
 
     def _create_alert_rule(self, title, stream, condition_type, time,
                            threshold_type='>', additional_threshold_type='', additional_threshold=0, second_stream=None,

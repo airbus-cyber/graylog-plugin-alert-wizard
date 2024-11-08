@@ -51,8 +51,9 @@ class Graylog:
         return self._server.extract_logs()
 
     def create_gelf_input(self):
-        gelf_input = self._api.create_gelf_input()
-        self._wait(gelf_input.is_running, 10, sleep_duration=.1)
+        gelf_input_identifier = self._api.create_gelf_input()
+        gelf_input_is_running = lambda: self._api.gelf_input_is_running(gelf_input_identifier)
+        self._wait(gelf_input_is_running, 10, sleep_duration=.1)
         return GraylogInputs()
 
     def access_rest_api(self):
