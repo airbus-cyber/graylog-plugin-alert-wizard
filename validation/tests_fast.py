@@ -99,11 +99,52 @@ class TestsFast(TestCase):
         response = self._graylog.update_alert_rule(title, {**rule, 'description': 'new description'})
         self.assertEqual(202, response.status_code)
 
+    def test_update_alert_rule_should_not_raise_exception_when_removing_conditions(self):
+        title = f'rule_title_{uuid4()}'
+        rule = self._graylog.create_alert_rule_count(title, _PERIOD)
+        stream = {
+            'field_rule': [],
+            'matching_type': 'AND'
+        }
+        self._graylog.start_logs_capture()
+        self._graylog.update_alert_rule(title, {**rule, 'stream': stream})
+        logs = self._graylog.extract_logs()
+        self.assertNotIn('Exception', logs)
+
     def test_update_alert_rule_should_delete_stream_when_removing_conditions(self):
         title = f'rule_title_{uuid4()}'
         rule = self._graylog.create_alert_rule_count(title, _PERIOD)
         stream = {
             'field_rule': [],
+            'matching_type': 'AND'
+        }
+        self._graylog.update_alert_rule(title, {**rule, 'stream': stream})
+        response = self._api.get_stream(rule['stream']['id'])
+        self.assertEqual(404, response.status_code)
+
+    def test_update_alert_rule_should_delete_stream_when_removing_stream_conditions_from_a_rule_with_list(self):
+        list_title = 'users'
+        self._graylog.create_list(list_title, ['toto', 'tata', 'titi'])
+        stream = {
+            'field_rule': [{
+                'field': 'x',
+                'type': 7,
+                'value': list_title
+            }, {
+                'field': 'source',
+                'type': 1,
+                'value': 'source123'
+            }],
+            'matching_type': 'AND'
+        }
+        title = 'A'
+        rule = self._graylog.create_alert_rule_count(title, _PERIOD, stream=stream)
+        stream = {
+            'field_rule': [{
+                'field': 'x',
+                'type': 7,
+                'value': list_title
+            }],
             'matching_type': 'AND'
         }
         self._graylog.update_alert_rule(title, {**rule, 'stream': stream})

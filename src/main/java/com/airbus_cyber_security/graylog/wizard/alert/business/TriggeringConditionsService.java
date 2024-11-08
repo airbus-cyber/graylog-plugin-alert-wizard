@@ -76,7 +76,7 @@ public class TriggeringConditionsService {
         String previousFilteringStreamIdentifier = previousConditions.filteringStreamIdentifier();
         if (previousFilteringStreamIdentifier != null) {
             if (streamFieldRules.isEmpty()) {
-                // TODO delete
+                this.streamPipelineService.deleteStreamFromIdentifier(previousFilteringStreamIdentifier);
                 filteringStreamIdentifier = null;
             } else {
                 Stream stream = this.streamPipelineService.loadStream(previousFilteringStreamIdentifier);
@@ -87,7 +87,8 @@ public class TriggeringConditionsService {
             filteringStreamIdentifier = this.createFilteringStream(streamConfiguration, title, userName);
         }
 
-        if (previousConditions.outputStreamIdentifier() != null && !previousConditions.outputStreamIdentifier().equals(filteringStreamIdentifier)) {
+        // second part of the condition here is probably incorrect...
+        if (previousConditions.outputStreamIdentifier() != null && !previousConditions.outputStreamIdentifier().equals(previousFilteringStreamIdentifier)) {
             this.streamPipelineService.deleteStreamFromIdentifier(previousConditions.outputStreamIdentifier());
         }
         deletePipelineIfAny(previousConditions.pipeline());

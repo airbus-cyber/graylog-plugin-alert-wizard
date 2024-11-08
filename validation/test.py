@@ -281,7 +281,6 @@ class Test(TestCase):
                 if events_count == 1:
                     return
                 time.sleep(1)
-            print(self._graylog.extract_logs())
             events = self._graylog.get_events()
             for i in range(events['total_events']):
                 print(events['events'][i])
