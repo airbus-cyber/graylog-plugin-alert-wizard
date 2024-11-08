@@ -17,6 +17,7 @@
 
 package com.airbus_cyber_security.graylog.wizard.alert.rest;
 
+import com.airbus_cyber_security.graylog.wizard.alert.business.EventDefinitionService;
 import com.airbus_cyber_security.graylog.wizard.alert.business.FieldRulesUtilities;
 import com.airbus_cyber_security.graylog.wizard.alert.model.TriggeringConditions;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
@@ -345,10 +346,14 @@ public class Conversions {
     }
 
     public EventProcessorConfig createAggregationCondition(String streamIdentifier, Map<String, Object> conditionParameter) {
-        return createAggregationCondition(streamIdentifier, conditionParameter, false);
+        return createAggregationCondition(streamIdentifier, conditionParameter, SEARCH_QUERY);
     }
 
-    public EventProcessorConfig createAggregationCondition(String streamIdentifier, Map<String, Object> conditionParameter, boolean useAdditionalSearchQuery) {
+    public EventProcessorConfig createAdditionalAggregationCondition(String streamIdentifier, Map<String, Object> conditionParameter) {
+        return this.createAggregationCondition(streamIdentifier, conditionParameter, ADDITIONAL_SEARCH_QUERY);
+    }
+
+    private EventProcessorConfig createAggregationCondition(String streamIdentifier, Map<String, Object> conditionParameter, String searchQueryField) {
         List<String> groupByFields = (List<String>) conditionParameter.get(GROUPING_FIELDS);
         String distinctBy = (String) conditionParameter.get(DISTINCT_BY);
 
@@ -376,7 +381,7 @@ public class Conversions {
                 .expression(expression)
                 .build();
 
-        String searchQuery = useAdditionalSearchQuery ? (String) conditionParameter.get(ADDITIONAL_SEARCH_QUERY) : (String) conditionParameter.get(SEARCH_QUERY);
+        String searchQuery = (String) conditionParameter.get(searchQueryField);
         Set<String> streams = getStreamsParameterFromOutputStream(streamIdentifier);
 
         return AggregationEventProcessorConfig.builder()

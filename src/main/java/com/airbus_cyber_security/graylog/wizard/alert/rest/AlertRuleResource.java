@@ -344,7 +344,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         EventProcessorConfig configuration = this.conversions.createAggregationCondition(streamIdentifier, conditionParameters);
         String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, priority, notificationIdentifier, configuration, userContext);
         String streamIdentifier2 = conditions2.outputStreamIdentifier();
-        EventProcessorConfig configuration2 = this.conversions.createAggregationCondition(streamIdentifier2, conditionParameters, true);
+        EventProcessorConfig configuration2 = this.conversions.createAdditionalAggregationCondition(streamIdentifier2, conditionParameters);
         String eventIdentifier2 = this.eventDefinitionService.createEvent(alertTitle + "#2", description, priority, notificationIdentifier, configuration2, userContext);
 
         return DisjunctionAlertPattern.builder()
@@ -402,7 +402,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             this.eventDefinitionService.updateEvent(title, request.getDescription(), request.getPriority(), previousPattern.eventIdentifier1(), configuration);
 
             String streamIdentifier2 = conditions2.outputStreamIdentifier();
-            EventProcessorConfig configuration2 = this.conversions.createAggregationCondition(streamIdentifier2, request.conditionParameters(), true);
+            EventProcessorConfig configuration2 = this.conversions.createAdditionalAggregationCondition(streamIdentifier2, request.conditionParameters());
             this.eventDefinitionService.updateEvent(title2, request.getDescription(), request.getPriority(), previousPattern.eventIdentifier2(), configuration2);
 
             return previousPattern.toBuilder().conditions1(conditions).build();
