@@ -363,6 +363,19 @@ class TestsFast(TestCase):
         second_event_definition = self._graylog.get_event_definition(second_event_definition_identifier)
         self.assertEqual('new description', second_event_definition['description'])
 
+    def test_create_alert_rule_should_have_an_int_threshold(self):
+        title = 'aaa'
+        stream = {
+            'field_rule': [{
+                'field': 'source',
+                'type': 1,
+                'value': 'toto'
+            }],
+            'matching_type': 'AND'
+        }
+        rule = self._api.create_alert_rule_count(title, _PERIOD, stream=stream)
+        self.assertIsInstance(rule['condition_parameters']['threshold'], int)
+
     def test_create_list_should_create_data_adapter(self):
         self._graylog.create_list('test', ['a'])
         response = self._graylog.query_data_adapter('alert-wizard-list-data-adapter-test', 'a')

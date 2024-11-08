@@ -75,19 +75,6 @@ class Test(TestCase):
         backlog_size = event_definition['notification_settings']['backlog_size']
         self.assertEqual(1000, backlog_size)
 
-    def test_create_alert_rule_should_have_an_int_threshold(self):
-        title = 'aaa'
-        stream = {
-            'field_rule': [{
-                'field': 'source',
-                'type': 1,
-                'value': 'toto'
-            }],
-            'matching_type': 'AND'
-        }
-        rule = self._api.create_alert_rule_count(title, _PERIOD, stream=stream)
-        self.assertIsInstance(rule['condition_parameters']['threshold'], int)
-
     def test_update_alert_rule_count_to_or_should_update_second_event_definition_description__issue102(self):
         title = 'aaa'
         stream = {
