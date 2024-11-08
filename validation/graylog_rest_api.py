@@ -216,8 +216,7 @@ class GraylogRestApi:
         self._delete(f'plugins/com.airbus_cyber_security.graylog.wizard/alerts/{name}')
 
     def get_alert_rules(self):
-        response = self._get('plugins/com.airbus_cyber_security.graylog.wizard/alerts')
-        return response.status_code
+        return self._get('plugins/com.airbus_cyber_security.graylog.wizard/alerts')
 
     def update_logging_alert_plugin_configuration(self):
         configuration = {

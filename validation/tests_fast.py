@@ -35,13 +35,17 @@ class TestsFast(TestCase):
         self._api = self._graylog.access_rest_api()
 
     def tearDown(self):
+        rules = self._api.get_alert_rules().json()
+        for rule in rules:
+            self._api.delete_alert_rule(rule['title'])
+
         lists = self._api.get_lists()
         for list in lists['lists']:
             self._api.delete_list(list['title'])
 
     def test_get_alerts_should_be_found(self):
-        status_code = self._graylog.get_alert_rules()
-        self.assertEqual(200, status_code)
+        response = self._graylog.get_alert_rules()
+        self.assertEqual(200, response.status_code)
 
     def test_create_alert_rule_should_not_fail(self):
         rule_title = f'alert_rule_title_{uuid4()}'
