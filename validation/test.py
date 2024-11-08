@@ -207,7 +207,7 @@ class Test(TestCase):
             'matching_type': 'AND'
         }
         alert_rule['condition_parameters']['additional_search_query'] = ''
-        alert_rule = self._graylog.update_alert_rule(title, {**alert_rule, 'description': 'new description'})
+        alert_rule = self._graylog.update_alert_rule(title, {**alert_rule, 'description': 'new description'}).json()
         second_event_definition_identifier = alert_rule['second_event_definition']
         second_event_definition = self._graylog.get_event_definition(second_event_definition_identifier)
         self.assertEqual('new description', second_event_definition['description'])

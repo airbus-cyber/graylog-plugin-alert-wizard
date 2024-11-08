@@ -53,29 +53,46 @@ public class TriggeringConditionsService {
         this.fieldRulesUtilities = fieldRulesUtilities;
     }
 
-    public TriggeringConditions createTriggeringConditions(AlertRuleStream streamConfiguration, String title, String userName) throws ValidationException {
+    private String createFilteringStream(AlertRuleStream streamConfiguration, String title, String userName) throws ValidationException {
         List<FieldRule> streamFieldRules = this.streamService.getStreamFieldRules(streamConfiguration.getFieldRules());
-        String filteringStreamIdentifier = null;
-        if (!streamFieldRules.isEmpty()) {
-            Stream filteringStream = this.streamService.createStream(streamConfiguration.getMatchingType(), title, userName, streamFieldRules);
-            filteringStreamIdentifier = filteringStream.getId();
+        if (streamFieldRules.isEmpty()) {
+            return null;
         }
+        Stream filteringStream = this.streamService.createStream(streamConfiguration.getMatchingType(), title, userName, streamFieldRules);
+        return filteringStream.getId();
+    }
+
+    public TriggeringConditions createTriggeringConditions(AlertRuleStream streamConfiguration, String title, String userName) throws ValidationException {
+        String filteringStreamIdentifier = this.createFilteringStream(streamConfiguration, title, userName);
         return createTriggeringConditionsFromStream(streamConfiguration, title, filteringStreamIdentifier, userName);
     }
 
-    public TriggeringConditions updateTriggeringConditions(TriggeringConditions previousConditions, String alertTitle,
+    public TriggeringConditions updateTriggeringConditions(TriggeringConditions previousConditions, String title,
                                                             AlertRuleStream streamConfiguration, String userName) throws ValidationException {
+        // TODO extract method updateFilteringStream
         // update filtering stream
-        String streamIdentifier = previousConditions.filteringStreamIdentifier();
-        Stream stream = this.streamPipelineService.loadStream(streamIdentifier);
-        this.streamService.updateStream(stream, streamConfiguration, alertTitle);
+        List<FieldRule> streamFieldRules = this.streamService.getStreamFieldRules(streamConfiguration.getFieldRules());
+        String filteringStreamIdentifier;
+        String previousFilteringStreamIdentifier = previousConditions.filteringStreamIdentifier();
+        if (previousFilteringStreamIdentifier != null) {
+            if (streamFieldRules.isEmpty()) {
+                // TODO delete
+                filteringStreamIdentifier = null;
+            } else {
+                Stream stream = this.streamPipelineService.loadStream(previousFilteringStreamIdentifier);
+                this.streamService.updateStream(stream, streamConfiguration, title);
+                filteringStreamIdentifier = previousFilteringStreamIdentifier;
+            }
+        } else {
+            filteringStreamIdentifier = this.createFilteringStream(streamConfiguration, title, userName);
+        }
 
-        if (previousConditions.outputStreamIdentifier() != null && !previousConditions.outputStreamIdentifier().equals(streamIdentifier)) {
+        if (previousConditions.outputStreamIdentifier() != null && !previousConditions.outputStreamIdentifier().equals(filteringStreamIdentifier)) {
             this.streamPipelineService.deleteStreamFromIdentifier(previousConditions.outputStreamIdentifier());
         }
         deletePipelineIfAny(previousConditions.pipeline());
 
-        return createTriggeringConditionsFromStream(streamConfiguration, alertTitle, stream.getId(), userName);
+        return createTriggeringConditionsFromStream(streamConfiguration, title, filteringStreamIdentifier, userName);
     }
 
     public void deleteTriggeringConditions(TriggeringConditions conditions) {

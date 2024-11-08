@@ -116,8 +116,7 @@ class GraylogRestApi:
         return response.json()
 
     def update_alert_rule(self, previousTitle, rule):
-        response = self._put(f'plugins/com.airbus_cyber_security.graylog.wizard/alerts/{previousTitle}', rule)
-        return response.json()
+        return self._put(f'plugins/com.airbus_cyber_security.graylog.wizard/alerts/{previousTitle}', rule)
 
     # TODO have a default value for rule
     def create_alert_rule_count(self, title, stream, time, description, search_query):

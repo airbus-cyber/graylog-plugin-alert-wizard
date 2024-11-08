@@ -39,7 +39,6 @@ class TestsFast(TestCase):
         for list in lists['lists']:
             self._api.delete_list(list['title'])
 
-
     def test_get_alerts_should_be_found(self):
         status_code = self._graylog.get_alert_rules()
         self.assertEqual(200, status_code)
@@ -84,11 +83,21 @@ class TestsFast(TestCase):
             'field_rule': [],
             'matching_type': 'AND'
         }
-        rule_title = f'rule_title_{uuid4()}'
-        self._graylog.create_alert_rule_count(rule_title, _PERIOD, stream=stream)
-        self._api.delete_alert_rule(rule_title)
+        title = f'rule_title_{uuid4()}'
+        self._graylog.create_alert_rule_count(title, _PERIOD, stream=stream)
+        self._api.delete_alert_rule(title)
         default_stream = self._api.get_stream('000000000000000000000001')
         self.assertEqual(200, default_stream.status_code)
+
+    def test_update_alert_rule_with_no_conditions_should_not_fail(self):
+        stream = {
+            'field_rule': [],
+            'matching_type': 'AND'
+        }
+        title = f'rule_title_{uuid4()}'
+        rule = self._graylog.create_alert_rule_count(title, _PERIOD, stream=stream)
+        response = self._graylog.update_alert_rule(title, {**rule, 'description': 'new description'})
+        self.assertEqual(202, response.status_code)
 
     def test_create_list_should_create_data_adapter(self):
         self._graylog.create_list('test', ['a'])
