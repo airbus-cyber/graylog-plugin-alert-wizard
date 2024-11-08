@@ -34,6 +34,12 @@ class TestsFast(TestCase):
     def setUp(self):
         self._api = self._graylog.access_rest_api()
 
+    def tearDown(self):
+        lists = self._api.get_lists()
+        for list in lists['lists']:
+            self._api.delete_list(list['title'])
+
+
     def test_get_alerts_should_be_found(self):
         status_code = self._graylog.get_alert_rules()
         self.assertEqual(200, status_code)
@@ -60,11 +66,6 @@ class TestsFast(TestCase):
         retrieved_alert_rule = self._graylog.get_alert_rule(title)
         self.assertEqual(1, retrieved_alert_rule['condition_parameters']['additional_threshold'])
 
-    def test_create_list_should_create_data_adapter(self):
-        self._graylog.create_list('test', ['a'])
-        response = self._graylog.query_data_adapter('alert-wizard-list-data-adapter-test', 'a')
-        self.assertEqual(200, response.status_code)
-
     def test_alert_rule_with_no_conditions_should_trigger__issue139(self):
         stream = {
             'field_rule': [],
@@ -88,3 +89,14 @@ class TestsFast(TestCase):
         self._api.delete_alert_rule(rule_title)
         default_stream = self._api.get_stream('000000000000000000000001')
         self.assertEqual(200, default_stream.status_code)
+
+    def test_create_list_should_create_data_adapter(self):
+        self._graylog.create_list('test', ['a'])
+        response = self._graylog.query_data_adapter('alert-wizard-list-data-adapter-test', 'a')
+        self.assertEqual(200, response.status_code)
+
+    def test_create_list_should_create_lookup_table_with_the_list_values(self):
+        self._graylog.create_list('test', ['a'])
+        response = self._graylog.query_lookup_table('alert-wizard-list-lookup-table-test', 'a')
+        result = response.json()['single_value']
+        self.assertEqual('a', result)

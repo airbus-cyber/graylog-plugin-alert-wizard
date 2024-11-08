@@ -257,6 +257,12 @@ class GraylogRestApi:
         }
         self._post('plugins/com.airbus_cyber_security.graylog.wizard/lists', payload)
 
+    def get_lists(self):
+        return self._get('plugins/com.airbus_cyber_security.graylog.wizard/lists').json()
+
+    def delete_list(self, name):
+        self._delete(f'plugins/com.airbus_cyber_security.graylog.wizard/lists/{name}')
+
     def query_data_adapter(self, adapter_name, key):
         params = {
             'key': key

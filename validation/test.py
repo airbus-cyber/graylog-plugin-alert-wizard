@@ -47,12 +47,6 @@ class Test(TestCase):
         notification = self._graylog.get_notification(rule['notification'])
         self.assertEqual(1441, notification['config']['aggregation_time'])
 
-    def test_create_list_should_create_lookup_table_with_the_list_values(self):
-        self._graylog.create_list('test', ['a'])
-        response = self._graylog.query_lookup_table('alert-wizard-list-lookup-table-test', 'a')
-        result = response.json()['single_value']
-        self.assertEqual('a', result)
-
     def test_get_config_should_have_a_default_priority_info(self):
         configuration = self._graylog.get_alert_wizard_plugin_configuration()
         self.assertEqual(1, configuration['default_values']['priority'])
