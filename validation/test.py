@@ -56,18 +56,6 @@ class Test(TestCase):
         notification = self._graylog.get_notification(rule['notification'])
         self.assertEqual(1441, notification['config']['aggregation_time'])
 
-    def test_get_alert_with_distinct_by_should_contain_the_distinct_by_field(self):
-        title = 'rule_distinct'
-        rule = {
-            'field': 'source',
-            'type': 1,
-            'value': 'toto'
-        }
-        distinct_by = 'x'
-        self._graylog.create_alert_rule_group_distinct(title, rule, [], distinct_by, _PERIOD)
-        alert_rule = self._graylog.get_alert_rule(title)
-        self.assertEqual(distinct_by, alert_rule['condition_parameters']['distinct_by'])
-
     def test_get_alert_with_no_distinct_by_should_contain_an_empty_distinct_by_field(self):
         title = 'rule_count'
         stream = {
