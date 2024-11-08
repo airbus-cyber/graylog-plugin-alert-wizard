@@ -286,6 +286,21 @@ class TestsFast(TestCase):
         logs = self._graylog.extract_logs()
         self.assertNotIn('ERROR', logs)
 
+    def test_get_all_rules_should_not_fail_when_a_stream_is_deleted__issue105(self):
+        title = 'aaa'
+        stream = {
+            'field_rule': [{
+                'field': 'source',
+                'type': 1,
+                'value': 'toto'
+            }],
+            'matching_type': 'AND'
+        }
+        alert_rule = self._api.create_alert_rule_count(title, _PERIOD, stream=stream)
+        self._graylog.delete_stream(alert_rule['stream']['id'])
+        response = self._graylog.get_alert_rules()
+        self.assertEqual(200, response.status_code)
+
     def test_create_list_should_create_data_adapter(self):
         self._graylog.create_list('test', ['a'])
         response = self._graylog.query_data_adapter('alert-wizard-list-data-adapter-test', 'a')
