@@ -170,6 +170,13 @@ class TestsFast(TestCase):
         alert_rule = self._graylog.get_alert_rule(title)
         self.assertEqual('new_description', alert_rule['description'])
 
+    def test_update_alert_should_change_the_alert_description__issue102(self):
+        title = 'aaa'
+        rule = self._graylog.create_alert_rule_count(title, _PERIOD)
+        self._graylog.update_alert_rule(title, {**rule, 'description': 'new_description'})
+        alert_rule = self._graylog.get_alert_rule(title)
+        self.assertEqual('new_description', alert_rule['description'])
+
     def test_create_list_should_create_data_adapter(self):
         self._graylog.create_list('test', ['a'])
         response = self._graylog.query_data_adapter('alert-wizard-list-data-adapter-test', 'a')
