@@ -145,15 +145,6 @@ class Test(TestCase):
         backlog_size = event_definition['notification_settings']['backlog_size']
         self.assertEqual(1000, backlog_size)
 
-    def test_get_alert_should_return_the_description_of_the_event_definition__issue102(self):
-        title = 'aaa'
-        alert_rule = self._graylog.create_alert_rule_count(title, _PERIOD)
-        event_definition = self._graylog.get_event_definition(alert_rule['condition'])
-        event_definition['description'] = 'new_description'
-        self._graylog.update_event_definition(event_definition)
-        alert_rule = self._graylog.get_alert_rule(title)
-        self.assertEqual('new_description', alert_rule['description'])
-
     def test_update_alert_should_change_the_alert_description__issue102(self):
         title = 'aaa'
         rule = self._graylog.create_alert_rule_count(title, _PERIOD)
