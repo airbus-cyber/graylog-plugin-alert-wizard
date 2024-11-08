@@ -301,6 +301,20 @@ class TestsFast(TestCase):
         response = self._graylog.get_alert_rules()
         self.assertEqual(200, response.status_code)
 
+    def test_get_all_rules_should_not_fail_when_an_event_definition_is_deleted__issue117(self):
+        stream = {
+            'field_rule': [{
+                'field': 'source',
+                'type': 1,
+                'value': 'toto'
+            }],
+            'matching_type': 'AND'
+        }
+        alert_rule = self._api.create_alert_rule_count('alert_rule_title', _PERIOD, stream=stream)
+        self._graylog.delete_event_definition(alert_rule['condition'])
+        response = self._graylog.get_alert_rules()
+        self.assertEqual(200, response.status_code)
+
     def test_create_list_should_create_data_adapter(self):
         self._graylog.create_list('test', ['a'])
         response = self._graylog.query_data_adapter('alert-wizard-list-data-adapter-test', 'a')
