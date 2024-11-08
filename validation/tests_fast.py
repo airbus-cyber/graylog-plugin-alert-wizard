@@ -221,6 +221,17 @@ class TestsFast(TestCase):
         alert_rule = self._graylog.get_alert_rule(title)
         self.assertEqual('new_description', alert_rule['description'])
 
+    def test_get_alert_with_group_by_fields_should_contain_the_group_by_fields(self):
+        title = 'rule_distinct'
+        rule = {
+            'field': 'source',
+            'type': 1,
+            'value': 'toto'
+        }
+        self._graylog.create_alert_rule_group_distinct(title, rule, ['x'], '', _PERIOD)
+        alert_rule = self._graylog.get_alert_rule(title)
+        self.assertEqual(1, len(alert_rule['condition_parameters']['grouping_fields']))
+
     def test_create_list_should_create_data_adapter(self):
         self._graylog.create_list('test', ['a'])
         response = self._graylog.query_data_adapter('alert-wizard-list-data-adapter-test', 'a')
