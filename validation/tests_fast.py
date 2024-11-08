@@ -16,7 +16,6 @@
 from unittest import TestCase
 import time
 from graylog import Graylog
-from uuid import uuid4
 
 _PERIOD = 1
 
@@ -48,23 +47,23 @@ class TestsFast(TestCase):
         self.assertEqual(200, response.status_code)
 
     def test_create_alert_rule_should_not_fail(self):
-        rule_title = f'alert_rule_title_{uuid4()}'
+        rule_title = 'alert_rule_title'
         alert_rule = self._graylog.create_alert_rule_count(rule_title, _PERIOD)
         self.assertEqual(rule_title, alert_rule['title'])
 
     def test_create_alert_rule_statistics_should_not_fail(self):
-        rule_title = f'statistics_{uuid4()}'
+        rule_title = 'statistics'
         alert_rule = self._graylog.create_alert_rule_statistics(rule_title, _PERIOD)
         self.assertEqual(rule_title, alert_rule['title'])
 
     def test_get_alert_rule_should_return_correct_additional_threshold_type__issue34(self):
-        title = f'rule_title_{uuid4()}'
+        title = 'rule_title'
         self._graylog.create_alert_rule_and(title, _PERIOD)
         retrieved_alert_rule = self._graylog.get_alert_rule(title)
         self.assertEqual('<', retrieved_alert_rule['condition_parameters']['additional_threshold_type'])
 
     def test_get_alert_rule_should_return_correct_additional_threshold__issue69(self):
-        title = f'rule_title_{uuid4()}'
+        title = 'rule_title'
         self._graylog.create_alert_rule_and(title, _PERIOD, additional_threshold=1)
         retrieved_alert_rule = self._graylog.get_alert_rule(title)
         self.assertEqual(1, retrieved_alert_rule['condition_parameters']['additional_threshold'])
@@ -74,7 +73,7 @@ class TestsFast(TestCase):
             'field_rule': [],
             'matching_type': 'AND'
         }
-        self._graylog.create_alert_rule_count(f'rule_title_{uuid4()}', _PERIOD, stream=stream)
+        self._graylog.create_alert_rule_count('rule_title', _PERIOD, stream=stream)
         # TODO should create a gelf_input when instantiating graylog and delete it at the send
         #      so that other tests do not fail
         with self._graylog.create_gelf_input() as inputs:
@@ -87,7 +86,7 @@ class TestsFast(TestCase):
             'field_rule': [],
             'matching_type': 'AND'
         }
-        title = f'rule_title_{uuid4()}'
+        title = 'rule_title'
         self._graylog.create_alert_rule_count(title, _PERIOD, stream=stream)
         self._api.delete_alert_rule(title)
         default_stream = self._api.get_stream('000000000000000000000001')
@@ -98,13 +97,13 @@ class TestsFast(TestCase):
             'field_rule': [],
             'matching_type': 'AND'
         }
-        title = f'rule_title_{uuid4()}'
+        title = 'rule_title'
         rule = self._graylog.create_alert_rule_count(title, _PERIOD, stream=stream)
         response = self._graylog.update_alert_rule(title, {**rule, 'description': 'new description'})
         self.assertEqual(202, response.status_code)
 
     def test_update_alert_rule_should_not_raise_exception_when_removing_conditions(self):
-        title = f'rule_title_{uuid4()}'
+        title = 'rule_title'
         rule = self._graylog.create_alert_rule_count(title, _PERIOD)
         stream = {
             'field_rule': [],
@@ -116,7 +115,7 @@ class TestsFast(TestCase):
         self.assertNotIn('Exception', logs)
 
     def test_update_alert_rule_should_delete_stream_when_removing_conditions(self):
-        title = f'rule_title_{uuid4()}'
+        title = 'rule_title'
         rule = self._graylog.create_alert_rule_count(title, _PERIOD)
         stream = {
             'field_rule': [],
