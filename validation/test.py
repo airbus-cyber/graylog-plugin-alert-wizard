@@ -47,11 +47,6 @@ class Test(TestCase):
         notification = self._graylog.get_notification(rule['notification'])
         self.assertEqual(1441, notification['config']['aggregation_time'])
 
-    def test_create_list_should_create_data_adapter(self):
-        self._graylog.create_list('test', ['a'])
-        response = self._graylog.query_data_adapter('alert-wizard-list-data-adapter-test', 'a')
-        self.assertEqual(200, response.status_code)
-
     def test_create_list_should_create_lookup_table_with_the_list_values(self):
         self._graylog.create_list('test', ['a'])
         response = self._graylog.query_lookup_table('alert-wizard-list-lookup-table-test', 'a')

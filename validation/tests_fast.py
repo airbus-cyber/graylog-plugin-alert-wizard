@@ -57,6 +57,11 @@ class TestsFast(TestCase):
         retrieved_alert_rule = self._graylog.get_alert_rule(title)
         self.assertEqual(1, retrieved_alert_rule['condition_parameters']['additional_threshold'])
 
+    def test_create_list_should_create_data_adapter(self):
+        self._graylog.create_list('test', ['a'])
+        response = self._graylog.query_data_adapter('alert-wizard-list-data-adapter-test', 'a')
+        self.assertEqual(200, response.status_code)
+
     def test_alert_rule_with_no_conditions_should_trigger__issue139(self):
         stream = {
             'field_rule': [],
