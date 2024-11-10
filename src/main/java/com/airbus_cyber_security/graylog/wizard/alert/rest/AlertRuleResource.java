@@ -32,6 +32,7 @@ import com.airbus_cyber_security.graylog.wizard.alert.model.DisjunctionAlertPatt
 import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
+import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.CloneAlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetDataAlertRule;
 import com.airbus_cyber_security.graylog.wizard.audit.AlertWizardAuditEventTypes;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
@@ -511,5 +512,50 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
 
         this.alertRuleService.destroy(alertTitle);
+    }
+
+    @POST
+    @Timed
+    @ApiOperation(value = "Clone an alert")
+    @RequiresAuthentication
+    @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_CREATE)
+    @ApiResponses(value = {@ApiResponse(code = 400, message = "The supplied request is not valid.")})
+    @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_CREATE)
+    @Path("/clone")
+    public Response clone(@ApiParam(name = "JSON body", required = true) @Valid @NotNull CloneAlertRuleRequest request, @Context UserContext userContext)
+            throws ValidationException, BadRequestException, NotFoundException {
+        AlertRule loadedAlert = this.alertRuleService.load(request.getSourceTitle());
+        if (loadedAlert == null) {
+            throw new NotFoundException("Alert <" + request.getSourceTitle() + "> not found!");
+        }
+        GetDataAlertRule sourceAlert = this.constructDataAlertRule(loadedAlert);
+        String userName = getCurrentUser().getName();
+        String title = request.getTitle();
+        String description = request.getDescription();
+        String alertTitle = checkImportPolicyAndGetTitle(title, userContext);
+        AlertType alertType = sourceAlert.getConditionType();
+        String notificationIdentifier = createNotificationFromCloneRequest(alertTitle, userContext, sourceAlert.getNotificationID(), request.getCloneNotification());
+        AlertRuleRequest alertRuleRequest = AlertRuleRequest.create(title, sourceAlert.getPriority(), description, sourceAlert.getConditionType(),
+                sourceAlert.conditionParameters(), sourceAlert.getStream(), sourceAlert.getSecondStream());
+        AlertPattern pattern = createAlertPattern(notificationIdentifier, alertRuleRequest, alertTitle, userContext, userName);
+        AlertRule alertRule = AlertRule.create(
+                alertTitle,
+                alertType,
+                pattern,
+                notificationIdentifier,
+                DateTime.now(DateTimeZone.UTC),
+                userName,
+                DateTime.now(DateTimeZone.UTC));
+        alertRule = this.alertRuleService.create(alertRule);
+        GetDataAlertRule result = this.constructDataAlertRule(alertRule);
+        return Response.ok().entity(result).build();
+    }
+
+    private String createNotificationFromCloneRequest(String alertTitle, UserContext userContext, String notificationID, Boolean cloneNotification) throws NotFoundException {
+        if(cloneNotification) {
+            return this.notificationService.cloneNotification(notificationID, alertTitle, userContext);
+        } else {
+            return this.notificationService.createNotification(alertTitle, userContext);
+        }
     }
 }

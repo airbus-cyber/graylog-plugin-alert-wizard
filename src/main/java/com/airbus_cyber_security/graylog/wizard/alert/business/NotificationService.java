@@ -24,6 +24,7 @@ import org.graylog.events.notifications.DBNotificationService;
 import org.graylog.events.notifications.NotificationDto;
 import org.graylog.events.notifications.NotificationResourceHandler;
 import org.graylog.security.UserContext;
+import org.graylog2.database.NotFoundException;
 import org.graylog2.plugin.cluster.ClusterConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,6 +102,21 @@ public class NotificationService {
                     .description(notification.description())
                     .build();
             this.update(notification);
+        }
+    }
+
+    public String cloneNotification(String notificationID, String alertTitle, UserContext userContext) throws NotFoundException {
+        Optional<NotificationDto> optSourceNotification = get(notificationID);
+        if (optSourceNotification.isPresent()) {
+            NotificationDto sourceNotification = optSourceNotification.get();
+            NotificationDto clonedNotification = NotificationDto.builder()
+                    .config(sourceNotification.config())
+                    .title(alertTitle)
+                    .description(sourceNotification.description())
+                    .build();
+            return this.create(clonedNotification, userContext);
+        } else {
+            throw new NotFoundException("No notification found for ID: " + notificationID);
         }
     }
 }

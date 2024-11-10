@@ -29,6 +29,10 @@ import jakarta.validation.constraints.NotNull;
 @JsonAutoDetect
 public abstract class CloneAlertRuleRequest {
 
+    @JsonProperty("source_title")
+    @NotNull
+    public abstract String getSourceTitle();
+
     @JsonProperty("title")
     @NotNull
     public abstract String getTitle();
@@ -37,9 +41,15 @@ public abstract class CloneAlertRuleRequest {
     @Nullable
     public abstract String getDescription();
 
-    @JsonCreator    
-    public static CloneAlertRuleRequest create(@JsonProperty("title") String title,
-                                               @JsonProperty("description") String description) {
-        return new AutoValue_CloneAlertRuleRequest(title, description);
+    @JsonProperty("clone_notification")
+    @NotNull
+    public abstract Boolean getCloneNotification();
+
+    @JsonCreator
+    public static CloneAlertRuleRequest create(@JsonProperty("source_title") String sourceTitle,
+                                               @JsonProperty("title") String title,
+                                               @JsonProperty("description") String description,
+                                               @JsonProperty("clone_notification") Boolean cloneNotification) {
+        return new AutoValue_CloneAlertRuleRequest(sourceTitle, title, description, cloneNotification);
     }
 }
