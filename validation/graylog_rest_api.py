@@ -216,6 +216,9 @@ class GraylogRestApi:
         response = self._get(f'plugins/com.airbus_cyber_security.graylog.wizard/alerts/{name}')
         return response.json()
 
+    def clone_alert_rule(self, clone_request):
+        return self._post('plugins/com.airbus_cyber_security.graylog.wizard/alerts/clone', clone_request)
+
     def delete_alert_rule(self, name):
         self._delete(f'plugins/com.airbus_cyber_security.graylog.wizard/alerts/{name}')
 
@@ -280,6 +283,9 @@ class GraylogRestApi:
     def get_notification(self, identifier):
         response = self._get(f'events/notifications/{identifier}')
         return response.json()
+
+    def update_notification(self, identifier, notification):
+        self._put(f'events/notifications/{identifier}', notification)
 
     def delete_notification(self, identifier):
         self._delete(f'events/notifications/{identifier}')

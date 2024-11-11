@@ -19,6 +19,7 @@ from graylog import Graylog
 
 _PERIOD = 1
 
+
 class TestsFast(TestCase):
 
     @classmethod
@@ -424,3 +425,42 @@ class TestsFast(TestCase):
             inputs.send({})
             # we have to wait for the period before the event triggers, then there might be some more processing time
             self._graylog.wait_until_new_event(starting_events_count, 2*_PERIOD)
+
+    def test_clone_alert_rule_and_not_notification(self):
+        rule_title = self._init_rule_with_updated_notification()
+        response_clone = self._graylog.clone_alert_rule(rule_title, 'cloneTitle', 'cloneDescription', False)
+        cloned_rule = self._check_clone(response_clone)
+
+        cloned_notification_id = cloned_rule['notification']
+        cloned_notification = self._graylog.get_notification(cloned_notification_id)
+
+        self.assertEqual([], cloned_notification['config']['split_fields'])
+        self.assertEqual(False, cloned_notification['config']['single_notification'])
+
+    def test_clone_alert_rule_and_notification(self):
+        rule_title = self._init_rule_with_updated_notification()
+        response_clone = self._graylog.clone_alert_rule(rule_title, 'cloneTitle', 'cloneDescription', True)
+        cloned_rule = self._check_clone(response_clone)
+
+        cloned_notification_id = cloned_rule['notification']
+        cloned_notification = self._graylog.get_notification(cloned_notification_id)
+
+        self.assertEqual(['sources'], cloned_notification['config']['split_fields'])
+        self.assertEqual(True, cloned_notification['config']['single_notification'])
+
+    def _init_rule_with_updated_notification(self):
+        created_rule = self._graylog.create_alert_rule_then('rule_then', '>', _PERIOD)
+        notification_id = created_rule['notification']
+        created_notification = self._graylog.get_notification(notification_id)
+        updated_notification = created_notification.copy()
+        updated_notification['config']['split_fields'] = ['sources']
+        updated_notification['config']['single_notification'] = True
+        self._graylog.update_notification(notification_id, updated_notification)
+        return created_rule['title']
+
+    def _check_clone(self, response_clone):
+        cloned_rule = response_clone.json()
+        self.assertEqual(200, response_clone.status_code)
+        self.assertEqual('cloneTitle', cloned_rule['title'])
+        self.assertEqual('cloneDescription', cloned_rule['description'])
+        return cloned_rule

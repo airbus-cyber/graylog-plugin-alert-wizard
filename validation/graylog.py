@@ -100,6 +100,15 @@ class Graylog:
         }
         return self._api.update_alert_rule(previousTitle, updated_rule)
 
+    def clone_alert_rule(self, source_title, title, description, clone_notification):
+        clone_request = {
+            'source_title': source_title,
+            'title': title,
+            'description': description,
+            'clone_notification': clone_notification
+        }
+        return self._api.clone_alert_rule(clone_request)
+
     def create_list(self, *args):
         self._api.create_list(*args)
 
@@ -120,6 +129,9 @@ class Graylog:
 
     def get_notification(self, identifier):
         return self._api.get_notification(identifier)
+
+    def update_notification(self, identifier, notification):
+        return self._api.update_notification(identifier, notification)
 
     def delete_notification(self, identifier):
         self._api.delete_notification(identifier)
