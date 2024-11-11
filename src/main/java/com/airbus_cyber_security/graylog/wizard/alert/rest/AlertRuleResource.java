@@ -239,11 +239,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     public GetDataAlertRule get(@ApiParam(name = TITLE, required = true) @PathParam(TITLE) String title)
             throws UnsupportedEncodingException, NotFoundException {
         String alertTitle = java.net.URLDecoder.decode(title, ENCODING);
-        AlertRule alert = this.alertRuleService.load(alertTitle);
-        if (alert == null) {
-            throw new NotFoundException("Alert <" + alertTitle + "> not found!");
-        }
-        return this.constructDataAlertRule(alert);
+        return getGetDataAlertRuleFromTitle(alertTitle);
     }
 
     private String checkImportPolicyAndGetTitle(String title, UserContext userContext) {
@@ -295,6 +291,11 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         AlertType alertType = request.getConditionType();
 
         String notificationIdentifier = this.notificationService.createNotification(alertTitle, userContext);
+        GetDataAlertRule result = createPatternAndRule(request, userContext, notificationIdentifier, alertTitle, userName, alertType);
+        return Response.ok().entity(result).build();
+    }
+
+    private GetDataAlertRule createPatternAndRule(AlertRuleRequest request, UserContext userContext, String notificationIdentifier, String alertTitle, String userName, AlertType alertType) throws ValidationException {
         AlertPattern pattern = createAlertPattern(notificationIdentifier, request, alertTitle, userContext, userName);
 
         AlertRule alertRule = AlertRule.create(
@@ -307,8 +308,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 DateTime.now(DateTimeZone.UTC));
         alertRule = this.alertRuleService.create(alertRule);
 
-        GetDataAlertRule result = this.constructDataAlertRule(alertRule);
-        return Response.ok().entity(result).build();
+        return this.constructDataAlertRule(alertRule);
     }
 
     private AlertPattern createAlertPattern(String notificationIdentifier, AlertRuleRequest request, String alertTitle,
@@ -524,31 +524,27 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     @Path("/clone")
     public Response clone(@ApiParam(name = "JSON body", required = true) @Valid @NotNull CloneAlertRuleRequest request, @Context UserContext userContext)
             throws ValidationException, BadRequestException, NotFoundException {
-        AlertRule loadedAlert = this.alertRuleService.load(request.getSourceTitle());
-        if (loadedAlert == null) {
-            throw new NotFoundException("Alert <" + request.getSourceTitle() + "> not found!");
-        }
-        GetDataAlertRule sourceAlert = this.constructDataAlertRule(loadedAlert);
+        GetDataAlertRule sourceAlert = getGetDataAlertRuleFromTitle(request.getSourceTitle());
         String userName = getCurrentUser().getName();
         String title = request.getTitle();
         String description = request.getDescription();
         String alertTitle = checkImportPolicyAndGetTitle(title, userContext);
         AlertType alertType = sourceAlert.getConditionType();
+
         String notificationIdentifier = createNotificationFromCloneRequest(alertTitle, userContext, sourceAlert.getNotificationID(), request.getCloneNotification());
         AlertRuleRequest alertRuleRequest = AlertRuleRequest.create(title, sourceAlert.getPriority(), description, sourceAlert.getConditionType(),
                 sourceAlert.conditionParameters(), sourceAlert.getStream(), sourceAlert.getSecondStream());
-        AlertPattern pattern = createAlertPattern(notificationIdentifier, alertRuleRequest, alertTitle, userContext, userName);
-        AlertRule alertRule = AlertRule.create(
-                alertTitle,
-                alertType,
-                pattern,
-                notificationIdentifier,
-                DateTime.now(DateTimeZone.UTC),
-                userName,
-                DateTime.now(DateTimeZone.UTC));
-        alertRule = this.alertRuleService.create(alertRule);
-        GetDataAlertRule result = this.constructDataAlertRule(alertRule);
+
+        GetDataAlertRule result = createPatternAndRule(alertRuleRequest, userContext, notificationIdentifier, alertTitle, userName, alertType);
         return Response.ok().entity(result).build();
+    }
+
+    private GetDataAlertRule getGetDataAlertRuleFromTitle(String title) throws NotFoundException {
+        AlertRule loadedAlert = this.alertRuleService.load(title);
+        if (loadedAlert == null) {
+            throw new NotFoundException("Alert <" + title + "> not found!");
+        }
+        return this.constructDataAlertRule(loadedAlert);
     }
 
     private String createNotificationFromCloneRequest(String alertTitle, UserContext userContext, String notificationID, Boolean cloneNotification) throws NotFoundException {
