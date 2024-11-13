@@ -185,10 +185,3 @@ class Test(TestCase):
             for i in range(events['total_events']):
                 print(events['events'][i])
             self.assertEqual(starting_events_count, self._graylog.get_events_count('aggregation-v1'))
-
-    # TODO should try to move this method in the fast test suites. I do not know why it sometimes fail there. Should investigate
-    def test_create_list_should_create_lookup_table_with_the_list_values(self):
-        self._graylog.create_list('test', ['a'])
-        response = self._graylog.query_lookup_table('alert-wizard-list-lookup-table-test', 'a')
-        result = response.json()['single_value']
-        self.assertEqual('a', result)

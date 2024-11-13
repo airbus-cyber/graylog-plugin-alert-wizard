@@ -42,6 +42,9 @@ class TestsFast(TestCase):
         lists = self._api.get_lists()
         for list in lists['lists']:
             self._api.delete_list(list['title'])
+            # Because it takes some time before the query adapter to be stopped
+            # (that's not a problem in our code, already the case with Graylog data adapter's queries)
+            self._graylog.wait_until_data_adapter_unavailable(list['title'])
 
         self._api.delete_gelf_input(self._gelf_input_identifier)
 
@@ -443,6 +446,14 @@ class TestsFast(TestCase):
         self._graylog.create_list('test', ['a'])
         response = self._graylog.query_data_adapter('alert-wizard-list-data-adapter-test', 'a')
         self.assertEqual(200, response.status_code)
+
+    # careful with the tests with lookup tables, because it sometimes take some time before the query adapter
+    # (and thus the lookup table) can be queried
+    def test_create_list_should_create_lookup_table_with_the_list_values(self):
+        self._graylog.create_list('test', ['a'])
+        response = self._graylog.query_lookup_table('alert-wizard-list-lookup-table-test', 'alert-wizard-list-data-adapter-test', 'a')
+        result = response.json()['single_value']
+        self.assertEqual('a', result)
 
     def test_alert_rule_with_no_conditions_should_trigger__issue139(self):
         self._api.create_alert_rule_count('rule_title', _PERIOD)

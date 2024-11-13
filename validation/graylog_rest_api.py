@@ -274,6 +274,28 @@ class GraylogRestApi:
         }
         return self._get(f'system/lookup/adapters/{adapter_name}/query?key={key}', params=params)
 
+    def create_data_adapter(self, title, path):
+        return self._post('system/lookup/adapters', {
+            'config': {
+                'check_interval': 60,
+                'key_column': 'key',
+                'path': path,
+                'quotechar': '"',
+                'separator': ',',
+                'type': 'csvfile',
+                'value_column': 'value'
+            },
+            'name': title,
+            'title': title,
+            'description': ''
+        })
+
+    def get_data_adapter(self, name):
+        return self._get(f'system/lookup/adapters/{name}')
+
+    def delete_data_adapter(self, identifier):
+        return self._delete(f'/api/system/lookup/adapters/{identifier}')
+
     def query_lookup_table(self, table_name, key):
         params = {
             'key': key

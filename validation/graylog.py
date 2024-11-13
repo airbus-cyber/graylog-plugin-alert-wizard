@@ -112,10 +112,23 @@ class Graylog:
     def create_list(self, *args):
         return self._api.create_list(*args)
 
+    def wait_until_data_adapter_unavailable(self, name):
+        query_adapter_is_unavailable = lambda: self._api.query_data_adapter(name, 'stopped test key').status_code == 404
+        self._wait(query_adapter_is_unavailable, 10, sleep_duration=.1)
+
+    def _wait_until_data_adapter_available(self, name):
+        query_adapter_is_ready = lambda: self._api.query_data_adapter(name, 'started test key').status_code != 404
+        self._wait(query_adapter_is_ready, 10, sleep_duration=.1)
+
+    # Because it sometimes takes some time before the data_adapter can be queried without returning 404
     def query_data_adapter(self, adapter_name, key):
+        self._wait_until_data_adapter_available(adapter_name)
         return self._api.query_data_adapter(adapter_name, key)
 
-    def query_lookup_table(self, table_name, key):
+    def query_lookup_table(self, table_name, data_adapter_name, key):
+        # Because it sometimes takes some time before the data_adapter can be queried without returning 404
+        # Here we assume the lookup table and data adapter have the same name
+        self._wait_until_data_adapter_available(data_adapter_name)
         return self._api.query_lookup_table(table_name, key)
 
     def get_event_definition(self, identifier):
@@ -159,5 +172,5 @@ class Graylog:
         return events_count == 1
 
     def wait_until_new_event(self, initial_event_count, wait_duration):
-        wait_until_new_event = lambda: self.get_events_count('aggregation-v1') == initial_event_count + 1
-        self._wait(wait_until_new_event, 60*wait_duration)
+        has_new_event = lambda: self.get_events_count('aggregation-v1') == initial_event_count + 1
+        self._wait(has_new_event, 60*wait_duration)
