@@ -118,8 +118,9 @@ public class AlertListService {
         Files.createDirectories(LISTS_PATH);
         Path path = getCSVFilePath(list.getTitle());
         // TODO shouldn't use the title here, rather an identifier
-        Writer writer = Files.newBufferedWriter(path);
-        try (CSVWriter csvWriter = new CSVWriter(writer)) {
+
+        try (Writer writer = Files.newBufferedWriter(path);
+             CSVWriter csvWriter = new CSVWriter(writer)) {
             csvWriter.writeNext(new String[] {KEY_COLUMN, VALUE_COLUMN});
 
             for (String value: this.getListValues(list)) {
