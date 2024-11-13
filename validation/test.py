@@ -75,25 +75,6 @@ class Test(TestCase):
         backlog_size = event_definition['notification_settings']['backlog_size']
         self.assertEqual(1000, backlog_size)
 
-    def test_update_alert_rule_should_set_event_definition_search_query__issue124(self):
-        title = 'aaa'
-        stream = {
-            'field_rule': [{
-                'field': 'source',
-                'type': 1,
-                'value': 'toto'
-            }],
-            'matching_type': 'AND'
-        }
-        rule = self._api.create_alert_rule_count(title, _PERIOD, search_query='query1234', stream=stream)
-        updated_rule = rule.copy()
-        updated_rule['condition_parameters']['search_query'] = 'new_search_query'
-        self._graylog.update_alert_rule(title, updated_rule)
-        alert_rule = self._graylog.get_alert_rule(title)
-        event_definition_identifier = alert_rule['condition']
-        event_definition = self._graylog.get_event_definition(event_definition_identifier)
-        self.assertEqual('new_search_query', event_definition['config']['query'])
-
     def test_create_and_alert_rule_with_pipeline_condition_should_not_trigger_event_when_only_field_matches__issue119(self):
         # Create a list (for example the list "users" with 3 users : toto, tata, titi)
         list_title = 'users'

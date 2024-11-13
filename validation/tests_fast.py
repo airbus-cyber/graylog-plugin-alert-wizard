@@ -420,6 +420,25 @@ class TestsFast(TestCase):
         event_definition = self._graylog.get_event_definition(event_definition_identifier)
         self.assertEqual('query1234', event_definition['config']['query'])
 
+    def test_update_alert_rule_should_set_event_definition_search_query__issue124(self):
+        title = 'aaa'
+        stream = {
+            'field_rule': [{
+                'field': 'source',
+                'type': 1,
+                'value': 'toto'
+            }],
+            'matching_type': 'AND'
+        }
+        rule = self._api.create_alert_rule_count(title, _PERIOD, search_query='query1234', stream=stream)
+        updated_rule = rule.copy()
+        updated_rule['condition_parameters']['search_query'] = 'new_search_query'
+        self._graylog.update_alert_rule(title, updated_rule)
+        alert_rule = self._graylog.get_alert_rule(title)
+        event_definition_identifier = alert_rule['condition']
+        event_definition = self._graylog.get_event_definition(event_definition_identifier)
+        self.assertEqual('new_search_query', event_definition['config']['query'])
+
     def test_create_list_should_create_data_adapter(self):
         self._graylog.create_list('test', ['a'])
         response = self._graylog.query_data_adapter('alert-wizard-list-data-adapter-test', 'a')
