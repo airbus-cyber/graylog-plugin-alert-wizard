@@ -42,6 +42,14 @@ Perfect for example to configure together and at the same time a stream, an aler
 
 ## Upgrading
 
+### Upgrading to 6.1.0
+
+The internal representation of alert rules has slightly changed and is not backward-compatible. The following migration procedure must be followed:
+1. Export rules from the preceding version,
+2. Delete all rules,
+3. Install version 6.1.0,
+4. Import rules.
+
 ### Upgrading to 5.2.1
 
 The 'search query' parameter of alert rules has been added. The following migration procedure must be followed:
