@@ -396,6 +396,15 @@ class TestsFast(TestCase):
         second_event_definition = self._graylog.get_event_definition(second_event_definition_identifier)
         self.assertEqual('new description', second_event_definition['description'])
 
+    def test_update_alert_rule_should_not_disable_event_definition__issue140(self):
+        title = 'aaa'
+        alert_rule = self._api.create_alert_rule_count(title, _PERIOD)
+        alert_rule = self._graylog.update_alert_rule(title, {**alert_rule, 'description': 'new description'}).json()
+        event_definition_identifier = alert_rule['condition']
+        event_definition = self._graylog.get_event_definition(event_definition_identifier)
+        print(event_definition)
+        self.assertEqual('ENABLED', event_definition['state'])
+
     def test_create_alert_rule_should_set_event_definition_search_query__issue124(self):
         title = 'aaa'
         stream = {

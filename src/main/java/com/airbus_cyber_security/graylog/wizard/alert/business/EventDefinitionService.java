@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableList;
 import org.graylog.events.notifications.EventNotificationHandler;
 import org.graylog.events.notifications.EventNotificationSettings;
 import org.graylog.events.processor.DBEventDefinitionService;
+import org.graylog.events.processor.EventDefinition;
 import org.graylog.events.processor.EventDefinitionDto;
 import org.graylog.events.processor.EventDefinitionHandler;
 import org.graylog.events.processor.EventProcessorConfig;
@@ -109,6 +110,7 @@ public class EventDefinitionService {
                 .notificationSettings(event.notificationSettings())
                 .notifications(event.notifications())
                 .storage(event.storage())
+                .state(EventDefinition.State.ENABLED)
                 .build();
         this.eventDefinitionHandler.update(updatedEvent, true);
     }
