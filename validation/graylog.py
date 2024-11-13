@@ -110,7 +110,7 @@ class Graylog:
         return self._api.clone_alert_rule(clone_request)
 
     def create_list(self, *args):
-        self._api.create_list(*args)
+        return self._api.create_list(*args)
 
     def query_data_adapter(self, adapter_name, key):
         return self._api.query_data_adapter(adapter_name, key)

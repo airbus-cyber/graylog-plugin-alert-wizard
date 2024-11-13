@@ -260,7 +260,7 @@ class GraylogRestApi:
             'lists': ';'.join(values),
             'title': title
         }
-        self._post('plugins/com.airbus_cyber_security.graylog.wizard/lists', payload)
+        return self._post('plugins/com.airbus_cyber_security.graylog.wizard/lists', payload)
 
     def get_lists(self):
         return self._get('plugins/com.airbus_cyber_security.graylog.wizard/lists').json()
