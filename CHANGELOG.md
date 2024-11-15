@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 ### Features
 * Add compatibility with [Graylog 6.1.0](https://graylog.org/post/announcing-graylog-v6-1/)
 
+### Bug Fixes
+* Event definition was disabled after a rule update ([issue #140](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/140))
+* Rule with no stream conditions, never triggered because no message would enter the stream. No more stream is created for these rules ([issue #139](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/139))
+
+
 ## [6.0.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/5.2.1...6.0.0)
 ### Features
 * Add compatibility with [Graylog 6.0.6](https://graylog.org/post/announcing-graylog-6-0-6/)
