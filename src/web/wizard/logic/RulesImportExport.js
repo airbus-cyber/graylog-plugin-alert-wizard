@@ -50,8 +50,8 @@ function normalizeConditionParametersType(type) {
 function normalizeConditionParameters(rule) {
     const condition_parameters = rule.condition_parameters;
     const type = normalizeConditionParametersType(condition_parameters.type);
-    let result = { ...condition_parameters, type };
-    result.threshold_type = normalizeThresholdType(condition_parameters.threshold_type);
+    const threshold_type = normalizeThresholdType(condition_parameters.threshold_type);
+    let result = { ...condition_parameters, type, threshold_type };
     const additional_threshold_type = condition_parameters.additional_threshold_type;
     if (additional_threshold_type) {
         result.additional_threshold_type = normalizeThresholdType(additional_threshold_type);
