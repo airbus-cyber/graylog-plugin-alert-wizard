@@ -43,7 +43,7 @@ function normalizeConditionParameters(condition_parameters, rule_name, rule) {
             result.distinct_by = '';
         } else {
             result.distinct_by = condition_parameters.distinction_fields[0];
-            UserNotification.warning('The rule ' + rule_name + ' has multiple distinction_fields, only the first one will be kept ("' + result.distinct_by + '")');
+            UserNotification.warning(`The rule ${rule_name} has multiple distinction_fields, only the first one will be kept ("${result.distinct_by}")`);
         }
     }
 
