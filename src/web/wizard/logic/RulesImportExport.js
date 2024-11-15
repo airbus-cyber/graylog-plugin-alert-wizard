@@ -57,6 +57,11 @@ function normalizeConditionParameters(condition_parameters, rule_name, rule) {
     return result;
 }
 
+function normalizeNotificationParameters(notification_parameters) {
+    const { split_fields, ...result } = notification_parameters;
+    return result;
+}
+
 function normalizeSearchQueryParameters(alertRule, condition_parameters) {
     let result = { ...condition_parameters };
     if (!result.search_query) {
@@ -107,12 +112,13 @@ function normalizeDescription(description) {
 
 function normalizeImportedRule(rule) {
     let condition_parameters = normalizeConditionParameters(rule.condition_parameters, rule.title, rule);
+    const notification_parameters = normalizeNotificationParameters(rule.notification_parameters);
     condition_parameters = normalizeSearchQueryParameters(rule, condition_parameters);
-    let normalizedRule = { ...rule, condition_parameters };
-    normalizedRule = normalizePriority(normalizedRule);
-    normalizedRule.description = normalizeDescription(rule.description);
+    let result = { ...rule, condition_parameters, notification_parameters };
+    result = normalizePriority(result);
+    result.description = normalizeDescription(rule.description);
 
-    return normalizedRule;
+    return result;
 }
 
 export default {
