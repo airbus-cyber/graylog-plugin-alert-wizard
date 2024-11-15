@@ -60,16 +60,7 @@ function normalizeDistinctBy(condition_parameters, title) {
     return result;
 }
 
-function normalizeSearchQueryParameters(conditionType, condition_parameters) {
-    let result = { ...condition_parameters };
-    if (!result.search_query) {
-        result.search_query = '*';
-    }
-
-    return result;
-}
-
-function normalizeAdditionalSearchQuery(additional_search_query) {
+function normalizeSearchQuery(additional_search_query) {
     if (!additional_search_query) {
         return '*';
     }
@@ -83,16 +74,17 @@ function normalizeConditionParameters(rule) {
     const threshold_type = normalizeThresholdType(condition_parameters.threshold_type);
     const grouping_fields = normalizeGroupingFields(rule);
     const distinct_by = normalizeDistinctBy(condition_parameters, rule.title);
-    let result = { ...condition_parameters, type, threshold_type, grouping_fields, distinct_by };
+    const search_query = normalizeSearchQuery(condition_parameters.search_query);
+    let result = { ...condition_parameters, type, search_query, threshold_type, grouping_fields, distinct_by };
     if (rule.condition_type == 'THEN' || rule.condition_type == 'AND') {
         result.additional_threshold_type = normalizeThresholdType(condition_parameters.additional_threshold_type);
     }
     if (['THEN', 'AND', 'OR'].includes(rule.condition_type)) {
-        result.additional_search_query = normalizeAdditionalSearchQuery(condition_parameters.additional_search_query);
+        result.additional_search_query = normalizeSearchQuery(condition_parameters.additional_search_query);
         result.additional_search_query = '*';
     }
 
-    return normalizeSearchQueryParameters(rule.condition_type, result);
+    return result;
 }
 
 function normalizeNotificationParameters(notification_parameters) {
