@@ -77,13 +77,13 @@ function normalizeSearchQueryParameters(alertRule, condition_parameters) {
 
 function convertSeverityToPriority(severity) {
     switch (severity.toUpperCase()) {
-        case "INFO" | "LOW" :
+        case 'INFO' | 'LOW':
             return 1;
-        case "MEDIUM" :
+        case 'MEDIUM':
             return 2;
-        case "HIGH" :
+        case 'HIGH':
             return 3;
-        default :
+        default:
             return 1;
     }
 }
