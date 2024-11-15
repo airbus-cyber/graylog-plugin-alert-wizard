@@ -90,6 +90,12 @@ class TestsFast(TestCase):
         retrieved_alert_rule = self._graylog.get_alert_rule(title)
         self.assertEqual(1, retrieved_alert_rule['condition_parameters']['additional_threshold'])
 
+    def test_get_alert_rule_should_return_correct_field__issue143(self):
+        title = 'rule_title'
+        self._api.create_alert_rule_statistics(title, _PERIOD)
+        retrieved_alert_rule = self._graylog.get_alert_rule(title)
+        self.assertEqual('x', retrieved_alert_rule['condition_parameters']['field'])
+
     def test_delete_alert_rule_with_no_conditions_should_not_delete_default_stream(self):
         title = 'rule_title'
         self._api.create_alert_rule_count(title, _PERIOD)

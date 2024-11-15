@@ -35,10 +35,12 @@ import org.graylog.events.conditions.Expression;
 import org.graylog.events.processor.EventProcessorConfig;
 import org.graylog.events.processor.aggregation.AggregationConditions;
 import org.graylog.events.processor.aggregation.AggregationEventProcessorConfig;
+import org.graylog.plugins.views.search.searchtypes.pivot.HasField;
 import org.graylog.plugins.views.search.searchtypes.pivot.SeriesSpec;
 import org.graylog.plugins.views.search.searchtypes.pivot.series.Average;
 import org.graylog.plugins.views.search.searchtypes.pivot.series.Cardinality;
 import org.graylog.plugins.views.search.searchtypes.pivot.series.Count;
+import org.graylog.plugins.views.search.searchtypes.pivot.series.HasOptionalField;
 import org.graylog.plugins.views.search.searchtypes.pivot.series.Max;
 import org.graylog.plugins.views.search.searchtypes.pivot.series.Min;
 import org.graylog.plugins.views.search.searchtypes.pivot.series.SeriesSpecBuilder;
@@ -169,10 +171,10 @@ public class Conversions {
                 parametersCondition.put(TYPE, series.type());
                 String distinctBy = "";
                 Optional<String> seriesField = Optional.empty();
-                if (series instanceof Cardinality) {
-                    seriesField = Optional.of(((Cardinality) series).field());
-                } else if (series instanceof Count) {
-                    seriesField = ((Count) series).field();
+                if (series instanceof HasField) {
+                    seriesField = Optional.of(((HasField) series).field());
+                } else if (series instanceof HasOptionalField) {
+                    seriesField = ((HasOptionalField) series).field();
                 }
 
                 if (seriesField.isPresent()) {
