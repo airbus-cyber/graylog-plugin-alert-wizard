@@ -75,13 +75,13 @@ function normalizeConditionParameters(rule) {
     const grouping_fields = normalizeGroupingFields(rule);
     const distinct_by = normalizeDistinctBy(condition_parameters, rule.title);
     const search_query = normalizeSearchQuery(condition_parameters.search_query);
-    let result = { ...condition_parameters, type, search_query, threshold_type, grouping_fields, distinct_by };
+    if (['COUNT', 'GROUP_DISTINCT', 'STATISTICAL'].includes(rule.condition_type)) {
+        return { ...condition_parameters, type, search_query, threshold_type, grouping_fields, distinct_by };
+    }
+    const additional_search_query = normalizeSearchQuery(condition_parameters.additional_search_query);
+    let result = { ...condition_parameters, type, search_query, additional_search_query, threshold_type, grouping_fields, distinct_by };
     if (rule.condition_type == 'THEN' || rule.condition_type == 'AND') {
         result.additional_threshold_type = normalizeThresholdType(condition_parameters.additional_threshold_type);
-    }
-    if (['THEN', 'AND', 'OR'].includes(rule.condition_type)) {
-        result.additional_search_query = normalizeSearchQuery(condition_parameters.additional_search_query);
-        result.additional_search_query = '*';
     }
 
     return result;
