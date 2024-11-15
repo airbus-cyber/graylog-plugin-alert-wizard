@@ -51,6 +51,8 @@ function normalizeConditionParameters(condition_parameters, rule_name, rule) {
     if (split_fields.length !== 0) {
         if (rule.condition_type === 'COUNT' || rule.condition_type === 'GROUP_DISTINCT') {
             result.grouping_fields = [...new Set([...result.grouping_fields, ...split_fields])];
+        } else {
+            UserNotification.warning(`The notification of rule ${rule.title} had split fields, they will be ignored`);
         }
     }
 
@@ -113,7 +115,7 @@ function normalizeDescription(description) {
 function normalizeConditionType(rule) {
     const split_fields = rule.notification_parameters.split_fields;
     if (split_fields.length !== 0 && rule.condition_type === 'COUNT') {
-        UserNotification.warning(`The rule ${rule.title} of type COUNT has been converted to type DISCTINCT/GROUP, because notification had split fields`);
+        UserNotification.warning(`The rule ${rule.title} of type COUNT has been converted to type DISTINCT/GROUP, because notification had split fields`);
         return 'GROUP_DISTINCT';
     }
     return rule.condition_type;

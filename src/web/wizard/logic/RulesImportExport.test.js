@@ -598,7 +598,4 @@ describe('RulesImport.normalizeImportedRules', () => {
         const result = RulesImportExport.normalizeImportedRules(rule);
         expect(result[0].condition_type).toBe('GROUP_DISTINCT');
     });
-
-    // TODO
-    // any other rule => ignore split fields + warning
 });
