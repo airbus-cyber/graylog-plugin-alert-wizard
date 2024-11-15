@@ -27,7 +27,7 @@ function normalizeThresholdType(threshold_type) {
     return threshold_type;
 }
 
-function normalizeConditionParameters(condition_parameters, rule_name) {
+function normalizeConditionParameters(condition_parameters, rule_name, rule) {
     let result = { ...condition_parameters };
     if (condition_parameters.type === 'MEAN') {
         result.type = 'AVG';
@@ -46,6 +46,14 @@ function normalizeConditionParameters(condition_parameters, rule_name) {
             UserNotification.warning('The rule ' + rule_name + ' has multiple distinction_fields, only the first one will be kept ("' + result.distinct_by + '")');
         }
     }
+
+    const split_fields = rule.notification_parameters.split_fields;
+    if (split_fields.length !== 0) {
+        if (rule.condition_type === 'GROUP_DISTINCT') {
+            result.grouping_fields = [...new Set([...result.grouping_fields, ...split_fields])];
+        }
+    }
+
     return result;
 }
 
@@ -77,7 +85,7 @@ function convertSeverityToPriority(severity) {
 
 function normalizePriority(alertRule) {
     const severity = alertRule.notification_parameters.severity;
-    if(severity) {
+    if (severity) {
         const priority = convertSeverityToPriority(severity);
         let result = {...alertRule, priority};
 
@@ -90,7 +98,7 @@ function normalizePriority(alertRule) {
 }
 
 function normalizeDescription(description) {
-    if(description === null || description === undefined) {
+    if (description === null || description === undefined) {
         return '';
     }
 
@@ -98,7 +106,7 @@ function normalizeDescription(description) {
 }
 
 function normalizeImportedRule(rule) {
-    let condition_parameters = normalizeConditionParameters(rule.condition_parameters, rule.title);
+    let condition_parameters = normalizeConditionParameters(rule.condition_parameters, rule.title, rule);
     condition_parameters = normalizeSearchQueryParameters(rule, condition_parameters);
     let normalizedRule = { ...rule, condition_parameters };
     normalizedRule = normalizePriority(normalizedRule);
