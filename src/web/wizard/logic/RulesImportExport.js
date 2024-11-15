@@ -47,31 +47,36 @@ function normalizeConditionParametersType(type) {
     return type;
 }
 
+function normalizeGroupingFields(rule) {
+    const groupingFields = rule.condition_parameters.grouping_fields;
+    const splitFields = rule.notification_parameters.split_fields;
+    if (splitFields.length === 0) {
+        return groupingFields;
+    }
+    if (rule.condition_type === 'COUNT' || rule.condition_type === 'GROUP_DISTINCT') {
+        return [...new Set([...groupingFields, ...splitFields])];
+    }
+    UserNotification.warning(`The notification of rule ${rule.title} had split fields, they will be ignored`);
+    return groupingFields;
+}
+
 function normalizeConditionParameters(rule) {
     const condition_parameters = rule.condition_parameters;
     const type = normalizeConditionParametersType(condition_parameters.type);
     const threshold_type = normalizeThresholdType(condition_parameters.threshold_type);
-    let result = { ...condition_parameters, type, threshold_type };
+    const grouping_fields = normalizeGroupingFields(rule);
+    let result = { ...condition_parameters, type, threshold_type, grouping_fields };
     const additional_threshold_type = condition_parameters.additional_threshold_type;
     if (additional_threshold_type) {
         result.additional_threshold_type = normalizeThresholdType(additional_threshold_type);
     }
     const distinction_fields = condition_parameters.distinction_fields;
-    if (distinction_fields !== undefined) {
+    if (distinction_fields) {
         if (distinction_fields.length === 0) {
             result.distinct_by = '';
         } else {
             result.distinct_by = condition_parameters.distinction_fields[0];
             UserNotification.warning(`The rule ${rule.title} has multiple distinction_fields, only the first one will be kept ("${result.distinct_by}")`);
-        }
-    }
-
-    const split_fields = rule.notification_parameters.split_fields;
-    if (split_fields.length !== 0) {
-        if (rule.condition_type === 'COUNT' || rule.condition_type === 'GROUP_DISTINCT') {
-            result.grouping_fields = [...new Set([...result.grouping_fields, ...split_fields])];
-        } else {
-            UserNotification.warning(`The notification of rule ${rule.title} had split fields, they will be ignored`);
         }
     }
 
