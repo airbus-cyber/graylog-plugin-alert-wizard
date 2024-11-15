@@ -40,12 +40,17 @@ function normalizeSearchQueryParameters(alertRule, condition_parameters) {
     return result;
 }
 
+function normalizeConditionParametersType(type) {
+    if (type === 'MEAN') {
+        return 'AVG';
+    }
+    return type;
+}
+
 function normalizeConditionParameters(rule) {
     const condition_parameters = rule.condition_parameters;
-    let result = { ...condition_parameters };
-    if (condition_parameters.type === 'MEAN') {
-        result.type = 'AVG';
-    }
+    const type = normalizeConditionParametersType(condition_parameters.type);
+    let result = { ...condition_parameters, type };
     result.threshold_type = normalizeThresholdType(condition_parameters.threshold_type);
     const additional_threshold_type = condition_parameters.additional_threshold_type;
     if (additional_threshold_type) {
