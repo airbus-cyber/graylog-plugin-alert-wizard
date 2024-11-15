@@ -27,19 +27,6 @@ function normalizeThresholdType(threshold_type) {
     return threshold_type;
 }
 
-function normalizeSearchQueryParameters(alertRule, condition_parameters) {
-    let result = { ...condition_parameters };
-    if (!result.search_query) {
-        result.search_query = '*';
-    }
-
-    if (['THEN', 'AND', 'OR'].includes(alertRule.condition_type) && !result.additional_search_query) {
-        result.additional_search_query = '*';
-    }
-
-    return result;
-}
-
 function normalizeConditionParametersType(type) {
     if (type === 'MEAN') {
         return 'AVG';
@@ -73,6 +60,23 @@ function normalizeDistinctBy(condition_parameters, title) {
     return result;
 }
 
+function normalizeSearchQueryParameters(conditionType, condition_parameters) {
+    let result = { ...condition_parameters };
+    if (!result.search_query) {
+        result.search_query = '*';
+    }
+
+    return result;
+}
+
+function normalizeAdditionalSearchQuery(additional_search_query) {
+    if (!additional_search_query) {
+        return '*';
+    }
+
+    return additional_search_query;
+}
+
 function normalizeConditionParameters(rule) {
     const condition_parameters = rule.condition_parameters;
     const type = normalizeConditionParametersType(condition_parameters.type);
@@ -80,12 +84,15 @@ function normalizeConditionParameters(rule) {
     const grouping_fields = normalizeGroupingFields(rule);
     const distinct_by = normalizeDistinctBy(condition_parameters, rule.title);
     let result = { ...condition_parameters, type, threshold_type, grouping_fields, distinct_by };
-    const additional_threshold_type = condition_parameters.additional_threshold_type;
-    if (additional_threshold_type) {
-        result.additional_threshold_type = normalizeThresholdType(additional_threshold_type);
+    if (rule.condition_type == 'THEN' || rule.condition_type == 'AND') {
+        result.additional_threshold_type = normalizeThresholdType(condition_parameters.additional_threshold_type);
+    }
+    if (['THEN', 'AND', 'OR'].includes(rule.condition_type)) {
+        result.additional_search_query = normalizeAdditionalSearchQuery(condition_parameters.additional_search_query);
+        result.additional_search_query = '*';
     }
 
-    return normalizeSearchQueryParameters(rule, result);
+    return normalizeSearchQueryParameters(rule.condition_type, result);
 }
 
 function normalizeNotificationParameters(notification_parameters) {
