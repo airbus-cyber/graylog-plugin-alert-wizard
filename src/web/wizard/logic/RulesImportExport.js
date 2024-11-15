@@ -74,7 +74,7 @@ function normalizeConditionParameters(rule) {
 }
 
 function normalizeNotificationParameters(notification_parameters) {
-    const { split_fields, ...result } = notification_parameters;
+    const { split_fields, severity, ...result } = notification_parameters;
     return result;
 }
 
@@ -94,14 +94,9 @@ function convertSeverityToPriority(severity) {
 function normalizePriority(alertRule) {
     const severity = alertRule.notification_parameters.severity;
     if (severity) {
-        const priority = convertSeverityToPriority(severity);
-        let result = {...alertRule, priority};
-
-        delete result.notification_parameters.severity;
-        return result;
-    } else {
-        return alertRule;
+        return convertSeverityToPriority(severity);
     }
+    return alertRule.priority;
 }
 
 function normalizeDescription(description) {
@@ -125,9 +120,9 @@ function normalizeImportedRule(rule) {
     const condition_parameters = normalizeConditionParameters(rule);
     const notification_parameters = normalizeNotificationParameters(rule.notification_parameters);
     const condition_type = normalizeConditionType(rule);
+    const priority = normalizePriority(rule);
     const {severity, ...ruleWithoutSeverity} = rule;
-    let result = { ...ruleWithoutSeverity, condition_type, condition_parameters, notification_parameters };
-    result = normalizePriority(result);
+    let result = { ...ruleWithoutSeverity, priority, condition_type, condition_parameters, notification_parameters };
     result.description = normalizeDescription(rule.description);
 
     return result;
