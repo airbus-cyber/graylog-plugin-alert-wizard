@@ -27,6 +27,19 @@ function normalizeThresholdType(threshold_type) {
     return threshold_type;
 }
 
+function normalizeSearchQueryParameters(alertRule, condition_parameters) {
+    let result = { ...condition_parameters };
+    if (!result.search_query) {
+        result.search_query = '*';
+    }
+
+    if (['THEN', 'AND', 'OR'].includes(alertRule.condition_type) && !result.additional_search_query) {
+        result.additional_search_query = '*';
+    }
+
+    return result;
+}
+
 function normalizeConditionParameters(rule) {
     const condition_parameters = rule.condition_parameters;
     let result = { ...condition_parameters };
@@ -57,24 +70,11 @@ function normalizeConditionParameters(rule) {
         }
     }
 
-    return result;
+    return normalizeSearchQueryParameters(rule, result);
 }
 
 function normalizeNotificationParameters(notification_parameters) {
     const { split_fields, ...result } = notification_parameters;
-    return result;
-}
-
-function normalizeSearchQueryParameters(alertRule, condition_parameters) {
-    let result = { ...condition_parameters };
-    if (!result.search_query) {
-        result.search_query = '*';
-    }
-
-    if (['THEN', 'AND', 'OR'].includes(alertRule.condition_type) && !result.additional_search_query) {
-        result.additional_search_query = '*';
-    }
-
     return result;
 }
 
@@ -98,7 +98,6 @@ function normalizePriority(alertRule) {
         let result = {...alertRule, priority};
 
         delete result.notification_parameters.severity;
-        delete result.severity;
         return result;
     } else {
         return alertRule;
@@ -123,11 +122,11 @@ function normalizeConditionType(rule) {
 }
 
 function normalizeImportedRule(rule) {
-    let condition_parameters = normalizeConditionParameters(rule);
+    const condition_parameters = normalizeConditionParameters(rule);
     const notification_parameters = normalizeNotificationParameters(rule.notification_parameters);
-    condition_parameters = normalizeSearchQueryParameters(rule, condition_parameters);
     const condition_type = normalizeConditionType(rule);
-    let result = { ...rule, condition_type, condition_parameters, notification_parameters };
+    const {severity, ...ruleWithoutSeverity} = rule;
+    let result = { ...ruleWithoutSeverity, condition_type, condition_parameters, notification_parameters };
     result = normalizePriority(result);
     result.description = normalizeDescription(rule.description);
 
