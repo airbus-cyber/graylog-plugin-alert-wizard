@@ -27,7 +27,8 @@ function normalizeThresholdType(threshold_type) {
     return threshold_type;
 }
 
-function normalizeConditionParameters(condition_parameters, rule_name, rule) {
+function normalizeConditionParameters(rule) {
+    const condition_parameters = rule.condition_parameters;
     let result = { ...condition_parameters };
     if (condition_parameters.type === 'MEAN') {
         result.type = 'AVG';
@@ -43,7 +44,7 @@ function normalizeConditionParameters(condition_parameters, rule_name, rule) {
             result.distinct_by = '';
         } else {
             result.distinct_by = condition_parameters.distinction_fields[0];
-            UserNotification.warning(`The rule ${rule_name} has multiple distinction_fields, only the first one will be kept ("${result.distinct_by}")`);
+            UserNotification.warning(`The rule ${rule.title} has multiple distinction_fields, only the first one will be kept ("${result.distinct_by}")`);
         }
     }
 
@@ -122,7 +123,7 @@ function normalizeConditionType(rule) {
 }
 
 function normalizeImportedRule(rule) {
-    let condition_parameters = normalizeConditionParameters(rule.condition_parameters, rule.title, rule);
+    let condition_parameters = normalizeConditionParameters(rule);
     const notification_parameters = normalizeNotificationParameters(rule.notification_parameters);
     condition_parameters = normalizeSearchQueryParameters(rule, condition_parameters);
     const condition_type = normalizeConditionType(rule);
