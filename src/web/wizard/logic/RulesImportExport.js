@@ -49,7 +49,7 @@ function normalizeConditionParameters(condition_parameters, rule_name, rule) {
 
     const split_fields = rule.notification_parameters.split_fields;
     if (split_fields.length !== 0) {
-        if (rule.condition_type === 'GROUP_DISTINCT') {
+        if (rule.condition_type === 'COUNT' || rule.condition_type === 'GROUP_DISTINCT') {
             result.grouping_fields = [...new Set([...result.grouping_fields, ...split_fields])];
         }
     }
@@ -110,11 +110,21 @@ function normalizeDescription(description) {
     return description;
 }
 
+function normalizeConditionType(rule) {
+    const split_fields = rule.notification_parameters.split_fields;
+    if (split_fields.length !== 0 && rule.condition_type === 'COUNT') {
+        UserNotification.warning(`The rule ${rule.title} of type COUNT has been converted to type DISCTINCT/GROUP, because notification had split fields`);
+        return 'GROUP_DISTINCT';
+    }
+    return rule.condition_type;
+}
+
 function normalizeImportedRule(rule) {
     let condition_parameters = normalizeConditionParameters(rule.condition_parameters, rule.title, rule);
     const notification_parameters = normalizeNotificationParameters(rule.notification_parameters);
     condition_parameters = normalizeSearchQueryParameters(rule, condition_parameters);
-    let result = { ...rule, condition_parameters, notification_parameters };
+    const condition_type = normalizeConditionType(rule);
+    let result = { ...rule, condition_type, condition_parameters, notification_parameters };
     result = normalizePriority(result);
     result.description = normalizeDescription(rule.description);
 

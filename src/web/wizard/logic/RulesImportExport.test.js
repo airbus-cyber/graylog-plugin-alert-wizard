@@ -555,13 +555,50 @@ describe('RulesImport.normalizeImportedRules', () => {
             'condition_type': 'GROUP_DISTINCT',
             'disabled': false,
             'notification': '673703a8f7f848355f0a2efb',
-            'second_stream': null,
+            'second_stream': null
         }];
         const result = RulesImportExport.normalizeImportedRules(rule);
         expect(result[0].notification_parameters).not.toHaveProperty('split_fields');
     });
 
+    it('should convert COUNT rule to GROUP/DISTINCT when notification have split fields', () => {
+        const rule = [{
+            'notification_parameters': {
+                'type': 'logging-alert-notification',
+                'split_fields': ['source'],
+                'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
+                'aggregation_time': 0,
+                'alert_tag': 'LoggingAlert',
+                'single_notification': false
+            },
+            'condition_parameters': {
+                'grace': 1,
+                'distinct_by': '',
+                'threshold': 0,
+                'threshold_type': '>',
+                'grouping_fields': [],
+                'time': 1,
+                'search_query': '*',
+                'type': 'count'
+            },
+            'second_event_definition': null,
+            'condition': '673703a8f7f848355f0a2efe',
+            'priority': 1,
+            'last_modified': '2024-11-15T08:17:44.717Z',
+            'title': 'A',
+            'description': '',
+            'stream': {'matching_type': 'AND', 'field_rule': [], 'id': null},
+            'creator_user_id': 'admin',
+            'created_at': '2024-11-15T08:17:44.717Z',
+            'condition_type': 'COUNT',
+            'disabled': false,
+            'notification': '673703a8f7f848355f0a2efb',
+            'second_stream': null
+        }]
+        const result = RulesImportExport.normalizeImportedRules(rule);
+        expect(result[0].condition_type).toBe('GROUP_DISTINCT');
+    });
+
     // TODO
-    // COUNT rule with split fields => group-by rule with split fields + warning
     // any other rule => ignore split fields + warning
 });
