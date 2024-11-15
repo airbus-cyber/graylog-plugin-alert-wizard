@@ -60,24 +60,29 @@ function normalizeGroupingFields(rule) {
     return groupingFields;
 }
 
+function normalizeDistinctBy(condition_parameters, title) {
+    const distinction_fields = condition_parameters.distinction_fields;
+    if (!distinction_fields) {
+        return condition_parameters.distinct_by;
+    }
+    if (distinction_fields.length === 0) {
+        return '';
+    }
+    const result = condition_parameters.distinction_fields[0];
+    UserNotification.warning(`The rule ${title} has multiple distinction_fields, only the first one will be kept ("${result}")`);
+    return result;
+}
+
 function normalizeConditionParameters(rule) {
     const condition_parameters = rule.condition_parameters;
     const type = normalizeConditionParametersType(condition_parameters.type);
     const threshold_type = normalizeThresholdType(condition_parameters.threshold_type);
     const grouping_fields = normalizeGroupingFields(rule);
-    let result = { ...condition_parameters, type, threshold_type, grouping_fields };
+    const distinct_by = normalizeDistinctBy(condition_parameters, rule.title);
+    let result = { ...condition_parameters, type, threshold_type, grouping_fields, distinct_by };
     const additional_threshold_type = condition_parameters.additional_threshold_type;
     if (additional_threshold_type) {
         result.additional_threshold_type = normalizeThresholdType(additional_threshold_type);
-    }
-    const distinction_fields = condition_parameters.distinction_fields;
-    if (distinction_fields) {
-        if (distinction_fields.length === 0) {
-            result.distinct_by = '';
-        } else {
-            result.distinct_by = condition_parameters.distinction_fields[0];
-            UserNotification.warning(`The rule ${rule.title} has multiple distinction_fields, only the first one will be kept ("${result.distinct_by}")`);
-        }
     }
 
     return normalizeSearchQueryParameters(rule, result);
