@@ -82,7 +82,7 @@ jobs:
       - name: Start development server
         working-directory: plugin/runtime
         run: |
-          docker compose --file docker-compose.dev.yml up --detach
+          docker compose up --detach --wait
       - name: Install e2e dependencies
         working-directory: plugin/e2e
         run: npm ci
