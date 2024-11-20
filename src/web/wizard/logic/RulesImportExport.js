@@ -136,8 +136,10 @@ function normalizeImportedRule(rule) {
     const condition_type = normalizeConditionType(rule);
     const priority = normalizePriority(rule);
     const description = normalizeDescription(rule.description);
-    const {severity, ...ruleWithoutSeverity} = rule;
-    return { ...ruleWithoutSeverity, priority, description, condition_type, condition_parameters, notification_parameters };
+    return {
+        priority, description, condition_type, condition_parameters, notification_parameters,
+        title: rule.title, stream: rule.stream, second_stream: rule.second_stream
+    };
 }
 
 export default {
