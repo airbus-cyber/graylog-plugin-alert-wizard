@@ -55,3 +55,7 @@ services:
     volumes:
      - ./graylog/config:/usr/share/graylog/data/config
      - ./graylog/plugin:/usr/share/graylog/plugin/
+    healthcheck:
+      test: curl --head --fail http://localhost:9000 || exit 1
+      start_period: 60s
+
