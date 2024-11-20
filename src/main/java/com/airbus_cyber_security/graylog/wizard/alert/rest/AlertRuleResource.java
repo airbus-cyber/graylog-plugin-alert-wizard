@@ -328,8 +328,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 Integer priority = request.getPriority();
                 Map<String, Object> conditionParameters = request.conditionParameters();
                 String streamIdentifier = conditions.outputStreamIdentifier();
-                EventProcessorConfig configuration1 = this.conversions.createEventConfiguration(alertType, conditionParameters, streamIdentifier);
-                String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, priority, notificationIdentifier, configuration1, userContext);
+                EventProcessorConfig configuration = this.conversions.createEventConfiguration(alertType, conditionParameters, streamIdentifier);
+
+                String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, priority, notificationIdentifier, configuration, userContext);
 
                 return AggregationAlertPattern.builder().conditions(conditions).eventIdentifier(eventIdentifier).build();
         }

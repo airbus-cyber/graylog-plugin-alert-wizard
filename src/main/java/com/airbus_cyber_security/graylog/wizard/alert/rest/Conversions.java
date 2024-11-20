@@ -60,6 +60,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -168,7 +169,7 @@ public class Conversions {
                 parametersCondition.put(THRESHOLD, convertThreshold(aggregationConfig.conditions().get().expression().get()));
                 parametersCondition.put(THRESHOLD_TYPE, aggregationConfig.conditions().get().expression().get().expr());
                 SeriesSpec series = aggregationConfig.series().get(0);
-                parametersCondition.put(TYPE, series.type());
+                parametersCondition.put(TYPE, series.type().toUpperCase(Locale.ENGLISH));
                 String distinctBy = "";
                 Optional<String> seriesField = Optional.empty();
                 if (series instanceof HasField) {
@@ -419,6 +420,7 @@ public class Conversions {
             case "VARIANCE":
                 return Variance.builder().id(identifier).field(field).build();
             default:
+                LOG.error("Unexpected series type: {}", type);
                 throw new BadRequestException();
         }
     }
@@ -444,7 +446,6 @@ public class Conversions {
 
     public EventProcessorConfig createStatisticalCondition(String streamIdentifier, Map<String, Object> conditionParameter) {
         String type = conditionParameter.get(TYPE).toString();
-        LOG.debug("Begin Stat, type: {}", type);
         // TODO extract method to parse searchWithinMs
         long searchWithinMs = this.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(TIME).toString()));
         // TODO extract method to parse executeEveryMs

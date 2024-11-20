@@ -509,3 +509,10 @@ class TestsFast(TestCase):
         self.assertEqual('cloneTitle', cloned_rule['title'])
         self.assertEqual('cloneDescription', cloned_rule['description'])
         return cloned_rule
+
+    def test_get_alert_rule_should_return_type_in_upper_case(self):
+        title = 'rule_title'
+        self._api.create_alert_rule_statistics(title, _PERIOD)
+        response = self._graylog.get_alert_rule(title)
+        print(response)
+        self.assertEqual('AVG', response['condition_parameters']['type'])
