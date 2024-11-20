@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 ### Bug Fixes
 * Event definition was disabled after a rule update ([issue #140](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/140))
 * Rule with no stream conditions, never triggered because no message would enter the stream. No more stream is created for these rules ([issue #139](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/139))
-
+* Get on a statistical condition was not returning the field ([issue #143](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/143))
 
 ## [6.0.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/5.2.1...6.0.0)
 ### Features
