@@ -479,7 +479,6 @@ class TestsFast(TestCase):
         cloned_notification_id = cloned_rule['notification']
         cloned_notification = self._graylog.get_notification(cloned_notification_id)
 
-        self.assertEqual([], cloned_notification['config']['split_fields'])
         self.assertEqual(False, cloned_notification['config']['single_notification'])
 
     def test_clone_alert_rule_and_notification(self):
@@ -490,7 +489,6 @@ class TestsFast(TestCase):
         cloned_notification_id = cloned_rule['notification']
         cloned_notification = self._graylog.get_notification(cloned_notification_id)
 
-        self.assertEqual(['sources'], cloned_notification['config']['split_fields'])
         self.assertEqual(True, cloned_notification['config']['single_notification'])
 
     def _init_rule_with_updated_notification(self):
@@ -498,7 +496,6 @@ class TestsFast(TestCase):
         notification_id = created_rule['notification']
         created_notification = self._graylog.get_notification(notification_id)
         updated_notification = created_notification.copy()
-        updated_notification['config']['split_fields'] = ['sources']
         updated_notification['config']['single_notification'] = True
         self._graylog.update_notification(notification_id, updated_notification)
         return created_rule['title']
