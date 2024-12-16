@@ -122,73 +122,6 @@ const FieldsInput = createReactClass({
         return true;
     },
 
-    _checkFieldsCondition() {
-        if (this.props.message !== undefined) {
-            /* Create temporary stream */
-            let tempRules = [];
-            for (let index = 0; index < this.state.stream.field_rule.length; index++) {
-                if (this._isRuleValid(this.state.stream.field_rule[index])) {
-                    let inverted = false;
-                    let type = this.state.stream.field_rule[index].type;
-                    if (type < 0) {
-                        inverted = true;
-                        type = -this.state.stream.field_rule[index].type;
-                    }
-                    let rule= {
-                        type: type,
-                        value: this.state.stream.field_rule[index].value,
-                        field: this.state.stream.field_rule[index].field,
-                        inverted: inverted
-                    };
-                    tempRules.push(rule);
-                }
-            }
-            
-            let tempStream = {
-                title: "WizardTempStream",
-                description: "Temporary stream to test wizard rules",
-                matching_type: this.state.stream.matching_type,
-                rules: tempRules,
-                index_set_id: this.state.indexSets[0].id
-            };
-            
-            StreamsStore.save(tempStream, stream => {
-                // TODO why do we set this in the state??
-                this.setState({tempStreamID: stream.stream_id});
-                /* Get the rules */
-                // TODO we don't seem to get here... Most probably because it should be stream.id rather than stream.stream_id
-                // TODO is it really necessary to get the stream? (don't we already have the information?)
-                StreamsStore.get(stream.stream_id, stream => {
-                    
-                    let newRules = [];
-                    for (let index = 0; index < stream.rules.length; index++) {
-                        let rule = {
-                            value: stream.rules[index].value,
-                            field: stream.rules[index].field,
-                            id: stream.rules[index].id,
-                            type: stream.rules[index].inverted ? -stream.rules[index].type : stream.rules[index].type
-                        };
-                        newRules.push(rule);
-                    }
-                    const update = ObjectUtils.clone(this.state.stream);
-                    update.field_rule = newRules;
-                    this.setState({stream: update}); 
-                    
-                    /*Check the rules*/
-                    // TODO seems the try button is active only in update, why is that?
-                    StreamsStore.testMatch(stream.id, {message: this.props.message.fields}, (resultData) => {
-                        this.setState({matchData: resultData});
-
-                        /* Remove temporary stream */
-                        StreamsStore.remove(this.state.tempStreamID); 
-                    });
-                });
-            });
-        } else {
-            this.setState({matchData: undefined});
-        }
-    },
-
     // TODO factor this copy-pasted code (see FieldRule)
     _getMatchDataColor() {
         return (this.state.matchData.matches ? '#dff0d8' : '#f2dede');
@@ -240,9 +173,6 @@ const FieldsInput = createReactClass({
                 <label>&nbsp; </label>
                 <label><FormattedMessage id="wizard.followingRules" defaultMessage="of the following rules:" /></label>
                 {' '}
-                <Button disabled={!this.props.message} onClick={this._checkFieldsCondition} bsStyle="info" title={messages.tryFieldsCondition} style={{marginLeft: '10em'}}>
-                    <FormattedMessage id ="wizard.try" defaultMessage="Try" />
-                </Button>
                 <br/><br/>
 
                 <FieldRuleList fieldRules={this.state.stream.field_rule} matchData={this.state.matchData} onSaveStream={this._onSaveStream} />

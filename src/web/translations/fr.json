@@ -176,7 +176,6 @@
   "wizard.DistinctByRule": "avec des valeurs différentes de {distinctBy}, ",
   "wizard.AndRule": "ET quand il y a {threshold_type} {threshold} messages ",
   "wizard.ThenRule": "suivi par {threshold_type} {threshold} messages ",
-  "wizard.try": "Test",
   "wizard.tryFieldsCondition": "Tester les conditions de champs",
   "wizard.importPolicy": "Politique d'import",
   "wizard.descriptionImportPolicy": "Choisir l'action lorsque la règle d'alerte existe déjà.",
