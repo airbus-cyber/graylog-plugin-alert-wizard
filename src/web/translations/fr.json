@@ -213,6 +213,8 @@
   "wizard.notification": "Notification",
   "wizard.tooltipEventDefinition": "Modifier la définition de l'évènement associée à la règle d'alerte",
   "wizard.tooltipNotification": "Modifier la notification associée à la règle d'alerte",
+  "wizard.search": "Recherche",
+  "wizard.tooltipSearch": "Lancer une recherche pour cette règle d'alerte",
   "wizard.cloneNotification": "Dupliquer la notification",
   "wizard.cloneNotificationHelp": "Si la case est cochée, la notification sera dupliquée"
 }

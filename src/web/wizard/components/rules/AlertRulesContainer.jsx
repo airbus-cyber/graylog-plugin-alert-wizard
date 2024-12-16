@@ -31,6 +31,7 @@ import ButtonToNotification from "../buttons/ButtonToNotification";
 import AlertRuleCloneForm from "./AlertRuleCloneForm";
 import EventDefinitionResources from "../../resources/EventDefinitionResource";
 import StreamsStore from 'stores/streams/StreamsStore';
+import ButtonToSearch from "../buttons/ButtonToSearch";
 
 function _convertAlertToElement(alert) {
     let alertValid = true;
@@ -157,6 +158,7 @@ const AlertRulesContainer = ({ fieldOrder }) => {
         const cloneAlert = <AlertRuleCloneForm alertTitle={element.title} disabled={!element.valid} onSubmit={_onCloneSubmit} />;
 
         return (<div className="pull-left" style={{display: 'flex', columnGap: '1px'}}>
+            <ButtonToSearch stream1={element.streamId} stream2={element.streamId2} disabled={!element.valid}/>
             {updateAlert}
             <ButtonToEventDefinition target={element.condition} disabled={!element.valid}/>
             <ButtonToNotification target={element.notification} disabled={!element.valid}/>
@@ -272,7 +274,7 @@ const AlertRulesContainer = ({ fieldOrder }) => {
                                      bulkSelection={{ actions: renderBulkActions() }}
                                      columnDefinitions={columnDefinitions}
                                      columnRenderers={columnRenderers()}
-                                     actionsCellWidth={500}
+                                     actionsCellWidth={520}
                                      entityActions={renderAlertRuleActions}
                                      entityAttributesAreCamelCase={false}
                                      entities={filterElements}
