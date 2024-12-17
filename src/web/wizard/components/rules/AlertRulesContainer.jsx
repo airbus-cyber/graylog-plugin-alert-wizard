@@ -50,7 +50,10 @@ function _convertAlertToElement(alert) {
     if (alert.second_stream) {
         streamId2 = alert.second_stream.id;
     }
-
+    let searchQuery = '';
+    if (alert.condition_parameters) {
+        searchQuery = alert.condition_parameters.search_query;
+    }
     return {
         id: alert.title,
         title: alert.title,
@@ -66,7 +69,8 @@ function _convertAlertToElement(alert) {
         streamId2: streamId2,
         condition: alert.condition,
         notification: alert.notification,
-        secondEventDefinition: alert.second_event_definition
+        secondEventDefinition: alert.second_event_definition,
+        searchQuery: searchQuery
     };
 }
 
@@ -156,9 +160,8 @@ const AlertRulesContainer = ({ fieldOrder }) => {
                 </LinkContainer>
             </IfPermitted>);
         const cloneAlert = <AlertRuleCloneForm alertTitle={element.title} disabled={!element.valid} onSubmit={_onCloneSubmit} />;
-
         return (<div className="pull-left" style={{display: 'flex', columnGap: '1px'}}>
-            <ButtonToSearch stream1={element.streamId} stream2={element.streamId2} disabled={!element.valid}/>
+            <ButtonToSearch searchQuery={element.searchQuery} stream1={element.streamId} stream2={element.streamId2} disabled={!element.valid}/>
             {updateAlert}
             <ButtonToEventDefinition target={element.condition} disabled={!element.valid}/>
             <ButtonToNotification target={element.notification} disabled={!element.valid}/>

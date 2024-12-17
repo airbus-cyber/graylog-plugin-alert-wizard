@@ -20,17 +20,20 @@ import PropTypes from 'prop-types';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Button } from 'components/bootstrap';
 import { Icon } from 'components/common';
-import { useIntl, FormattedMessage } from 'react-intl';
+import { useIntl } from 'react-intl';
 import Routes from 'routing/Routes';
 
-const ButtonToSearch = ({stream1, stream2, disabled}) => {
+const ButtonToSearch = ({searchQuery, stream1, stream2, disabled}) => {
     const intl = useIntl();
     const tooltip = intl.formatMessage({id: "wizard.tooltipSearch", defaultMessage: "Launch search for this alert rule"});
-    const stream = [stream1];
+    const stream = [];
+    if (stream1) {
+        stream.push(stream1);
+    }
     if (stream2) {
         stream.push(stream2);
     }
-    const searchURL = Routes.search_with_query("", "relative", {"relative": 86400}, stream);
+    const searchURL = Routes.search_with_query(searchQuery, "relative", {"relative": 86400}, stream);
     const link = {
         pathname: Routes.SEARCH,
         search: searchURL.substring(searchURL.indexOf('?'))
@@ -46,7 +49,9 @@ const ButtonToSearch = ({stream1, stream2, disabled}) => {
 }
 
 ButtonToSearch.propTypes = {
-    stream: PropTypes.string.isRequired,
+    searchQuery: PropTypes.string,
+    stream1: PropTypes.string,
+    stream2: PropTypes.string,
     disabled: PropTypes.bool,
 };
 
