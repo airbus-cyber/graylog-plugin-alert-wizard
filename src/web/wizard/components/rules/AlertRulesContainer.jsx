@@ -220,27 +220,31 @@ const AlertRulesContainer = ({ fieldOrder }) => {
     const _onResume = (eventDefinitionIdentifier, stream, secondEventDefinitionIdentifier, stream2) => {
         const promises = [];
         promises.push(EventDefinitionResources.enable(eventDefinitionIdentifier));
-        StreamsStore.resume(stream, response => response).finally(() => _loadAlertRules());
+        if (stream !== null) {
+            StreamsStore.resume(stream, response => response);
+        }
         if (secondEventDefinitionIdentifier !== null) {
             promises.push(EventDefinitionResources.enable(secondEventDefinitionIdentifier));
         }
         if (stream2 !== null) {
-            StreamsStore.resume(stream2, response => response).finally(() => _loadAlertRules());
+            StreamsStore.resume(stream2, response => response);
         }
-        Promise.all(promises).then(() => {});
+        Promise.all(promises).then(() => {}).finally(() => _loadAlertRules());
     };
 
     const _onPause = (name, eventDefinitionIdentifier, stream, secondEventDefinitionIdentifier, secondStream) => {
         const promises = [];
         promises.push(EventDefinitionResources.disable(eventDefinitionIdentifier));
-        StreamsStore.pause(stream, response => response).finally(() => _loadAlertRules());
-        if (secondEventDefinitionIdentifier) {
+        if (stream !== null) {
+            StreamsStore.pause(stream, response => response);
+        }
+        if (secondEventDefinitionIdentifier !== null) {
             promises.push(EventDefinitionResources.disable(secondEventDefinitionIdentifier));
         }
         if (secondStream !== null) {
             StreamsStore.pause(secondStream, response => response);
         }
-        Promise.all(promises).then(() => {});
+        Promise.all(promises).then(() => {}).finally(() => _loadAlertRules());
     }
 
     const _onCloneSubmit = (name, title, description, shouldCloneNotification) => {

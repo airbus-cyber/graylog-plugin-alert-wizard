@@ -58,6 +58,7 @@ import jakarta.ws.rs.Produces;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.graylog.events.notifications.NotificationDto;
+import org.graylog.events.processor.EventDefinition;
 import org.graylog.events.processor.EventDefinitionDto;
 import org.graylog.events.processor.EventProcessorConfig;
 import org.graylog.events.processor.aggregation.AggregationEventProcessorConfig;
@@ -135,6 +136,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         AlertPattern alertPattern = alert.pattern();
         DateTime lastModified = alert.getLastModified();
         Optional<EventDefinitionDto> event = Optional.empty();
+        Optional<EventDefinitionDto> event2 = Optional.empty();
         Map<String, Object> parametersCondition = null;
         boolean isDisabled = false;
         AlertRuleStream alertRuleStream = null;
@@ -147,7 +149,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             alertRuleStream = this.constructAlertRuleStream(conditions1);
             TriggeringConditions conditions2 = pattern.conditions2();
             alertRuleStream2 = this.constructAlertRuleStream(conditions2);
-            isDisabled = this.triggeringConditionsService.isDisabled(conditions1);
+            isDisabled = this.triggeringConditionsService.isDisabled(conditions1) || this.triggeringConditionsService.isDisabled(conditions2);
         } else if (alertPattern instanceof DisjunctionAlertPattern pattern) {
             event = this.eventDefinitionService.getEventDefinition(pattern.eventIdentifier1());
             parametersCondition = getConditionParameters(event);
@@ -155,9 +157,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             alertRuleStream = this.constructAlertRuleStream(conditions);
             TriggeringConditions conditions2 = pattern.conditions2();
             alertRuleStream2 = this.constructAlertRuleStream(conditions2);
-            isDisabled = this.triggeringConditionsService.isDisabled(conditions);
+            isDisabled = this.triggeringConditionsService.isDisabled(conditions) || this.triggeringConditionsService.isDisabled(conditions2);;
             eventIdentifier2 = pattern.eventIdentifier2();
-            completeParametersConditionForDisjunction(parametersCondition, this.eventDefinitionService.getEventDefinition(eventIdentifier2));
+            event2 = this.eventDefinitionService.getEventDefinition(eventIdentifier2);
+            completeParametersConditionForDisjunction(parametersCondition, event2);
         } else if (alertPattern instanceof AggregationAlertPattern pattern) {
             event = this.eventDefinitionService.getEventDefinition(pattern.eventIdentifier());
             parametersCondition = getConditionParameters(event);
@@ -180,6 +183,16 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             eventIdentifier = eventDefinitionDto.id();
             description = eventDefinitionDto.description();
             priority = eventDefinitionDto.priority();
+            if (EventDefinition.State.DISABLED.equals(eventDefinitionDto.state())) {
+                isDisabled = true;
+            }
+        }
+
+        if (event2.isPresent()) {
+            EventDefinitionDto eventDefinitionDto2 = event2.get();
+            if (EventDefinition.State.DISABLED.equals(eventDefinitionDto2.state())) {
+                isDisabled = true;
+            }
         }
 
         return GetDataAlertRule.create(alert.getTitle(),
