@@ -37,7 +37,7 @@ function normalizeConditionParametersType(type) {
 function normalizeGroupingFields(rule) {
     const groupingFields = rule.condition_parameters.grouping_fields;
     const splitFields = rule.notification_parameters.split_fields;
-    if (splitFields.length === 0) {
+    if (splitFields === null|| splitFields === undefined || splitFields.length === 0) {
         return groupingFields;
     }
     if (rule.condition_type === 'COUNT' || rule.condition_type === 'GROUP_DISTINCT') {
@@ -123,7 +123,7 @@ function normalizeDescription(description) {
 
 function normalizeConditionType(rule) {
     const split_fields = rule.notification_parameters.split_fields;
-    if (split_fields.length !== 0 && rule.condition_type === 'COUNT') {
+    if (split_fields && split_fields.length !== 0 && rule.condition_type === 'COUNT') {
         UserNotification.warning(`The rule ${rule.title} of type COUNT has been converted to type DISTINCT/GROUP, because notification had split fields`);
         return 'GROUP_DISTINCT';
     }
