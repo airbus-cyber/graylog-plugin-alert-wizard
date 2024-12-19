@@ -44,6 +44,9 @@ public abstract class AlertRuleRequest {
     @NotNull
     public abstract String getDescription();
 
+    @JsonProperty(value = "disabled", defaultValue = "false")
+    public abstract boolean isDisabled();
+
     // TODO should be an enum. Possible values: COUNT, GROUP_DISTINCT, STATISTICAL, AND, THEN, OR
     @JsonProperty("condition_type")
     @NotNull
@@ -65,10 +68,11 @@ public abstract class AlertRuleRequest {
     public static AlertRuleRequest create(@JsonProperty("title") String title,
                                              @JsonProperty("priority") Integer priority,
                                              @JsonProperty("description") String description,
+                                             @JsonProperty("disabled") boolean disabled,
                                              @JsonProperty("condition_type") AlertType alertType,
                                              @JsonProperty("condition_parameters") Map<String, Object> conditionParameters,
                                              @JsonProperty("stream") AlertRuleStream stream,
                                              @JsonProperty("second_stream") AlertRuleStream stream2) {
-        return new AutoValue_AlertRuleRequest(title, priority, description, alertType, conditionParameters, stream, stream2);
+        return new AutoValue_AlertRuleRequest(title, priority, description, disabled, alertType, conditionParameters, stream, stream2);
     }
 }

@@ -66,18 +66,18 @@ public class StreamFacade {
         this.indexSetID = indexSetRegistry.getDefault().getConfig().id();
     }
 
-    public Stream createStream(Stream.MatchingType matchingType, String title, String userName, List<FieldRule> fieldRules) throws ValidationException {
-        Stream stream = this.createStream(matchingType, title, userName);
+    public Stream createStream(Stream.MatchingType matchingType, String title, String userName, List<FieldRule> fieldRules, boolean disabled) throws ValidationException {
+        Stream stream = this.createStream(matchingType, title, userName, disabled);
         this.createStreamRule(fieldRules, stream.getId());
         return stream;
     }
 
-    public Stream createStream(Stream.MatchingType matchingType, String title, String userName) throws ValidationException {
+    public Stream createStream(Stream.MatchingType matchingType, String title, String userName, boolean disabled) throws ValidationException {
         LOG.debug("Create Stream: " + title);
         CreateStreamRequest request = CreateStreamRequest.create(title, Description.COMMENT_ALERT_WIZARD,
                 Collections.emptyList(), "", matchingType.name(), false, indexSetID);
         Stream stream = this.streamService.create(request, userName);
-        stream.setDisabled(false);
+        stream.setDisabled(disabled);
 
         if (!stream.getIndexSet().getConfig().isWritable()) {
             throw new BadRequestException("Assigned index set must be writable!");

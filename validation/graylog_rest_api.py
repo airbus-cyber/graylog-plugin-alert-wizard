@@ -90,7 +90,7 @@ class GraylogRestApi:
     def _create_alert_rule(self, title, stream, condition_type, time,
                            threshold_type='>', additional_threshold_type='', additional_threshold=0, second_stream=None,
                            group_by_fields=[], distinct_by='', field='', statistics_function='', description='',
-                           search_query='', additional_search_query=''):
+                           search_query='', additional_search_query='', disabled=False):
         alert_rule = {
             'condition_parameters': {
                 'search_query': search_query,
@@ -111,7 +111,8 @@ class GraylogRestApi:
             'description': description,
             'priority': 1,
             'stream': stream,
-            'title': title
+            'title': title,
+            'disabled': disabled
         }
         if second_stream:
             alert_rule.update({
@@ -123,8 +124,8 @@ class GraylogRestApi:
     def update_alert_rule(self, previousTitle, rule):
         return self._put(f'plugins/com.airbus_cyber_security.graylog.wizard/alerts/{previousTitle}', rule)
 
-    def create_alert_rule_count(self, title, time, description='', search_query='', stream=_DEFAULT_STREAM):
-        return self._create_alert_rule(title, stream, 'COUNT', time, description=description, search_query=search_query)
+    def create_alert_rule_count(self, title, time, description='', search_query='', stream=_DEFAULT_STREAM, disabled=False):
+        return self._create_alert_rule(title, stream, 'COUNT', time, description=description, search_query=search_query, disabled=disabled)
 
     def create_alert_rule_group_distinct(self, title, rule, group_by_fields, distinct_by, time):
         stream = {

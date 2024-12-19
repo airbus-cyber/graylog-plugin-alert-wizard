@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 * Rules without split_fields can't be imported ([issue #144](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/144))
 * Rule was not disabled if stream is paused ([issue #141](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/141))
 * Rule without stream can't be disabled ([issue #145](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/145))
+* Keep disable state when rule is created or updated ([issue #138](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/138))
 
 ## [6.0.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/5.2.1...6.0.0)
 ### Features

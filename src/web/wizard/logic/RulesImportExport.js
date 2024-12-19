@@ -138,7 +138,7 @@ function normalizeImportedRule(rule) {
     const description = normalizeDescription(rule.description);
     return {
         priority, description, condition_type, condition_parameters, notification_parameters,
-        title: rule.title, stream: rule.stream, second_stream: rule.second_stream
+        title: rule.title, stream: rule.stream, second_stream: rule.second_stream, disabled: rule.disabled
     };
 }
 

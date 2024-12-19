@@ -59,12 +59,17 @@ public class EventDefinitionService {
         return this.eventDefinitionService.get(eventDefinitionIdentifier);
     }
 
-    private String createEventFromDto(EventDefinitionDto eventDefinition, UserContext userContext) {
-        EventDefinitionDto result = this.eventDefinitionHandler.create(eventDefinition, Optional.of(userContext.getUser()));
+    private String createEventFromDto(EventDefinitionDto eventDefinition, UserContext userContext, boolean disabled) {
+        EventDefinitionDto result;
+        if (disabled) {
+           result = this.eventDefinitionHandler.createWithoutSchedule(eventDefinition, Optional.of(userContext.getUser()));
+        } else {
+            result = this.eventDefinitionHandler.create(eventDefinition, Optional.of(userContext.getUser()));
+        }
         return result.id();
     }
 
-    public String createEvent(String alertTitle, String description, Integer priority, String notificationIdentifier, EventProcessorConfig configuration, UserContext userContext) {
+    public String createEvent(String alertTitle, String description, Integer priority, String notificationIdentifier, EventProcessorConfig configuration, UserContext userContext, boolean disabled) {
         LOG.debug("Create Event: " + alertTitle);
         EventNotificationHandler.Config notificationConfiguration = EventNotificationHandler.Config.builder()
                 .notificationId(notificationIdentifier)
@@ -86,18 +91,18 @@ public class EventDefinitionService {
                         .build())
                 .build();
 
-        return this.createEventFromDto(eventDefinition, userContext);
+        return this.createEventFromDto(eventDefinition, userContext, disabled);
     }
 
-    public void updateEvent(String alertTitle, String description, Integer priority, String eventIdentifier, EventProcessorConfig configuration) {
+    public void updateEvent(String alertTitle, String description, Integer priority, String eventIdentifier, EventProcessorConfig configuration, boolean disabled) {
         LOG.debug("Update event: {}, identifier: {}", alertTitle, eventIdentifier);
         EventDefinitionDto event = this.getEventDefinition(eventIdentifier)
                 .orElseThrow(() -> new jakarta.ws.rs.NotFoundException("Event definition <" + eventIdentifier + "> doesn't exist"));
 
-        this.updateEvent(alertTitle, description, priority, event, configuration);
+        this.updateEvent(alertTitle, description, priority, event, configuration, disabled);
     }
 
-    private void updateEvent(String title, String description, Integer priority, EventDefinitionDto event, EventProcessorConfig configuration) {
+    private void updateEvent(String title, String description, Integer priority, EventDefinitionDto event, EventProcessorConfig configuration, boolean disabled) {
         EventDefinitionDto updatedEvent = EventDefinitionDto.builder()
                 .id(event.id())
                 .title(title)
@@ -112,7 +117,7 @@ public class EventDefinitionService {
                 .storage(event.storage())
                 .state(EventDefinition.State.ENABLED)
                 .build();
-        this.eventDefinitionHandler.update(updatedEvent, true);
+        this.eventDefinitionHandler.update(updatedEvent, !disabled);
     }
 
     public void delete(String identifier) {

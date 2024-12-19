@@ -328,7 +328,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                                             UserContext userContext, String userName) throws ValidationException {
         AlertType alertType = request.getConditionType();
 
-        TriggeringConditions conditions = this.triggeringConditionsService.createTriggeringConditions(request.getStream(), alertTitle, userName);
+        TriggeringConditions conditions = this.triggeringConditionsService.createTriggeringConditions(request.getStream(), alertTitle, userName, request.isDisabled());
 
         switch (alertType) {
             case THEN:
@@ -343,7 +343,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 String streamIdentifier = conditions.outputStreamIdentifier();
                 EventProcessorConfig configuration = this.conversions.createEventConfiguration(alertType, conditionParameters, streamIdentifier);
 
-                String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, priority, notificationIdentifier, configuration, userContext);
+                String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, priority, notificationIdentifier, configuration, userContext, request.isDisabled());
 
                 return AggregationAlertPattern.builder().conditions(conditions).eventIdentifier(eventIdentifier).build();
         }
@@ -354,13 +354,13 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         Integer priority = request.getPriority();
         Map<String, Object> conditionParameters = request.conditionParameters();
 
-        TriggeringConditions conditions2 = this.triggeringConditionsService.createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName);
+        TriggeringConditions conditions2 = this.triggeringConditionsService.createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName, request.isDisabled());
         String streamIdentifier = conditions.outputStreamIdentifier();
         EventProcessorConfig configuration = this.conversions.createAggregationCondition(streamIdentifier, conditionParameters);
-        String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, priority, notificationIdentifier, configuration, userContext);
+        String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, priority, notificationIdentifier, configuration, userContext, request.isDisabled());
         String streamIdentifier2 = conditions2.outputStreamIdentifier();
         EventProcessorConfig configuration2 = this.conversions.createAdditionalAggregationCondition(streamIdentifier2, conditionParameters);
-        String eventIdentifier2 = this.eventDefinitionService.createEvent(alertTitle + "#2", description, priority, notificationIdentifier, configuration2, userContext);
+        String eventIdentifier2 = this.eventDefinitionService.createEvent(alertTitle + "#2", description, priority, notificationIdentifier, configuration2, userContext, request.isDisabled());
 
         return DisjunctionAlertPattern.builder()
                 .conditions1(conditions).conditions2(conditions2).eventIdentifier1(eventIdentifier).eventIdentifier2(eventIdentifier2)
@@ -373,11 +373,11 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         AlertType alertType = request.getConditionType();
         Map<String, Object> conditionParameters = request.conditionParameters();
 
-        TriggeringConditions conditions2 = this.triggeringConditionsService.createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName);
+        TriggeringConditions conditions2 = this.triggeringConditionsService.createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName, request.isDisabled());
         String streamIdentifier = conditions.outputStreamIdentifier();
         String streamIdentifier2 = conditions2.outputStreamIdentifier();
         EventProcessorConfig configuration = this.conversions.createCorrelationCondition(alertType, streamIdentifier, streamIdentifier2, conditionParameters);
-        String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, priority, notificationIdentifier, configuration, userContext);
+        String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, priority, notificationIdentifier, configuration, userContext, request.isDisabled());
         return CorrelationAlertPattern.builder().conditions1(conditions).conditions2(conditions2).eventIdentifier(eventIdentifier).build();
     }
 
@@ -396,37 +396,37 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         // TODO increase readability: extract three methods?
         if (previousAlertPattern instanceof CorrelationAlertPattern previousPattern) {
             TriggeringConditions previousConditions = previousPattern.conditions1();
-            TriggeringConditions conditions = this.triggeringConditionsService.updateTriggeringConditions(previousConditions, title, streamConfiguration, userName);
+            TriggeringConditions conditions = this.triggeringConditionsService.updateTriggeringConditions(previousConditions, title, streamConfiguration, userName, request.isDisabled());
             TriggeringConditions previousConditions2 = previousPattern.conditions2();
-            TriggeringConditions conditions2 = this.triggeringConditionsService.updateTriggeringConditions(previousConditions2, title2, streamConfiguration2, userName);
+            TriggeringConditions conditions2 = this.triggeringConditionsService.updateTriggeringConditions(previousConditions2, title2, streamConfiguration2, userName, request.isDisabled());
 
             String streamIdentifier = conditions.outputStreamIdentifier();
             String streamIdentifier2 = conditions2.outputStreamIdentifier();
             EventProcessorConfig configuration = this.conversions.createCorrelationCondition(alertType, streamIdentifier, streamIdentifier2, request.conditionParameters());
-            this.eventDefinitionService.updateEvent(title, request.getDescription(), request.getPriority(), previousPattern.eventIdentifier(), configuration);
+            this.eventDefinitionService.updateEvent(title, request.getDescription(), request.getPriority(), previousPattern.eventIdentifier(), configuration, request.isDisabled());
 
             return previousPattern.toBuilder().conditions1(conditions).build();
         } else if (previousAlertPattern instanceof DisjunctionAlertPattern previousPattern) {
             TriggeringConditions previousConditions = previousPattern.conditions1();
-            TriggeringConditions conditions = this.triggeringConditionsService.updateTriggeringConditions(previousConditions, title, streamConfiguration, userName);
+            TriggeringConditions conditions = this.triggeringConditionsService.updateTriggeringConditions(previousConditions, title, streamConfiguration, userName, request.isDisabled());
             TriggeringConditions previousConditions2 = previousPattern.conditions2();
-            TriggeringConditions conditions2 = this.triggeringConditionsService.updateTriggeringConditions(previousConditions2, title2, streamConfiguration2, userName);
+            TriggeringConditions conditions2 = this.triggeringConditionsService.updateTriggeringConditions(previousConditions2, title2, streamConfiguration2, userName, request.isDisabled());
 
             String streamIdentifier = conditions.outputStreamIdentifier();
             EventProcessorConfig configuration = this.conversions.createEventConfiguration(request.getConditionType(), request.conditionParameters(), streamIdentifier);
-            this.eventDefinitionService.updateEvent(title, request.getDescription(), request.getPriority(), previousPattern.eventIdentifier1(), configuration);
+            this.eventDefinitionService.updateEvent(title, request.getDescription(), request.getPriority(), previousPattern.eventIdentifier1(), configuration, request.isDisabled());
 
             String streamIdentifier2 = conditions2.outputStreamIdentifier();
             EventProcessorConfig configuration2 = this.conversions.createAdditionalAggregationCondition(streamIdentifier2, request.conditionParameters());
-            this.eventDefinitionService.updateEvent(title2, request.getDescription(), request.getPriority(), previousPattern.eventIdentifier2(), configuration2);
+            this.eventDefinitionService.updateEvent(title2, request.getDescription(), request.getPriority(), previousPattern.eventIdentifier2(), configuration2, request.isDisabled());
 
             return previousPattern.toBuilder().conditions1(conditions).build();
         } else if (previousAlertPattern instanceof AggregationAlertPattern previousPattern) {
             TriggeringConditions previousConditions = previousPattern.conditions();
-            TriggeringConditions conditions = this.triggeringConditionsService.updateTriggeringConditions(previousConditions, title, streamConfiguration, userName);
+            TriggeringConditions conditions = this.triggeringConditionsService.updateTriggeringConditions(previousConditions, title, streamConfiguration, userName, request.isDisabled());
             String streamIdentifier = conditions.outputStreamIdentifier();
             EventProcessorConfig configuration = this.conversions.createEventConfiguration(request.getConditionType(), request.conditionParameters(), streamIdentifier);
-            this.eventDefinitionService.updateEvent(title, request.getDescription(), request.getPriority(), previousPattern.eventIdentifier(), configuration);
+            this.eventDefinitionService.updateEvent(title, request.getDescription(), request.getPriority(), previousPattern.eventIdentifier(), configuration, request.isDisabled());
 
             return previousPattern.toBuilder().conditions(conditions).build();
         }
@@ -546,7 +546,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         AlertType alertType = sourceAlert.getConditionType();
 
         String notificationIdentifier = createNotificationFromCloneRequest(alertTitle, userContext, sourceAlert.getNotificationID(), request.getCloneNotification());
-        AlertRuleRequest alertRuleRequest = AlertRuleRequest.create(title, sourceAlert.getPriority(), description, sourceAlert.getConditionType(),
+        AlertRuleRequest alertRuleRequest = AlertRuleRequest.create(title, sourceAlert.getPriority(), description, sourceAlert.isDisabled(), sourceAlert.getConditionType(),
                 sourceAlert.conditionParameters(), sourceAlert.getStream(), sourceAlert.getSecondStream());
 
         GetDataAlertRule result = createPatternAndRule(alertRuleRequest, userContext, notificationIdentifier, alertTitle, userName, alertType);

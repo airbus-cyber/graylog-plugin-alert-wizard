@@ -66,7 +66,7 @@ const ImportAlertPage = createReactClass({
     },
 
     handleRuleSelectionChanged(selection) {
-        this.setState({ selectedAlertTitles: selection })
+        this.setState({ selectedAlertTitles: selection });
     },
 
     async onSubmitApplyAlertRules(evt) {

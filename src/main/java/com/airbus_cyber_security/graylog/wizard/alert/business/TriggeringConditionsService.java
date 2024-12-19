@@ -53,26 +53,26 @@ public class TriggeringConditionsService {
         this.fieldRulesUtilities = fieldRulesUtilities;
     }
 
-    private String createFilteringStream(AlertRuleStream streamConfiguration, String title, String userName) throws ValidationException {
+    private String createFilteringStream(AlertRuleStream streamConfiguration, String title, String userName, boolean disabled) throws ValidationException {
         List<FieldRule> streamFieldRules = this.streamService.getStreamFieldRules(streamConfiguration.getFieldRules());
         if (streamFieldRules.isEmpty()) {
             return null;
         }
-        Stream filteringStream = this.streamService.createStream(streamConfiguration.getMatchingType(), title, userName, streamFieldRules);
+        Stream filteringStream = this.streamService.createStream(streamConfiguration.getMatchingType(), title, userName, streamFieldRules, disabled);
         return filteringStream.getId();
     }
 
-    public TriggeringConditions createTriggeringConditions(AlertRuleStream streamConfiguration, String title, String userName) throws ValidationException {
-        String filteringStreamIdentifier = this.createFilteringStream(streamConfiguration, title, userName);
-        return createTriggeringConditionsFromStream(streamConfiguration, title, filteringStreamIdentifier, userName);
+    public TriggeringConditions createTriggeringConditions(AlertRuleStream streamConfiguration, String title, String userName, boolean disabled) throws ValidationException {
+        String filteringStreamIdentifier = this.createFilteringStream(streamConfiguration, title, userName, disabled);
+        return createTriggeringConditionsFromStream(streamConfiguration, title, filteringStreamIdentifier, userName, disabled);
     }
 
     private String updateFilteringString(TriggeringConditions previousConditions, String title,
-                                         AlertRuleStream streamConfiguration, String userName) throws ValidationException {
+                                         AlertRuleStream streamConfiguration, String userName, boolean disabled) throws ValidationException {
         List<FieldRule> streamFieldRules = this.streamService.getStreamFieldRules(streamConfiguration.getFieldRules());
         String previousFilteringStreamIdentifier = previousConditions.filteringStreamIdentifier();
         if (previousFilteringStreamIdentifier == null) {
-            return this.createFilteringStream(streamConfiguration, title, userName);
+            return this.createFilteringStream(streamConfiguration, title, userName, disabled);
         }
         if (streamFieldRules.isEmpty()) {
             this.streamPipelineService.deleteStreamFromIdentifier(previousFilteringStreamIdentifier);
@@ -84,8 +84,8 @@ public class TriggeringConditionsService {
     }
 
     public TriggeringConditions updateTriggeringConditions(TriggeringConditions previousConditions, String title,
-                                                            AlertRuleStream streamConfiguration, String userName) throws ValidationException {
-        String filteringStreamIdentifier = this.updateFilteringString(previousConditions, title, streamConfiguration, userName);
+                                                            AlertRuleStream streamConfiguration, String userName, boolean disabled) throws ValidationException {
+        String filteringStreamIdentifier = this.updateFilteringString(previousConditions, title, streamConfiguration, userName, disabled);
 
         // second part of the condition here is probably incorrect...
         if (previousConditions.outputStreamIdentifier() != null
@@ -94,7 +94,7 @@ public class TriggeringConditionsService {
         }
         deletePipelineIfAny(previousConditions.pipeline());
 
-        return createTriggeringConditionsFromStream(streamConfiguration, title, filteringStreamIdentifier, userName);
+        return createTriggeringConditionsFromStream(streamConfiguration, title, filteringStreamIdentifier, userName, disabled);
     }
 
     public void deleteTriggeringConditions(TriggeringConditions conditions) {
@@ -141,7 +141,7 @@ public class TriggeringConditionsService {
     }
 
     private TriggeringConditions createTriggeringConditionsFromStream(AlertRuleStream streamConfiguration, String title,
-                                                                      String filteringStreamIdentifier, String userName) throws ValidationException {
+                                                                      String filteringStreamIdentifier, String userName, boolean disabled) throws ValidationException {
         List<FieldRule> fieldRulesWithList = this.streamPipelineService.extractPipelineFieldRules(streamConfiguration.getFieldRules());
 
         TriggeringConditions.Builder builder = TriggeringConditions.builder().filteringStreamIdentifier(filteringStreamIdentifier);
@@ -163,7 +163,7 @@ public class TriggeringConditionsService {
 
         if (!this.fieldRulesUtilities.hasStreamRules(streamConfiguration.getFieldRules())) {
             PipelineDao graylogPipeline = this.streamPipelineService.createPipeline(title, matchingType, Stream.DEFAULT_STREAM_ID);
-            Stream outputStream = this.streamService.createStream(matchingType, title + " output", userName);
+            Stream outputStream = this.streamService.createStream(matchingType, title + " output", userName, disabled);
             RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(title, fieldRulesWithList, matchingType, outputStream.getId());
             Pipeline pipeline = Pipeline.builder()
                     .identifier(graylogPipeline.id()).ruleIdentifier(pipelineRule.id()).fieldRules(fieldRulesWithList)
@@ -178,7 +178,7 @@ public class TriggeringConditionsService {
             return builder.outputStreamIdentifier(filteringStreamIdentifier).pipeline(pipeline).build();
         } else {
             PipelineDao graylogPipeline = this.streamPipelineService.createPipeline(title, matchingType, filteringStreamIdentifier);
-            Stream outputStream = this.streamService.createStream(matchingType, title + " output", userName);
+            Stream outputStream = this.streamService.createStream(matchingType, title + " output", userName, disabled);
             RuleDao pipelineRule = this.streamPipelineService.createPipelineRule(title, fieldRulesWithList, matchingType, outputStream.getId());
             Pipeline pipeline = Pipeline.builder()
                     .identifier(graylogPipeline.id()).ruleIdentifier(pipelineRule.id()).fieldRules(fieldRulesWithList)

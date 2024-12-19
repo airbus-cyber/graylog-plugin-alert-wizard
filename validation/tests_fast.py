@@ -513,3 +513,32 @@ class TestsFast(TestCase):
         response = self._graylog.get_alert_rule(title)
         print(response)
         self.assertEqual('AVG', response['condition_parameters']['type'])
+
+    def test_create_alert_with_disable_state_should_be_disabled__issue138(self):
+        title = 'rule_title'
+        self._api.create_alert_rule_count(title, _PERIOD, disabled=True)
+
+        response = self._api.get_alert_rule(title)
+        self.assertEqual(True, response['disabled'])
+
+    def test_create_alert_with_disable_state_should_have_disabled_event_definition__issue138(self):
+        title = 'rule_title'
+        create_response = self._api.create_alert_rule_count(title, _PERIOD, disabled=True)
+
+        response = self._api.get_event_definition(create_response['condition'])
+        self.assertEqual('DISABLED', response['state'])
+
+    def test_create_alert_with_disable_state_should_have_disabled_stream__issue138(self):
+        title = 'rule_title'
+        stream = {
+            'field_rule': [{
+                'field': 'source',
+                'type': 1,
+                'value': 'toto'
+            }],
+            'matching_type': 'AND'
+        }
+        create_response = self._api.create_alert_rule_count(title, _PERIOD, stream=stream, disabled=True)
+
+        response = self._api.get_stream(create_response['stream']['id'])
+        self.assertEqual(True, response.json()['disabled'])
