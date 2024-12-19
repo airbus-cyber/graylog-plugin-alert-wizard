@@ -5,11 +5,16 @@ All notable changes to this project will be documented in this file.
 ## [6.1.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/6.0.0...6.1.0)
 ### Features
 * Add compatibility with [Graylog 6.1.0](https://graylog.org/post/announcing-graylog-v6-1/)
+* Replace Test button by Search button ([issue #130](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/130))
+* Notification could be cloned ([issue #133](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/133))
 
 ### Bug Fixes
 * Event definition was disabled after a rule update ([issue #140](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/140))
 * Rule with no stream conditions, never triggered because no message would enter the stream. No more stream is created for these rules ([issue #139](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/139))
 * Get on a statistical condition was not returning the field ([issue #143](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/143))
+* Rules without split_fields can't be imported ([issue #144](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/144))
+* Rule was not disabled if stream is paused ([issue #141](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/141))
+* Rule without stream can't be disabled ([issue #145](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/145))
 
 ## [6.0.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/5.2.1...6.0.0)
 ### Features
