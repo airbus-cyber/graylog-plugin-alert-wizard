@@ -50,6 +50,13 @@ The internal representation of alert rules has slightly changed and is not backw
 3. Install version 6.1.0,
 4. Import rules.
 
+### Upgrading to 6.0.0 and greater
+
+With Graylog 6.0 and greater the Airbus plugin classes need to be allowed within the server configuration:
+```
+safe_classes = org.graylog.,org.graylog2.,com.airbus_cyber_security.graylog.
+```
+
 ### Upgrading to 5.2.1
 
 The 'search query' parameter of alert rules has been added. The following migration procedure must be followed:
@@ -150,6 +157,11 @@ will be use, and have to follow the [Notification format](https://docs.graylog.o
 and place the `.jar` file in your Graylog plugin directory. The plugin directory
 is the `plugins/` folder relative from your `graylog-server` directory by default
 and can be configured in your `graylog.conf` file.
+
+> **WARNING**: With Graylog 6.0 and greater the Airbus plugin classes need to be allowed within the server configuration:
+```
+safe_classes = org.graylog.,org.graylog2.,com.airbus_cyber_security.graylog.
+```
 
 Restart `graylog-server` and you are done.
 
