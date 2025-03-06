@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.x.x](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/6.1.1...6.x.x)
+### Bug Fixes
+* Remove load message ([issue #146](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/146))
+
+
 ## [6.1.1](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/6.1.0...6.1.1)
 ### Bug Fixes
 * Bump graylog-plugin-logging-alert version to 6.1.1 ([issue #101](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/101))

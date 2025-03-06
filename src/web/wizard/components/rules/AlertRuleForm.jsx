@@ -24,7 +24,6 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 
 import { Button, Col, Row, Nav, NavItem } from 'components/bootstrap';
 import ObjectUtils from 'util/ObjectUtils';
-import LoaderTabs from 'components/messageloaders/LoaderTabs';
 import StreamsStore from 'stores/streams/StreamsStore';
 
 import Navigation from 'wizard/routing/Navigation';
@@ -214,14 +213,6 @@ const AlertRuleForm = createReactClass({
                 <Row>
                     <Col md={2} className={styles.subnavigation}>{subnavigation}</Col>
                     <Col md={10} className={styles.contentpane}>
-                        <h2>
-                            <FormattedMessage id= "wizard.loadMessage" defaultMessage= "Load a message to test fields conditions" />
-                        </h2>
-                        <div className="stream-loader">
-                            <LoaderTabs messageId={this.props.messageId} index={this.props.index}
-                                        onMessageLoaded={this._onMessageLoaded}/>
-                        </div>
-                        <hr/>
                         <h2><FormattedMessage id= "wizard.titleParameters" defaultMessage= "Alert rule parameters" /></h2>
                         {this.props.navigationToRuleComponents}
                         <p className="description"><FormattedMessage id= "wizard.descripionParameters" defaultMessage= "Define the parameters of the alert rule." /></p>
