@@ -17,7 +17,6 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { LinkContainer } from 'react-router-bootstrap';
 import { Button } from 'components/bootstrap';
 import { Icon } from 'components/common';
 import { useIntl } from 'react-intl';
@@ -34,17 +33,12 @@ const ButtonToSearch = ({searchQuery, stream1, stream2, disabled}) => {
         stream.push(stream2);
     }
     const searchURL = Routes.search_with_query(searchQuery, "relative", {"relative": 86400}, stream);
-    const link = {
-        pathname: Routes.SEARCH,
-        search: searchURL.substring(searchURL.indexOf('?'))
-    }
+    const link = Routes.SEARCH + searchURL.substring(searchURL.indexOf('?'));
 
     return (
-        <LinkContainer disabled={disabled} to={link} >
-            <Button bsStyle="info" title={tooltip} >
-                <Icon name="play_arrow" />
-            </Button>
-        </LinkContainer>
+        <Button bsStyle="info" title={tooltip} disabled={disabled} href={link} target="_blank">
+            <Icon name="play_arrow" />
+        </Button>
     );
 }
 

@@ -55,6 +55,9 @@ test('go_on_search_page_when_click_on_search_button', async ({ page }) => {
   await open_alert_page_and_filter(page, title);
   await page.getByRole('link', { name: 'play_arrow' }).click();
 
-  await expect(page.getByText(title)).toBeVisible();
-  await expect(page.getByText(searchQuery)).toBeVisible();
+  // Wait new tab
+  await page.waitForTimeout(200);
+  let pages = page.context().pages();
+  await expect(pages[1].getByText(title)).toBeVisible();
+  await expect(pages[1].getByText(searchQuery)).toBeVisible();
 });
