@@ -61,3 +61,17 @@ test('go_on_search_page_when_click_on_search_button', async ({ page }) => {
   await expect(pages[1].getByText(title)).toBeVisible();
   await expect(pages[1].getByText(searchQuery)).toBeVisible();
 });
+
+test('OR rule should contains GroupBy field', async ({ page }) => {
+  await page.goto('/wizard/AlertRules');
+
+  await login_steps(page);
+
+  // Fill Title
+  const title = `AAA-${crypto.randomUUID()}`;
+  await page.getByRole('link', { name: 'Create' }).click();
+  await page.getByRole('button', { name: 'OR' }).click();
+  await page.locator('#title').fill(title);
+
+  await expect(page.getByText('Group by Condition')).toBeVisible();
+});

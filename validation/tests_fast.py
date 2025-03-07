@@ -364,6 +364,20 @@ class TestsFast(TestCase):
         second_event_definition = self._graylog.get_event_definition(second_event_definition_identifier)
         self.assertEqual('new description', second_event_definition['description'])
 
+    def test_create_alert_rule_or_should_set__event_definition_group_by__issue149(self):
+        title = 'aaa'
+        alert_rule = self._graylog.create_alert_rule_or(title, _PERIOD, group_by_fields=['groupField'])
+        event_definition_identifier = alert_rule['condition']
+        event_definition = self._graylog.get_event_definition(event_definition_identifier)
+        self.assertEqual('groupField', event_definition['config']['group_by'][0])
+
+    def test_create_alert_rule_or_should_set_second_event_definition_group_by__issue149(self):
+        title = 'aaa'
+        alert_rule = self._graylog.create_alert_rule_or(title, _PERIOD, group_by_fields=['groupField'])
+        second_event_definition_identifier = alert_rule['second_event_definition']
+        second_event_definition = self._graylog.get_event_definition(second_event_definition_identifier)
+        self.assertEqual('groupField', second_event_definition['config']['group_by'][0])
+
     def test_create_alert_rule_should_have_an_int_threshold(self):
         title = 'aaa'
         stream = {

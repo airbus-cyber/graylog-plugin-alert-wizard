@@ -25,9 +25,10 @@ import FieldsInput from 'wizard/components/inputs/FieldsInput';
 import NumberInput from 'wizard/components/inputs/NumberInput';
 import TimeRangeInput from 'wizard/components/inputs/TimeRangeInput';
 import Description from 'wizard/components/inputs/Description';
+import SearchQueryInput from 'wizard/components/inputs/SearchQueryInput';
+import GroupByInput from 'wizard/components/inputs/GroupByInput';
 import { Row, Col } from 'components/bootstrap';
 import HighlightedDiv from 'wizard/components/containers/HighlightedDiv';
-import SearchQueryInput from "wizard/components/inputs/SearchQueryInput";
 
 const STREAM = {
     matching_type: '',
@@ -89,30 +90,32 @@ const OrCondition = createReactClass({
         return (
             <>
                 <HighlightedDiv>
-                    <SearchQueryInput onUpdate={this._handleChangeCondition} search_query={this.props.alert.condition_parameters.search_query} />
+                    <SearchQueryInput onUpdate={this._handleChangeCondition} search_query={this.props.alert.condition_parameters.search_query}/>
                     <br/>
                     <FieldsInput stream={this.props.alert.stream} onSaveStream={this._handleChangeStream} message={this.props.message}
-                                    matchData={this.props.matchData} />
+                                 matchData={this.props.matchData}/>
                 </HighlightedDiv>
                 <br/>
-                <Row style={{ marginBottom: '0px' }}><Col md={2} /><Col md={10}><label><FormattedMessage id= "wizard.or" defaultMessage= "OR" /></label></Col></Row>
+                <Row style={{marginBottom: '0px'}}><Col md={2}/><Col md={10}><label><FormattedMessage id="wizard.or" defaultMessage="OR"/></label></Col></Row>
                 <br/>
                 <HighlightedDiv>
-                    <SearchQueryInput onUpdate={this._handleChangeCondition} search_query={this.props.alert.condition_parameters.additional_search_query} fieldName='additional_search_query' />
+                    <SearchQueryInput onUpdate={this._handleChangeCondition} search_query={this.props.alert.condition_parameters.additional_search_query} fieldName='additional_search_query'/>
                     <br/>
-                    <FieldsInput stream={this.props.alert.second_stream} onSaveStream={this._handleChangeSecondStream} message={this.props.message} />
+                    <FieldsInput stream={this.props.alert.second_stream} onSaveStream={this._handleChangeSecondStream} message={this.props.message}/>
                 </HighlightedDiv>
                 <br/>
                 <NumberInput onUpdate={this._handleChangeCondition} threshold={this.props.alert.condition_parameters.threshold}
-                                threshold_type={this.props.alert.condition_parameters.threshold_type} />
+                             threshold_type={this.props.alert.condition_parameters.threshold_type}/>
                 <br/>
-                <TimeRangeInput onUpdate={this._handleChangeCondition} time={time.toString()} time_type={time_type.toString()} />
+                <TimeRangeInput onUpdate={this._handleChangeCondition} time={time.toString()} time_type={time_type.toString()}/>
+                <br/>
+                <GroupByInput onUpdate={this._handleChangeCondition} grouping_fields={this.props.alert.condition_parameters.grouping_fields}/>
                 <br/>
                 <Description onUpdate={this.props.onUpdate} description={this.props.alert.description}/>
                 <br/>
             </>
         );
-        
+
     },
 });
 
