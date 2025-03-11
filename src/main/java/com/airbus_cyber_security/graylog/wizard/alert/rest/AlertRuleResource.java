@@ -138,6 +138,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         Optional<EventDefinitionDto> event = Optional.empty();
         Optional<EventDefinitionDto> event2 = Optional.empty();
         Map<String, Object> parametersCondition = null;
+        Map<String, Object> parametersCondition2 = null;
         boolean isDisabled = false;
         AlertRuleStream alertRuleStream = null;
         AlertRuleStream alertRuleStream2 = null;
@@ -160,7 +161,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             isDisabled = this.triggeringConditionsService.isDisabled(conditions) || this.triggeringConditionsService.isDisabled(conditions2);;
             eventIdentifier2 = pattern.eventIdentifier2();
             event2 = this.eventDefinitionService.getEventDefinition(eventIdentifier2);
-            completeParametersConditionForDisjunction(parametersCondition, event2);
+            parametersCondition2 = getConditionParameters(event2);
+            completeParametersConditionForDisjunction(parametersCondition, parametersCondition2);
         } else if (alertPattern instanceof AggregationAlertPattern pattern) {
             event = this.eventDefinitionService.getEventDefinition(pattern.eventIdentifier());
             parametersCondition = getConditionParameters(event);
@@ -218,10 +220,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return this.conversions.getConditionParameters(event.get().config());
     }
 
-    private void completeParametersConditionForDisjunction(Map<String, Object> configParameters, Optional<EventDefinitionDto> event) {
-        if (event.isPresent()) {
-            configParameters.put("additional_search_query", ((AggregationEventProcessorConfig) event.get().config()).query());
-        }
+    private void completeParametersConditionForDisjunction(Map<String, Object> configParameters, Map<String, Object> configParameters2) {
+        configParameters.put("additional_search_query", configParameters2.get("search_query"));
+        configParameters.put("additional_threshold_type", configParameters2.get("threshold_type"));
+        configParameters.put("additional_threshold", configParameters2.get("threshold"));
     }
 
     @GET

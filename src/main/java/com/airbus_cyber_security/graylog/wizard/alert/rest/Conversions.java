@@ -242,7 +242,10 @@ public class Conversions {
     }
 
     private boolean isValidCondOr(Map<String, Object> conditionParameters, AlertRuleStream secondStream) {
-        return (isValidThresholdType(conditionParameters.get(THRESHOLD_TYPE).toString()) &&
+        return (conditionParameters.containsKey(ADDITIONAL_THRESHOLD) &&
+                conditionParameters.containsKey(ADDITIONAL_THRESHOLD_TYPE) &&
+                isValidThresholdType(conditionParameters.get(THRESHOLD_TYPE).toString()) &&
+                isValidThresholdType(conditionParameters.get(ADDITIONAL_THRESHOLD_TYPE).toString()) &&
                 isValidStream(secondStream));
     }
 
@@ -290,6 +293,10 @@ public class Conversions {
 
     private int accessThreshold(Map<String, Object> conditionParameter) {
         return (int) conditionParameter.get(THRESHOLD);
+    }
+
+    private int accessAdditionalThreshold(Map<String, Object> conditionParameter) {
+        return (int) conditionParameter.get(ADDITIONAL_THRESHOLD);
     }
 
     // TODO move method to AlertRuleUtils?
@@ -353,6 +360,10 @@ public class Conversions {
     }
 
     public EventProcessorConfig createAdditionalAggregationCondition(String streamIdentifier, Map<String, Object> conditionParameter) {
+        String additionalThresholdType = (String) conditionParameter.get(ADDITIONAL_THRESHOLD_TYPE);
+        int additionalThreshold = this.accessAdditionalThreshold(conditionParameter);
+        conditionParameter.put(THRESHOLD_TYPE, additionalThresholdType);
+        conditionParameter.put(THRESHOLD, additionalThreshold);
         return this.createAggregationCondition(streamIdentifier, conditionParameter, ADDITIONAL_SEARCH_QUERY);
     }
 
