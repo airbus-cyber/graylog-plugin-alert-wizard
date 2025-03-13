@@ -368,7 +368,7 @@ public class Conversions {
     }
 
     private SeriesSpecBuilder<?, ?> createSeriesBuilder(String identifier, String distinctBy) {
-        if (distinctBy.isEmpty()) {
+        if (distinctBy == null || distinctBy.isEmpty()) {
             return Count.builder().id(identifier);
         }
         return Cardinality.builder().id(identifier).field(distinctBy);
