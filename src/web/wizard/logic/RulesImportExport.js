@@ -68,14 +68,8 @@ function normalizeSearchQuery(additional_search_query) {
     return additional_search_query;
 }
 
-function normalizeConditionParameters(rule) {
-    const condition_parameters = rule.condition_parameters;
-    const type = normalizeConditionParametersType(condition_parameters.type);
-    const threshold_type = normalizeThresholdType(condition_parameters.threshold_type);
-    const grouping_fields = normalizeGroupingFields(rule);
-    const distinct_by = normalizeDistinctBy(condition_parameters, rule.title);
-    const search_query = normalizeSearchQuery(condition_parameters.search_query);
-    if (rule.condition_type === 'OR') {
+function fixAdditionalThresholdForORCondition(condition_type, condition_parameters) {
+    if (condition_type === 'OR') {
         if (typeof condition_parameters.additional_threshold_type === 'undefined') {
             condition_parameters.additional_threshold_type = condition_parameters.threshold_type
         }
@@ -83,10 +77,21 @@ function normalizeConditionParameters(rule) {
             condition_parameters.additional_threshold = condition_parameters.threshold
         }
     }
+}
+
+function normalizeConditionParameters(rule) {
+    const condition_parameters = rule.condition_parameters;
+    const type = normalizeConditionParametersType(condition_parameters.type);
+    const threshold_type = normalizeThresholdType(condition_parameters.threshold_type);
+    const grouping_fields = normalizeGroupingFields(rule);
+    const distinct_by = normalizeDistinctBy(condition_parameters, rule.title);
+    const search_query = normalizeSearchQuery(condition_parameters.search_query);
+    fixAdditionalThresholdForORCondition(rule.condition_type, condition_parameters)
     const result = { ...condition_parameters, type, search_query, threshold_type, grouping_fields, distinct_by };
     if (['COUNT', 'GROUP_DISTINCT', 'STATISTICAL'].includes(rule.condition_type)) {
         return result;
     }
+
     const additional_search_query = normalizeSearchQuery(condition_parameters.additional_search_query);
     const additional_threshold_type = normalizeThresholdType(condition_parameters.additional_threshold_type);
     return { ...result, additional_search_query, additional_threshold_type };
