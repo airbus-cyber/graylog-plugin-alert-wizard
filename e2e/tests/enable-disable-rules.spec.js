@@ -61,7 +61,7 @@ test('disable stream#2 should disable rule', async ({ page }) => {
     await page.waitForTimeout(200);
     await page.locator('#field-input').nth(1).fill('message');
     await page.waitForTimeout(200);
-    await page.getByText('arrow_drop_down').nth(4).click();
+    await page.getByText('arrow_drop_down').nth(5).click();
     await page.getByRole('option', { name: 'matches exactly' }).click();
     await page.locator('#value').nth(1).fill('cba');
     await page.waitForTimeout(200);
