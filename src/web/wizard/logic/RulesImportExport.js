@@ -75,14 +75,19 @@ function normalizeConditionParameters(rule) {
     const grouping_fields = normalizeGroupingFields(rule);
     const distinct_by = normalizeDistinctBy(condition_parameters, rule.title);
     const search_query = normalizeSearchQuery(condition_parameters.search_query);
+    if (rule.condition_type === 'OR') {
+        if (typeof condition_parameters.additional_threshold_type === 'undefined') {
+            condition_parameters.additional_threshold_type = condition_parameters.threshold_type
+        }
+        if (typeof condition_parameters.additional_threshold === 'undefined') {
+            condition_parameters.additional_threshold = condition_parameters.threshold
+        }
+    }
     const result = { ...condition_parameters, type, search_query, threshold_type, grouping_fields, distinct_by };
     if (['COUNT', 'GROUP_DISTINCT', 'STATISTICAL'].includes(rule.condition_type)) {
         return result;
     }
     const additional_search_query = normalizeSearchQuery(condition_parameters.additional_search_query);
-    if (rule.condition_type === 'OR') {
-        return { ...result, additional_search_query };
-    }
     const additional_threshold_type = normalizeThresholdType(condition_parameters.additional_threshold_type);
     return { ...result, additional_search_query, additional_threshold_type };
 }

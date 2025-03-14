@@ -72,6 +72,15 @@ const OrCondition = createReactClass({
         this.setState({alert: update});
         this.props.onUpdate('second_stream', update.second_stream);
     },
+    _handleChangeAdditionalNbrCond(field, value) {
+        if (field === "threshold") {
+            this._handleChangeCondition("additional_threshold", value);
+        } else if (field === "threshold_type") {
+            this._handleChangeCondition("additional_threshold_type", value);
+        } else {
+            this._handleChangeCondition(field, value);
+        }
+    },
     
     render() {
         let time;
@@ -94,6 +103,9 @@ const OrCondition = createReactClass({
                     <br/>
                     <FieldsInput stream={this.props.alert.stream} onSaveStream={this._handleChangeStream} message={this.props.message}
                                  matchData={this.props.matchData}/>
+                    <br/>
+                    <NumberInput onUpdate={this._handleChangeCondition} threshold={this.state.alert.condition_parameters.threshold}
+                                 threshold_type={this.state.alert.condition_parameters.threshold_type}/>
                 </HighlightedDiv>
                 <br/>
                 <Row style={{marginBottom: '0px'}}><Col md={2}/><Col md={10}><label><FormattedMessage id="wizard.or" defaultMessage="OR"/></label></Col></Row>
@@ -102,10 +114,10 @@ const OrCondition = createReactClass({
                     <SearchQueryInput onUpdate={this._handleChangeCondition} search_query={this.props.alert.condition_parameters.additional_search_query} fieldName='additional_search_query'/>
                     <br/>
                     <FieldsInput stream={this.props.alert.second_stream} onSaveStream={this._handleChangeSecondStream} message={this.props.message}/>
+                    <br/>
+                    <NumberInput onUpdate={this._handleChangeAdditionalNbrCond} threshold={this.state.alert.condition_parameters.additional_threshold}
+                                 threshold_type={this.state.alert.condition_parameters.additional_threshold_type}/>
                 </HighlightedDiv>
-                <br/>
-                <NumberInput onUpdate={this._handleChangeCondition} threshold={this.props.alert.condition_parameters.threshold}
-                             threshold_type={this.props.alert.condition_parameters.threshold_type}/>
                 <br/>
                 <TimeRangeInput onUpdate={this._handleChangeCondition} time={time.toString()} time_type={time_type.toString()}/>
                 <br/>

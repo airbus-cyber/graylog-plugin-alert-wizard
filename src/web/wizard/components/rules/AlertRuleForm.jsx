@@ -132,8 +132,8 @@ const AlertRuleForm = createReactClass({
                 return (<CorrelationCondition onUpdate={this._updateAlertField} onUpdateAlert={this._updateAlert} alert={this.state.alert}
                                               message={this.state.message} matchData={this.state.matchData} />);
             case 'OR':
-                return (<OrCondition onUpdate={this._updateAlertField} alert={this.state.alert} message={this.state.message}
-                                     matchData={this.state.matchData} />);
+                return (<OrCondition onUpdate={this._updateAlertField} onUpdateAlert={this._updateAlert} alert={this.state.alert}
+                                     message={this.state.message} matchData={this.state.matchData} />);
             default:
                 return (<div/>);
         }
