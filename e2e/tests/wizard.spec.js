@@ -75,3 +75,14 @@ test('OR rule should contains GroupBy field', async ({ page }) => {
 
   await expect(page.getByText('Group by Condition')).toBeVisible();
 });
+
+test('transmit query from search to new wizard alert - #142', async ({ page }) => {
+  await page.goto('/search?q=source%3A+test');
+
+  await login_steps(page);
+
+  await page.getByLabel('Open search actions dropdown').click();
+  await page.getByRole('menuitem', { name: 'Create wizard alert rule' }).click();
+
+  await expect(page.locator('#search_query')).toHaveValue('source: test');
+});
