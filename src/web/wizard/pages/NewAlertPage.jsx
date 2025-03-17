@@ -26,7 +26,7 @@ import { IntlProvider, FormattedMessage } from 'react-intl';
 import { Button, Col, Row } from 'components/bootstrap';
 import { DocumentTitle, PageHeader, Spinner } from 'components/common';
 import useHistory from 'routing/useHistory';
-
+import useLocation from 'routing/useLocation';
 import messages_fr from 'translations/fr.json';
 import AlertRuleForm from 'wizard/components/rules/AlertRuleForm';
 import AlertRuleResource from 'wizard/resources/AlertRuleResource';
@@ -42,6 +42,8 @@ const messages = {
 const NewAlertPage = () => {
     const [configuration, setConfiguration] = useState(null);
     const history = useHistory();
+    const location = useLocation();
+    const initialQueryString = location?.state?.queryString ? location.state.queryString : '*';
 
     useEffect(() => {
         WizardConfigurationResource.get().then(configuration => {
@@ -81,7 +83,7 @@ const NewAlertPage = () => {
                 distinct_by: '',
                 field: '',
                 type: '',
-                search_query: '*',
+                search_query: initialQueryString,
                 additional_search_query: '*'
             },
             stream: {

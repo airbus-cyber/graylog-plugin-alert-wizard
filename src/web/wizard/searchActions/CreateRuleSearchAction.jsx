@@ -18,19 +18,24 @@
 import React from 'react';
 import { useCallback } from 'react';
 import { MenuItem } from 'components/bootstrap';
+import useHistory from 'routing/useHistory';
+import Navigation from "../routing/Navigation";
 
 const CreateRuleSearchAction = (searchActionProps) => {
+
+    const history = useHistory();
 
     function _extractQueryString(searchView) {
         if(searchView.search.queries && searchView.search.queries.size > 0)
             return searchView.search.queries.first().query.query_string;
 
-        return '';
+        return '*';
     }
 
     const createWizardRule = useCallback(() => {
-        console.log(_extractQueryString(searchActionProps.search));
-    }, []);
+        const queryString = _extractQueryString(searchActionProps.search);
+        history.pushWithState(Navigation.getWizardNewAlertRoute(), { queryString });
+    }, [history]);
 
     return (
         <>
