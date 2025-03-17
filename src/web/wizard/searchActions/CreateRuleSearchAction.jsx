@@ -19,7 +19,7 @@ import React from 'react';
 import { useCallback } from 'react';
 import { MenuItem } from 'components/bootstrap';
 import useHistory from 'routing/useHistory';
-import Navigation from "../routing/Navigation";
+import Navigation from 'wizard/routing/Navigation';
 
 const CreateRuleSearchAction = (searchActionProps) => {
 
