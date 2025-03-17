@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [6.x.x](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/6.1.1...6.x.x)
 ### Features
+* Open wizard new rule from search page ([issue #142](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/142))
 * Add grouping field for OR rules ([issue #149](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/149))
 * Add additional threshold for OR rules ([issue #151](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/151))
 
