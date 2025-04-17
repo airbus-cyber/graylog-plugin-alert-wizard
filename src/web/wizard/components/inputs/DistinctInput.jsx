@@ -58,7 +58,6 @@ const DistinctInput = createReactClass({
                                 value={this.state.distinct_by}
                                 onChange={this._onDistinctionFieldsChange}
                                 allowCreate={true}/>
-                        <Input />
                         </div>
                     </Input>
                 </Col>
