@@ -2,11 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
-## [6.x.x](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/6.1.1...6.x.x)
+## [6.1.2](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/6.1.1...6.1.2)
 ### Features
 * Open wizard new rule from search page ([issue #142](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/142))
 * Add grouping field for OR rules ([issue #149](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/149))
 * Add additional threshold for OR rules ([issue #151](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/151))
+* Bump graylog-plugin-logging-alert version to 6.1.2 ([issue #54](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/54))
 
 ### Bug Fixes
 * Remove load message ([issue #146](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/146))
