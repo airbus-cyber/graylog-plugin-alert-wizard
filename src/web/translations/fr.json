@@ -72,6 +72,7 @@
   "wizard.groupBy": "Condition de regroupement",
   "wizard.distinctBy": "Condition de différenciation",
   "wizard.groupByLabel": "Les messages doivent être groupés par",
+  "wizard.groupByDescription": "Note : Ces champs sont utilisés pour regrouper les alertes",
   "wizard.distinctByLabel": "Les messages doivent être distincts par",
   "wizard.the": "La",
   "wizard.of": "de",

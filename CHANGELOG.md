@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 * Bump graylog-plugin-logging-alert version to 6.1.2 ([issue #54](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/54))
 
 ### Bug Fixes
+* Description for Group By fields ([issue #153](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/153)) 
 * Remove load message ([issue #146](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/146))
 * Open Search in new tab ([issue #147](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/147))
 
