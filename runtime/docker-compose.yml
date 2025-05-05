@@ -8,6 +8,8 @@ services:
   mongo:
     image: "mongo:6.0"
     container_name: mongo
+    networks:
+      - eh-network
     # uncomment to expose mongodb on localhost:27017
     # ports:
     #   - 27017:27017
@@ -28,6 +30,11 @@ services:
       memlock:
         soft: -1
         hard: -1
+    ports:
+      - 9200:9200
+    networks:
+      - eh-network
+
 
   # Graylog: https://hub.docker.com/r/graylog/graylog/
   graylog:
@@ -58,4 +65,11 @@ services:
     healthcheck:
       test: curl --head --fail http://localhost:9000 || exit 1
       start_period: 60s
+    networks:
+      - eh-network
+
+networks:
+  eh-network:
+    name: eh-network
+    driver: bridge
 

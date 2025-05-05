@@ -528,3 +528,10 @@ class TestsFast(TestCase):
 
         response = self._api.get_stream(create_response['stream']['id'])
         self.assertEqual(True, response.json()['disabled'])
+
+    def test_update_alert_rule_title_should_not_fail__issue128(self):
+        title = 'title_to_update'
+        rule = self._api.create_alert_rule_count(title, _PERIOD)
+        response = self._graylog.update_alert_rule(title, {**rule, 'title': 'updated_title'}).json()
+
+        self.assertEqual('updated_title', response['title'])

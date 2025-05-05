@@ -456,14 +456,14 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String notificationIdentifier = previousAlert.getNotificationID();
         String userName = getCurrentUser().getName();
 
-        this.notificationService.updateNotification(title, notificationIdentifier);
+        this.notificationService.updateNotification(request.getTitle(), notificationIdentifier);
 
         AlertType previousAlertType = previousAlert.getAlertType();
         AlertPattern pattern = updateAlertPattern(previousAlert.pattern(), notificationIdentifier, request,
-                previousAlertType, title, userContext, userName);
+                previousAlertType, request.getTitle(), userContext, userName);
 
         AlertRule alertRule = AlertRule.create(
-                title,
+                request.getTitle(),
                 request.getConditionType(),
                 pattern,
                 previousAlert.getNotificationID(),
