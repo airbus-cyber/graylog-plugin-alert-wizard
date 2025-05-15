@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 * Description for Group By fields ([issue #153](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/153)) 
 * Remove load message ([issue #146](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/146))
 * Open Search in new tab ([issue #147](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/147))
+* Open Search in two tabs for OR, THEN, AND ([issue #156](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/156))
 
 ## [6.1.1](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/6.1.0...6.1.1)
 ### Bug Fixes

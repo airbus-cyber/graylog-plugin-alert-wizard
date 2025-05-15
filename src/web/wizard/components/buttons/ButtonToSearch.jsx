@@ -22,21 +22,35 @@ import { Icon } from 'components/common';
 import { useIntl } from 'react-intl';
 import Routes from 'routing/Routes';
 
-const ButtonToSearch = ({searchQuery, stream1, stream2, disabled}) => {
+function normalizeSearchQuery(searchQuery) {
+    if (searchQuery && searchQuery !== '*') {
+        return searchQuery;
+    }
+
+    return '';
+}
+
+function createUrl(searchQuery, stream) {
+    const normSearchQuery = normalizeSearchQuery(searchQuery);
+    return Routes.search_with_query(normSearchQuery, "relative", {"relative": 86400}, [stream]);
+}
+
+const ButtonToSearch = ({searchQuery1, searchQuery2, stream1, stream2, disabled}) => {
     const intl = useIntl();
     const tooltip = intl.formatMessage({id: "wizard.tooltipSearch", defaultMessage: "Launch search for this alert rule"});
-    const stream = [];
-    if (stream1) {
-        stream.push(stream1);
+
+    const openSearchTabs = () => {
+        const url1 = createUrl(searchQuery1, stream1);
+        window.open(url1, '_blank', 'noopener,noreferrer')
+
+        if(stream2) {
+            const url2 = createUrl(searchQuery2, stream2);
+            window.open(url2, '_blank', 'noopener,noreferrer');
+        }
     }
-    if (stream2) {
-        stream.push(stream2);
-    }
-    const searchURL = Routes.search_with_query(searchQuery, "relative", {"relative": 86400}, stream);
-    const link = Routes.SEARCH + searchURL.substring(searchURL.indexOf('?'));
 
     return (
-        <Button bsStyle="info" title={tooltip} disabled={disabled} href={link} target="_blank">
+        <Button bsStyle="info" title={tooltip} disabled={disabled} onClick={openSearchTabs}>
             <Icon name="play_arrow" />
         </Button>
     );
