@@ -115,6 +115,55 @@ test('open_two_tabs_when_click_on_search_button', async ({ page }) => {
   }
 });
 
+
+test('open_two_tabs_when_click_on_search_button_when_second_stream_condition_is_empty_#156', async ({ page }) => {
+  await page.goto('/wizard/AlertRules');
+
+  await login_steps(page);
+
+  // Fill Title
+  const title = `AAA-${crypto.randomUUID()}`;
+  await page.getByRole('link', { name: 'Create' }).click();
+  await page.getByRole('button', { name: 'OR' }).click();
+  await page.locator('#title').fill(title);
+
+  // Add 1st Field Condition
+  await fill_field_condition(page, 'message', 'matches exactly', 'abc');
+
+  // Fill 1st Search Query
+  const searchQuery = 'a?c';
+  await page.locator('#search_query').first().fill(searchQuery);
+  await page.waitForTimeout(200);
+
+  // Fill 2nd Search Query
+  const searchQuery2 = 'b?d';
+  await page.locator('#search_query').nth(1).fill(searchQuery2);
+  await page.waitForTimeout(200);
+
+  // Save
+  await page.getByRole('button', { name: 'Save' }).click();
+
+  // Go on search page
+  await open_alert_page_and_filter(page, title);
+  await page.getByRole('button', { name: 'play_arrow' }).click();
+
+  // Wait new tabs
+  await page.waitForTimeout(2000);
+  let pages = page.context().pages();
+  expect(pages.length).toBe(3);
+  if (await pages[1].getByText(title + '#2').isVisible()) {
+    await expect(pages[2].getByText(title)).toBeVisible();
+    await expect(pages[2].getByText(searchQuery)).toBeVisible();
+
+    await expect(pages[1].getByText(searchQuery2)).toBeVisible();
+  } else {
+    await expect(pages[1].getByText(title)).toBeVisible();
+    await expect(pages[1].getByText(searchQuery)).toBeVisible();
+
+    await expect(pages[2].getByText(searchQuery2)).toBeVisible();
+  }
+});
+
 test('OR rule should contains GroupBy field', async ({ page }) => {
   await page.goto('/wizard/AlertRules');
 
