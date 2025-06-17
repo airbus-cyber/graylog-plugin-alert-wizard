@@ -407,7 +407,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             EventProcessorConfig configuration = this.conversions.createCorrelationCondition(alertType, streamIdentifier, streamIdentifier2, request.conditionParameters());
             this.eventDefinitionService.updateEvent(title, request.getDescription(), request.getPriority(), previousPattern.eventIdentifier(), configuration, request.isDisabled());
 
-            return previousPattern.toBuilder().conditions1(conditions).build();
+            return previousPattern.toBuilder().conditions1(conditions).conditions2(conditions2).build();
         } else if (previousAlertPattern instanceof DisjunctionAlertPattern previousPattern) {
             TriggeringConditions previousConditions = previousPattern.conditions1();
             TriggeringConditions conditions = this.triggeringConditionsService.updateTriggeringConditions(previousConditions, title, streamConfiguration, userName, request.isDisabled());
@@ -422,7 +422,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             EventProcessorConfig configuration2 = this.conversions.createAdditionalAggregationCondition(streamIdentifier2, request.conditionParameters());
             this.eventDefinitionService.updateEvent(title2, request.getDescription(), request.getPriority(), previousPattern.eventIdentifier2(), configuration2, request.isDisabled());
 
-            return previousPattern.toBuilder().conditions1(conditions).build();
+            return previousPattern.toBuilder().conditions1(conditions).conditions2(conditions2).build();
         } else if (previousAlertPattern instanceof AggregationAlertPattern previousPattern) {
             TriggeringConditions previousConditions = previousPattern.conditions();
             TriggeringConditions conditions = this.triggeringConditionsService.updateTriggeringConditions(previousConditions, title, streamConfiguration, userName, request.isDisabled());

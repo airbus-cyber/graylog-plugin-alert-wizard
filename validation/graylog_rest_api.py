@@ -213,6 +213,18 @@ class GraylogRestApi:
         }
         return self._create_alert_rule(title, stream, 'OR', time, description=description, additional_threshold_type='<', additional_threshold=additional_threshold, second_stream=second_stream, group_by_fields=group_by_fields)
 
+    def create_alert_rule_or_without_stream(self, title, time, description, search_query, additional_search_query, additional_threshold=0, group_by_fields=[]):
+        second_stream = {
+            'field_rule': [],
+            'matching_type': 'AND'
+        }
+        stream = {
+            'field_rule': [],
+            'matching_type': 'AND'
+        }
+        return self._create_alert_rule(title, stream, 'OR', time, description=description, additional_threshold_type='>', additional_threshold=additional_threshold, second_stream=second_stream, group_by_fields=group_by_fields, search_query=search_query, additional_search_query=additional_search_query)
+
+
     def get_alert_rule(self, name):
         response = self._get(f'plugins/com.airbus_cyber_security.graylog.wizard/alerts/{name}')
         return response.json()

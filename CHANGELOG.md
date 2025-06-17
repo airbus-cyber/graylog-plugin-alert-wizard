@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.1.3](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/6.1.2...6.1.3)
+### Bug Fixes
+* Open Search in two tabs for OR, THEN, AND ([issue #156](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/156))
+* Editing OR, AND, THEN rules does not save second streams ([issue #159](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/159))
+
 ## [6.1.2](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/6.1.1...6.1.2)
 ### Features
 * Open wizard new rule from search page ([issue #142](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/142))

@@ -88,6 +88,9 @@ class Graylog:
     def create_alert_rule_or(self, title, time, description='', additional_threshold=0, group_by_fields=[]):
         return self._api.create_alert_rule_or(title, time, description, additional_threshold, group_by_fields)
 
+    def create_alert_rule_or_without_stream(self, title, time, search_query, additional_search_query, description='', additional_threshold=0, group_by_fields=[]):
+        return self._api.create_alert_rule_or_without_stream(title, time, description, search_query, additional_search_query, additional_threshold, group_by_fields)
+
     def update_alert_rule(self, previousTitle, rule):
         updated_rule = {
             'title': rule['title'],

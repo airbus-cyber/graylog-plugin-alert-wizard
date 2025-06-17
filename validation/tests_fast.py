@@ -535,3 +535,46 @@ class TestsFast(TestCase):
         response = self._graylog.update_alert_rule(title, {**rule, 'title': 'updated_title'}).json()
 
         self.assertEqual('updated_title', response['title'])
+
+    def test_update_and_or_then_rule_should_set_stream__issue159(self):
+        search_query_1 = 'src: x'
+        search_query_2 = 'user: x'
+
+        title = 'or_without_stream'
+        stream_1 = {
+            'field_rule': [{
+                'field': 'src',
+                'type': 1,
+                'value': 'x'
+            }],
+            'matching_type': 'AND',
+            'id': None
+        }
+        stream_2 = {
+            'field_rule': [{
+                'field': 'user',
+                'type': 1,
+                'value': 'x'
+            }],
+            'matching_type': 'AND',
+            'id': None
+        }
+        alert_rule = self._graylog.create_alert_rule_or_without_stream(title, _PERIOD, search_query_1, search_query_2)
+        updated_rule = alert_rule.copy()
+        updated_rule['condition_parameters']['search_query'] = ''
+        updated_rule['condition_parameters']['additional_search_query'] = ''
+        updated_rule['stream'] = stream_1
+        updated_rule['second_stream'] = stream_2
+
+        self._graylog.update_alert_rule(title, updated_rule)
+
+        alert_rule = self._graylog.get_alert_rule(title)
+
+        updated_stream_1 = alert_rule['stream']
+        self.assertIsNotNone(updated_stream_1['id'])
+        self.assertEqual('src', updated_stream_1['field_rule'][0]['field'])
+
+        updated_stream_2 = alert_rule['second_stream']
+        self.assertIsNotNone(updated_stream_2['id'])
+        self.assertEqual('user', updated_stream_2['field_rule'][0]['field'])
+
