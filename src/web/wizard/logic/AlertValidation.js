@@ -77,5 +77,17 @@ export default {
             return false;
         }
         return true;
+    },
+
+    isAlertCorrupted(alert) {
+        if (alert.condition === null || alert.condition_parameters === null || alert.stream === null || alert.notification === null) {
+            return true;
+        }
+
+        if (alert.condition_type === 'OR' && alert.second_event_definition === null) {
+            return true;
+        }
+
+        return false;
     }
 }

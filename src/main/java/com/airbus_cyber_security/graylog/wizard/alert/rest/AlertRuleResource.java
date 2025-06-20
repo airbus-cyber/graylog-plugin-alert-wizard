@@ -142,7 +142,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         boolean isDisabled = false;
         AlertRuleStream alertRuleStream = null;
         AlertRuleStream alertRuleStream2 = null;
-        String eventIdentifier2 = null;
+
         if (alertPattern instanceof CorrelationAlertPattern pattern) {
             event = this.eventDefinitionService.getEventDefinition(pattern.eventIdentifier());
             parametersCondition = getConditionParameters(event);
@@ -152,15 +152,15 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             alertRuleStream2 = this.constructAlertRuleStream(conditions2);
             isDisabled = this.triggeringConditionsService.isDisabled(conditions1) || this.triggeringConditionsService.isDisabled(conditions2);
         } else if (alertPattern instanceof DisjunctionAlertPattern pattern) {
-            event = this.eventDefinitionService.getEventDefinition(pattern.eventIdentifier1());
-            parametersCondition = getConditionParameters(event);
             TriggeringConditions conditions = pattern.conditions1();
             alertRuleStream = this.constructAlertRuleStream(conditions);
             TriggeringConditions conditions2 = pattern.conditions2();
             alertRuleStream2 = this.constructAlertRuleStream(conditions2);
             isDisabled = this.triggeringConditionsService.isDisabled(conditions) || this.triggeringConditionsService.isDisabled(conditions2);;
-            eventIdentifier2 = pattern.eventIdentifier2();
-            event2 = this.eventDefinitionService.getEventDefinition(eventIdentifier2);
+
+            event = this.eventDefinitionService.getEventDefinition(pattern.eventIdentifier1());
+            event2 = this.eventDefinitionService.getEventDefinition(pattern.eventIdentifier2());
+            parametersCondition = getConditionParameters(event);
             parametersCondition2 = getConditionParameters(event2);
             completeParametersConditionForDisjunction(parametersCondition, parametersCondition2);
         } else if (alertPattern instanceof AggregationAlertPattern pattern) {
@@ -190,8 +190,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             }
         }
 
+        String eventIdentifier2 = null;
         if (event2.isPresent()) {
             EventDefinitionDto eventDefinitionDto2 = event2.get();
+            eventIdentifier2 = eventDefinitionDto2.id();
             if (EventDefinition.State.DISABLED.equals(eventDefinitionDto2.state())) {
                 isDisabled = true;
             }
@@ -221,9 +223,11 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     }
 
     private void completeParametersConditionForDisjunction(Map<String, Object> configParameters, Map<String, Object> configParameters2) {
-        configParameters.put("additional_search_query", configParameters2.get("search_query"));
-        configParameters.put("additional_threshold_type", configParameters2.get("threshold_type"));
-        configParameters.put("additional_threshold", configParameters2.get("threshold"));
+        if (configParameters != null && configParameters2 != null) {
+            configParameters.put("additional_search_query", configParameters2.get("search_query"));
+            configParameters.put("additional_threshold_type", configParameters2.get("threshold_type"));
+            configParameters.put("additional_threshold", configParameters2.get("threshold"));
+        }
     }
 
     @GET

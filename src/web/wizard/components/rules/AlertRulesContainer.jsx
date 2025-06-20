@@ -32,12 +32,12 @@ import AlertRuleCloneForm from "./AlertRuleCloneForm";
 import EventDefinitionResources from "../../resources/EventDefinitionResource";
 import StreamsStore from 'stores/streams/StreamsStore';
 import ButtonToSearch from "../buttons/ButtonToSearch";
+import AlertValidation from "../../logic/AlertValidation";
 
 function _convertAlertToElement(alert) {
-    let alertValid = true;
+    let alertValid = !AlertValidation.isAlertCorrupted(alert);
     let textColor = '';
-    if (alert.condition === null || alert.condition_parameters === null || alert.stream === null || alert.notification === null) {
-        alertValid = false;
+    if (!alertValid) {
         textColor = 'text-danger';
     } else if (alert.disabled) {
         textColor = 'text-muted';
@@ -99,7 +99,13 @@ const AlertRulesContainer = ({ fieldOrder }) => {
         {value: 3, label: intl.formatMessage({id: "wizard.high", defaultMessage: "High"})}
     ];
     const getPriorityType = (type) => {
-        return availablePriorityTypes.find((t) => t.value === type).label;
+        const selectedPriority = availablePriorityTypes.find((t) => t.value === type);
+
+        if (selectedPriority) {
+            return selectedPriority.label;
+        }
+
+        return "";
     }
 
     const [alerts, setAlerts] = useState([]);
@@ -128,13 +134,13 @@ const AlertRulesContainer = ({ fieldOrder }) => {
                 renderCell: (_status, element) => {
                     if (element.valid) {
                         if(_status) {
-                            return <span style={{backgroundColor: 'orange', color: 'white'}}><FormattedMessage id="wizard.disabled" defaultMessage="Disabled"/></span>;
+                            return <span style={{backgroundColor: 'orange', color: 'white'}} className={element.textColor}><FormattedMessage id="wizard.disabled" defaultMessage="Disabled"/></span>;
                         } else {
-                            return <FormattedMessage id="wizard.enabled" defaultMessage="Enabled" />;
+                            return <span><FormattedMessage id="wizard.enabled" defaultMessage="Enabled" /></span>;
                         }
                     }
                     else {
-                        return <FormattedMessage id="wizard.corrupted" defaultMessage="Corrupted" />;
+                        return <span className={element.textColor}><FormattedMessage id="wizard.corrupted" defaultMessage="Corrupted" /></span>;
                     }
                 }
             },
