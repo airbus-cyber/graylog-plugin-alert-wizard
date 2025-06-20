@@ -15,39 +15,30 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-import createReactClass from 'create-react-class';
 import React from 'react';
 import PropTypes from 'prop-types';
-import { LinkContainer } from 'react-router-bootstrap';
-// TODO make our own InfoButton and factor?
 import { Button } from 'components/bootstrap';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Routes from 'routing/Routes';
 
-const ButtonToNotification = createReactClass({
+const ButtonToNotification  = ({target, disabled}) => {
+    const intl = useIntl();
+    const tooltip = intl.formatMessage({id: "wizard.tooltipNotification", defaultMessage: "Edit notification for this alert rule"});
 
-    propTypes: {
-        target: PropTypes.string.isRequired,
-        disabled: PropTypes.bool,
-    },
-
-    // TODO replace deprecated componentWillMount into a combination of getInitialState and componentDidMount
-    componentWillMount() {
-        const { intl } = this.props;
-        const tooltip = intl.formatMessage({id: "wizard.tooltipNotification", defaultMessage: "Edit notification for this alert rule"});
-        this.setState({tooltip: tooltip});
-    },
-
-    render() {
-        // TODO could look for all the LinkContainer/Button/FormattedMessage and maybe factor
-        return (
-            <LinkContainer disabled={this.props.disabled} to={Routes.ALERTS.NOTIFICATIONS.edit(this.props.target)} >
-                <Button bsStyle="info" title={this.state.tooltip} >
-                    <FormattedMessage id="wizard.notification" defaultMessage="Notification" />
-                </Button>
-            </LinkContainer>
-        );
+    const openNotification = () => {
+        window.open(Routes.ALERTS.NOTIFICATIONS.edit(target),"_self");
     }
-});
 
-export default injectIntl(ButtonToNotification);
+    return (
+        <Button bsStyle="info" title={tooltip} disabled={disabled} onClick={openNotification}>
+            <FormattedMessage id="wizard.notification" defaultMessage="Notification" />
+        </Button>
+    );
+}
+
+ButtonToNotification.propTypes = {
+    target: PropTypes.string.isRequired,
+    disabled: PropTypes.bool,
+};
+
+export default ButtonToNotification;

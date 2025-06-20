@@ -33,6 +33,7 @@ import EventDefinitionResources from "../../resources/EventDefinitionResource";
 import StreamsStore from 'stores/streams/StreamsStore';
 import ButtonToSearch from "../buttons/ButtonToSearch";
 import AlertValidation from "../../logic/AlertValidation";
+import ButtonToUpdateRule from "../buttons/ButtonToUpdateRule";
 
 function _convertAlertToElement(alert) {
     let alertValid = !AlertValidation.isAlertCorrupted(alert);
@@ -162,21 +163,12 @@ const AlertRulesContainer = ({ fieldOrder }) => {
     );
     const onSortChange = useCallback(() => {}, []);
     const renderAlertRuleActions = useCallback((element) => {
-        const updateAlert = (
-            <IfPermitted permissions="wizard_alerts_rules:read">
-                <LinkContainer to={Routes.pluginRoute('WIZARD_UPDATEALERT_ALERTRULETITLE')(element.title.replace(/\//g, '%2F'))} disabled={!element.valid}>
-                    <Button bsStyle="info" type="submit">
-                        <FormattedMessage id="wizard.edit" defaultMessage="Edit"/>
-                    </Button>
-                </LinkContainer>
-            </IfPermitted>);
-        const cloneAlert = <AlertRuleCloneForm alertTitle={element.title} disabled={!element.valid} onSubmit={_onCloneSubmit} />;
         return (<div className="pull-left" style={{display: 'flex', columnGap: '1px'}}>
             <ButtonToSearch searchQuery1={element.searchQuery} searchQuery2={element.searchQuery2} stream1={element.streamId} stream2={element.streamId2} disabled={!element.valid}/>
-            {updateAlert}
+            <ButtonToUpdateRule target={element.title} disabled={!element.valid}/>
             <ButtonToEventDefinition target={element.condition} disabled={!element.valid}/>
             <ButtonToNotification target={element.notification} disabled={!element.valid}/>
-            {cloneAlert}
+            <AlertRuleCloneForm alertTitle={element.title} disabled={!element.valid} onSubmit={_onCloneSubmit} />
         </div>);
     }, []);
     const _elementMatchQuery = (element, query) => {

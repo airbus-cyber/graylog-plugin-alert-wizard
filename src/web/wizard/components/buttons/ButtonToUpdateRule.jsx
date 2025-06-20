@@ -18,27 +18,31 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'components/bootstrap';
+import { IfPermitted } from 'components/common';
 import { useIntl, FormattedMessage } from 'react-intl';
 import Routes from 'routing/Routes';
 
-const ButtonToEventDefinition = ({target, disabled}) => {
+const ButtonToUpdateRule = ({target, disabled}) => {
     const intl = useIntl();
-    const tooltip = intl.formatMessage({id: "wizard.tooltipEventDefinition", defaultMessage: "Edit event definition for this alert rule"});
+    const tooltip = intl.formatMessage({id: "wizard.buttonInfoUpdate", defaultMessage: "Edit this alert rule"});
 
-    const openEventDefinition = () => {
-        window.open(Routes.ALERTS.DEFINITIONS.edit(target),"_self");
+    const openUpdateRule = () => {
+        const url = Routes.pluginRoute('WIZARD_UPDATEALERT_ALERTRULETITLE')(target.replace(/\//g, '%2F'));
+        window.open(url,"_self");
     }
 
     return (
-        <Button bsStyle="info" title={tooltip} disabled={disabled} onClick={openEventDefinition}>
-            <FormattedMessage id="wizard.eventDefinition" defaultMessage="Event definition" />
-        </Button>
+        <IfPermitted permissions="wizard_alerts_rules:read">
+            <Button bsStyle="info" title={tooltip} disabled={disabled} onClick={openUpdateRule}>
+                <FormattedMessage id="wizard.edit" defaultMessage="Edit"/>
+            </Button>
+        </IfPermitted>
     );
 }
 
-ButtonToEventDefinition.propTypes = {
+ButtonToUpdateRule.propTypes = {
     target: PropTypes.string.isRequired,
     disabled: PropTypes.bool,
 };
 
-export default ButtonToEventDefinition;
+export default ButtonToUpdateRule;
