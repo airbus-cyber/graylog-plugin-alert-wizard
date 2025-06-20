@@ -24,8 +24,8 @@ test('statistics rule should retain field', async ({ page }) => {
   // Go on search page
   await open_alert_page_and_filter(page, title);
 
-  await expect(page.getByRole('link', { name: 'Edit' })).toHaveCount(1);
-  await page.getByRole('link', { name: 'Edit' }).click();
+  await expect(page.getByRole('button', { name: 'Edit' })).toHaveCount(1);
+  await page.getByRole('button', { name: 'Edit' }).click();
   await expect(page.getByText('source – string')).toBeVisible();
 });
 
