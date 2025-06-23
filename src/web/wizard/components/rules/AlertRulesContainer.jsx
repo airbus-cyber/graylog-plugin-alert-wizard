@@ -16,24 +16,23 @@
  */
 
 import React from 'react';
+import Reflux from 'reflux';
 import { useState, useCallback, useEffect } from 'react';
-import { EntityDataTable, NoSearchResult, Timestamp, IfPermitted, SearchForm } from 'components/common';
-import { LinkContainer } from 'react-router-bootstrap';
-import { Button } from 'components/bootstrap';
-import AlertRuleActions from "../../actions/AlertRuleActions";
-import { useIntl, FormattedMessage } from "react-intl";
-import AlertRuleBulkActions from "./AlertRuleBulkActions";
+import { EntityDataTable, NoSearchResult, Timestamp, SearchForm } from 'components/common';
+import AlertRuleActions from 'wizard/actions/AlertRuleActions';
+import AlertRuleStore from 'wizard/stores/AlertRuleStore';
+import { useIntl, FormattedMessage } from 'react-intl';
+import AlertRuleBulkActions from './AlertRuleBulkActions';
 import { toDateObject, DATE_TIME_FORMATS } from 'util/DateTime';
-import AlertRuleText from "./AlertRuleText";
-import Routes from 'routing/Routes';
-import ButtonToEventDefinition from "../buttons/ButtonToEventDefinition";
-import ButtonToNotification from "../buttons/ButtonToNotification";
-import AlertRuleCloneForm from "./AlertRuleCloneForm";
-import EventDefinitionResources from "../../resources/EventDefinitionResource";
+import AlertRuleText from './AlertRuleText';
+import ButtonToEventDefinition from '../buttons/ButtonToEventDefinition';
+import ButtonToNotification from '../buttons/ButtonToNotification';
+import AlertRuleCloneForm from './AlertRuleCloneForm';
+import EventDefinitionResources from '../../resources/EventDefinitionResource';
 import StreamsStore from 'stores/streams/StreamsStore';
-import ButtonToSearch from "../buttons/ButtonToSearch";
-import AlertValidation from "../../logic/AlertValidation";
-import ButtonToUpdateRule from "../buttons/ButtonToUpdateRule";
+import ButtonToSearch from '../buttons/ButtonToSearch';
+import AlertValidation from '../../logic/AlertValidation';
+import ButtonToUpdateRule from '../buttons/ButtonToUpdateRule';
 
 function _convertAlertToElement(alert) {
     let alertValid = !AlertValidation.isAlertCorrupted(alert);
@@ -85,19 +84,19 @@ const AlertRulesContainer = ({ fieldOrder }) => {
     const intl = useIntl();
 
     const fieldsTitle = [
-        {key: 'title', label: intl.formatMessage({id: "wizard.title", defaultMessage: "Title"}), config: 'title'},
-        {key: 'priority', label: intl.formatMessage({id: "wizard.priority", defaultMessage: "Priority"}), config: 'Priority'},
-        {key: 'description', label: intl.formatMessage({id: "wizard.fieldDescription", defaultMessage: "Description"}), config: 'Description'},
-        {key: 'created', label: intl.formatMessage({id: "wizard.created", defaultMessage: "Created"}), config: 'Created'},
-        {key: 'lastModified', label: intl.formatMessage({id: "wizard.lastModified", defaultMessage: "Last Modified"}), config: 'Last Modified'},
-        {key: 'user', label: intl.formatMessage({id: "wizard.user", defaultMessage: "User"}), config: 'User'},
-        {key: 'status', label: intl.formatMessage({id: "wizard.status", defaultMessage: "Status"}), config: 'Status'},
-        {key: 'rule', label: intl.formatMessage({id: "wizard.rule", defaultMessage: "Rule"}), config: 'Rule'}
+        {key: 'title', label: intl.formatMessage({id: 'wizard.title', defaultMessage: 'Title'}), config: 'title'},
+        {key: 'priority', label: intl.formatMessage({id: 'wizard.priority', defaultMessage: 'Priority'}), config: 'Priority'},
+        {key: 'description', label: intl.formatMessage({id: 'wizard.fieldDescription', defaultMessage: 'Description'}), config: 'Description'},
+        {key: 'created', label: intl.formatMessage({id: 'wizard.created', defaultMessage: 'Created'}), config: 'Created'},
+        {key: 'lastModified', label: intl.formatMessage({id: 'wizard.lastModified', defaultMessage: 'Last Modified'}), config: 'Last Modified'},
+        {key: 'user', label: intl.formatMessage({id: 'wizard.user', defaultMessage: 'User'}), config: 'User'},
+        {key: 'status', label: intl.formatMessage({id: 'wizard.status', defaultMessage: 'Status'}), config: 'Status'},
+        {key: 'rule', label: intl.formatMessage({id: 'wizard.rule', defaultMessage: 'Rule'}), config: 'Rule'}
     ];
     const availablePriorityTypes = [
-        {value: 1, label: intl.formatMessage({id: "wizard.low", defaultMessage: "Low"})},
-        {value: 2, label: intl.formatMessage({id: "wizard.medium", defaultMessage: "Normal"})},
-        {value: 3, label: intl.formatMessage({id: "wizard.high", defaultMessage: "High"})}
+        {value: 1, label: intl.formatMessage({id: 'wizard.low', defaultMessage: 'Low'})},
+        {value: 2, label: intl.formatMessage({id: 'wizard.medium', defaultMessage: 'Normal'})},
+        {value: 3, label: intl.formatMessage({id: 'wizard.high', defaultMessage: 'High'})}
     ];
     const getPriorityType = (type) => {
         const selectedPriority = availablePriorityTypes.find((t) => t.value === type);
@@ -106,7 +105,7 @@ const AlertRulesContainer = ({ fieldOrder }) => {
             return selectedPriority.label;
         }
 
-        return "";
+        return '';
     }
 
     const [alerts, setAlerts] = useState([]);
@@ -135,13 +134,13 @@ const AlertRulesContainer = ({ fieldOrder }) => {
                 renderCell: (_status, element) => {
                     if (element.valid) {
                         if(_status) {
-                            return <span style={{backgroundColor: 'orange', color: 'white'}} className={element.textColor}><FormattedMessage id="wizard.disabled" defaultMessage="Disabled"/></span>;
+                            return <span style={{backgroundColor: 'orange', color: 'white'}} className={element.textColor}><FormattedMessage id='wizard.disabled' defaultMessage='Disabled'/></span>;
                         } else {
-                            return <span><FormattedMessage id="wizard.enabled" defaultMessage="Enabled" /></span>;
+                            return <span><FormattedMessage id='wizard.enabled' defaultMessage='Enabled' /></span>;
                         }
                     }
                     else {
-                        return <span className={element.textColor}><FormattedMessage id="wizard.corrupted" defaultMessage="Corrupted" /></span>;
+                        return <span className={element.textColor}><FormattedMessage id='wizard.corrupted' defaultMessage='Corrupted' /></span>;
                     }
                 }
             },
@@ -163,7 +162,7 @@ const AlertRulesContainer = ({ fieldOrder }) => {
     );
     const onSortChange = useCallback(() => {}, []);
     const renderAlertRuleActions = useCallback((element) => {
-        return (<div className="pull-left" style={{display: 'flex', columnGap: '1px'}}>
+        return (<div className='pull-left' style={{display: 'flex', columnGap: '1px'}}>
             <ButtonToSearch searchQuery1={element.searchQuery} searchQuery2={element.searchQuery2} stream1={element.streamId} stream2={element.streamId2} disabled={!element.valid}/>
             <ButtonToUpdateRule target={element.title} disabled={!element.valid}/>
             <ButtonToEventDefinition target={element.condition} disabled={!element.valid}/>
@@ -257,6 +256,7 @@ const AlertRulesContainer = ({ fieldOrder }) => {
     }
 
     useEffect(() => {
+        Reflux.connect(AlertRuleStore);
         _loadAlertRules();
         }, []);
 
@@ -273,7 +273,7 @@ const AlertRulesContainer = ({ fieldOrder }) => {
             <div>
                 {alerts?.length === 0 ? (
                     <NoSearchResult>
-                        <FormattedMessage id="wizard.noAlertFound" defaultMessage="No Alert Rule has been found" />
+                        <FormattedMessage id='wizard.noAlertFound' defaultMessage='No Alert Rule has been found' />
                     </NoSearchResult>
                 ) : (
                     <EntityDataTable
