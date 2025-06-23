@@ -24,7 +24,6 @@ import { LinkContainer } from 'react-router-bootstrap';
 import Routes from 'routing/Routes';
 import { Col, Row, Button } from 'components/bootstrap';
 import { IfPermitted, PageHeader, DocumentTitle, Spinner } from 'components/common';
-import AlertRuleList from 'wizard/components/rules/AlertRuleList';
 import { IntlProvider, FormattedMessage } from 'react-intl';
 import packageJson from '../../../../package.json';
 import messages_fr from 'translations/fr.json';
