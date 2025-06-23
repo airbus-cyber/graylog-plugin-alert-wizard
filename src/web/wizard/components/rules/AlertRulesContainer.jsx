@@ -221,7 +221,9 @@ const AlertRulesContainer = ({ fieldOrder }) => {
 
     const _onResume = (eventDefinitionIdentifier, stream, secondEventDefinitionIdentifier, stream2) => {
         const promises = [];
-        promises.push(EventDefinitionResources.enable(eventDefinitionIdentifier));
+        if (eventDefinitionIdentifier !== null) {
+            promises.push(EventDefinitionResources.enable(eventDefinitionIdentifier));
+        }
         if (stream !== null) {
             StreamsStore.resume(stream, response => response);
         }
@@ -236,7 +238,9 @@ const AlertRulesContainer = ({ fieldOrder }) => {
 
     const _onPause = (name, eventDefinitionIdentifier, stream, secondEventDefinitionIdentifier, secondStream) => {
         const promises = [];
-        promises.push(EventDefinitionResources.disable(eventDefinitionIdentifier));
+        if (eventDefinitionIdentifier !== null) {
+            promises.push(EventDefinitionResources.disable(eventDefinitionIdentifier));
+        }
         if (stream !== null) {
             StreamsStore.pause(stream, response => response);
         }
