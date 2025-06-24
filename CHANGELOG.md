@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ### Bug Fixes
 * Open Search in two tabs for OR, THEN, AND ([issue #156](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/156))
 * Editing OR, AND, THEN rules does not save second streams ([issue #159](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/159))
+* Delete Event Definition breaks the Wizard rules list ([issue #160](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/160))
 
 ## [6.1.2](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/6.1.1...6.1.2)
 ### Features
