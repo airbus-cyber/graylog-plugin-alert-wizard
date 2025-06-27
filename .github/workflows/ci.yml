@@ -91,7 +91,7 @@ jobs:
         run: npx playwright install chromium firefox
       - name: Run end to end tests
         working-directory: plugin/e2e
-        run: npx playwright test
+        run: npx playwright test -c playwright.config.js
       - name: Stop development server
         working-directory: plugin/runtime
         run: |

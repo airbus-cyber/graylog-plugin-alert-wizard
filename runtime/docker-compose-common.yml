@@ -1,0 +1,42 @@
+# sources of inspiration for this file
+# * https://go2docs.graylog.org/5-1/downloading_and_installing_graylog/docker_installation.htm
+# * https://github.com/Graylog2/docker-compose
+
+services:
+
+  # MongoDB: https://hub.docker.com/_/mongo/
+  mongo:
+    image: "mongo:6.0"
+    container_name: mongo
+    networks:
+      - eh-network
+    # uncomment to expose mongodb on localhost:27017
+    # ports:
+    #   - 27017:27017
+
+  # OpenSearch:
+  # * https://hub.docker.com/r/opensearchproject/opensearch
+  # * https://opensearch.org/docs/2.15/install-and-configure/install-opensearch/docker/#sample-docker-composeyml
+  opensearch:
+    image: "opensearchproject/opensearch:2.15.0"
+    container_name: opensearch2.15
+    environment:
+      - plugins.security.disabled=true
+      - discovery.type=single-node
+      - action.auto_create_index=false
+      - bootstrap.memory_lock=true
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=T3st-P@ssword!
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 9200:9200
+    networks:
+      - eh-network
+
+networks:
+  eh-network:
+    name: eh-network
+    driver: bridge
+

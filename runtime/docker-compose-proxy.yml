@@ -31,10 +31,10 @@ services:
       # GELF UDP
       - 12201:12201/udp
     volumes:
-     - ./graylog/config:/usr/share/graylog/data/config
+     - ./graylog/config-proxy:/usr/share/graylog/data/config
      - ./graylog/plugin:/usr/share/graylog/plugin/
     healthcheck:
-      test: curl --head --fail http://localhost:9000 || exit 1
+      test: curl --head --fail http://localhost:9000/graylog || exit 1
       start_period: 60s
     networks:
       - eh-network
