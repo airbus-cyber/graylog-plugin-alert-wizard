@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.graylog.plugins</groupId>
         <artifactId>graylog-plugin-web-parent</artifactId>
-        <version>6.1.0</version>
+        <version>6.1.4</version>
     </parent>
 
     <groupId>com.airbus-cyber-security.graylog</groupId>
