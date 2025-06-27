@@ -17,6 +17,7 @@
 
 import packageJson from '../../package.json';
 import { PluginManifest, PluginStore } from 'graylog-web-plugin/plugin';
+import { appPrefixed } from 'util/URLUtils';
 import WizardPage from './wizard/pages/WizardPage';
 import NewAlertPage from './wizard/pages/NewAlertPage';
 import UpdateAlertPage from './wizard/pages/UpdateAlertPage';
@@ -50,8 +51,8 @@ PluginStore.register(new PluginManifest(packageJson, {
         {
             description: 'Wizard',
             children: [
-                { path: '/wizard/AlertRules', description: 'Alert Rules' },
-                { path: '/wizard/Lists', description: 'Lists' },
+                { path: appPrefixed('/wizard/AlertRules'), description: 'Alert Rules' },
+                { path: appPrefixed('/wizard/Lists'), description: 'Lists' },
             ],
         },
     ],
