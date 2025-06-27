@@ -96,28 +96,18 @@ jobs:
         working-directory: plugin/runtime
         run: |
           docker compose down
-      - uses: actions/upload-artifact@v4
-        if: ${{ always() }}
-        with:
-          name: playwright-report
-          path: e2e/playwright-report/
 
       - name: Start development server proxy
         working-directory: plugin/runtime
         run: |
-          docker compose up -f docker-compose-proxy.yml --detach --wait
+          docker compose -f docker-compose-proxy.yml up --detach --wait
       - name: Run UI tests proxy
         working-directory: plugin/e2e
         run: npx playwright test -c playwright.config.proxy.js
       - name: Stop development server proxy
         working-directory: plugin/runtime
         run: |
-          docker compose down -f docker-compose-proxy.yml
-      - uses: actions/upload-artifact@v4
-        if: ${{ always() }}
-        with:
-          name: playwright-report-proxy
-          path: e2e/playwright-report/
+          docker compose -f docker-compose-proxy.yml down
 
       - name: Package signed .rpm
         if: endsWith(steps.requestPom.outputs.VERSION,'SNAPSHOT') == false
