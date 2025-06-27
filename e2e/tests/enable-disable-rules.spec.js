@@ -4,7 +4,7 @@ import crypto from 'node:crypto';
 import { login_steps, fill_field_condition, open_alert_page_and_filter } from './test-utils.js';
 
 test('disable/enable rule without stream should work', async ({ page }) => {
-    await page.goto('/wizard/AlertRules');
+    await page.goto('wizard/AlertRules');
 
     await login_steps(page);
 
@@ -45,7 +45,7 @@ test('disable/enable rule without stream should work', async ({ page }) => {
 
 
 test('disable stream#2 should disable rule', async ({ page }) => {
-    await page.goto('/wizard/AlertRules');
+    await page.goto('wizard/AlertRules');
 
     await login_steps(page);
 
@@ -69,7 +69,7 @@ test('disable stream#2 should disable rule', async ({ page }) => {
     await page.getByRole('button', { name: 'Save' }).click();
 
     // Disable stream#2
-    await page.goto(`/streams?page=1&query=${title}%232`);
+    await page.goto(`streams?page=1&query=${title}%232`);
     await page.waitForTimeout(200);
     page.on('dialog', dialog => dialog.accept());
     await page.getByLabel('Pause stream').click();

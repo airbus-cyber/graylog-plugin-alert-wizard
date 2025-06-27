@@ -4,7 +4,7 @@ import crypto from 'node:crypto';
 import { login_steps, fill_field_condition, open_alert_page_and_filter } from './test-utils.js';
 
 test('remove event definition should conflict rule', async ({ page }) => {
-    await page.goto('/wizard/AlertRules');
+    await page.goto('wizard/AlertRules');
 
     await login_steps(page);
 
@@ -34,7 +34,7 @@ test('remove event definition should conflict rule', async ({ page }) => {
     await page.getByRole('button', { name: 'Save' }).click();
 
     // Delete EventDefinition
-    await page.goto('/alerts/definitions');
+    await page.goto('alerts/definitions');
     await page.getByPlaceholder('Search for event definitions').fill(title);
     await page.waitForTimeout(500);
     await page.getByLabel("More actions").first().click();

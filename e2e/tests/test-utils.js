@@ -7,7 +7,7 @@ export async function login_steps(page) {
 }
 
 export async function open_alert_page_and_filter(page, filter) {
-    await page.goto('/wizard/AlertRules');
+    await page.goto('wizard/AlertRules');
     // Wait for rules are loaded
     await page.waitForTimeout(1000);
     await page.getByPlaceholder('Filter alert rules').fill(filter);

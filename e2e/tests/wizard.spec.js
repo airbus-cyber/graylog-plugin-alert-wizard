@@ -3,8 +3,24 @@ import { test, expect } from '@playwright/test';
 import crypto from 'node:crypto';
 import { login_steps, fill_field_condition, open_alert_page_and_filter } from './test-utils.js';
 
+test('follow menu link should works #161', async ({ page }) => {
+  await page.goto('welcome');
+
+  await login_steps(page);
+
+  await page.getByRole('button', { name: 'Wizard' }).click();
+  await page.getByRole('menuitem', { name: 'Alert Rules' }).click();
+  await page.waitForTimeout(200);
+
+  await expect(page.getByRole('heading', { name: 'Alert Rules' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Create' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Import' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Export' })).toBeVisible();
+});
+
+
 test('statistics rule should retain field', async ({ page }) => {
-  await page.goto('/wizard/AlertRules');
+  await page.goto('wizard/AlertRules');
 
   await login_steps(page);
 
@@ -31,7 +47,7 @@ test('statistics rule should retain field', async ({ page }) => {
 
 
 test('go_on_search_page_when_click_on_search_button', async ({ page }) => {
-  await page.goto('/wizard/AlertRules');
+  await page.goto('wizard/AlertRules');
 
   await login_steps(page);
 
@@ -63,7 +79,7 @@ test('go_on_search_page_when_click_on_search_button', async ({ page }) => {
 });
 
 test('open_two_tabs_when_click_on_search_button', async ({ page }) => {
-  await page.goto('/wizard/AlertRules');
+  await page.goto('wizard/AlertRules');
 
   await login_steps(page);
 
@@ -117,7 +133,7 @@ test('open_two_tabs_when_click_on_search_button', async ({ page }) => {
 
 
 test('open_two_tabs_when_click_on_search_button_when_second_stream_condition_is_empty_#156', async ({ page }) => {
-  await page.goto('/wizard/AlertRules');
+  await page.goto('wizard/AlertRules');
 
   await login_steps(page);
 
@@ -165,7 +181,7 @@ test('open_two_tabs_when_click_on_search_button_when_second_stream_condition_is_
 });
 
 test('OR rule should contains GroupBy field', async ({ page }) => {
-  await page.goto('/wizard/AlertRules');
+  await page.goto('wizard/AlertRules');
 
   await login_steps(page);
 
@@ -179,7 +195,7 @@ test('OR rule should contains GroupBy field', async ({ page }) => {
 });
 
 test('transmit query from search to new wizard alert - #142', async ({ page }) => {
-  await page.goto('/search?q=source%3A+test');
+  await page.goto('search?q=source%3A+test');
 
   await login_steps(page);
 
