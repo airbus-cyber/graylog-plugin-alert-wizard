@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [6.1.4](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/6.1.3...6.1.4)
 ### Bug Fixes
 * 404 Not Found when http_publish_uri is set ([issue #161](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/161))
+* Bump graylog-plugin-logging-alert version to 6.1.3 ([issue #56](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/56))
 
 ## [6.1.3](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/6.1.2...6.1.3)
 ### Bug Fixes
