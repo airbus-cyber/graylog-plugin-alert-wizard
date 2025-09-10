@@ -41,13 +41,13 @@ const ButtonToSearch = ({searchQuery1, searchQuery2, stream1, stream2, disabled}
 
     const openSearchTabs = () => {
         const url1 = createUrl(searchQuery1, stream1);
-        window.open(url1, '_blank', 'noopener,noreferrer')
+        window.open(url1, '_blank', 'noopener,noreferrer');
 
         if(stream2 || searchQuery2) {
             const url2 = createUrl(searchQuery2, stream2);
             window.open(url2, '_blank', 'noopener,noreferrer');
         }
-    }
+    };
 
     return (
         <Button bsStyle="info" title={tooltip} disabled={disabled} onClick={openSearchTabs}>

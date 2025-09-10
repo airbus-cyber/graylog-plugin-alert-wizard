@@ -25,12 +25,16 @@ const ButtonToNotification  = ({target, disabled}) => {
     const intl = useIntl();
     const tooltip = intl.formatMessage({id: "wizard.tooltipNotification", defaultMessage: "Edit notification for this alert rule"});
 
-    const openNotification = () => {
-        window.open(Routes.ALERTS.NOTIFICATIONS.edit(target),"_self");
-    }
+    const computeURl = () => {
+        let url = '';
+        if (!disabled) {
+            url = Routes.ALERTS.NOTIFICATIONS.edit(target);
+        }
+        return url;
+    };
 
     return (
-        <Button bsStyle="info" title={tooltip} disabled={disabled} onClick={openNotification}>
+        <Button bsStyle="info" title={tooltip} disabled={disabled} href={computeURl()}>
             <FormattedMessage id="wizard.notification" defaultMessage="Notification" />
         </Button>
     );

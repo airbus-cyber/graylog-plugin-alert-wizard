@@ -26,14 +26,17 @@ const ButtonToUpdateRule = ({target, disabled}) => {
     const intl = useIntl();
     const tooltip = intl.formatMessage({id: "wizard.buttonInfoUpdate", defaultMessage: "Edit this alert rule"});
 
-    const openUpdateRule = () => {
-        const url = Routes.pluginRoute('WIZARD_UPDATEALERT_ALERTRULETITLE')(target.replace(/\//g, '%2F'));
-        window.open(url,"_self");
-    }
+    const computeURl = () => {
+        let url = '';
+        if (!disabled) {
+            url = Routes.pluginRoute('WIZARD_UPDATEALERT_ALERTRULETITLE')(target.replace(/\//g, '%2F'));
+        }
+        return url;
+    };
 
     return (
         <IfPermitted permissions="wizard_alerts_rules:read">
-            <Button bsStyle="info" title={tooltip} disabled={disabled} onClick={openUpdateRule}>
+            <Button bsStyle="info" title={tooltip} disabled={disabled} href={computeURl()}>
                 <FormattedMessage id="wizard.edit" defaultMessage="Edit"/>
             </Button>
         </IfPermitted>

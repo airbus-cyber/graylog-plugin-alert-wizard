@@ -25,12 +25,16 @@ const ButtonToEventDefinition = ({target, disabled}) => {
     const intl = useIntl();
     const tooltip = intl.formatMessage({id: "wizard.tooltipEventDefinition", defaultMessage: "Edit event definition for this alert rule"});
 
-    const openEventDefinition = () => {
-        window.open(Routes.ALERTS.DEFINITIONS.edit(target),"_self");
-    }
+    const computeURl = () => {
+        let url = '';
+        if (!disabled) {
+            url = Routes.ALERTS.DEFINITIONS.edit(target);
+        }
+        return url;
+    };
 
     return (
-        <Button bsStyle="info" title={tooltip} disabled={disabled} onClick={openEventDefinition}>
+        <Button bsStyle="info" title={tooltip} disabled={disabled} href={computeURl()}>
             <FormattedMessage id="wizard.eventDefinition" defaultMessage="Event definition" />
         </Button>
     );
