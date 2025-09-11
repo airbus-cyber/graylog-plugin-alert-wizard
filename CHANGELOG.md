@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.1.5](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/6.1.4...6.1.5)
+### Bug Fixes
+* Open notification and event definition in a new tab ([issue #164](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/164))
+
 ## [6.1.4](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/6.1.3...6.1.4)
 ### Bug Fixes
 * 404 Not Found when http_publish_uri is set ([issue #161](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/161))
