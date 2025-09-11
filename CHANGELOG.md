@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [6.1.5](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/6.1.4...6.1.5)
 ### Bug Fixes
 * Open notification and event definition in a new tab ([issue #164](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/164))
+* Bump graylog-plugin-logging-alert version to 6.1.5 ([issue #57](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/57))
 
 ## [6.1.4](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/6.1.3...6.1.4)
 ### Bug Fixes
