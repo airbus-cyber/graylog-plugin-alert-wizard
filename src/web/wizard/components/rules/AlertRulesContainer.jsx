@@ -170,11 +170,12 @@ const AlertRulesContainer = ({ fieldOrder }) => {
         </div>);
     }, []);
     const _elementMatchQuery = (element, query) => {
-        const matchTitle = element.title.includes(query);
-        const matchUser = element.user.includes(query);
-        const matchPriority = getPriorityType(element.priority).includes(query);
-        const matchCreatedAt = toDateObject(element.created).format(DATE_TIME_FORMATS.default).includes(query);
-        const matchUpdatedAt = toDateObject(element.lastModified).format(DATE_TIME_FORMATS.default).includes(query);
+        const lowerQuery = query ? query.toLowerCase() : '';
+        const matchTitle = element.title.toLowerCase().includes(lowerQuery);
+        const matchUser = element.user.toLowerCase().includes(lowerQuery);
+        const matchPriority = getPriorityType(element.priority).toLowerCase().includes(lowerQuery);
+        const matchCreatedAt = toDateObject(element.created).format(DATE_TIME_FORMATS.default).toLowerCase().includes(lowerQuery);
+        const matchUpdatedAt = toDateObject(element.lastModified).format(DATE_TIME_FORMATS.default).toLowerCase().includes(lowerQuery);
 
         return matchTitle || matchUser || matchPriority || matchCreatedAt || matchUpdatedAt;
     }

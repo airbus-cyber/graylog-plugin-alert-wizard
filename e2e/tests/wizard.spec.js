@@ -204,3 +204,30 @@ test('transmit query from search to new wizard alert - #142', async ({ page }) =
 
   await expect(page.locator('#search_query')).toHaveValue('source: test');
 });
+
+test('Rules filter is not case sensitive - #163', async ({ page }) => {
+  await page.goto('wizard/AlertRules');
+
+  await login_steps(page);
+
+  // Fill Title
+  const title = `AAA-${crypto.randomUUID()}`;
+  const lowerTitle = title.toLowerCase();
+  await page.getByRole('link', { name: 'Create' }).click();
+  await page.locator('#title').fill(title);
+
+  // Add Field Condition
+  await fill_field_condition(page, 'message', 'matches exactly', 'abc');
+
+  // Fill Search Query
+  const searchQuery = 'a?c';
+  await page.locator('#search_query').fill(searchQuery);
+  await page.waitForTimeout(200);
+
+  // Save
+  await page.getByRole('button', { name: 'Save' }).click();
+
+  // Check if filter works
+  await open_alert_page_and_filter(page, lowerTitle);
+  await expect(page.getByRole('button', { name: 'play_arrow' })).toBeVisible();
+});
