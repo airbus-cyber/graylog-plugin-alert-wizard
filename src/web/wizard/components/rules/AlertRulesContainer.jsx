@@ -80,7 +80,6 @@ function _convertAlertToElement(alert) {
 }
 
 const AlertRulesContainer = ({ fieldOrder }) => {
-
     const intl = useIntl();
 
     const fieldsTitle = [
@@ -106,7 +105,7 @@ const AlertRulesContainer = ({ fieldOrder }) => {
         }
 
         return '';
-    }
+    };
 
     const [alerts, setAlerts] = useState([]);
     const [filterElements, setFilterElements] = useState([]);
@@ -189,14 +188,14 @@ const AlertRulesContainer = ({ fieldOrder }) => {
 
     const onReset = ()=> onSearch('');
 
-    const _loadAlertRules = useCallback(() => {
+    const _loadAlertRules = () => {
         AlertRuleActions.list().then(newAlerts => {
             setAlerts(newAlerts);
             const allElements = newAlerts.map(_convertAlertToElement);
             setElements(allElements);
             onSearch(query, allElements);
         });
-    }, [alerts, elements, query]);
+    };
 
     const deleteAlertRules = (alertRulesTitles) => {
         const promises = alertRulesTitles.map(name => AlertRuleActions.deleteByName(name));
