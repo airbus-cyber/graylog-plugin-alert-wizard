@@ -100,7 +100,7 @@ jobs:
       - name: Start development server proxy
         working-directory: plugin/runtime
         run: |
-          docker compose -f docker-compose-proxy.yml up
+          docker compose -f docker-compose-proxy.yml up --detach --wait
       - name: Run UI tests proxy
         working-directory: plugin/e2e
         run: npx playwright test -c playwright.config.proxy.js
