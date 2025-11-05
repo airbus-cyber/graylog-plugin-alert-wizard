@@ -19,10 +19,13 @@ package com.airbus_cyber_security.graylog.wizard.alert.business;
 
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRule;
 import com.mongodb.BasicDBObject;
+import org.bson.conversions.Bson;
 import org.graylog2.bindings.providers.MongoJackObjectMapperProvider;
 import org.graylog2.database.MongoConnection;
 import org.graylog2.database.NotFoundException;
 import org.graylog2.database.PaginatedDbService;
+import org.graylog2.database.PaginatedList;
+import org.graylog2.search.SearchQuery;
 import org.mongojack.DBCursor;
 import org.mongojack.DBQuery;
 import org.slf4j.Logger;
@@ -33,6 +36,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 
 // TODO split this into AlertRuleCollection and move it down in the persistence namespace
@@ -89,5 +93,20 @@ public class AlertRuleService extends PaginatedDbService<AlertRule> {
 	
 	public boolean isPresent(String title) {
 		return (this.db.getCount(DBQuery.is(TITLE, title)) > 0);
+	}
+
+	public PaginatedList<AlertRule> searchPaginated(SearchQuery query, Predicate<AlertRule> filter,
+															 Bson sort, int page, int perPage) {
+		final Bson dbQuery = query.toBson();
+		final PaginatedList<AlertRule> list = filter == null ?
+				findPaginatedWithQueryAndSort(dbQuery, sort, page, perPage) :
+				findPaginatedWithQueryFilterAndSort(dbQuery, filter, sort, page, perPage);
+
+		return new PaginatedList<>(
+				list,
+				list.pagination().total(),
+				page,
+				perPage
+		);
 	}
 }
