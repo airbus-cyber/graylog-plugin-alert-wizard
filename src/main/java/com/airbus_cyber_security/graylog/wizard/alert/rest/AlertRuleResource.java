@@ -40,6 +40,7 @@ import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfigura
 import com.airbus_cyber_security.graylog.wizard.config.rest.ImportPolicyType;
 import com.airbus_cyber_security.graylog.wizard.permissions.AlertRuleRestPermissions;
 import com.codahale.metrics.annotation.Timed;
+import com.google.common.collect.ImmutableMap;
 import com.mongodb.MongoException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -49,25 +50,35 @@ import io.swagger.annotations.ApiResponses;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.graylog.events.notifications.NotificationDto;
 import org.graylog.events.processor.EventDefinition;
 import org.graylog.events.processor.EventDefinitionDto;
 import org.graylog.events.processor.EventProcessorConfig;
-import org.graylog.events.processor.aggregation.AggregationEventProcessorConfig;
 import org.graylog.events.rest.EventNotificationsResource;
 import org.graylog.security.UserContext;
 import org.graylog2.audit.jersey.AuditEvent;
 import org.graylog2.database.NotFoundException;
+import org.graylog2.database.PaginatedList;
 import org.graylog2.plugin.database.ValidationException;
 import org.graylog2.plugin.rest.PluginRestResource;
+import org.graylog2.rest.models.SortOrder;
+import org.graylog2.rest.models.tools.responses.PageListResponse;
+import org.graylog2.rest.resources.entities.EntityAttribute;
+import org.graylog2.rest.resources.entities.EntityDefaults;
+import org.graylog2.rest.resources.entities.Sorting;
+import org.graylog2.search.SearchQuery;
+import org.graylog2.search.SearchQueryField;
+import org.graylog2.search.SearchQueryParser;
 import org.graylog2.shared.rest.resources.RestResource;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -83,6 +94,7 @@ import jakarta.ws.rs.core.Response;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -96,6 +108,22 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private static final String ENCODING = "UTF-8";
     private static final String TITLE = "title";
 
+    private static final String DEFAULT_SORT_FIELD = "title";
+    private static final String DEFAULT_SORT_DIRECTION = "asc";
+    private static final ImmutableMap<String, SearchQueryField> SEARCH_FIELD_MAPPING = ImmutableMap.<String, SearchQueryField>builder()
+            .put("id", SearchQueryField.create("_id", SearchQueryField.Type.OBJECT_ID))
+            .put("title", SearchQueryField.create(GetDataAlertRule.FIELD_TITLE))
+            .put("description", SearchQueryField.create(GetDataAlertRule.FIELD_DESCRIPTION))
+            .build();
+    private static final List<EntityAttribute> attributes = List.of(
+            EntityAttribute.builder().id("title").title("Title").build(),
+            EntityAttribute.builder().id("description").title("Description").build(),
+            EntityAttribute.builder().id("priority").title("Priority").type(SearchQueryField.Type.INT).build()
+    );
+    private static final EntityDefaults settings = EntityDefaults.builder()
+            .sort(Sorting.create(DEFAULT_SORT_FIELD, Sorting.Direction.valueOf(DEFAULT_SORT_DIRECTION.toUpperCase(Locale.ROOT))))
+            .build();
+
     // TODO try to remove this field => move it down in business
     private final AlertWizardConfigurationService configurationService;
 
@@ -107,6 +135,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private final Conversions conversions;
     private final TriggeringConditionsService triggeringConditionsService;
     private final NotificationService notificationService;
+
+    private final SearchQueryParser searchQueryParser;
 
     @Inject
     public AlertRuleResource(AlertRuleService alertRuleService,
@@ -125,6 +155,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         this.conversions = conversions;
         this.notificationService = notificationService;
+        this.searchQueryParser = new SearchQueryParser(GetDataAlertRule.FIELD_TITLE, SEARCH_FIELD_MAPPING);
     }
 
     private AlertRuleStream constructAlertRuleStream(TriggeringConditions conditions) {
@@ -573,5 +604,45 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         } else {
             return this.notificationService.createNotification(alertTitle, userContext);
         }
+    }
+
+    // This method is based on method getPage in class org.graylog.events.rest.EventDefinitionsResource
+    @GET
+    @Timed
+    @Path("/paginated")
+    @ApiOperation(value = "Get a paginated list of alerts")
+    @Produces(MediaType.APPLICATION_JSON)
+    public PageListResponse<GetDataAlertRule> getPage(@ApiParam(name = "page") @QueryParam("page") @DefaultValue("1") int page,
+                                                      @ApiParam(name = "per_page") @QueryParam("per_page") @DefaultValue("50") int perPage,
+                                                      @ApiParam(name = "query") @QueryParam("query") @DefaultValue("") String query,
+                                                      @ApiParam(name = "sort",
+                                                              value = "The field to sort the result on",
+                                                              required = true,
+                                                              allowableValues = "title,description,priority")
+                                                      @DefaultValue(DEFAULT_SORT_FIELD) @QueryParam("sort") String sort,
+                                                      @ApiParam(name = "order", value = "The sort direction", allowableValues = "asc, desc")
+                                                      @DefaultValue(DEFAULT_SORT_DIRECTION) @QueryParam("order") SortOrder order) {
+
+        SearchQuery searchQuery;
+        try {
+            searchQuery = searchQueryParser.parse(query);
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException("Invalid argument in search query: " + e.getMessage());
+        }
+        final PaginatedList<AlertRule> result = this.alertRuleService.searchPaginated(
+                searchQuery,
+                alertRule -> true,
+                order.toBsonSort(sort),
+                page,
+                perPage);
+
+        PaginatedList<AlertRule> alertRules = new PaginatedList<>(
+                result.delegate(), result.pagination().total(), result.pagination().page(), result.pagination().perPage()
+        );
+
+        List<GetDataAlertRule> elements = result.delegate().stream().map(this::constructDataAlertRule).toList();
+
+        return PageListResponse.create(query, alertRules.pagination(),
+                result.grandTotal().orElse(0L), sort, order, elements, attributes, settings);
     }
 }

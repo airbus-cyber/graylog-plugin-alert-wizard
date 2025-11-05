@@ -34,16 +34,19 @@ import java.util.Map;
 @AutoValue
 @JsonAutoDetect
 public abstract class GetDataAlertRule {
+	public static final String FIELD_TITLE = "title";
+	public static final String FIELD_PRIORITY = "priority";
+	public static final String FIELD_DESCRIPTION = "description";
 
-	@JsonProperty("title")
+	@JsonProperty(FIELD_TITLE)
 	@NotNull
 	public abstract String getTitle();
 
-	@JsonProperty("priority")
+	@JsonProperty(FIELD_PRIORITY)
 	@Nullable
 	public abstract Integer getPriority();
 
-    @JsonProperty("description")
+    @JsonProperty(FIELD_DESCRIPTION)
     @Nullable
     public abstract String getDescription();
 
