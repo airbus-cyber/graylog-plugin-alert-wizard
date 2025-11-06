@@ -16,14 +16,14 @@
  */
 
 import React from 'react';
-import Reflux from 'reflux';
-import { useState, useCallback, useEffect } from 'react';
-import { EntityDataTable, NoSearchResult, Timestamp, SearchForm } from 'components/common';
+import { useState, useCallback } from 'react';
+import { PaginatedEntityTable, Timestamp } from 'components/common';
 import AlertRuleActions from 'wizard/actions/AlertRuleActions';
-import AlertRuleStore from 'wizard/stores/AlertRuleStore';
+import { useQueryClient } from '@tanstack/react-query';
+import { keyFn, fetchAlertRules, KEY_PREFIX } from './hooks/useAlertRules';
 import { useIntl, FormattedMessage } from 'react-intl';
 import AlertRuleBulkActions from './AlertRuleBulkActions';
-import { toDateObject, DATE_TIME_FORMATS } from 'util/DateTime';
+import { toDateObject } from 'util/DateTime';
 import AlertRuleText from './AlertRuleText';
 import ButtonToEventDefinition from '../buttons/ButtonToEventDefinition';
 import ButtonToNotification from '../buttons/ButtonToNotification';
@@ -33,6 +33,7 @@ import StreamsStore from 'stores/streams/StreamsStore';
 import ButtonToSearch from '../buttons/ButtonToSearch';
 import AlertValidation from '../../logic/AlertValidation';
 import ButtonToUpdateRule from '../buttons/ButtonToUpdateRule';
+import {DEFAULT_LAYOUT} from "./Constants";
 
 function _convertAlertToElement(alert) {
     let alertValid = !AlertValidation.isAlertCorrupted(alert);
@@ -81,16 +82,18 @@ function _convertAlertToElement(alert) {
 
 const AlertRulesContainer = ({ fieldOrder }) => {
     const intl = useIntl();
+    const queryClient = useQueryClient();
 
+    const _loadAlertRules = () => queryClient.invalidateQueries(KEY_PREFIX);
     const fieldsTitle = [
-        {key: 'title', label: intl.formatMessage({id: 'wizard.title', defaultMessage: 'Title'}), config: 'title'},
-        {key: 'priority', label: intl.formatMessage({id: 'wizard.priority', defaultMessage: 'Priority'}), config: 'Priority'},
-        {key: 'description', label: intl.formatMessage({id: 'wizard.fieldDescription', defaultMessage: 'Description'}), config: 'Description'},
-        {key: 'created', label: intl.formatMessage({id: 'wizard.created', defaultMessage: 'Created'}), config: 'Created'},
-        {key: 'lastModified', label: intl.formatMessage({id: 'wizard.lastModified', defaultMessage: 'Last Modified'}), config: 'Last Modified'},
-        {key: 'user', label: intl.formatMessage({id: 'wizard.user', defaultMessage: 'User'}), config: 'User'},
-        {key: 'status', label: intl.formatMessage({id: 'wizard.status', defaultMessage: 'Status'}), config: 'Status'},
-        {key: 'rule', label: intl.formatMessage({id: 'wizard.rule', defaultMessage: 'Rule'}), config: 'Rule'}
+        {key: 'title', label: intl.formatMessage({id: 'wizard.title', defaultMessage: 'Title'}), config: 'title', sortable: true},
+        {key: 'priority', label: intl.formatMessage({id: 'wizard.priority', defaultMessage: 'Priority'}), config: 'Priority', sortable: true},
+        {key: 'description', label: intl.formatMessage({id: 'wizard.fieldDescription', defaultMessage: 'Description'}), config: 'Description', sortable: true},
+        {key: 'created', label: intl.formatMessage({id: 'wizard.created', defaultMessage: 'Created'}), config: 'Created', sortable: true},
+        {key: 'lastModified', label: intl.formatMessage({id: 'wizard.lastModified', defaultMessage: 'Last Modified'}), config: 'Last Modified', sortable: true},
+        {key: 'user', label: intl.formatMessage({id: 'wizard.user', defaultMessage: 'User'}), config: 'User', sortable: true},
+        {key: 'status', label: intl.formatMessage({id: 'wizard.status', defaultMessage: 'Status'}), config: 'Status', sortable: true},
+        {key: 'rule', label: intl.formatMessage({id: 'wizard.rule', defaultMessage: 'Rule'}), config: 'Rule', sortable: false}
     ];
     const availablePriorityTypes = [
         {value: 1, label: intl.formatMessage({id: 'wizard.low', defaultMessage: 'Low'})},
@@ -107,32 +110,43 @@ const AlertRulesContainer = ({ fieldOrder }) => {
         return '';
     };
 
-    const [alerts, setAlerts] = useState([]);
-    const [filterElements, setFilterElements] = useState([]);
     const [elements, setElements] = useState([]);
-    const [query, setQuery] = useState('');
-    const [visibleColumn, setVisibleColumn] = useState([...['title'], ...fieldOrder.filter(field => field.enabled).map((field) => field.name).map((fieldName) => fieldsTitle.find(x => x.config === fieldName).key)]);
-    const [columnOrder, setColumnOrder] = useState([...['title'], ...fieldOrder.map((field) => field.name).map((fieldName) => fieldsTitle.find(x => x.config === fieldName).key)]);
+    const [columnOrder] = useState([...['title'], ...fieldOrder.map((field) => field.name).map((fieldName) => fieldsTitle.find(x => x.config === fieldName).key)]);
+    const [additionalAttributes] = useState([...fieldsTitle.map((field) => { return {id: field.key, title: field.label, sortable: field.sortable};})]);
 
-    const columnDefinitions= fieldsTitle.map(field => {return {id: field.key, title: field.label, sortable: false};});
+    const renderHeader = (_column) => {
+        return (<span>{fieldsTitle.find(x => x.key === _column.id).label}</span>);
+    };
     const columnRenderers = () => ({
         attributes: {
+            title: {
+                renderHeader
+            },
+            user: {
+                renderCell: (_user, alert) => (<span style={{whiteSpace: 'pre-line'}}>{alert.creator_user_id}</span>),
+                renderHeader
+            },
             priority: {
-                renderCell: (_priority) => (<span style={{whiteSpace: 'pre-line'}}>{getPriorityType(_priority)}</span>)
+                renderCell: (_priority) => (<span style={{whiteSpace: 'pre-line'}}>{getPriorityType(_priority)}</span>),
+                renderHeader
             },
             description: {
-                renderCell: (_description) => (<span style={{whiteSpace: 'pre-line'}}>{_description}</span>)
+                renderCell: (_description) => (<span style={{whiteSpace: 'pre-line'}}>{_description}</span>),
+                renderHeader
             },
             created: {
-                renderCell: (_created) => (<Timestamp dateTime={toDateObject(_created)} relative/>)
+                renderCell: (_created, alert) => (<Timestamp dateTime={toDateObject(alert.created_at)} relative/>),
+                renderHeader
             },
             lastModified: {
-                renderCell: (_lastModified) => (<Timestamp dateTime={toDateObject(_lastModified)} relative/>)
+                renderCell: (_lastModified, alert) => (<Timestamp dateTime={toDateObject(alert.last_modified)} relative/>),
+                renderHeader
             },
             status: {
-                renderCell: (_status, element) => {
+                renderCell: (_status, alert) => {
+                    const element = _convertAlertToElement(alert);
                     if (element.valid) {
-                        if(_status) {
+                        if(element.status) {
                             return <span style={{backgroundColor: 'orange', color: 'white'}} className={element.textColor}><FormattedMessage id='wizard.disabled' defaultMessage='Disabled'/></span>;
                         } else {
                             return <span><FormattedMessage id='wizard.enabled' defaultMessage='Enabled' /></span>;
@@ -141,26 +155,24 @@ const AlertRulesContainer = ({ fieldOrder }) => {
                     else {
                         return <span className={element.textColor}><FormattedMessage id='wizard.corrupted' defaultMessage='Corrupted' /></span>;
                     }
-                }
+                },
+                renderHeader
             },
             rule: {
-                renderCell: (_rule, element) => {
-                    const alert = alerts.find(x => x.title === element.id);
-                    return <AlertRuleText alert={alert} />;
-                }
+                renderCell: (_rule, alert) => <AlertRuleText alert={alert} />,
+                renderHeader
             }
         },
     });
-    const onColumnsChange = useCallback((displayedAttributes) => {
-        setVisibleColumn(displayedAttributes);
-    }, [visibleColumn]);
     const renderBulkActions = () => (
         <AlertRuleBulkActions deleteAlertRulesFunction={deleteAlertRules}
                               disableAlertRulesFunction={disableAlertRules}
                               enableAlertRulesFunction={enableAlertRules} />
     );
     const onSortChange = useCallback(() => {}, []);
-    const renderAlertRuleActions = useCallback((element) => {
+    const renderAlertRuleActions = useCallback((alert) => {
+        const element = _convertAlertToElement(alert);
+
         return (<div className='pull-left' style={{display: 'flex', columnGap: '1px'}}>
             <ButtonToSearch searchQuery1={element.searchQuery} searchQuery2={element.searchQuery2} stream1={element.streamId} stream2={element.streamId2} disabled={!element.valid}/>
             <ButtonToUpdateRule target={element.title} disabled={!element.valid}/>
@@ -169,34 +181,6 @@ const AlertRulesContainer = ({ fieldOrder }) => {
             <AlertRuleCloneForm alertTitle={element.title} disabled={!element.valid} onSubmit={_onCloneSubmit} />
         </div>);
     }, []);
-    const _elementMatchQuery = (element, query) => {
-        const lowerQuery = query ? query.toLowerCase() : '';
-        const matchTitle = element.title.toLowerCase().includes(lowerQuery);
-        const matchUser = element.user.toLowerCase().includes(lowerQuery);
-        const matchPriority = getPriorityType(element.priority).toLowerCase().includes(lowerQuery);
-        const matchCreatedAt = toDateObject(element.created).format(DATE_TIME_FORMATS.default).toLowerCase().includes(lowerQuery);
-        const matchUpdatedAt = toDateObject(element.lastModified).format(DATE_TIME_FORMATS.default).toLowerCase().includes(lowerQuery);
-
-        return matchTitle || matchUser || matchPriority || matchCreatedAt || matchUpdatedAt;
-    }
-    const onSearch = useCallback((newQuery, allElements = null) => {
-        const usedElements = allElements ? allElements : elements;
-        const newElements = usedElements.filter((elt) => _elementMatchQuery(elt, newQuery));
-
-        setFilterElements(newElements);
-        setQuery(newQuery);
-    }, [query, elements]);
-
-    const onReset = ()=> onSearch('');
-
-    const _loadAlertRules = () => {
-        AlertRuleActions.list().then(newAlerts => {
-            setAlerts(newAlerts);
-            const allElements = newAlerts.map(_convertAlertToElement);
-            setElements(allElements);
-            onSearch(query, allElements);
-        });
-    };
 
     const deleteAlertRules = (alertRulesTitles) => {
         const promises = alertRulesTitles.map(name => AlertRuleActions.deleteByName(name));
@@ -204,6 +188,7 @@ const AlertRulesContainer = ({ fieldOrder }) => {
     }
 
     const disableAlertRules = (alertRulesTitles) => {
+        console.log(alertRulesTitles);
         const tempElements = alertRulesTitles.map(name => elements.find(x => x.id === name));
 
         for(const elt of tempElements) {
@@ -255,46 +240,21 @@ const AlertRulesContainer = ({ fieldOrder }) => {
 
     const _onCloneSubmit = (name, title, description, shouldCloneNotification) => {
         AlertRuleActions.clone(name, title, description, shouldCloneNotification)
-            .then()
-            .finally(() => _loadAlertRules());
+            .then(() => {}).finally(() => _loadAlertRules());
     }
-
-    useEffect(() => {
-        Reflux.connect(AlertRuleStore);
-        _loadAlertRules();
-        }, []);
 
     return (
         <>
-            <div style={{marginBottom: 5}}>
-                <SearchForm onSearch={onSearch}
-                            onReset={onReset}
-                            placeholder={intl.formatMessage({
-                                id: 'wizard.filter',
-                                defaultMessage: 'Filter alert rules'
-                            })}/>
-            </div>
-            <div>
-                {alerts?.length === 0 ? (
-                    <NoSearchResult>
-                        <FormattedMessage id='wizard.noAlertFound' defaultMessage='No Alert Rule has been found' />
-                    </NoSearchResult>
-                ) : (
-                    <EntityDataTable
-                                     visibleColumns={visibleColumn}
-                                     columnsOrder={columnOrder}
-                                     onColumnsChange={onColumnsChange}
-                                     onSortChange={onSortChange}
-                                     bulkSelection={{ actions: renderBulkActions() }}
-                                     columnDefinitions={columnDefinitions}
-                                     columnRenderers={columnRenderers()}
-                                     actionsCellWidth={520}
-                                     entityActions={renderAlertRuleActions}
-                                     entityAttributesAreCamelCase={false}
-                                     entities={filterElements}
-                    />
-                )}
-            </div>
+            <PaginatedEntityTable humanName="alert rules"
+                                  columnRenderers={columnRenderers()}
+                                  columnsOrder={columnOrder}
+                                  bulkSelection={{ actions: renderBulkActions() }}
+                                  entityActions={renderAlertRuleActions}
+                                  entityAttributesAreCamelCase
+                                  fetchEntities={fetchAlertRules}
+                                  keyFn={keyFn}
+                                  additionalAttributes={additionalAttributes}
+                                  tableLayout={DEFAULT_LAYOUT}/>
         </>
     );
 };

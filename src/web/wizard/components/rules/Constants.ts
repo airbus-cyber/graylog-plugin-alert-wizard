@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Airbus CyberSecurity (SAS)
+ * Copyright (C) 2020 Graylog, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Server Side Public License, version 1,
@@ -14,17 +14,11 @@
  * along with this program. If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
+import type { Sort } from 'stores/PaginationTypes';
 
-import Reflux from 'reflux';
-
-const AlertRuleActions = Reflux.createActions({
-    list: {asyncResult: true},
-    get: {asyncResult: true},
-    create: {asyncResult: true},
-    clone: {asyncResult: true},
-    deleteByName: {asyncResult: true},
-    update: {asyncResult: true},
-    searchPaginated: { asyncResult: true },
-});
-
-export default AlertRuleActions;
+export const DEFAULT_LAYOUT = {
+  entityTableId: 'alert_rules',
+  defaultPageSize: 20,
+  defaultSort: { attributeId: 'title', direction: 'asc' } as Sort,
+  defaultDisplayedAttributes: ['title', 'priority', 'description', 'created'],
+};

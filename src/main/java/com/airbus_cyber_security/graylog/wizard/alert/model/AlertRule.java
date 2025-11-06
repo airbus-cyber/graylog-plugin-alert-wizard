@@ -25,6 +25,8 @@ import org.joda.time.DateTime;
 
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
+import org.mongojack.Id;
+import org.mongojack.ObjectId;
 
 
 // TODO rename ID into Identifier everywhere
@@ -32,7 +34,11 @@ import jakarta.validation.constraints.NotNull;
 @JsonAutoDetect
 public abstract class AlertRule {
 
-    // TODO should add an identifier and work with it (see Notification or EventDefinition)
+    @Id
+    @ObjectId
+    @Nullable
+    @JsonProperty("id")
+    public abstract String id();
 
     @JsonProperty("title")
     @NotNull
@@ -74,7 +80,7 @@ public abstract class AlertRule {
                                    @JsonProperty("created_at") DateTime createdAt,
                                    @JsonProperty("creator_user_id") String creatorUserId,
                                    @JsonProperty("last_modified") DateTime lastModified){
-        return create(title, alertType, pattern, notificationID, createdAt, creatorUserId, lastModified);
+        return new AutoValue_AlertRule(objectId, title, alertType, pattern, notificationID, createdAt, creatorUserId, lastModified);
     }
 	
 	public static AlertRule create(
@@ -85,6 +91,6 @@ public abstract class AlertRule {
             DateTime createdAt,
             String creatorUserId,
             DateTime lastModified) {
-		return new AutoValue_AlertRule(title, alertType, pattern, notificationID, createdAt, creatorUserId, lastModified);
+		return create(null, title, alertType, pattern, notificationID, createdAt, creatorUserId, lastModified);
 	}
 }

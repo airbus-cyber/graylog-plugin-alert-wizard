@@ -73,7 +73,6 @@ import org.graylog2.plugin.database.ValidationException;
 import org.graylog2.plugin.rest.PluginRestResource;
 import org.graylog2.rest.models.SortOrder;
 import org.graylog2.rest.models.tools.responses.PageListResponse;
-import org.graylog2.rest.resources.entities.EntityAttribute;
 import org.graylog2.rest.resources.entities.EntityDefaults;
 import org.graylog2.rest.resources.entities.Sorting;
 import org.graylog2.search.SearchQuery;
@@ -115,11 +114,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             .put("title", SearchQueryField.create(GetDataAlertRule.FIELD_TITLE))
             .put("description", SearchQueryField.create(GetDataAlertRule.FIELD_DESCRIPTION))
             .build();
-    private static final List<EntityAttribute> attributes = List.of(
-            EntityAttribute.builder().id("title").title("Title").build(),
-            EntityAttribute.builder().id("description").title("Description").build(),
-            EntityAttribute.builder().id("priority").title("Priority").type(SearchQueryField.Type.INT).build()
-    );
     private static final EntityDefaults settings = EntityDefaults.builder()
             .sort(Sorting.create(DEFAULT_SORT_FIELD, Sorting.Direction.valueOf(DEFAULT_SORT_DIRECTION.toUpperCase(Locale.ROOT))))
             .build();
@@ -230,7 +224,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             }
         }
 
-        return GetDataAlertRule.create(alert.getTitle(),
+        return GetDataAlertRule.create(
+                alert.id(),
+                alert.getTitle(),
                 priority,
                 eventIdentifier,
                 eventIdentifier2,
@@ -643,6 +639,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         List<GetDataAlertRule> elements = result.delegate().stream().map(this::constructDataAlertRule).toList();
 
         return PageListResponse.create(query, alertRules.pagination(),
-                result.grandTotal().orElse(0L), sort, order, elements, attributes, settings);
+                result.grandTotal().orElse(0L), sort, order, elements, List.of(), settings);
     }
 }

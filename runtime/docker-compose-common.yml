@@ -11,8 +11,8 @@ services:
     networks:
       - eh-network
     # uncomment to expose mongodb on localhost:27017
-    # ports:
-    #   - 27017:27017
+    ports:
+      - 27017:27017
 
   # OpenSearch:
   # * https://hub.docker.com/r/opensearchproject/opensearch

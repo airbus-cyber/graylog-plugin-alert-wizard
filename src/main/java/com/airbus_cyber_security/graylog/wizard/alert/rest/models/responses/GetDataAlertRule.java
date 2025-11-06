@@ -27,6 +27,9 @@ import org.joda.time.DateTime;
 
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
+import org.mongojack.Id;
+import org.mongojack.ObjectId;
+
 import java.util.Map;
 
 // TODO either inherit or reuse AlertRuleRequest to avoid duplication in this class => I believe it should be the same object, with optional fields maybe...
@@ -34,9 +37,16 @@ import java.util.Map;
 @AutoValue
 @JsonAutoDetect
 public abstract class GetDataAlertRule {
+	public static final String FIELD_ID = "id";
 	public static final String FIELD_TITLE = "title";
 	public static final String FIELD_PRIORITY = "priority";
 	public static final String FIELD_DESCRIPTION = "description";
+
+	@Id
+	@ObjectId
+	@Nullable
+	@JsonProperty(FIELD_ID)
+	public abstract String id();
 
 	@JsonProperty(FIELD_TITLE)
 	@NotNull
@@ -96,7 +106,8 @@ public abstract class GetDataAlertRule {
 	public abstract boolean isDisabled();
 
 	@JsonCreator
-	public static GetDataAlertRule create(@JsonProperty("title") String title,
+	public static GetDataAlertRule create(@JsonProperty("id") String id,
+										  @JsonProperty("title") String title,
                                           @JsonProperty("priority") Integer priority,
                                           @JsonProperty("condition") String eventDefinitionIdentifier,
 										  @JsonProperty("second_event_definition") String secondEventDefinitionIdentifier,
@@ -116,7 +127,7 @@ public abstract class GetDataAlertRule {
                                           @JsonProperty("condition_parameters") Map<String, Object> conditionParameters,
                                           @JsonProperty("stream") AlertRuleStream stream,
                                           @JsonProperty("second_stream") AlertRuleStream stream2) {
-		return new AutoValue_GetDataAlertRule(title, priority, description, alertType, conditionParameters, stream, stream2,
+		return new AutoValue_GetDataAlertRule(id, title, priority, description, alertType, conditionParameters, stream, stream2,
 				eventDefinitionIdentifier, secondEventDefinitionIdentifier, notificationIdentifier, createdAt, creatorUserIdentifier,
 				lastModified, isDisabled);
 	}
