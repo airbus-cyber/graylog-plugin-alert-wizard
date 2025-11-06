@@ -48,8 +48,9 @@ import UserNotification from 'util/UserNotification';
 import fetch from 'logic/rest/FetchProvider';
 import AlertRuleActions from 'wizard/actions/AlertRuleActions';
 import RestUtils from './RestUtils';
+import PaginationURL from 'util/PaginationURL';
 
-const SOURCE_URL = RestUtils.buildSourceURL('alerts')
+const SOURCE_URL = RestUtils.buildSourceURL('alerts');
 
 const AlertRuleStore = Reflux.createStore({
     listenables: [AlertRuleActions],
@@ -72,6 +73,41 @@ const AlertRuleStore = Reflux.createStore({
                         'Could not retrieve alert rules');
                 });
         AlertRuleActions.list.promise(promise);
+    },
+
+    searchPaginated(newPage, newPerPage, newQuery, additional) {
+        const url = PaginationURL(`${SOURCE_URL}/paginated`, newPage, newPerPage, newQuery, additional);
+
+        const promise = fetch('GET', URLUtils.qualifyUrl(url))
+            .then((response) => {
+                const {
+                    elements,
+                    query,
+                    attributes,
+                    pagination: {
+                        count,
+                        total,
+                        page,
+                        per_page: perPage,
+                    },
+                } = response;
+
+                return {
+                    elements,
+                    attributes,
+                    pagination: {
+                        count,
+                        total,
+                        page,
+                        perPage,
+                        query,
+                    },
+                };
+            });
+
+        AlertRuleActions.searchPaginated.promise(promise);
+
+        return promise;
     },
 
     get(name) {
