@@ -29,7 +29,7 @@ const ButtonToUpdateRule = ({target, disabled}) => {
     const computeURl = () => {
         let url = '';
         if (!disabled) {
-            url = Routes.pluginRoute('WIZARD_UPDATEALERT_ALERTRULETITLE')(target.replace(/\//g, '%2F'));
+            url = Routes.pluginRoute('WIZARD_UPDATEALERT_ALERTID')(target.replace(/\//g, '%2F'));
         }
         return url;
     };

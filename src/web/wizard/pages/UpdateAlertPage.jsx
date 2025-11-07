@@ -45,7 +45,7 @@ const UpdateAlertPage = ({params}) => {
     const history = useHistory();
 
     useEffect(() => {
-        AlertRuleActions.get(params.alertRuleTitle).then(alert => {
+        AlertRuleActions.get(params.alertId).then(alert => {
             alert.stream.field_rule.forEach(rule => rule.identifier = generateIdentifier());
             if (alert.second_stream) {
                 alert.second_stream.field_rule.forEach(rule => rule.identifier = generateIdentifier());
@@ -56,7 +56,7 @@ const UpdateAlertPage = ({params}) => {
 
     const _update = (alert) => {
         // TODO simplify parameters here (only one necessary and the code in AlertRuleStore)
-        AlertRuleActions.update(params.alertRuleTitle, alert).then((response) => {
+        AlertRuleActions.update(params.alertId, alert).then((response) => {
             if (response !== true) {
                 return;
             }

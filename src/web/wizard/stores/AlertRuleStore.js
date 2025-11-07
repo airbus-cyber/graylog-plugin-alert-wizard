@@ -110,8 +110,8 @@ const AlertRuleStore = Reflux.createStore({
         return promise;
     },
 
-    get(name) {
-        const promise = fetch('GET', URLUtils.qualifyUrl(SOURCE_URL + '/' + encodeURIComponent(name)))
+    get(id) {
+        const promise = fetch('GET', URLUtils.qualifyUrl(SOURCE_URL + '/' + encodeURIComponent(id)))
             .then(
                 response => {
                     this.trigger({alert: response});
@@ -122,6 +122,20 @@ const AlertRuleStore = Reflux.createStore({
                         'Could not retrieve alert rule');
                 });
         AlertRuleActions.get.promise(promise);
+    },
+
+    getByTitle(title) {
+        const promise = fetch('GET', URLUtils.qualifyUrl(SOURCE_URL + '/title/' + encodeURIComponent(title)))
+            .then(
+                response => {
+                    this.trigger({alert: response});
+                    return response;
+                },
+                error => {
+                    UserNotification.error(`Fetching alert rule failed with status: ${error}`,
+                        'Could not retrieve alert rule');
+                });
+        AlertRuleActions.getByTitle.promise(promise);
     },
 
     create(newAlert) {

@@ -37,7 +37,7 @@ PluginStore.register(new PluginManifest(packageJson, {
     routes: [
         {path: '/wizard/AlertRules', component: WizardPage, permissions: 'WIZARD_ALERTS_RULES_READ'},
         {path: '/wizard/NewAlert', component: NewAlertPage, permissions: 'WIZARD_ALERTS_RULES_CREATE'},
-        {path: '/wizard/UpdateAlert/:alertRuleTitle', component: UpdateAlertPage, permissions: 'WIZARD_ALERTS_RULES_UPDATE'},
+        {path: '/wizard/UpdateAlert/:alertId', component: UpdateAlertPage, permissions: 'WIZARD_ALERTS_RULES_UPDATE'},
         {path: '/wizard/ExportAlert', component: ExportAlertPage, permissions: 'WIZARD_ALERTS_RULES_READ'},
         {path: '/wizard/ImportAlert', component: ImportAlertPage, permissions: 'WIZARD_ALERTS_RULES_READ'},
         {path: '/wizard/Lists', component: WizardListsPage},
