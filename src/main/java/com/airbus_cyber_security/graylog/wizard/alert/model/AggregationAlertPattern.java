@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.auto.value.AutoValue;
 
 import jakarta.validation.constraints.NotNull;
+import org.bson.Document;
 
 /**
  * To encode most simple rules: a single path (condition -> aggregation event) which trigger the same notification.
@@ -63,5 +64,12 @@ public abstract class AggregationAlertPattern implements AlertPattern {
         public abstract Builder eventIdentifier(String eventIdentifier);
 
         public abstract AggregationAlertPattern build();
+    }
+
+    public static AggregationAlertPattern fromDocument(Document document) {
+        return builder().
+                eventIdentifier(document.getString(FIELD_EVENT_IDENTIFIER)).
+                conditions(TriggeringConditions.fromDocument(document.get(FIELD_CONDITIONS, Document.class))).
+                build();
     }
 }

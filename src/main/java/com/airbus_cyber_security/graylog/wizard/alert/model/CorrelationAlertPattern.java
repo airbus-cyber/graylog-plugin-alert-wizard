@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.auto.value.AutoValue;
 
 import jakarta.validation.constraints.NotNull;
+import org.bson.Document;
 
 /**
  * To encode AND/THEN rules: two separate conditions which are combined with a correlation event
@@ -71,5 +72,13 @@ public abstract class CorrelationAlertPattern implements AlertPattern {
         public abstract Builder eventIdentifier(String eventIdentifier);
 
         public abstract CorrelationAlertPattern build();
+    }
+
+    public static CorrelationAlertPattern fromDocument(Document document) {
+        return builder().
+                eventIdentifier(document.getString(FIELD_EVENT_IDENTIFIER)).
+                conditions1(TriggeringConditions.fromDocument(document.get(FIELD_CONDITIONS1, Document.class))).
+                conditions2(TriggeringConditions.fromDocument(document.get(FIELD_CONDITIONS2, Document.class))).
+                build();
     }
 }

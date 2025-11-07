@@ -25,6 +25,7 @@ import com.google.auto.value.AutoValue;
 
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
+import org.bson.Document;
 
 @AutoValue
 @JsonAutoDetect
@@ -53,6 +54,15 @@ public abstract class FieldRule {
                                    @JsonProperty("type") int type,
                                    @JsonProperty("value") String value){
         return new AutoValue_FieldRule(id, field, type, value);
+    }
+
+    public static FieldRule fromDocument(Document document) {
+        return create(
+                document.getString("id"),
+                document.getString("field"),
+                document.getInteger("type"),
+                document.getString("value")
+        );
     }
 
 }

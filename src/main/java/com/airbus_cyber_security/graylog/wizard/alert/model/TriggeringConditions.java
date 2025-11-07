@@ -25,6 +25,7 @@ import com.google.auto.value.AutoValue;
 
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
+import org.bson.Document;
 import org.graylog2.plugin.streams.Stream;
 
 /**
@@ -93,5 +94,14 @@ public abstract class TriggeringConditions {
         public abstract Builder pipeline(Pipeline pipeline);
 
         public abstract TriggeringConditions build();
+    }
+
+    public static TriggeringConditions fromDocument(Document document) {
+        return builder().
+                matchingType(Stream.MatchingType.valueOf(document.getString(FIELD_MATCHING_TYPE))).
+                filteringStreamIdentifier(document.getString(FIELD_FILTERING_STREAM)).
+                outputStreamIdentifier(document.getString(FIELD_OUTPUT_STREAM)).
+
+                build();
     }
 }

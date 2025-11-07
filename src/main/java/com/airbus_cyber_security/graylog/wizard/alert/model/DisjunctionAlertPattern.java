@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.auto.value.AutoValue;
 
 import jakarta.validation.constraints.NotNull;
+import org.bson.Document;
 
 /**
  * To encode Or rule: two separate paths (condition -> aggregation event) which trigger the same notification.
@@ -78,5 +79,14 @@ public abstract class DisjunctionAlertPattern implements AlertPattern {
         public abstract Builder eventIdentifier2(String eventIdentifier);
 
         public abstract DisjunctionAlertPattern build();
+    }
+
+    public static DisjunctionAlertPattern fromDocument(Document document) {
+        return builder().
+                eventIdentifier1(document.getString(FIELD_EVENT_IDENTIFIER1)).
+                eventIdentifier2(document.getString(FIELD_EVENT_IDENTIFIER2)).
+                conditions1(TriggeringConditions.fromDocument(document.get(FIELD_CONDITIONS1, Document.class))).
+                conditions2(TriggeringConditions.fromDocument(document.get(FIELD_CONDITIONS2, Document.class))).
+                build();
     }
 }

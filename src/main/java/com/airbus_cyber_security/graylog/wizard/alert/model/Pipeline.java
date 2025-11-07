@@ -24,6 +24,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.auto.value.AutoValue;
 
 import jakarta.validation.constraints.NotNull;
+import org.bson.Document;
+
 import java.util.List;
 
 @AutoValue
@@ -70,5 +72,13 @@ public abstract class Pipeline {
         public abstract Builder fieldRules(List<FieldRule> fieldRules);
 
         public abstract Pipeline build();
+    }
+
+    public static Pipeline fromDocument(Document document) {
+        return builder().
+                identifier(document.getString(FIELD_IDENTIFIER)).
+                ruleIdentifier(document.getString(FIELD_RULE_IDENTIFIER)).
+                fieldRules(document.getList(FIELD_FIELD_RULES, Document.class).stream().map(FieldRule::fromDocument).toList()).
+                build();
     }
 }
