@@ -275,7 +275,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     }
 
     @GET
-    @Path("/{title}")
+    @Path("/{id}")
     @Timed
     @ApiOperation(value = "Get a alert")
     @RequiresAuthentication
@@ -283,7 +283,22 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     @ApiResponses(value = {
             @ApiResponse(code = 404, message = "Alert not found."),
     })
-    public GetDataAlertRule get(@ApiParam(name = TITLE, required = true) @PathParam(TITLE) String title)
+    public GetDataAlertRule get(@ApiParam(name = ID, required = true) @PathParam(ID) String id)
+            throws UnsupportedEncodingException, NotFoundException {
+        String alertId = java.net.URLDecoder.decode(id, ENCODING);
+        return getGetDataAlertRule(alertId);
+    }
+
+    @GET
+    @Path("/title/{title}")
+    @Timed
+    @ApiOperation(value = "Get a alert by title")
+    @RequiresAuthentication
+    @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_READ)
+    @ApiResponses(value = {
+            @ApiResponse(code = 404, message = "Alert not found."),
+    })
+    public GetDataAlertRule getByTitle(@ApiParam(name = TITLE, required = true) @PathParam(TITLE) String title)
             throws UnsupportedEncodingException, NotFoundException {
         String alertTitle = java.net.URLDecoder.decode(title, ENCODING);
         return getGetDataAlertRuleFromTitle(alertTitle);
@@ -347,6 +362,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         AlertPattern pattern = createAlertPattern(notificationIdentifier, request, alertTitle, userContext, userName);
 
         AlertRule alertRule = AlertRule.create(
+                null,
                 alertTitle,
                 alertType,
                 pattern,
@@ -470,43 +486,50 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     }
 
     @PUT
-    @Path("/{title}")
+    @Path("/{id}")
     @Timed
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_UPDATE)
     @ApiOperation(value = "Update a alert")
     @ApiResponses(value = {@ApiResponse(code = 400, message = "The supplied request is not valid.")})
     @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_UPDATE)
-    public Response update(@ApiParam(name = TITLE, required = true)
-                           @PathParam(TITLE) String title,
+    public Response update(@ApiParam(name = ID, required = true)
+                           @PathParam(ID) String id,
                            @ApiParam(name = "JSON body", required = true) @Valid @NotNull AlertRuleRequest request,
                            @Context UserContext userContext
     ) throws UnsupportedEncodingException, NotFoundException, ValidationException {
 
         this.conversions.checkIsValidRequest(request);
 
-        AlertRule previousAlert = this.alertRuleService.load(title);
-        String notificationIdentifier = previousAlert.getNotificationID();
-        String userName = getCurrentUser().getName();
+        Optional<AlertRule> previousAlertOpt = this.alertRuleService.get(id);
+        if (previousAlertOpt.isPresent()) {
+            AlertRule previousAlert = previousAlertOpt.get();
 
-        this.notificationService.updateNotification(request.getTitle(), notificationIdentifier);
+            String notificationIdentifier = previousAlert.getNotificationID();
+            String userName = getCurrentUser().getName();
 
-        AlertType previousAlertType = previousAlert.getAlertType();
-        AlertPattern pattern = updateAlertPattern(previousAlert.pattern(), notificationIdentifier, request,
-                previousAlertType, request.getTitle(), userContext, userName);
+            this.notificationService.updateNotification(request.getTitle(), notificationIdentifier);
 
-        AlertRule alertRule = AlertRule.create(
-                request.getTitle(),
-                request.getConditionType(),
-                pattern,
-                previousAlert.getNotificationID(),
-                previousAlert.getCreatedAt(),
-                userName,
-                DateTime.now(DateTimeZone.UTC));
-        alertRule = this.alertRuleService.update(java.net.URLDecoder.decode(title, ENCODING), alertRule);
+            AlertType previousAlertType = previousAlert.getAlertType();
+            AlertPattern pattern = updateAlertPattern(previousAlert.pattern(), notificationIdentifier, request,
+                    previousAlertType, request.getTitle(), userContext, userName);
 
-        GetDataAlertRule result = this.constructDataAlertRule(alertRule);
-        return Response.accepted().entity(result).build();
+            AlertRule alertRule = AlertRule.create(
+                    id,
+                    request.getTitle(),
+                    request.getConditionType(),
+                    pattern,
+                    previousAlert.getNotificationID(),
+                    previousAlert.getCreatedAt(),
+                    userName,
+                    DateTime.now(DateTimeZone.UTC));
+            alertRule = this.alertRuleService.update(alertRule);
+
+            GetDataAlertRule result = this.constructDataAlertRule(alertRule);
+            return Response.accepted().entity(result).build();
+        } else {
+            throw new NotFoundException("Alert <" + id + "> not found!");
+        }
     }
 
     private void deleteEvent(String eventIdentifier) {
@@ -586,6 +609,14 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         GetDataAlertRule result = createPatternAndRule(alertRuleRequest, userContext, notificationIdentifier, alertTitle, userName, alertType);
         return Response.ok().entity(result).build();
+    }
+
+    private GetDataAlertRule getGetDataAlertRule(String id) throws NotFoundException {
+        Optional<AlertRule> loadedAlertOpt = this.alertRuleService.get(id);
+        if (loadedAlertOpt.isEmpty()) {
+            throw new NotFoundException("Alert <" + id + "> not found!");
+        }
+        return this.constructDataAlertRule(loadedAlertOpt.get());
     }
 
     private GetDataAlertRule getGetDataAlertRuleFromTitle(String title) throws NotFoundException {

@@ -25,8 +25,8 @@ import { Input, Row, Col, Button } from 'components/bootstrap';
 import messages_fr from 'translations/fr.json';
 import AlertRuleActions from 'wizard/actions/AlertRuleActions';
 import Navigation from 'wizard/routing/Navigation';
-import AlertRuleSelectionList from 'wizard/components/rules/AlertRuleSelectionList'
-import RulesImportExport from 'wizard/logic/RulesImportExport'
+import AlertRuleSelectionList from 'wizard/components/rules/AlertRuleSelectionList';
+import RulesImportExport from 'wizard/logic/RulesImportExport';
 import { EventNotificationsActions } from 'stores/event-notifications/EventNotificationsStore';
 
 const language = navigator.language.split(/[-_]/)[0];
@@ -81,7 +81,7 @@ const ImportAlertPage = createReactClass({
             //      => set up selenium tests ? :(
             await AlertRuleActions.create(rule);
                 // TODO should not need to perform this get: create should return the information of the alert
-            const alert = await AlertRuleActions.get(rule.title);
+            const alert = await AlertRuleActions.getByTitle(rule.title);
             const notification = {
                 'config': {
                     ...rule.notification_parameters,

@@ -20,6 +20,7 @@ import Reflux from 'reflux';
 const AlertRuleActions = Reflux.createActions({
     list: {asyncResult: true},
     get: {asyncResult: true},
+    getByTitle: {asyncResult: true},
     create: {asyncResult: true},
     clone: {asyncResult: true},
     delete: {asyncResult: true},

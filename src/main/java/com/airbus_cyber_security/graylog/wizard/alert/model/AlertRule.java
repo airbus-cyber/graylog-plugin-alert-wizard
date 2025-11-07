@@ -29,15 +29,15 @@ import org.mongojack.Id;
 import org.mongojack.ObjectId;
 
 
-// TODO rename ID into Identifier everywhere
 @AutoValue
 @JsonAutoDetect
 public abstract class AlertRule {
+    public final static String ID = "id";
 
     @Id
     @ObjectId
     @Nullable
-    @JsonProperty("id")
+    @JsonProperty(ID)
     public abstract String id();
 
     @JsonProperty("title")
@@ -82,15 +82,4 @@ public abstract class AlertRule {
                                    @JsonProperty("last_modified") DateTime lastModified){
         return new AutoValue_AlertRule(objectId, title, alertType, pattern, notificationID, createdAt, creatorUserId, lastModified);
     }
-	
-	public static AlertRule create(
-            String title,
-            AlertType alertType,
-            AlertPattern pattern,
-            String notificationID,
-            DateTime createdAt,
-            String creatorUserId,
-            DateTime lastModified) {
-		return create(null, title, alertType, pattern, notificationID, createdAt, creatorUserId, lastModified);
-	}
 }

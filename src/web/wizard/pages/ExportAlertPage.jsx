@@ -28,8 +28,8 @@ import AlertRuleActions from 'wizard/actions/AlertRuleActions';
 import FileSaver from 'wizard/logic/FileSaver';
 import IconDownload from 'wizard/components/icons/Download';
 import Navigation from 'wizard/routing/Navigation';
-import AlertRuleSelectionList from 'wizard/components/rules/AlertRuleSelectionList'
-import RulesImportExport from 'wizard/logic/RulesImportExport'
+import AlertRuleSelectionList from 'wizard/components/rules/AlertRuleSelectionList';
+import RulesImportExport from 'wizard/logic/RulesImportExport';
 import { EventNotificationsActions } from 'stores/event-notifications/EventNotificationsStore';
 
 const language = navigator.language.split(/[-_]/)[0];
@@ -62,7 +62,7 @@ const ExportAlertPage = createReactClass({
 
         const alerts = [];
         for (const title of this.state.selectedAlertTitles) {
-            const alert = await AlertRuleActions.get(title);
+            const alert = await AlertRuleActions.getByTitle(title);
             const notification = await EventNotificationsActions.get(alert.notification);
             // TODO write a test that checks that the notification_parameters are present in the result (using mswjs or selenium?)
             alert.notification_parameters = notification.config;

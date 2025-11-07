@@ -60,7 +60,7 @@ function _convertAlertToElement(alert) {
         searchQuery2 = alert.condition_parameters.additional_search_query;
     }
     return {
-        id: alert.title,
+        id: alert.id,
         title: alert.title,
         priority: alert.priority,
         description: alert.description,
@@ -174,7 +174,7 @@ const AlertRulesContainer = ({ fieldOrder }) => {
 
         return (<div className='pull-left' style={{display: 'flex', columnGap: '1px'}}>
             <ButtonToSearch searchQuery1={element.searchQuery} searchQuery2={element.searchQuery2} stream1={element.streamId} stream2={element.streamId2} disabled={!element.valid}/>
-            <ButtonToUpdateRule target={element.title} disabled={!element.valid}/>
+            <ButtonToUpdateRule target={element.id} disabled={!element.valid}/>
             <ButtonToEventDefinition target={element.condition} disabled={!element.valid}/>
             <ButtonToNotification target={element.notification} disabled={!element.valid}/>
             <AlertRuleCloneForm alertTitle={element.title} disabled={!element.valid} onSubmit={_onCloneSubmit} />

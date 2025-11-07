@@ -64,16 +64,15 @@ public class AlertRuleService extends PaginatedDbService<AlertRule> {
 		}
 	}
 	
-	public AlertRule update(String title, AlertRule alert) {
+	public AlertRule update(AlertRule alert) {
 		LOG.debug("Alert to be updated [{}]", alert);
 
 		Set<ConstraintViolation<AlertRule>> violations = validator.validate(alert);
 		if (!violations.isEmpty()) {
 			throw new IllegalArgumentException("Specified object failed validation: " + violations);
 		}
-		// TODO would be easier to just do a this.save, but unfortunately we are using title as identifier. We should use an identifier instead!!!
-		return this.db.findAndModify(DBQuery.is(TITLE, title), new BasicDBObject(), new BasicDBObject(),
-				                    false, alert, true, false);
+
+		return this.save(alert);
 	}
 
 	public List<AlertRule> all() {
