@@ -92,7 +92,7 @@ const AlertRulesContainer = ({ fieldOrder }) => {
         {key: 'created', label: intl.formatMessage({id: 'wizard.created', defaultMessage: 'Created'}), config: 'Created', sortable: true},
         {key: 'lastModified', label: intl.formatMessage({id: 'wizard.lastModified', defaultMessage: 'Last Modified'}), config: 'Last Modified', sortable: true},
         {key: 'user', label: intl.formatMessage({id: 'wizard.user', defaultMessage: 'User'}), config: 'User', sortable: true},
-        {key: 'status', label: intl.formatMessage({id: 'wizard.status', defaultMessage: 'Status'}), config: 'Status', sortable: true},
+        {key: 'status', label: intl.formatMessage({id: 'wizard.status', defaultMessage: 'Status'}), config: 'Status', sortable: false},
         {key: 'rule', label: intl.formatMessage({id: 'wizard.rule', defaultMessage: 'Rule'}), config: 'Rule', sortable: false}
     ];
     const availablePriorityTypes = [

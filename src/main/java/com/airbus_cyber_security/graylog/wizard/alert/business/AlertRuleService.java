@@ -18,8 +18,16 @@
 package com.airbus_cyber_security.graylog.wizard.alert.business;
 
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRule;
+import com.google.common.collect.ImmutableList;
 import com.mongodb.BasicDBObject;
+import com.mongodb.client.AggregateIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Aggregates;
+import com.mongodb.client.model.Field;
+import com.mongodb.client.model.Variable;
+import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.graylog.events.processor.DBEventDefinitionService;
 import org.graylog2.bindings.providers.MongoJackObjectMapperProvider;
 import org.graylog2.database.MongoConnection;
 import org.graylog2.database.NotFoundException;
@@ -37,6 +45,7 @@ import jakarta.validation.Validator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.StreamSupport;
 
 
 // TODO split this into AlertRuleCollection and move it down in the persistence namespace
@@ -46,6 +55,8 @@ public class AlertRuleService extends PaginatedDbService<AlertRule> {
 	private final Validator validator;
 	private static final Logger LOG = LoggerFactory.getLogger(AlertRuleService.class);
 	private static final String TITLE = "title";
+	private static final List<String> STRING_FIELDS = List.of("title", "description", "creator_user_id");
+	private final MongoCollection<Document> collection;
 
 	@Inject
 	public AlertRuleService(MongoConnection mongoConnection, MongoJackObjectMapperProvider mapperProvider,
@@ -53,6 +64,7 @@ public class AlertRuleService extends PaginatedDbService<AlertRule> {
 		super(mongoConnection, mapperProvider, AlertRule.class, COLLECTION_NAME);
 		this.validator = validator;
 		this.db.createIndex(new BasicDBObject(TITLE, 1), new BasicDBObject("unique", true));
+		this.collection = mongoConnection.getMongoDatabase().getCollection(COLLECTION_NAME);
 	}
 
 	public AlertRule create(AlertRule alert) {
@@ -94,18 +106,65 @@ public class AlertRuleService extends PaginatedDbService<AlertRule> {
 		return (this.db.getCount(DBQuery.is(TITLE, title)) > 0);
 	}
 
-	public PaginatedList<AlertRule> searchPaginated(SearchQuery query, Predicate<AlertRule> filter,
-															 Bson sort, int page, int perPage) {
+	public PaginatedList<AlertRule> searchPaginated(SearchQuery query, Predicate<AlertRule> predicate,
+													String order, String sortField, int page, int perPage) {
 		final Bson dbQuery = query.toBson();
-		final PaginatedList<AlertRule> list = filter == null ?
-				findPaginatedWithQueryAndSort(dbQuery, sort, page, perPage) :
-				findPaginatedWithQueryFilterAndSort(dbQuery, filter, sort, page, perPage);
 
-		return new PaginatedList<>(
-				list,
-				list.pagination().total(),
-				page,
-				perPage
-		);
+		var pipelineBuilder = ImmutableList.<Bson>builder()
+				.add(Aggregates.match(dbQuery));
+
+		if (sortField.equals("priority") || sortField.equals("description")) {
+			String eventField = "$event_definition." + sortField;
+			pipelineBuilder.add(Aggregates.lookup(
+							DBEventDefinitionService.COLLECTION_NAME,
+							List.of(new Variable<>("event_identifier", doc("$toObjectId", "$alert_pattern.event_identifier")),
+									new Variable<>("event_identifier1", doc("$toObjectId", "$alert_pattern.event_identifier1"))),
+							List.of(Aggregates.match(doc("$or",
+									List.of(
+											doc("$expr", doc("$eq", List.of("$_id", "$$event_identifier"))),
+											doc("$expr", doc("$eq", List.of("$_id", "$$event_identifier1")))
+									)))),
+							"event_definition"
+					))
+					.add(Aggregates.set(new Field<>(sortField, doc("$first", eventField))))
+					.add(Aggregates.unset("event_definition"));
+		}
+
+		if (isStringField(sortField)) {
+			pipelineBuilder.add(Aggregates.set(new Field<>("lower" + sortField, doc("$toLower", "$" + sortField))))
+					.add(Aggregates.sort(getSortBuilder(order, "lower" + sortField)))
+					.add(Aggregates.unset("lower" + sortField));
+		} else {
+			pipelineBuilder.add(Aggregates.sort(getSortBuilder(order, sortField)));
+		}
+
+		final AggregateIterable<Document> result = collection.aggregate(pipelineBuilder.build());
+
+		final List<AlertRule> alertRuleList = StreamSupport.stream(result.spliterator(), false)
+				.map(AlertRule::fromDocument)
+				.filter(predicate)
+				.toList();
+
+		final long grandTotal = db.find(DBQuery.empty()).toArray()
+				.stream()
+				.filter(predicate)
+				.count();
+
+		final List<AlertRule> paginatedAlerts = perPage > 0
+				? alertRuleList.stream()
+				.skip((long) perPage * Math.max(0, page - 1))
+				.limit(perPage)
+				.toList()
+				: alertRuleList;
+
+		return new PaginatedList<>(paginatedAlerts, alertRuleList.size(), page, perPage, grandTotal);
+	}
+
+	private Document doc(String key, Object value) {
+		return new Document(key, value);
+	}
+
+	private boolean isStringField(String sortField) {
+		return STRING_FIELDS.contains(sortField);
 	}
 }

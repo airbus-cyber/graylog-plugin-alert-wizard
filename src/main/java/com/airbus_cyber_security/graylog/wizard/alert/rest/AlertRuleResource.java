@@ -656,7 +656,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                                                               allowableValues = "title,user,created,lastModified")
                                                       @DefaultValue(DEFAULT_SORT_FIELD) @QueryParam("sort") String sort,
                                                       @ApiParam(name = "order", value = "The sort direction", allowableValues = "asc, desc")
-                                                      @DefaultValue(DEFAULT_SORT_DIRECTION) @QueryParam("order") SortOrder order) {
+                                                      @DefaultValue(DEFAULT_SORT_DIRECTION) @QueryParam("order") String order) {
 
         SearchQuery searchQuery;
         try {
@@ -668,7 +668,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         final PaginatedList<AlertRule> result = this.alertRuleService.searchPaginated(
                 searchQuery,
                 alertRule -> true,
-                order.toBsonSort(sortAttr),
+                order,
+                sortAttr,
                 page,
                 perPage);
 
