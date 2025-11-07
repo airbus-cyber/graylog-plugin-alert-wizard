@@ -118,6 +118,12 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private static final EntityDefaults settings = EntityDefaults.builder()
             .sort(Sorting.create(DEFAULT_SORT_FIELD, Sorting.Direction.valueOf(DEFAULT_SORT_DIRECTION.toUpperCase(Locale.ROOT))))
             .build();
+    private static final ImmutableMap<String, String> SORT_FIELD_MAP = ImmutableMap.<String, String>builder()
+            .put("title", "title")
+            .put("user", "creator_user_id")
+            .put("created", "created_at")
+            .put("lastModified", "last_modified")
+            .build();
 
     // TODO try to remove this field => move it down in business
     private final AlertWizardConfigurationService configurationService;
@@ -647,7 +653,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                                                       @ApiParam(name = "sort",
                                                               value = "The field to sort the result on",
                                                               required = true,
-                                                              allowableValues = "title,description,priority")
+                                                              allowableValues = "title,user,created,lastModified")
                                                       @DefaultValue(DEFAULT_SORT_FIELD) @QueryParam("sort") String sort,
                                                       @ApiParam(name = "order", value = "The sort direction", allowableValues = "asc, desc")
                                                       @DefaultValue(DEFAULT_SORT_DIRECTION) @QueryParam("order") SortOrder order) {
@@ -658,10 +664,11 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         } catch (IllegalArgumentException e) {
             throw new BadRequestException("Invalid argument in search query: " + e.getMessage());
         }
+        String sortAttr = SORT_FIELD_MAP.getOrDefault(sort, sort);
         final PaginatedList<AlertRule> result = this.alertRuleService.searchPaginated(
                 searchQuery,
                 alertRule -> true,
-                order.toBsonSort(sort),
+                order.toBsonSort(sortAttr),
                 page,
                 perPage);
 
