@@ -183,23 +183,37 @@ const AlertRulesContainer = ({ fieldOrder }) => {
 
     const deleteAlertRules = (alertRulesIds) => {
         const promises = alertRulesIds.map(id => AlertRuleActions.delete(id));
-        Promise.all(promises).then(() => _loadAlertRules());
+        Promise.all(promises).then(() => {}).finally(() => _loadAlertRules());
     }
 
-    const disableAlertRules = (alertRulesIds) => {
-        const tempElements = alertRulesIds.map(name => elements.find(x => x.id === name));
+    const disableAlertRules = async (alertRulesIds) => {
+        const tempElements = [];
 
-        for(const elt of tempElements) {
-            _onPause(elt.title, elt.condition, elt.streamId, elt.secondEventDefinition, elt.streamId2);
+        for(const id of alertRulesIds) {
+            const loadedRule = await AlertRuleActions.get(id);
+            tempElements.push(_convertAlertToElement(loadedRule));
         }
+
+        const promises = [];
+        for(const elt of tempElements) {
+            promises.push(_onPause(elt.title, elt.condition, elt.streamId, elt.secondEventDefinition, elt.streamId2));
+        }
+        Promise.all(promises).then(() => {}).finally(() => _loadAlertRules());
     }
 
-    const enableAlertRules = (alertRulesIds) => {
-        const tempElements = alertRulesIds.map(name => elements.find(x => x.id === name));
+    const enableAlertRules = async (alertRulesIds) => {
+        const tempElements = [];
 
-        for(const elt of tempElements) {
-            _onResume(elt.condition, elt.streamId, elt.secondEventDefinition, elt.streamId2);
+        for(const id of alertRulesIds) {
+            const loadedRule = await AlertRuleActions.get(id);
+            tempElements.push(_convertAlertToElement(loadedRule));
         }
+
+        const promises = [];
+        for(const elt of tempElements) {
+            promises.push(_onResume(elt.condition, elt.streamId, elt.secondEventDefinition, elt.streamId2));
+        }
+        Promise.all(promises).then(() => {}).finally(() => _loadAlertRules());
     }
 
     const _onResume = (eventDefinitionIdentifier, stream, secondEventDefinitionIdentifier, stream2) => {
@@ -216,7 +230,7 @@ const AlertRulesContainer = ({ fieldOrder }) => {
         if (stream2 !== null) {
             StreamsStore.resume(stream2, response => response);
         }
-        Promise.all(promises).then(() => {}).finally(() => _loadAlertRules());
+        return Promise.all(promises);
     };
 
     const _onPause = (name, eventDefinitionIdentifier, stream, secondEventDefinitionIdentifier, secondStream) => {
@@ -233,7 +247,7 @@ const AlertRulesContainer = ({ fieldOrder }) => {
         if (secondStream !== null) {
             StreamsStore.pause(secondStream, response => response);
         }
-        Promise.all(promises).then(() => {}).finally(() => _loadAlertRules());
+        return Promise.all(promises);
     }
 
     const _onCloneSubmit = (name, title, description, shouldCloneNotification) => {
