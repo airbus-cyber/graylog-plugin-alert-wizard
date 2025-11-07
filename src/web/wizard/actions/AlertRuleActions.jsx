@@ -22,7 +22,7 @@ const AlertRuleActions = Reflux.createActions({
     get: {asyncResult: true},
     create: {asyncResult: true},
     clone: {asyncResult: true},
-    deleteByName: {asyncResult: true},
+    delete: {asyncResult: true},
     update: {asyncResult: true},
     searchPaginated: { asyncResult: true },
 });
