@@ -199,8 +199,8 @@ const AlertRuleStore = Reflux.createStore({
         AlertRuleActions.update.promise(promise);
     },
 
-    deleteByName(alertName) {
-        const url = URLUtils.qualifyUrl(SOURCE_URL + '/' + encodeURIComponent(alertName));
+    delete(id) {
+        const url = URLUtils.qualifyUrl(SOURCE_URL + '/' + encodeURIComponent(id));
         const method = 'DELETE';
 
         const promise = fetch(method, url)
@@ -211,7 +211,7 @@ const AlertRuleStore = Reflux.createStore({
                 UserNotification.error(`Deleting alert rule failed with status: ${error.message}`,
                     'Could not delete alert rule');
             });
-        AlertRuleActions.deleteByName.promise(promise);
+        AlertRuleActions.delete.promise(promise);
     },
 });
 

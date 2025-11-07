@@ -105,6 +105,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private static final Logger LOG = LoggerFactory.getLogger(AlertRuleResource.class);
 
     private static final String ENCODING = "UTF-8";
+    private static final String ID = "id";
     private static final String TITLE = "title";
 
     private static final String DEFAULT_SORT_FIELD = "title";
@@ -305,8 +306,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 alertTitle = newAlertTitle;
             } else if (importPolicy != null && importPolicy.equals(ImportPolicyType.REPLACE)) {
                 try {
-                    this.delete(alertTitle, userContext);
-                } catch (MongoException | UnsupportedEncodingException e) {
+                    AlertRule alert = this.alertRuleService.load(alertTitle);
+                    this.delete(alert.id(), userContext);
+                } catch (MongoException | UnsupportedEncodingException | NotFoundException e) {
                     LOG.error("Failed to replace alert rule");
                     throw new BadRequestException("Failed to replace alert rule.");
                 }
@@ -531,7 +533,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     }
 
     @DELETE
-    @Path("/{title}")
+    @Path("/{id}")
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_DELETE)
     @ApiOperation(value = "Delete a alert")
@@ -540,25 +542,25 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             @ApiResponse(code = 400, message = "Invalid ObjectId.")
     })
     @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_DELETE)
-    public void delete(@ApiParam(name = TITLE, required = true)
-                       @PathParam(TITLE) String title,
+    public void delete(@ApiParam(name = ID, required = true)
+                       @PathParam(ID) String id,
                        @Context UserContext userContext
     ) throws MongoException, UnsupportedEncodingException {
-        String alertTitle = java.net.URLDecoder.decode(title, ENCODING);
+        Optional<AlertRule> alertRuleOptional = this.alertRuleService.get(id);
 
-        try {
-            AlertRule alertRule = this.alertRuleService.load(alertTitle);
+        if (alertRuleOptional.isPresent()) {
+            AlertRule alertRule = alertRuleOptional.get();
 
             deleteAlertPattern(alertRule.pattern());
             if (alertRule.getNotificationID() != null && !alertRule.getNotificationID().isEmpty()) {
                 // TODO move this down into AlertRuleUtilsService and remove the use for eventNotificationsResource
                 this.eventNotificationsResource.delete(alertRule.getNotificationID(), userContext);
             }
-        } catch (NotFoundException e) {
-            LOG.error("Cannot find alert " + alertTitle, e);
-        }
 
-        this.alertRuleService.destroy(alertTitle);
+            this.alertRuleService.delete(id);
+        } else {
+            LOG.error("Cannot find alert {}", id);
+        }
     }
 
     @POST

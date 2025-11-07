@@ -17,22 +17,22 @@
 
 import React from 'react';
 import { useState, useCallback } from 'react';
-import { PaginatedEntityTable, Timestamp } from 'components/common';
-import AlertRuleActions from 'wizard/actions/AlertRuleActions';
-import { useQueryClient } from '@tanstack/react-query';
-import { keyFn, fetchAlertRules, KEY_PREFIX } from './hooks/useAlertRules';
 import { useIntl, FormattedMessage } from 'react-intl';
-import AlertRuleBulkActions from './AlertRuleBulkActions';
+import { useQueryClient } from '@tanstack/react-query';
 import { toDateObject } from 'util/DateTime';
-import AlertRuleText from './AlertRuleText';
-import ButtonToEventDefinition from '../buttons/ButtonToEventDefinition';
-import ButtonToNotification from '../buttons/ButtonToNotification';
-import AlertRuleCloneForm from './AlertRuleCloneForm';
-import EventDefinitionResources from '../../resources/EventDefinitionResource';
 import StreamsStore from 'stores/streams/StreamsStore';
-import ButtonToSearch from '../buttons/ButtonToSearch';
-import AlertValidation from '../../logic/AlertValidation';
-import ButtonToUpdateRule from '../buttons/ButtonToUpdateRule';
+import { PaginatedEntityTable, Timestamp } from 'components/common';
+import ButtonToEventDefinition from 'wizard/components/buttons/ButtonToEventDefinition';
+import ButtonToNotification from 'wizard/components/buttons/ButtonToNotification';
+import ButtonToSearch from 'wizard/components/buttons/ButtonToSearch';
+import ButtonToUpdateRule from 'wizard/components/buttons/ButtonToUpdateRule';
+import EventDefinitionResources from 'wizard/resources/EventDefinitionResource';
+import AlertRuleActions from 'wizard/actions/AlertRuleActions';
+import AlertValidation from 'wizard/logic/AlertValidation';
+import { keyFn, fetchAlertRules } from './hooks/useAlertRules';
+import AlertRuleBulkActions from './AlertRuleBulkActions';
+import AlertRuleText from './AlertRuleText';
+import AlertRuleCloneForm from './AlertRuleCloneForm';
 import {DEFAULT_LAYOUT} from "./Constants";
 
 function _convertAlertToElement(alert) {
@@ -84,7 +84,7 @@ const AlertRulesContainer = ({ fieldOrder }) => {
     const intl = useIntl();
     const queryClient = useQueryClient();
 
-    const _loadAlertRules = () => queryClient.invalidateQueries(KEY_PREFIX);
+    const _loadAlertRules = () => queryClient.invalidateQueries(keyFn());
     const fieldsTitle = [
         {key: 'title', label: intl.formatMessage({id: 'wizard.title', defaultMessage: 'Title'}), config: 'title', sortable: true},
         {key: 'priority', label: intl.formatMessage({id: 'wizard.priority', defaultMessage: 'Priority'}), config: 'Priority', sortable: true},
@@ -169,7 +169,6 @@ const AlertRulesContainer = ({ fieldOrder }) => {
                               disableAlertRulesFunction={disableAlertRules}
                               enableAlertRulesFunction={enableAlertRules} />
     );
-    const onSortChange = useCallback(() => {}, []);
     const renderAlertRuleActions = useCallback((alert) => {
         const element = _convertAlertToElement(alert);
 
@@ -182,22 +181,21 @@ const AlertRulesContainer = ({ fieldOrder }) => {
         </div>);
     }, []);
 
-    const deleteAlertRules = (alertRulesTitles) => {
-        const promises = alertRulesTitles.map(name => AlertRuleActions.deleteByName(name));
+    const deleteAlertRules = (alertRulesIds) => {
+        const promises = alertRulesIds.map(id => AlertRuleActions.delete(id));
         Promise.all(promises).then(() => _loadAlertRules());
     }
 
-    const disableAlertRules = (alertRulesTitles) => {
-        console.log(alertRulesTitles);
-        const tempElements = alertRulesTitles.map(name => elements.find(x => x.id === name));
+    const disableAlertRules = (alertRulesIds) => {
+        const tempElements = alertRulesIds.map(name => elements.find(x => x.id === name));
 
         for(const elt of tempElements) {
             _onPause(elt.title, elt.condition, elt.streamId, elt.secondEventDefinition, elt.streamId2);
         }
     }
 
-    const enableAlertRules = (alertRulesTitles) => {
-        const tempElements = alertRulesTitles.map(name => elements.find(x => x.id === name));
+    const enableAlertRules = (alertRulesIds) => {
+        const tempElements = alertRulesIds.map(name => elements.find(x => x.id === name));
 
         for(const elt of tempElements) {
             _onResume(elt.condition, elt.streamId, elt.secondEventDefinition, elt.streamId2);
