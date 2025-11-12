@@ -41,6 +41,17 @@ public abstract class GetDataAlertRule {
 	public static final String FIELD_TITLE = "title";
 	public static final String FIELD_PRIORITY = "priority";
 	public static final String FIELD_DESCRIPTION = "description";
+	public static final String FIELD_CONDITION_TYPE = "condition_type";
+	public static final String FIELD_CONDITION_PARAMETERS = "condition_parameters";
+	public static final String FIELD_STREAM = "stream";
+	public static final String FIELD_SECOND_STREAM = "second_stream";
+	public static final String FIELD_CONDITION = "condition";
+	public static final String FIELD_SECOND_EVENT_DEFINITION = "second_event_definition";
+	public static final String FIELD_NOTIFICATION = "notification";
+	public static final String FIELD_CREATED_AT = "created_at";
+	public static final String FIELD_CREATOR_USER_ID = "creator_user_id";
+	public static final String FIELD_LAST_MODIFIED = "last_modified";
+	public static final String FIELD_DISABLED = "disabled";
 
 	@Id
 	@ObjectId
@@ -60,73 +71,73 @@ public abstract class GetDataAlertRule {
     @Nullable
     public abstract String getDescription();
 
-    @JsonProperty("condition_type")
+    @JsonProperty(FIELD_CONDITION_TYPE)
     @Nullable
     public abstract AlertType getConditionType();
 
-    @JsonProperty("condition_parameters")
+    @JsonProperty(FIELD_CONDITION_PARAMETERS)
     @Nullable
     public abstract Map<String, Object> conditionParameters();
 
-    @JsonProperty("stream")
+    @JsonProperty(FIELD_STREAM)
     @Nullable
     public abstract AlertRuleStream getStream();
 
-    @JsonProperty("second_stream")
+    @JsonProperty(FIELD_SECOND_STREAM)
     @Nullable
     public abstract AlertRuleStream getSecondStream();
 
 	// TODO should be named EventDefinitionIdentifier rather than ConditionID
-	@JsonProperty("condition")
+	@JsonProperty(FIELD_CONDITION)
 	@Nullable
 	public abstract String getConditionID();
 
-	@JsonProperty("second_event_definition")
+	@JsonProperty(FIELD_SECOND_EVENT_DEFINITION)
 	@Nullable
 	public abstract String secondEventDefinitionIdentifier();
 
 	// TODO rename into getNotificationIdentifier
-	@JsonProperty("notification")
+	@JsonProperty(FIELD_NOTIFICATION)
 	@Nullable
 	public abstract String getNotificationID();
 
-	@JsonProperty("created_at")
+	@JsonProperty(FIELD_CREATED_AT)
 	@Nullable
 	public abstract DateTime getCreatedAt();
 
-	@JsonProperty("creator_user_id")
+	@JsonProperty(FIELD_CREATOR_USER_ID)
 	@Nullable
 	public abstract String getCreatorUserId();
 
-	@JsonProperty("last_modified")
+	@JsonProperty(FIELD_LAST_MODIFIED)
 	@Nullable
 	public abstract DateTime getLastModified();
 
-	@JsonProperty("disabled")
+	@JsonProperty(FIELD_DISABLED)
 	public abstract boolean isDisabled();
 
+	// TODO
+	//      I guess all annotations on this method create can be removed
+	//      since, if I understand well, this @JsonCreator is used to deserialize
+	//      json objects to java.
+	//      However this object is returns by the API REST, but never fed inside the request
+	// TODO try to remove all annotations on this method
 	@JsonCreator
-	public static GetDataAlertRule create(@JsonProperty("id") String id,
-										  @JsonProperty("title") String title,
-                                          @JsonProperty("priority") Integer priority,
-                                          @JsonProperty("condition") String eventDefinitionIdentifier,
-										  @JsonProperty("second_event_definition") String secondEventDefinitionIdentifier,
-                                          @JsonProperty("notification") String notificationIdentifier,
-                                          @JsonProperty("created_at") DateTime createdAt,
-                                          @JsonProperty("creator_user_id") String creatorUserIdentifier,
-										  // TODO shouldn't the JsonProperty here be last_modified rather than created_at?
-										  //      I guess all annotations on this method create can be removed
-										  //      since, if I understand well, this @JsonCreator is used to deserialize
-										  //      json objects to java.
-										  //      However this object is returns by the API REST, but never fed inside the request
-										  // TODO try to remove all annotations on this method
-                                          @JsonProperty("created_at") DateTime lastModified,
-                                          @JsonProperty("disabled") boolean isDisabled,
-                                          @JsonProperty("description") String description,
-                                          @JsonProperty("condition_type") AlertType alertType,
-                                          @JsonProperty("condition_parameters") Map<String, Object> conditionParameters,
-                                          @JsonProperty("stream") AlertRuleStream stream,
-                                          @JsonProperty("second_stream") AlertRuleStream stream2) {
+	public static GetDataAlertRule create(@JsonProperty(FIELD_ID) String id,
+										  @JsonProperty(FIELD_TITLE) String title,
+                                          @JsonProperty(FIELD_PRIORITY) Integer priority,
+                                          @JsonProperty(FIELD_CONDITION) String eventDefinitionIdentifier,
+										  @JsonProperty(FIELD_SECOND_EVENT_DEFINITION) String secondEventDefinitionIdentifier,
+                                          @JsonProperty(FIELD_NOTIFICATION) String notificationIdentifier,
+                                          @JsonProperty(FIELD_CREATED_AT) DateTime createdAt,
+                                          @JsonProperty(FIELD_CREATOR_USER_ID) String creatorUserIdentifier,
+                                          @JsonProperty(FIELD_LAST_MODIFIED) DateTime lastModified,
+                                          @JsonProperty(FIELD_DISABLED) boolean isDisabled,
+                                          @JsonProperty(FIELD_DESCRIPTION) String description,
+                                          @JsonProperty(FIELD_CONDITION_TYPE) AlertType alertType,
+                                          @JsonProperty(FIELD_CONDITION_PARAMETERS) Map<String, Object> conditionParameters,
+                                          @JsonProperty(FIELD_STREAM) AlertRuleStream stream,
+                                          @JsonProperty(FIELD_SECOND_STREAM) AlertRuleStream stream2) {
 		return new AutoValue_GetDataAlertRule(id, title, priority, description, alertType, conditionParameters, stream, stream2,
 				eventDefinitionIdentifier, secondEventDefinitionIdentifier, notificationIdentifier, createdAt, creatorUserIdentifier,
 				lastModified, isDisabled);

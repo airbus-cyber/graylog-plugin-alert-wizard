@@ -71,7 +71,6 @@ import org.graylog2.database.NotFoundException;
 import org.graylog2.database.PaginatedList;
 import org.graylog2.plugin.database.ValidationException;
 import org.graylog2.plugin.rest.PluginRestResource;
-import org.graylog2.rest.models.SortOrder;
 import org.graylog2.rest.models.tools.responses.PageListResponse;
 import org.graylog2.rest.resources.entities.EntityDefaults;
 import org.graylog2.rest.resources.entities.Sorting;
@@ -108,22 +107,27 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private static final String ID = "id";
     private static final String TITLE = "title";
 
-    private static final String DEFAULT_SORT_FIELD = "title";
+    private static final String DEFAULT_SORT_FIELD = GetDataAlertRule.FIELD_TITLE;
     private static final String DEFAULT_SORT_DIRECTION = "asc";
+    private static final ImmutableMap<String, String> FIELD_MAP = ImmutableMap.<String, String>builder()
+            .put("id", "_id")
+            .put("title", GetDataAlertRule.FIELD_TITLE)
+            .put("description", GetDataAlertRule.FIELD_DESCRIPTION)
+            .put("user", GetDataAlertRule.FIELD_CREATOR_USER_ID)
+            .put("created", GetDataAlertRule.FIELD_CREATED_AT)
+            .put("lastModified", GetDataAlertRule.FIELD_LAST_MODIFIED)
+            .put("priority", GetDataAlertRule.FIELD_PRIORITY)
+            .build();
     private static final ImmutableMap<String, SearchQueryField> SEARCH_FIELD_MAPPING = ImmutableMap.<String, SearchQueryField>builder()
             .put("id", SearchQueryField.create("_id", SearchQueryField.Type.OBJECT_ID))
             .put("title", SearchQueryField.create(GetDataAlertRule.FIELD_TITLE))
+            .put("user", SearchQueryField.create(GetDataAlertRule.FIELD_CREATOR_USER_ID))
             .put("description", SearchQueryField.create(GetDataAlertRule.FIELD_DESCRIPTION))
             .build();
     private static final EntityDefaults settings = EntityDefaults.builder()
             .sort(Sorting.create(DEFAULT_SORT_FIELD, Sorting.Direction.valueOf(DEFAULT_SORT_DIRECTION.toUpperCase(Locale.ROOT))))
             .build();
-    private static final ImmutableMap<String, String> SORT_FIELD_MAP = ImmutableMap.<String, String>builder()
-            .put("title", "title")
-            .put("user", "creator_user_id")
-            .put("created", "created_at")
-            .put("lastModified", "last_modified")
-            .build();
+
 
     // TODO try to remove this field => move it down in business
     private final AlertWizardConfigurationService configurationService;
@@ -664,7 +668,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         } catch (IllegalArgumentException e) {
             throw new BadRequestException("Invalid argument in search query: " + e.getMessage());
         }
-        String sortAttr = SORT_FIELD_MAP.getOrDefault(sort, sort);
+        String sortAttr = FIELD_MAP.getOrDefault(sort, sort);
         final PaginatedList<AlertRule> result = this.alertRuleService.searchPaginated(
                 searchQuery,
                 alertRule -> true,
