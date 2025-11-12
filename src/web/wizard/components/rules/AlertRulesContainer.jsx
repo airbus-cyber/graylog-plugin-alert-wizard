@@ -266,7 +266,8 @@ const AlertRulesContainer = ({ fieldOrder }) => {
                                   columnsOrder={columnOrder}
                                   bulkSelection={{ actions: renderBulkActions() }}
                                   entityActions={renderAlertRuleActions}
-                                  entityAttributesAreCamelCase
+                                  actionsCellWidth={520}
+                                  entityAttributesAreCamelCase={false}
                                   fetchEntities={fetchAlertRules}
                                   keyFn={keyFn}
                                   additionalAttributes={additionalAttributes}
