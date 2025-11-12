@@ -113,6 +113,10 @@ const AlertRulesContainer = ({ fieldOrder }) => {
     const [elements, setElements] = useState([]);
     const [columnOrder] = useState([...['title'], ...fieldOrder.map((field) => field.name).map((fieldName) => fieldsTitle.find(x => x.config === fieldName).key)]);
     const [additionalAttributes] = useState([...fieldsTitle.map((field) => { return {id: field.key, title: field.label, sortable: field.sortable};})]);
+    const [layoutConfig] = useState({
+        ...DEFAULT_LAYOUT,
+        defaultDisplayedAttributes: ['title', ...fieldOrder.filter(field => field.enabled).map((field) => field.name).map((fieldName) => fieldsTitle.find(x => x.config === fieldName).key)]
+    });
 
     const renderHeader = (_column) => {
         return (<span>{fieldsTitle.find(x => x.key === _column.id).label}</span>);
@@ -266,7 +270,7 @@ const AlertRulesContainer = ({ fieldOrder }) => {
                                   fetchEntities={fetchAlertRules}
                                   keyFn={keyFn}
                                   additionalAttributes={additionalAttributes}
-                                  tableLayout={DEFAULT_LAYOUT}/>
+                                  tableLayout={layoutConfig}/>
         </>
     );
 };
