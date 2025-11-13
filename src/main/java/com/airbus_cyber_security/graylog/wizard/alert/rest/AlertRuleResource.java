@@ -123,6 +123,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             .put("title", SearchQueryField.create(GetDataAlertRule.FIELD_TITLE))
             .put("user", SearchQueryField.create(GetDataAlertRule.FIELD_CREATOR_USER_ID))
             .put("description", SearchQueryField.create(GetDataAlertRule.FIELD_DESCRIPTION))
+            .put("priority", SearchQueryField.create(GetDataAlertRule.FIELD_PRIORITY, SearchQueryField.Type.INT))
             .build();
     private static final EntityDefaults settings = EntityDefaults.builder()
             .sort(Sorting.create(DEFAULT_SORT_FIELD, Sorting.Direction.valueOf(DEFAULT_SORT_DIRECTION.toUpperCase(Locale.ROOT))))

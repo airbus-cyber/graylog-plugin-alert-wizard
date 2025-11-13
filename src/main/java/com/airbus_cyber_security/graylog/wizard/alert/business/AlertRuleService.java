@@ -18,7 +18,10 @@
 package com.airbus_cyber_security.graylog.wizard.alert.business;
 
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRule;
+import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetDataAlertRule;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.ImmutableSet;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.MongoCollection;
@@ -34,6 +37,7 @@ import org.graylog2.database.NotFoundException;
 import org.graylog2.database.PaginatedDbService;
 import org.graylog2.database.PaginatedList;
 import org.graylog2.search.SearchQuery;
+import org.graylog2.search.SearchQueryParser;
 import org.mongojack.DBCursor;
 import org.mongojack.DBQuery;
 import org.slf4j.Logger;
@@ -42,6 +46,7 @@ import org.slf4j.LoggerFactory;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
+
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -110,11 +115,22 @@ public class AlertRuleService extends PaginatedDbService<AlertRule> {
 													String order, String sortField, int page, int perPage) {
 		final Bson dbQuery = query.toBson();
 
-		var pipelineBuilder = ImmutableList.<Bson>builder()
-				.add(Aggregates.match(dbQuery));
+		var pipelineBuilder = ImmutableList.<Bson>builder();
 
-		if (sortField.equals("priority") || sortField.equals("description")) {
-			String eventField = "$event_definition." + sortField;
+		if (!(query.getQueryMap().containsKey(GetDataAlertRule.FIELD_DESCRIPTION)
+				|| query.getQueryMap().containsKey(GetDataAlertRule.FIELD_PRIORITY))) {
+			pipelineBuilder.add(Aggregates.match(dbQuery));
+		} else {
+			final ImmutableMultimap.Builder<String, SearchQueryParser.FieldValue> builder = ImmutableMultimap.builder();
+			final ImmutableSet.Builder<String> disallowedKeys = ImmutableSet.builder();
+			final Bson emptyDbQuery = new SearchQuery("", builder.build(), disallowedKeys.build()).toBson();
+			pipelineBuilder.add(Aggregates.match(emptyDbQuery));
+		}
+
+		if (sortField.equals(GetDataAlertRule.FIELD_PRIORITY)
+				|| sortField.equals(GetDataAlertRule.FIELD_DESCRIPTION)
+				|| query.getQueryMap().containsKey(GetDataAlertRule.FIELD_DESCRIPTION)
+				|| query.getQueryMap().containsKey(GetDataAlertRule.FIELD_PRIORITY)) {
 			pipelineBuilder.add(Aggregates.lookup(
 							DBEventDefinitionService.COLLECTION_NAME,
 							List.of(new Variable<>("event_identifier", doc("$toObjectId", "$alert_pattern.event_identifier")),
@@ -126,8 +142,15 @@ public class AlertRuleService extends PaginatedDbService<AlertRule> {
 									)))),
 							"event_definition"
 					))
-					.add(Aggregates.set(new Field<>(sortField, doc("$first", eventField))))
+					.add(Aggregates.set(
+							new Field<>("priority", doc("$first", "$event_definition.priority")),
+							new Field<>("description", doc("$first", "$event_definition.description"))))
 					.add(Aggregates.unset("event_definition"));
+		}
+
+		if (query.getQueryMap().containsKey(GetDataAlertRule.FIELD_DESCRIPTION)
+				|| query.getQueryMap().containsKey(GetDataAlertRule.FIELD_PRIORITY)) {
+			pipelineBuilder.add(Aggregates.match(dbQuery));
 		}
 
 		if (isStringField(sortField)) {
