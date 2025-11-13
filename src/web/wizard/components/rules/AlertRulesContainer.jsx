@@ -21,7 +21,7 @@ import { useIntl, FormattedMessage } from 'react-intl';
 import { useQueryClient } from '@tanstack/react-query';
 import { toDateObject } from 'util/DateTime';
 import StreamsStore from 'stores/streams/StreamsStore';
-import { PaginatedEntityTable, Timestamp } from 'components/common';
+import { PaginatedEntityTable, Timestamp, QueryHelper } from 'components/common';
 import ButtonToEventDefinition from 'wizard/components/buttons/ButtonToEventDefinition';
 import ButtonToNotification from 'wizard/components/buttons/ButtonToNotification';
 import ButtonToSearch from 'wizard/components/buttons/ButtonToSearch';
@@ -29,11 +29,11 @@ import ButtonToUpdateRule from 'wizard/components/buttons/ButtonToUpdateRule';
 import EventDefinitionResources from 'wizard/resources/EventDefinitionResource';
 import AlertRuleActions from 'wizard/actions/AlertRuleActions';
 import AlertValidation from 'wizard/logic/AlertValidation';
-import { keyFn, fetchAlertRules } from './hooks/useAlertRules';
+import { keyFn, fetchAlertRules, commonQueryFields, fieldMap, queryExample } from './hooks/useAlertRules';
 import AlertRuleBulkActions from './AlertRuleBulkActions';
 import AlertRuleText from './AlertRuleText';
 import AlertRuleCloneForm from './AlertRuleCloneForm';
-import {DEFAULT_LAYOUT} from "./Constants";
+import { DEFAULT_LAYOUT } from './Constants';
 
 function _convertAlertToElement(alert) {
     let alertValid = !AlertValidation.isAlertCorrupted(alert);
@@ -110,7 +110,6 @@ const AlertRulesContainer = ({ fieldOrder }) => {
         return '';
     };
 
-    const [elements, setElements] = useState([]);
     const [columnOrder] = useState([...['title'], ...fieldOrder.map((field) => field.name).map((fieldName) => fieldsTitle.find(x => x.config === fieldName).key)]);
     const [additionalAttributes] = useState([...fieldsTitle.map((field) => { return {id: field.key, title: field.label, sortable: field.sortable};})]);
     const [layoutConfig] = useState({
@@ -264,6 +263,10 @@ const AlertRulesContainer = ({ fieldOrder }) => {
             <PaginatedEntityTable humanName="alert rules"
                                   columnRenderers={columnRenderers()}
                                   columnsOrder={columnOrder}
+                                  queryHelpComponent={<QueryHelper entityName="alert rule"
+                                                                   commonFields={commonQueryFields}
+                                                                   fieldMap={fieldMap}
+                                                                   example={queryExample} />}
                                   bulkSelection={{ actions: renderBulkActions() }}
                                   entityActions={renderAlertRuleActions}
                                   actionsCellWidth={520}

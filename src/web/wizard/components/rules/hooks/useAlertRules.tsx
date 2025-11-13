@@ -19,11 +19,42 @@ import { useQuery } from '@tanstack/react-query';
 import UserNotification from 'util/UserNotification';
 import type { SearchParams } from 'stores/PaginationTypes';
 import AlertRuleStore from 'wizard/stores/AlertRuleStore';
-import { AlertRule } from "wizard/model/AlertRule";
+import { AlertRule } from 'wizard/model/AlertRule';
+import * as React from "react";
 
 type Options = {
     enabled: boolean,
 }
+
+export const commonQueryFields = ['id', 'title', 'description'];
+
+export const fieldMap = {
+    priority: 'Priority of the alert rule.',
+    user: 'User who created the alert rule.'
+};
+
+export const queryExample = (
+    <>
+        <p>
+            Find all alert rules with title containing 'log':<br />
+            <code>log</code><br />
+            <code>title:log</code><br />
+        </p>
+        <p>
+            Find all alert rules with LOW(1) priority:<br />
+            <code>priority:1</code><br />
+            LOW(1)/NORMAL(2)/HIGH(3)<br />
+        </p>
+        <p>
+            Find all alert rules with a description containing 'security':<br />
+            <code>description:security</code><br />
+        </p>
+        <p>
+            Find a alert rule with the id '5f4dfb9c69be46153b9a9a7b':<br />
+            <code>id:5f4dfb9c69be46153b9a9a7b</code><br />
+        </p>
+    </>
+);
 
 export const fetchAlertRules = (searchParams: SearchParams) => AlertRuleStore.searchPaginated(
     searchParams.page,
