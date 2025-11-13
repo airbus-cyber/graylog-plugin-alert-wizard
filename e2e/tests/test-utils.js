@@ -10,7 +10,7 @@ export async function open_alert_page_and_filter(page, filter) {
     await page.goto('wizard/AlertRules');
     // Wait for rules are loaded
     await page.waitForTimeout(1000);
-    await page.getByPlaceholder('Filter alert rules').fill(filter);
+    await page.getByPlaceholder('Search for alert rules').fill(filter);
     // Wait for filter is applied
     await page.waitForTimeout(500);
 }
