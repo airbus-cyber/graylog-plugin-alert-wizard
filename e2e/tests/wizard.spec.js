@@ -3,6 +3,8 @@ import { test, expect } from '@playwright/test';
 import crypto from 'node:crypto';
 import { login_steps, fill_field_condition, open_alert_page_and_filter } from './test-utils.js';
 
+const rules_button = ['Count', 'Group / Distinct', 'Statistics', 'THEN', 'AND', 'OR'];
+
 test('follow menu link should works #161', async ({ page }) => {
   await page.goto('welcome');
 
@@ -230,4 +232,30 @@ test('Rules filter is not case sensitive - #163', async ({ page }) => {
   // Check if filter works
   await open_alert_page_and_filter(page, lowerTitle);
   await expect(page.getByRole('button', { name: 'play_arrow' })).toBeVisible();
+});
+
+test('Update rules cannot change type of rule - #136', async ({ page }) => {
+  await page.goto('wizard/AlertRules');
+
+  await login_steps(page);
+
+  // Fill Title
+  const title = `AAA-${crypto.randomUUID()}`;
+  await page.getByRole('link', { name: 'Create' }).click();
+  await page.locator('#title').fill(title);
+
+// Add Field Condition
+  await fill_field_condition(page, 'message', 'matches exactly', 'abc');
+
+  await page.getByRole('button', { name: 'Save' }).click();
+
+  // Go on search page
+  await open_alert_page_and_filter(page, title);
+
+  await page.getByRole('link', { name: 'Edit' }).click();
+
+  for (const rule_name of rules_button) {
+    await expect(page.locator('li').filter({ hasText:  rule_name })).toBeVisible();
+    await expect(page.locator('li').filter({ hasText:  rule_name })).toContainClass('disabled');
+  }
 });

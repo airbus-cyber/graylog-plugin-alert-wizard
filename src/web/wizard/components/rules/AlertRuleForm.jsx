@@ -45,7 +45,8 @@ const AlertRuleForm = createReactClass({
     propTypes: {
         alert: PropTypes.object.isRequired,
         navigationToRuleComponents: PropTypes.element,
-        onSave: PropTypes.func.isRequired
+        onSave: PropTypes.func.isRequired,
+        disableNavbar: PropTypes.bool
     },
 
     componentDidMount() {
@@ -185,22 +186,22 @@ const AlertRuleForm = createReactClass({
         const subnavigation = (
                 <Nav stacked bsStyle="pills" activeKey={this.state.alert.condition_type} onSelect={key => this._handleSelect(key)}>
                     <NavItem key="divider" disabled title="Rule Type" className={styles.divider}>{messages.ruleType}</NavItem>
-                    <NavItem eventKey={'COUNT'} title={messages.tooltipCountCondition}>
+                    <NavItem eventKey={'COUNT'} title={messages.tooltipCountCondition} disabled={this.props.disableNavbar}>
                         <FormattedMessage id= "wizard.countCondition" defaultMessage= "Count" />
                     </NavItem>
-                    <NavItem eventKey={'GROUP_DISTINCT'} title={messages.tooltipGroupDistinctCondition}>
+                    <NavItem eventKey={'GROUP_DISTINCT'} title={messages.tooltipGroupDistinctCondition} disabled={this.props.disableNavbar}>
                         <FormattedMessage id= "wizard.groupDistinctCondition" defaultMessage= "Group / Distinct" />
                     </NavItem>
-                    <NavItem eventKey={'STATISTICAL'} title={messages.tooltipStatisticalCondition}>
+                    <NavItem eventKey={'STATISTICAL'} title={messages.tooltipStatisticalCondition} disabled={this.props.disableNavbar}>
                         <FormattedMessage id= "wizard.StatisticsCondition" defaultMessage= "Statistics" />
                     </NavItem>
-                    <NavItem eventKey={'THEN'} title={messages.tooltipThenCondition}>
+                    <NavItem eventKey={'THEN'} title={messages.tooltipThenCondition} disabled={this.props.disableNavbar}>
                         <FormattedMessage id= "wizard.thenCondition" defaultMessage= "THEN" />
                     </NavItem>
-                    <NavItem eventKey={'AND'} title={messages.tooltipAndCondition}>
+                    <NavItem eventKey={'AND'} title={messages.tooltipAndCondition} disabled={this.props.disableNavbar}>
                         <FormattedMessage id= "wizard.andCondition" defaultMessage= "AND" />
                     </NavItem>
-                    <NavItem eventKey={'OR'} title={messages.tooltipOrCondition}>
+                    <NavItem eventKey={'OR'} title={messages.tooltipOrCondition} disabled={this.props.disableNavbar}>
                         <FormattedMessage id= "wizard.orCondition" defaultMessage= "OR" />
                     </NavItem>
                 </Nav>
