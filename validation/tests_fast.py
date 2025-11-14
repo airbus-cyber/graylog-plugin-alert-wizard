@@ -38,7 +38,7 @@ class TestsFast(TestCase):
     def tearDown(self):
         rules = self._api.get_alert_rules().json()
         for rule in rules:
-            self._api.delete_alert_rule(rule['title'])
+            self._api.delete_alert_rule(rule['id'])
         lists = self._api.get_lists()
         for list in lists['lists']:
             self._api.delete_list(list['title'])
@@ -80,33 +80,33 @@ class TestsFast(TestCase):
 
     def test_get_alert_rule_should_return_correct_additional_threshold_type__issue34(self):
         title = 'rule_title'
-        self._graylog.create_alert_rule_and(title, _PERIOD)
-        retrieved_alert_rule = self._graylog.get_alert_rule(title)
+        rule = self._graylog.create_alert_rule_and(title, _PERIOD)
+        retrieved_alert_rule = self._graylog.get_alert_rule(rule['id'])
         self.assertEqual('<', retrieved_alert_rule['condition_parameters']['additional_threshold_type'])
 
     def test_get_alert_rule_should_return_correct_additional_threshold__issue69(self):
         title = 'rule_title'
-        self._graylog.create_alert_rule_and(title, _PERIOD, additional_threshold=1)
-        retrieved_alert_rule = self._graylog.get_alert_rule(title)
+        rule = self._graylog.create_alert_rule_and(title, _PERIOD, additional_threshold=1)
+        retrieved_alert_rule = self._graylog.get_alert_rule(rule['id'])
         self.assertEqual(1, retrieved_alert_rule['condition_parameters']['additional_threshold'])
 
     def test_get_alert_rule_should_return_correct_field__issue143(self):
         title = 'rule_title'
-        self._api.create_alert_rule_statistics(title, _PERIOD)
-        retrieved_alert_rule = self._graylog.get_alert_rule(title)
+        rule = self._api.create_alert_rule_statistics(title, _PERIOD)
+        retrieved_alert_rule = self._graylog.get_alert_rule(rule['id'])
         self.assertEqual('x', retrieved_alert_rule['condition_parameters']['field'])
 
     def test_delete_alert_rule_with_no_conditions_should_not_delete_default_stream(self):
         title = 'rule_title'
-        self._api.create_alert_rule_count(title, _PERIOD)
-        self._api.delete_alert_rule(title)
+        rule = self._api.create_alert_rule_count(title, _PERIOD)
+        self._api.delete_alert_rule(rule['id'])
         default_stream = self._api.get_stream('000000000000000000000001')
         self.assertEqual(200, default_stream.status_code)
 
     def test_update_alert_rule_with_no_conditions_should_not_fail(self):
         title = 'rule_title'
         rule = self._api.create_alert_rule_count(title, _PERIOD)
-        response = self._graylog.update_alert_rule(title, {**rule, 'description': 'new description'})
+        response = self._graylog.update_alert_rule(rule['id'], {**rule, 'description': 'new description'})
         self.assertEqual(202, response.status_code)
 
     def test_update_alert_rule_should_not_raise_exception_when_removing_conditions(self):
@@ -125,7 +125,7 @@ class TestsFast(TestCase):
             'matching_type': 'AND'
         }
         self._graylog.start_logs_capture()
-        self._graylog.update_alert_rule(title, {**rule, 'stream': stream})
+        self._graylog.update_alert_rule(rule['id'], {**rule, 'stream': stream})
         logs = self._graylog.extract_logs()
         self.assertNotIn('Exception', logs)
 
@@ -144,7 +144,7 @@ class TestsFast(TestCase):
             'field_rule': [],
             'matching_type': 'AND'
         }
-        self._graylog.update_alert_rule(title, {**rule, 'stream': stream})
+        self._graylog.update_alert_rule(rule['id'], {**rule, 'stream': stream})
         response = self._api.get_stream(rule['stream']['id'])
         self.assertEqual(404, response.status_code)
 
@@ -173,7 +173,7 @@ class TestsFast(TestCase):
             }],
             'matching_type': 'AND'
         }
-        self._graylog.update_alert_rule(title, {**rule, 'stream': stream})
+        self._graylog.update_alert_rule(rule['id'], {**rule, 'stream': stream})
         response = self._api.get_stream(rule['stream']['id'])
         self.assertEqual(404, response.status_code)
 
@@ -206,7 +206,7 @@ class TestsFast(TestCase):
         event_definition = self._graylog.get_event_definition(alert_rule['condition'])
         event_definition['description'] = 'new_description'
         self._graylog.update_event_definition(event_definition)
-        alert_rule = self._graylog.get_alert_rule(title)
+        alert_rule = self._graylog.get_alert_rule(alert_rule['id'])
         self.assertEqual('new_description', alert_rule['description'])
 
     def test_update_alert_should_change_the_alert_description__issue102(self):
@@ -220,8 +220,8 @@ class TestsFast(TestCase):
             'matching_type': 'AND'
         }
         rule = self._api.create_alert_rule_count(title, _PERIOD, stream=stream)
-        self._graylog.update_alert_rule(title, {**rule, 'description': 'new_description'})
-        alert_rule = self._graylog.get_alert_rule(title)
+        self._graylog.update_alert_rule(rule['id'], {**rule, 'description': 'new_description'})
+        alert_rule = self._graylog.get_alert_rule(rule['id'])
         self.assertEqual('new_description', alert_rule['description'])
 
     def test_get_alert_with_group_by_fields_should_contain_the_group_by_fields(self):
@@ -231,8 +231,8 @@ class TestsFast(TestCase):
             'type': 1,
             'value': 'toto'
         }
-        self._graylog.create_alert_rule_group_distinct(title, rule, ['x'], '', _PERIOD)
-        alert_rule = self._graylog.get_alert_rule(title)
+        rule = self._graylog.create_alert_rule_group_distinct(title, rule, ['x'], '', _PERIOD)
+        alert_rule = self._graylog.get_alert_rule(rule['id'])
         self.assertEqual(1, len(alert_rule['condition_parameters']['grouping_fields']))
 
     def test_get_alert_with_distinct_by_should_contain_the_distinct_by_field(self):
@@ -243,8 +243,8 @@ class TestsFast(TestCase):
             'value': 'toto'
         }
         distinct_by = 'x'
-        self._graylog.create_alert_rule_group_distinct(title, rule, [], distinct_by, _PERIOD)
-        alert_rule = self._graylog.get_alert_rule(title)
+        rule = self._graylog.create_alert_rule_group_distinct(title, rule, [], distinct_by, _PERIOD)
+        alert_rule = self._graylog.get_alert_rule(rule['id'])
         self.assertEqual(distinct_by, alert_rule['condition_parameters']['distinct_by'])
 
     def test_get_alert_with_no_distinct_by_should_contain_an_empty_distinct_by_field(self):
@@ -257,8 +257,8 @@ class TestsFast(TestCase):
             }],
             'matching_type': 'AND'
         }
-        self._api.create_alert_rule_count(title, _PERIOD, stream=stream)
-        alert_rule = self._graylog.get_alert_rule(title)
+        rule = self._api.create_alert_rule_count(title, _PERIOD, stream=stream)
+        alert_rule = self._graylog.get_alert_rule(rule['id'])
         self.assertEqual('', alert_rule['condition_parameters']['distinct_by'])
 
     def test_create_alert_rule_then_should_not_fail(self):
@@ -269,8 +269,8 @@ class TestsFast(TestCase):
 
     def test_get_alert_rule_then_should_have_correct_threshold_type(self):
         title = 'rule_then'
-        self._graylog.create_alert_rule_then(title, '>', _PERIOD)
-        alert_rule = self._graylog.get_alert_rule(title)
+        rule = self._graylog.create_alert_rule_then(title, '>', _PERIOD)
+        alert_rule = self._graylog.get_alert_rule(rule['id'])
         self.assertEqual('>', alert_rule['condition_parameters']['threshold_type'])
 
     def test_create_alert_rule_with_same_name_should_not_fail(self):
@@ -359,7 +359,7 @@ class TestsFast(TestCase):
     def test_update_alert_rule_or_should_update_second_event_definition_description__issue102(self):
         title = 'aaa'
         alert_rule = self._graylog.create_alert_rule_or(title, _PERIOD, description='description')
-        self._graylog.update_alert_rule(title, {**alert_rule, 'description': 'new description'})
+        self._graylog.update_alert_rule(alert_rule['id'], {**alert_rule, 'description': 'new description'})
         second_event_definition_identifier = alert_rule['second_event_definition']
         second_event_definition = self._graylog.get_event_definition(second_event_definition_identifier)
         self.assertEqual('new description', second_event_definition['description'])
@@ -394,7 +394,7 @@ class TestsFast(TestCase):
     def test_update_alert_rule_should_not_disable_event_definition__issue140(self):
         title = 'aaa'
         alert_rule = self._api.create_alert_rule_count(title, _PERIOD)
-        alert_rule = self._graylog.update_alert_rule(title, {**alert_rule, 'description': 'new description'}).json()
+        alert_rule = self._graylog.update_alert_rule(alert_rule['id'], {**alert_rule, 'description': 'new description'}).json()
         event_definition_identifier = alert_rule['condition']
         event_definition = self._graylog.get_event_definition(event_definition_identifier)
         print(event_definition)
@@ -428,8 +428,8 @@ class TestsFast(TestCase):
         rule = self._api.create_alert_rule_count(title, _PERIOD, search_query='query1234', stream=stream)
         updated_rule = rule.copy()
         updated_rule['condition_parameters']['search_query'] = 'new_search_query'
-        self._graylog.update_alert_rule(title, updated_rule)
-        alert_rule = self._graylog.get_alert_rule(title)
+        self._graylog.update_alert_rule(rule['id'], updated_rule)
+        alert_rule = self._graylog.get_alert_rule(rule['id'])
         event_definition_identifier = alert_rule['condition']
         event_definition = self._graylog.get_event_definition(event_definition_identifier)
         self.assertEqual('new_search_query', event_definition['config']['query'])
@@ -458,8 +458,8 @@ class TestsFast(TestCase):
             self._graylog.wait_until_new_event(starting_events_count, 2*_PERIOD)
 
     def test_clone_alert_rule_and_not_notification(self):
-        rule_title = self._init_rule_with_updated_notification()
-        response_clone = self._graylog.clone_alert_rule(rule_title, 'cloneTitle', 'cloneDescription', False)
+        rule = self._init_rule_with_updated_notification()
+        response_clone = self._graylog.clone_alert_rule(rule['title'], 'cloneTitle', 'cloneDescription', False)
         cloned_rule = self._check_clone(response_clone)
 
         cloned_notification_id = cloned_rule['notification']
@@ -468,8 +468,8 @@ class TestsFast(TestCase):
         self.assertEqual(False, cloned_notification['config']['single_notification'])
 
     def test_clone_alert_rule_and_notification(self):
-        rule_title = self._init_rule_with_updated_notification()
-        response_clone = self._graylog.clone_alert_rule(rule_title, 'cloneTitle', 'cloneDescription', True)
+        rule = self._init_rule_with_updated_notification()
+        response_clone = self._graylog.clone_alert_rule(rule['title'], 'cloneTitle', 'cloneDescription', True)
         cloned_rule = self._check_clone(response_clone)
 
         cloned_notification_id = cloned_rule['notification']
@@ -484,7 +484,7 @@ class TestsFast(TestCase):
         updated_notification = created_notification.copy()
         updated_notification['config']['single_notification'] = True
         self._graylog.update_notification(notification_id, updated_notification)
-        return created_rule['title']
+        return created_rule
 
     def _check_clone(self, response_clone):
         cloned_rule = response_clone.json()
@@ -495,16 +495,16 @@ class TestsFast(TestCase):
 
     def test_get_alert_rule_should_return_type_in_upper_case(self):
         title = 'rule_title'
-        self._api.create_alert_rule_statistics(title, _PERIOD)
-        response = self._graylog.get_alert_rule(title)
+        rule = self._api.create_alert_rule_statistics(title, _PERIOD)
+        response = self._graylog.get_alert_rule(rule['id'])
         print(response)
         self.assertEqual('AVG', response['condition_parameters']['type'])
 
     def test_create_alert_with_disable_state_should_be_disabled__issue138(self):
         title = 'rule_title'
-        self._api.create_alert_rule_count(title, _PERIOD, disabled=True)
+        rule = self._api.create_alert_rule_count(title, _PERIOD, disabled=True)
 
-        response = self._api.get_alert_rule(title)
+        response = self._api.get_alert_rule(rule['id'])
         self.assertEqual(True, response['disabled'])
 
     def test_create_alert_with_disable_state_should_have_disabled_event_definition__issue138(self):
@@ -532,7 +532,7 @@ class TestsFast(TestCase):
     def test_update_alert_rule_title_should_not_fail__issue128(self):
         title = 'title_to_update'
         rule = self._api.create_alert_rule_count(title, _PERIOD)
-        response = self._graylog.update_alert_rule(title, {**rule, 'title': 'updated_title'}).json()
+        response = self._graylog.update_alert_rule(rule['id'], {**rule, 'title': 'updated_title'}).json()
 
         self.assertEqual('updated_title', response['title'])
 
@@ -566,9 +566,9 @@ class TestsFast(TestCase):
         updated_rule['stream'] = stream_1
         updated_rule['second_stream'] = stream_2
 
-        self._graylog.update_alert_rule(title, updated_rule)
+        self._graylog.update_alert_rule(alert_rule['id'], updated_rule)
 
-        alert_rule = self._graylog.get_alert_rule(title)
+        alert_rule = self._graylog.get_alert_rule(alert_rule['id'])
 
         updated_stream_1 = alert_rule['stream']
         self.assertIsNotNone(updated_stream_1['id'])

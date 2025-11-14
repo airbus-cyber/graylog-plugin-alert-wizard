@@ -95,7 +95,7 @@ class Test(TestCase):
             }],
             'matching_type': 'AND'
         }
-        alert_rule = self._api.create_alert_rule_count('A', _PERIOD, stream=stream)
+        self._api.create_alert_rule_count('A', _PERIOD, stream=stream)
 
         # Send a log with user=toto and source=sourceABC. It will be placed in the Stream because the pipeline function found the user in the list. So the rule will trigger but it is wrong because "source" is not equal to "source123"
         # Send a log with user=xxx and source=source123. It will be placed in the Stream beauce the only Stream rule is field "source" match exactly "source123". So the rule will trigger but it is wrong because "user" is not present in the list

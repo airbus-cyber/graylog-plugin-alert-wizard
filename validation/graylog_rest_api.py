@@ -121,8 +121,8 @@ class GraylogRestApi:
         response = self._post('plugins/com.airbus_cyber_security.graylog.wizard/alerts', alert_rule)
         return response.json()
 
-    def update_alert_rule(self, previousTitle, rule):
-        return self._put(f'plugins/com.airbus_cyber_security.graylog.wizard/alerts/{previousTitle}', rule)
+    def update_alert_rule(self, alert_id, rule):
+        return self._put(f'plugins/com.airbus_cyber_security.graylog.wizard/alerts/{alert_id}', rule)
 
     def create_alert_rule_count(self, title, time, description='', search_query='', stream=_DEFAULT_STREAM, disabled=False):
         return self._create_alert_rule(title, stream, 'COUNT', time, description=description, search_query=search_query, disabled=disabled)
@@ -225,15 +225,19 @@ class GraylogRestApi:
         return self._create_alert_rule(title, stream, 'OR', time, description=description, additional_threshold_type='>', additional_threshold=additional_threshold, second_stream=second_stream, group_by_fields=group_by_fields, search_query=search_query, additional_search_query=additional_search_query)
 
 
-    def get_alert_rule(self, name):
-        response = self._get(f'plugins/com.airbus_cyber_security.graylog.wizard/alerts/{name}')
+    def get_alert_rule(self, alert_id):
+        response = self._get(f'plugins/com.airbus_cyber_security.graylog.wizard/alerts/{alert_id}')
+        return response.json()
+
+    def get_alert_rule_by_title(self, title):
+        response = self._get(f'plugins/com.airbus_cyber_security.graylog.wizard/alerts/title/{title}')
         return response.json()
 
     def clone_alert_rule(self, clone_request):
         return self._post('plugins/com.airbus_cyber_security.graylog.wizard/alerts/clone', clone_request)
 
-    def delete_alert_rule(self, name):
-        self._delete(f'plugins/com.airbus_cyber_security.graylog.wizard/alerts/{name}')
+    def delete_alert_rule(self, alert_id):
+        self._delete(f'plugins/com.airbus_cyber_security.graylog.wizard/alerts/{alert_id}')
 
     def get_alert_rules(self):
         return self._get('plugins/com.airbus_cyber_security.graylog.wizard/alerts')
