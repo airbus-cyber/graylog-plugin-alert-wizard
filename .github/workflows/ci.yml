@@ -54,6 +54,10 @@ jobs:
         with:
           path: plugin/node_modules
           key: ${{ hashFiles('plugin/yarn.lock') }}
+      - name: Check license headers
+        working-directory: plugin
+        run: |
+          ./mvnw license:check
       - name: Build plugin
         working-directory: plugin
         run: |
@@ -129,10 +133,6 @@ jobs:
           echo -n "$GPG_PRIVATE_KEY" | gpg2 --batch --allow-secret-key-import --import
           gpg2 --export-secret-keys --batch --pinentry-mode loopback --passphrase "$PASSPHRASE" > $HOME/.gnupg/secring.gpg
           ./mvnw org.vafer:jdeb:jdeb --settings deployment/settings.xml
-      - name: Check license headers
-        working-directory: plugin
-        run: |
-          mvn license:check
       - name: Archive .jar
         uses: actions/upload-artifact@v4
         with:
