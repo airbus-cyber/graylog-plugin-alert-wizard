@@ -67,8 +67,11 @@ class Graylog:
     def get_alert_wizard_plugin_configuration(self):
         return self._api.get_alert_wizard_plugin_configuration()
 
-    def get_alert_rule(self, name):
-        return self._api.get_alert_rule(name)
+    def get_alert_rule(self, alert_id):
+        return self._api.get_alert_rule(alert_id)
+
+    def get_alert_rule_by_title(self, title):
+        return self._api.get_alert_rule_by_title(title)
     
     def get_alert_rules(self):
         return self._api.get_alert_rules()
@@ -91,7 +94,7 @@ class Graylog:
     def create_alert_rule_or_without_stream(self, title, time, search_query, additional_search_query, description='', additional_threshold=0, group_by_fields=[]):
         return self._api.create_alert_rule_or_without_stream(title, time, description, search_query, additional_search_query, additional_threshold, group_by_fields)
 
-    def update_alert_rule(self, previousTitle, rule):
+    def update_alert_rule(self, alert_id, rule):
         updated_rule = {
             'title': rule['title'],
             'priority': rule['priority'],
@@ -101,7 +104,7 @@ class Graylog:
             'stream': rule['stream'],
             'second_stream': rule['second_stream']
         }
-        return self._api.update_alert_rule(previousTitle, updated_rule)
+        return self._api.update_alert_rule(alert_id, updated_rule)
 
     def clone_alert_rule(self, source_title, title, description, clone_notification):
         clone_request = {
