@@ -58,7 +58,7 @@ const NewAlertPage = () => {
             }
             history.push(Navigation.getWizardRoute());
         });
-    }
+    };
 
     let componentCreateAlertRule;
     if (configuration) {

@@ -62,7 +62,7 @@ const UpdateAlertPage = ({params}) => {
             }
             history.push(Navigation.getWizardRoute());
         });
-    }
+    };
 
     if (!alert) {
         return <Spinner/>;
