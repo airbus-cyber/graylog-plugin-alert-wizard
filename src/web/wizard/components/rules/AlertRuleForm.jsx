@@ -65,7 +65,7 @@ const AlertRuleForm = ({alert, navigationToRuleComponents, onSave, disableNavbar
                 return (<StatisticsCondition onUpdate={_updateAlertField} alert={alert} />);
             case 'THEN':
             case 'AND':
-                return (<CorrelationCondition onUpdate={_updateAlertField} onUpdateAlert={_updateAlert} alert={alert} />);
+                return (<CorrelationCondition onUpdate={_updateAlertField} alert={alert} />);
             case 'OR':
                 return (<OrCondition onUpdate={_updateAlertField} onUpdateAlert={_updateAlert} alert={alert} />);
             default:

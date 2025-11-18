@@ -47,9 +47,7 @@ const FieldsInput = createReactClass({
 
     propTypes: {
         stream: PropTypes.object.isRequired,
-        onSaveStream: PropTypes.func.isRequired,
-        message: PropTypes.object,
-        matchData: PropTypes.object,
+        onSaveStream: PropTypes.func.isRequired
     },
 
     componentDidMount() {
@@ -57,12 +55,8 @@ const FieldsInput = createReactClass({
     },
 
     componentDidUpdate(prevProps) {
-        if (!isEqual(this.props.matchData, prevProps.matchData)) {
-            this.setState({matchData: this.props.matchData});
-        }
         if (!isEqual(this.props.stream, prevProps.stream) && this.props.stream !== null) {
             this.setState({stream: this.props.stream});
-            this.setState({matchData: undefined});
         }
     },
 
@@ -122,11 +116,6 @@ const FieldsInput = createReactClass({
         return true;
     },
 
-    // TODO factor this copy-pasted code (see FieldRule)
-    _getMatchDataColor() {
-        return (this.state.matchData.matches ? '#dff0d8' : '#f2dede');
-    },
-
     _isLoading() {
         return (!this.state.stream);
     },
@@ -139,7 +128,6 @@ const FieldsInput = createReactClass({
                 </div>
             );
         }
-        const color = (this.state.matchData ? this._getMatchDataColor() : '#FFFFFF');
 
         const { intl } = this.props;
         const messages = {
@@ -158,7 +146,7 @@ const FieldsInput = createReactClass({
                 <label><FormattedMessage id="wizard.messagesMatch" defaultMessage="Messages must match" /></label>
                 <Input ref="matching_type" id="matching_type" name="matching_type" required>
                     <div style={{width:'150px'}}>
-                    <Select style={{backgroundColor: color}}
+                    <Select
                         autosize={false}
                         required
                         clearable={false}
@@ -175,7 +163,7 @@ const FieldsInput = createReactClass({
                 {' '}
                 <br/><br/>
 
-                <FieldRuleList fieldRules={this.state.stream.field_rule} matchData={this.state.matchData} onSaveStream={this._onSaveStream} />
+                <FieldRuleList fieldRules={this.state.stream.field_rule} onSaveStream={this._onSaveStream} />
             </Col>
         </Row>
         );

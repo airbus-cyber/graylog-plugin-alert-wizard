@@ -23,7 +23,6 @@ import PropTypes from 'prop-types';
 
 import { Input } from 'components/bootstrap';
 import { Select, Spinner } from 'components/common';
-import ObjectUtils from 'util/ObjectUtils';
 import FormsUtils from 'util/FormsUtils';
 
 import AlertListActions from 'wizard/actions/AlertListActions';
@@ -65,16 +64,12 @@ const _availableRuleType = () => {
     ];
 };
 
-const FieldRule = ({matchData, rule, onUpdate, onDelete}) => {
+const FieldRule = ({rule, onUpdate, onDelete}) => {
     const [lists, setLists] = useState(null);
 
     useEffect(() => {
         AlertListActions.list().then(setLists);
     }, []);
-
-    const _getMatchDataColor = () => {
-        return (matchData.rules[rule.id] ? '#dff0d8' : '#f2dede');
-    };
 
     const _propagateUpdate = (field, type, value) => {
         const newState = { field: field, type: type, value: value };
@@ -113,7 +108,6 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete}) => {
         if (rule.type !== 5 && rule.type !== -5 && rule.type !== 7 && rule.type !== -7) {
             return (
                 <Input style={{
-                           backgroundColor: color,
                            borderTopLeftRadius: '0px',
                            borderBottomLeftRadius: '0px',
                            height: '36px'
@@ -126,7 +120,7 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete}) => {
             return (
                 <Input id="alertLists" name="alertLists">
                     <div style={{width: '150px'}}>
-                        <Select style={{backgroundColor: color, borderRadius: '0px'}}
+                        <Select style={{borderRadius: '0px'}}
                                 autosize={false}
                                 required
                                 clearable={false}
@@ -148,10 +142,6 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete}) => {
         delete: intl.formatMessage({id: "wizard.delete", defaultMessage: "Delete"}),
         select: intl.formatMessage({id: "wizard.select", defaultMessage: "Select..."})
     };
-
-    // TODO could move this code down into _getMatchDataColor and simplify code
-    const isMatchDataPesent = (matchData && matchData.rules.hasOwnProperty(rule.id));
-    const color = (isMatchDataPesent ? _getMatchDataColor() : '');
 
     const deleteAction = (
         <button id="delete-alert" type="button" className="btn btn-primary"
@@ -175,7 +165,7 @@ const FieldRule = ({matchData, rule, onUpdate, onDelete}) => {
                 </Input>
                 <Input id="type" name="type">
                     <div style={{width: '200px'}}>
-                        <Select style={{backgroundColor: color}}
+                        <Select
                                 required
                                 clearable={false}
                                 value={rule.type.toString()}
@@ -197,8 +187,6 @@ FieldRule.propTypes = {
     rule: PropTypes.object.isRequired,
     onUpdate: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
-    // TODO isRequired?
-    matchData: PropTypes.array,
 };
 
 export default FieldRule;

@@ -28,7 +28,7 @@ import FieldRule from './FieldRule';
 
 // see https://react.dev/learn/rendering-lists and https://react.dev/learn/updating-arrays-in-state
 
-const FieldRuleList = ({fieldRules, matchData, onSaveStream}) => {
+const FieldRuleList = ({fieldRules, onSaveStream}) => {
     // TODO does it work to call useIntl outside of a component?
     const intl = useIntl();
     const messages = {
@@ -40,7 +40,7 @@ const FieldRuleList = ({fieldRules, matchData, onSaveStream}) => {
     const _updateRules = (rules) => {
         setState(rules);
         onSaveStream(rules);
-    }
+    };
 
     const _addFieldRule = () => {
         const newRule = {field: '', type: '', value: '', identifier: generateIdentifier()};
@@ -64,7 +64,7 @@ const FieldRuleList = ({fieldRules, matchData, onSaveStream}) => {
         // TODO should probably move the delete action out the FieldRule into here???
         return (
             <div key={rule.identifier}>
-                <FieldRule rule={rule} matchData={matchData}
+                <FieldRule rule={rule}
                            onUpdate={newState => _onUpdateFieldRuleSubmit(index, newState)}
                            onDelete={() => _onDeleteFieldRuleSubmit(index)} />
                 <br/>
