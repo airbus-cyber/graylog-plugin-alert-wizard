@@ -16,52 +16,31 @@
  */
 
 
-import PropTypes from 'prop-types';
 import React from 'react';
-import createReactClass from 'create-react-class';
 import { Input, Row, Col } from 'components/bootstrap';
 import { FormattedMessage } from 'react-intl';
 
-const SearchQueryInput = createReactClass({
-    displayName: 'SearchQuery',
+const SearchQueryInput = ({search_query, onUpdate, fieldName = 'search_query'}) => {
 
-    propTypes: {
-        onUpdate: PropTypes.func,
-        fieldName: PropTypes.string
-    },
-    getDefaultProps() {
-        return {
-            search_query:'',
-            fieldName: 'search_query'
-        };
-    },
-    getInitialState() {
-        return {
-            search_query: this.props.search_query,
-            fieldName: this.props.fieldName
-        };
-    },
-    _onValueChanged() {
+    const _onValueChanged = () => {
         return e => {
-            this.props.onUpdate(this.props.fieldName, e.target.value);
+            onUpdate(fieldName, e.target.value);
         };
-    },
+    };
 
-    render() {
-        return (
-            <Row style={{ display: 'flex', alignItems: 'center' }}>
-                <Col md={2} style={{ marginTop: 5, marginBottom: 0 }}>
-                    <label className="pull-right text-right" ><FormattedMessage id= "wizard.titleSearchQuery" defaultMessage= "Search Query" /></label>
-                </Col>
-                <Col md={10}>
-                    <Input style={{borderTopRightRadius: '0px', borderBottomRightRadius: '0px', height:'36px', width:'600px'}}
-                           id="search_query" name="search_query" type="text"
-                           onChange={this._onValueChanged()}
-                           defaultValue={this.state.search_query}/>
-                </Col>
-            </Row>
-        );
-    },
-});
+    return (
+        <Row style={{ display: 'flex', alignItems: 'center' }}>
+            <Col md={2} style={{ marginTop: 5, marginBottom: 0 }}>
+                <label className="pull-right text-right" ><FormattedMessage id= "wizard.titleSearchQuery" defaultMessage= "Search Query" /></label>
+            </Col>
+            <Col md={10}>
+                <Input style={{borderTopRightRadius: '0px', borderBottomRightRadius: '0px', height:'36px', width:'600px'}}
+                       id="search_query" name="search_query" type="text"
+                       onChange={_onValueChanged()}
+                       defaultValue={search_query}/>
+            </Col>
+        </Row>
+    );
+};
 
 export default SearchQueryInput;
