@@ -16,14 +16,17 @@
  */
 
 
-import React from 'react';
+import React, {useState} from 'react';
 import { Input, Row, Col } from 'components/bootstrap';
 import { FormattedMessage } from 'react-intl';
 
 const SearchQueryInput = ({search_query, onUpdate, fieldName = 'search_query'}) => {
 
+    const [value, setValue] = useState(search_query);
+
     const _onValueChanged = () => {
         return e => {
+            setValue(e.target.value);
             onUpdate(fieldName, e.target.value);
         };
     };
@@ -37,7 +40,7 @@ const SearchQueryInput = ({search_query, onUpdate, fieldName = 'search_query'}) 
                 <Input style={{borderTopRightRadius: '0px', borderBottomRightRadius: '0px', height:'36px', width:'600px'}}
                        id="search_query" name="search_query" type="text"
                        onChange={_onValueChanged()}
-                       defaultValue={search_query}/>
+                       value={value}/>
             </Col>
         </Row>
     );

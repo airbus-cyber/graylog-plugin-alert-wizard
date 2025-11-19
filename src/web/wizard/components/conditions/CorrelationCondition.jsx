@@ -15,7 +15,7 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { Button } from 'components/bootstrap';
 import { FormattedMessage } from 'react-intl';
 import { Row, Col } from 'components/bootstrap';
@@ -34,8 +34,27 @@ const STREAM = {
     field_rule: [{field: '', type: '', value: ''}],
 };
 
-
 const CorrelationCondition = ({alert, onUpdate}) => {
+
+    const [time, setTime] = useState(0);
+    const [time_type, setTimeType] = useState(0);
+
+    const _computeTime = () => {
+        if (alert.condition_parameters.time >= 1440) {
+            setTime(alert.condition_parameters.time / 1440);
+            setTimeType(1440);
+        } else if (alert.condition_parameters.time >= 60) {
+            setTime(alert.condition_parameters.time / 60);
+            setTimeType(60);
+        } else {
+            setTime(alert.condition_parameters.time);
+            setTimeType(1);
+        }
+    };
+
+    useEffect(() => {
+        _computeTime();
+    }, []);
 
     const _handleChangeCondition = (field, value) => {
         let update = ObjectUtils.clone(alert);
@@ -45,6 +64,7 @@ const CorrelationCondition = ({alert, onUpdate}) => {
             update.condition_parameters[field] = value;
         }
         onUpdate('condition_parameters', update.condition_parameters);
+        _computeTime();
     };
 
     const _handleChangeStream = (field, value) => {
@@ -90,19 +110,6 @@ const CorrelationCondition = ({alert, onUpdate}) => {
         onUpdate('second_stream', update.second_stream);
         onUpdate('condition_parameters', update.condition_parameters);
     };
-    
-    let time;
-    let time_type;
-    if (alert.condition_parameters.time >= 1440) {
-        time = alert.condition_parameters.time / 1440;
-        time_type = 1440;
-    } else if (alert.condition_parameters.time >= 60) {
-        time = alert.condition_parameters.time / 60;
-        time_type = 60;
-    } else {
-        time = alert.condition_parameters.time;
-        time_type = 1;
-    }
 
     const buttonSwitchStream = (<Button onClick={_switchStreamNumberCondition} title="Switch" bsStyle="info" style={{ fontSize: '18px' }}><IconArrowsV/></Button>);
 
