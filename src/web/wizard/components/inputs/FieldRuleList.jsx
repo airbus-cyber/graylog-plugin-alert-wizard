@@ -16,7 +16,6 @@
  */
 
 import React from 'react';
-import { useState } from 'react';
 import { useIntl } from 'react-intl';
 
 import { Button } from 'components/bootstrap';
@@ -27,40 +26,35 @@ import FieldRule from './FieldRule';
 
 
 // see https://react.dev/learn/rendering-lists and https://react.dev/learn/updating-arrays-in-state
-
 const FieldRuleList = ({fieldRules, onSaveStream}) => {
-    // TODO does it work to call useIntl outside of a component?
     const intl = useIntl();
     const messages = {
         add: intl.formatMessage({id: "wizard.add", defaultMessage: "Add"}),
     };
-    const [state, setState] = useState(fieldRules);
 
-    // TODO is this really the right way to do it: both changing the state and propagating up (which will come back down)?
     const _updateRules = (rules) => {
-        setState(rules);
         onSaveStream(rules);
     };
 
     const _addFieldRule = () => {
         const newRule = {field: '', type: '', value: '', identifier: generateIdentifier()};
-        const nextState = [...state, newRule];
+        const nextState = [...fieldRules, newRule];
         _updateRules(nextState);
     };
 
     const _onUpdateFieldRuleSubmit = (index, rule) => {
-        const nextState = [...state];
-        nextState[index] = {...rule, identifier: state[index].identifier};
+        const nextState = [...fieldRules];
+        nextState[index] = {...rule, identifier: fieldRules[index].identifier};
         _updateRules(nextState);
     };
 
     const _onDeleteFieldRuleSubmit = (index) => {
-        const nextState = [...state];
+        const nextState = [...fieldRules];
         nextState.splice(index, 1);
         _updateRules(nextState);
     };
 
-    const listFieldRule = state.map((rule, index) => {
+    const listFieldRule = fieldRules.map((rule, index) => {
         // TODO should probably move the delete action out the FieldRule into here???
         return (
             <div key={rule.identifier}>
