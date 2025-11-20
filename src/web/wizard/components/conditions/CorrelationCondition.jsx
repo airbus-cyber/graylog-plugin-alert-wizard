@@ -34,27 +34,26 @@ const STREAM = {
     field_rule: [{field: '', type: '', value: ''}],
 };
 
+const _getTimeType = (time) => {
+    if (time >= 1440) {
+        return 1440;
+    } else if (time >= 60) {
+        return 60;
+    } else {
+        return 1;
+    }
+};
+
 const CorrelationCondition = ({alert, onUpdate}) => {
 
-    const [time, setTime] = useState(0);
-    const [time_type, setTimeType] = useState(0);
-
-    const _computeTime = () => {
-        if (alert.condition_parameters.time >= 1440) {
-            setTime(alert.condition_parameters.time / 1440);
-            setTimeType(1440);
-        } else if (alert.condition_parameters.time >= 60) {
-            setTime(alert.condition_parameters.time / 60);
-            setTimeType(60);
-        } else {
-            setTime(alert.condition_parameters.time);
-            setTimeType(1);
-        }
-    };
+    const [time, setTime] = useState(alert.condition_parameters.time);
+    const [time_type, setTimeType] = useState(_getTimeType(alert.condition_parameters.time));
 
     useEffect(() => {
-        _computeTime();
-    }, []);
+        const computedTimeType = _getTimeType(alert.condition_parameters.time);
+        setTime(alert.condition_parameters.time / computedTimeType);
+        setTimeType(computedTimeType);
+    }, [alert]);
 
     const _handleChangeCondition = (field, value) => {
         let update = ObjectUtils.clone(alert);
@@ -64,7 +63,6 @@ const CorrelationCondition = ({alert, onUpdate}) => {
             update.condition_parameters[field] = value;
         }
         onUpdate('condition_parameters', update.condition_parameters);
-        _computeTime();
     };
 
     const _handleChangeStream = (field, value) => {
