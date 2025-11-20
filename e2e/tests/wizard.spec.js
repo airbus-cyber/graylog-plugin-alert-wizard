@@ -96,7 +96,7 @@ test('open_two_tabs_when_click_on_search_button', async ({ page }) => {
 
   // Fill 1st Search Query
   const searchQuery = 'a?c';
-  await page.locator('#search_query').first().fill(searchQuery);
+  await page.locator('#search_query').fill(searchQuery);
   await page.waitForTimeout(200);
 
   // Add 2nd Field Condition
@@ -104,7 +104,7 @@ test('open_two_tabs_when_click_on_search_button', async ({ page }) => {
 
   // Fill 2nd Search Query
   const searchQuery2 = 'b?d';
-  await page.locator('#search_query').nth(1).fill(searchQuery2);
+  await page.locator('#additional_search_query').fill(searchQuery2);
   await page.waitForTimeout(200);
 
   // Save
@@ -150,12 +150,12 @@ test('open_two_tabs_when_click_on_search_button_when_second_stream_condition_is_
 
   // Fill 1st Search Query
   const searchQuery = 'a?c';
-  await page.locator('#search_query').first().fill(searchQuery);
+  await page.locator('#search_query').fill(searchQuery);
   await page.waitForTimeout(200);
 
   // Fill 2nd Search Query
   const searchQuery2 = 'b?d';
-  await page.locator('#search_query').nth(1).fill(searchQuery2);
+  await page.locator('#additional_search_query').fill(searchQuery2);
   await page.waitForTimeout(200);
 
   // Save

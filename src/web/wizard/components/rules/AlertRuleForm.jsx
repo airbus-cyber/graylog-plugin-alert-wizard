@@ -51,13 +51,15 @@ const AlertRuleForm = ({initialAlert, navigationToRuleComponents, onSave, disabl
         if (value === '') {
             setIsValid(false);
         } else {
-            setIsValid(AlertValidation.isAlertValid(alert));
+            setIsValid(AlertValidation.isAlertValid(update));
         }
     }, [alert, isModified, isValid]);
 
-    const _updateAlert = useCallback(() => {
+    const _updateAlert = useCallback((newAlert) => {
+        setAlert(newAlert);
         setIsModified(true);
-    }, [isModified]);
+        setIsValid(AlertValidation.isAlertValid(newAlert));
+    }, [alert, isModified, isValid]);
 
     const _selectContentComponent = () => {
         switch (conditionType) {
@@ -69,9 +71,9 @@ const AlertRuleForm = ({initialAlert, navigationToRuleComponents, onSave, disabl
                 return (<StatisticsCondition onUpdate={_updateAlertField} alert={alert} />);
             case 'THEN':
             case 'AND':
-                return (<CorrelationCondition onUpdate={_updateAlertField} alert={alert} />);
+                return (<CorrelationCondition onUpdate={_updateAlertField} onUpdateAlert={_updateAlert} alert={alert} />);
             case 'OR':
-                return (<OrCondition onUpdate={_updateAlertField} onUpdateAlert={_updateAlert} alert={alert} />);
+                return (<OrCondition onUpdate={_updateAlertField} alert={alert} />);
             default:
                 return (<div/>);
         }

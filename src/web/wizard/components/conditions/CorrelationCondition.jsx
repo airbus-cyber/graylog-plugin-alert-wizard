@@ -44,7 +44,7 @@ const _getTimeType = (time) => {
     }
 };
 
-const CorrelationCondition = ({alert, onUpdate}) => {
+const CorrelationCondition = ({alert, onUpdate, onUpdateAlert}) => {
 
     const [time, setTime] = useState(alert.condition_parameters.time);
     const [time_type, setTimeType] = useState(_getTimeType(alert.condition_parameters.time));
@@ -104,9 +104,7 @@ const CorrelationCondition = ({alert, onUpdate}) => {
         update.condition_parameters.additional_threshold = alert.condition_parameters.threshold;
         update.condition_parameters.additional_threshold_type = alert.condition_parameters.threshold_type;
 
-        onUpdate('stream', update.stream);
-        onUpdate('second_stream', update.second_stream);
-        onUpdate('condition_parameters', update.condition_parameters);
+        onUpdateAlert(update);
     };
 
     const buttonSwitchStream = (<Button onClick={_switchStreamNumberCondition} title="Switch" bsStyle="info" style={{ fontSize: '18px' }}><IconArrowsV/></Button>);
