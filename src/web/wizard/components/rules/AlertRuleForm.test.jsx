@@ -39,7 +39,7 @@ xdescribe('<AlertRuleForm>', () => {
         const onSave = jest.fn();
         render(<BrowserRouter>
                    <IntlProvider locale="en" >
-                        <AlertRuleForm alert={alert} onSave={onSave} />
+                        <AlertRuleForm initialAlert={alert} onSave={onSave} />
                    </IntlProvider>
                </BrowserRouter>);
     });

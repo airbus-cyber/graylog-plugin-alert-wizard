@@ -94,7 +94,7 @@ const UpdateAlertPage = ({params}) => {
                 </PageHeader>
                 <Row className="content">
                     <Col md={12}>
-                        <AlertRuleForm alert={alert} navigationToRuleComponents={navigationToRuleComponents} onSave={_update} disableNavbar={true} />
+                        <AlertRuleForm initialAlert={alert} navigationToRuleComponents={navigationToRuleComponents} onSave={_update} disableNavbar={true} />
                     </Col>
                 </Row>
             </DocumentTitle>

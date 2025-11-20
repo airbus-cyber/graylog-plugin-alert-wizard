@@ -95,7 +95,7 @@ const NewAlertPage = () => {
                 field_rule: [],
             }
         };
-        componentCreateAlertRule = <AlertRuleForm alert={alert} onSave={_save} />;
+        componentCreateAlertRule = <AlertRuleForm initialAlert={alert} onSave={_save} />;
     } else {
         componentCreateAlertRule = <Spinner/>;
     }

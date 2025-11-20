@@ -21,6 +21,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 import { useIntl, FormattedMessage } from 'react-intl';
 
 import { Button, Col, Row, Nav, NavItem } from 'components/bootstrap';
+import ObjectUtils from 'util/ObjectUtils';
 
 import Navigation from 'wizard/routing/Navigation';
 import StatisticsCondition from 'wizard/components/conditions/StatisticsCondition';
@@ -33,15 +34,18 @@ import AlertValidation from 'wizard/logic/AlertValidation';
 
 import styles from './AlertRuleForm.css';
 
-const AlertRuleForm = ({alert, navigationToRuleComponents, onSave, disableNavbar}) => {
+const AlertRuleForm = ({initialAlert, navigationToRuleComponents, onSave, disableNavbar}) => {
     const intl = useIntl();
 
+    const [alert, setAlert] = useState(initialAlert);
     const [isModified, setIsModified] = useState(false);
     const [isValid, setIsValid] = useState(false);
     const [conditionType, setConditionType] = useState(alert.condition_type);
 
     const _updateAlertField = useCallback((field, value) => {
-        alert[field] = value;
+        const update = ObjectUtils.clone(alert);
+        update[field] = value;
+        setAlert(update);
         setIsModified(true);
         // TODO why is this check necessary???
         if (value === '') {
@@ -49,7 +53,7 @@ const AlertRuleForm = ({alert, navigationToRuleComponents, onSave, disableNavbar
         } else {
             setIsValid(AlertValidation.isAlertValid(alert));
         }
-    }, [isModified, isValid]);
+    }, [alert, isModified, isValid]);
 
     const _updateAlert = useCallback(() => {
         setIsModified(true);
