@@ -65,6 +65,7 @@ const FieldsInput = ({stream, onSaveStream}) => {
                     <Input ref={matchingTypeRef} id="matching_type" name="matching_type" required>
                         <div style={{width:'150px'}}>
                             <Select
+                                id="matching_type_select"
                                 autosize={false}
                                 required
                                 clearable={false}

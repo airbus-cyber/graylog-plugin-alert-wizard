@@ -118,7 +118,7 @@ test('open_two_tabs_when_click_on_search_button', async ({ page }) => {
   await page.waitForTimeout(2000);
   let pages = page.context().pages();
   expect(pages.length).toBe(3);
-  if (await pages[1].getByText(title + '#2').isVisible()) {
+  if (await pages[1].getByText(searchQuery2).isVisible()) {
     await expect(pages[2].getByText(title)).toBeVisible();
     await expect(pages[2].getByText(searchQuery)).toBeVisible();
 
@@ -169,7 +169,7 @@ test('open_two_tabs_when_click_on_search_button_when_second_stream_condition_is_
   await page.waitForTimeout(2000);
   let pages = page.context().pages();
   expect(pages.length).toBe(3);
-  if (await pages[1].getByText(title).isVisible()) {
+  if (await pages[1].getByText(searchQuery).isVisible()) {
     await expect(pages[1].getByText(title)).toBeVisible();
     await expect(pages[1].getByText(searchQuery)).toBeVisible();
 
@@ -258,4 +258,63 @@ test('Update rules cannot change type of rule - #136', async ({ page }) => {
     await expect(page.locator('li').filter({ hasText:  rule_name })).toBeVisible();
     await expect(page.locator('li').filter({ hasText:  rule_name })).toContainClass('disabled');
   }
+});
+
+test('use switch button should works - #158', async ({ page }) => {
+  await page.goto('wizard/AlertRules');
+
+  await login_steps(page);
+
+  // Fill Title
+  const title = `AAA-${crypto.randomUUID()}`;
+  await page.getByRole('link', {name: 'Create'}).click();
+  await page.getByRole('button', {name: 'THEN'}).click();
+  await page.locator('#title').fill(title);
+
+  // Add 1st Field Condition
+  await fill_field_condition(page, 'message', 'matches exactly', 'abc');
+
+  // Change 1st must match
+  await page.getByText('arrow_drop_down').nth(1).click();
+  await page.getByRole('option', { name: 'at least one' }).click();
+  await page.waitForTimeout(200);
+
+  // Fill 1st Search Query
+  const searchQuery = 'a?c';
+  await page.locator('#search_query').fill(searchQuery);
+  await page.waitForTimeout(200);
+
+  // Change 1st count condition
+  await page.getByText('arrow_drop_down').nth(3).click();
+  await page.getByRole('option', { name: 'less than' }).click();
+  await page.waitForTimeout(200);
+  await page.locator('#threshold').first().fill('5');
+  await page.waitForTimeout(200);
+
+  // Add 2nd Field Condition
+  await fill_field_condition(page, 'user', 'contains', 'def', 1);
+
+  // Fill 2nd Search Query
+  const searchQuery2 = 'b?d';
+  await page.locator('#additional_search_query').fill(searchQuery2);
+  await page.waitForTimeout(200);
+
+  // Click on Switch Button
+  await page.getByRole('button', { name: 'swap_vert' }).click();
+  await page.waitForTimeout(200);
+
+  // Check switch result
+  await expect(page.locator('#search_query')).toHaveValue(searchQuery2);
+  await expect(page.locator('#additional_search_query')).toHaveValue(searchQuery);
+
+  await expect(page.locator('#matching_type_select').first()).toContainText('all');
+  await expect(page.locator('#matching_type_select').nth(1)).toContainText('at least one');
+
+  await expect(page.locator('#field-input').first()).toHaveValue('user');
+  await expect(page.locator('#value').first()).toHaveValue('def');
+  await expect(page.locator('#field-input').nth(1)).toHaveValue('message');
+  await expect(page.locator('#value').nth(1)).toHaveValue('abc');
+
+  await expect(page.locator('#threshold').first()).toHaveValue('0');
+  await expect(page.locator('#threshold').nth(1)).toHaveValue('5');
 });
