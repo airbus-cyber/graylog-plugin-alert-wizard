@@ -117,19 +117,23 @@ test('open_two_tabs_when_click_on_search_button', async ({ page }) => {
   // Wait new tabs
   await page.waitForTimeout(2000);
   let pages = page.context().pages();
-  expect(pages.length).toBe(3);
-  if (await pages[1].getByText(searchQuery2).isVisible()) {
-    await expect(pages[2].getByText(title)).toBeVisible();
-    await expect(pages[2].getByText(searchQuery)).toBeVisible();
+  await expect(pages.length).toBe(3);
 
-    await expect(pages[1].getByText(title + '#2')).toBeVisible();
-    await expect(pages[1].getByText(searchQuery2)).toBeVisible();
-  } else {
+  const url = pages[1].url();
+  const searchInPageOne = url.includes("q=a%3Fc");
+
+  if (searchInPageOne) {
     await expect(pages[1].getByText(title)).toBeVisible();
     await expect(pages[1].getByText(searchQuery)).toBeVisible();
 
     await expect(pages[2].getByText(title + '#2')).toBeVisible();
     await expect(pages[2].getByText(searchQuery2)).toBeVisible();
+  } else {
+    await expect(pages[2].getByText(title)).toBeVisible();
+    await expect(pages[2].getByText(searchQuery)).toBeVisible();
+
+    await expect(pages[1].getByText(title + '#2')).toBeVisible();
+    await expect(pages[1].getByText(searchQuery2)).toBeVisible();
   }
 });
 
@@ -168,8 +172,12 @@ test('open_two_tabs_when_click_on_search_button_when_second_stream_condition_is_
   // Wait new tabs
   await page.waitForTimeout(2000);
   let pages = page.context().pages();
-  expect(pages.length).toBe(3);
-  if (await pages[1].getByText(searchQuery).isVisible()) {
+  await expect(pages.length).toBe(3);
+
+  const url = pages[1].url();
+  const searchInPageOne = url.includes("q=a%3Fc");
+
+  if (searchInPageOne) {
     await expect(pages[1].getByText(title)).toBeVisible();
     await expect(pages[1].getByText(searchQuery)).toBeVisible();
 
