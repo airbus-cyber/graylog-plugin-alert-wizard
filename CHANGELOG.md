@@ -6,12 +6,12 @@ All notable changes to this project will be documented in this file.
 ### Features
 * Rules page is paginated ([issue #165](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/165))
 * A saved rule cannot change his type ([issue #136](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/136))
+* Bump graylog-plugin-logging-alert version to 6.1.6 ([issue #53](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/53))
 
 ### Bug Fixes
 * The button to switch blocks in a THEN rule does not work ([issue #158](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/158))
 * Rules list page is reloaded twice ([issue #162](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/162))
 * Rules filter is case-sensitive ([issue #163](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/163))
-
 
 ## [6.1.5](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/6.1.4...6.1.5)
 ### Bug Fixes

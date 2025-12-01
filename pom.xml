@@ -76,7 +76,7 @@
         <graylog.plugin-dir>/usr/share/graylog-server/plugin</graylog.plugin-dir>
         <!-- versions -->
         <graylog-plugin-correlation-count.version>6.1.0</graylog-plugin-correlation-count.version>
-        <graylog-plugin-logging-alert.version>6.1.5</graylog-plugin-logging-alert.version>
+        <graylog-plugin-logging-alert.version>6.1.6</graylog-plugin-logging-alert.version>
         <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
         <opencsv.version>2.4</opencsv.version>
     </properties>
