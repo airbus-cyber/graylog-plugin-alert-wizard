@@ -30,6 +30,9 @@ import ImportListPage from './wizard/pages/ImportListPage';
 import ExportListPage from './wizard/pages/ExportListPage';
 import WizardAlertConfig from './wizard/components/configuration/WizardAlertConfig';
 import CreateRuleSearchAction from './wizard/searchActions/CreateRuleSearchAction';
+import AggregationFieldValueProviderForm from './wizard/aggregationField/AggregationFieldValueProviderForm';
+import { AGGREGATION_TYPE, AGGREGATION_DEFAULT_CONFIG, AGGREGATION_REQUIRED_FIELDS } from './wizard/aggregationField/AggregationFieldValueProviderForm';
+import AggregationFieldValueProviderSummary from './wizard/aggregationField/AggregationFieldValueProviderSummary';
 
 // TODO: think about it, but it seems alerts and lists are two entirely different "realms". If so, split their code in two distinct namespace
 PluginStore.register(new PluginManifest(packageJson, {
@@ -63,6 +66,17 @@ PluginStore.register(new PluginManifest(packageJson, {
             displayName: 'Alert Wizard',
             configType: 'com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig'
         },
+    ],
+
+    fieldValueProviders: [
+        {
+            type: AGGREGATION_TYPE,
+            displayName: 'Aggregation Id Field',
+            formComponent: AggregationFieldValueProviderForm,
+            summaryComponent: AggregationFieldValueProviderSummary,
+            defaultConfig: AGGREGATION_DEFAULT_CONFIG,
+            requiredFields: AGGREGATION_REQUIRED_FIELDS,
+        }
     ],
 
     'views.components.searchActions': [

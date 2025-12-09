@@ -25,10 +25,13 @@ import com.google.inject.assistedinject.Assisted;
 import jakarta.inject.Inject;
 import org.graylog.events.event.EventWithContext;
 import org.graylog.events.fields.FieldValue;
+import org.graylog.events.fields.FieldValueType;
 import org.graylog.events.fields.providers.AbstractFieldValueProvider;
 import org.graylog.events.fields.providers.FieldValueProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.UUID;
 
 public class AggregationFieldValueProvider extends AbstractFieldValueProvider {
     public interface Factory extends AbstractFieldValueProvider.Factory<AggregationFieldValueProvider> {
@@ -48,7 +51,7 @@ public class AggregationFieldValueProvider extends AbstractFieldValueProvider {
 
     @Override
     protected FieldValue doGet(String fieldName, EventWithContext eventWithContext) {
-        return null;
+        return FieldValue.create(FieldValueType.STRING, UUID.randomUUID().toString());
     }
 
 
