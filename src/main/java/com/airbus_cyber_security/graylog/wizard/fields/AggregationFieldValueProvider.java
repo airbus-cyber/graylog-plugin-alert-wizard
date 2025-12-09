@@ -28,9 +28,17 @@ import org.graylog.events.fields.FieldValue;
 import org.graylog.events.fields.FieldValueType;
 import org.graylog.events.fields.providers.AbstractFieldValueProvider;
 import org.graylog.events.fields.providers.FieldValueProvider;
+import org.graylog.events.search.EventsSearchFilter;
+import org.graylog.events.search.EventsSearchParameters;
+import org.graylog.events.search.EventsSearchResult;
+import org.graylog.events.search.EventsSearchService;
+import org.graylog2.plugin.Message;
+import org.graylog2.plugin.indexer.searches.timeranges.RelativeRange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
+import java.util.Optional;
 import java.util.UUID;
 
 public class AggregationFieldValueProvider extends AbstractFieldValueProvider {
@@ -42,18 +50,64 @@ public class AggregationFieldValueProvider extends AbstractFieldValueProvider {
     private static final Logger LOG = LoggerFactory.getLogger(AggregationFieldValueProvider.class);
 
     private final AggregationFieldValueProvider.Config config;
+    private final EventsSearchService searchService;
 
     @Inject
-    public AggregationFieldValueProvider(@Assisted FieldValueProvider.Config config) {
+    public AggregationFieldValueProvider(@Assisted FieldValueProvider.Config config, EventsSearchService searchService) {
         super(config);
         this.config = (AggregationFieldValueProvider.Config) config;
+        this.searchService = searchService;
     }
 
     @Override
     protected FieldValue doGet(String fieldName, EventWithContext eventWithContext) {
-        return FieldValue.create(FieldValueType.STRING, UUID.randomUUID().toString());
+        LOG.debug("Start Compute field {}", fieldName);
+
+        // Check if alert already exist in time range
+        if (this.config.aggregationTimeRange() > 0) {
+            LOG.debug("Aggregation Time Range is defined");
+
+            String eventDefinitionId = eventWithContext.event().getEventDefinitionId();
+            int timeRange = this.config.aggregationTimeRange() * 60;
+
+            EventsSearchFilter searchFilter = EventsSearchFilter.builder()
+                    .alerts(EventsSearchFilter.Alerts.ONLY)
+                    .eventDefinitions(Collections.singleton(eventDefinitionId))
+                    .build();
+
+            EventsSearchParameters request = EventsSearchParameters.builder()
+                    .filter(searchFilter)
+                    .timerange(RelativeRange.create(timeRange))
+                    .page(1)
+                    // Do not use higher perPage value cause request failed
+                    .perPage(5000)
+                    .query("")
+                    .sortBy(Message.FIELD_TIMESTAMP)
+                    .sortDirection(EventsSearchParameters.SortDirection.DESC)
+                    .build();
+
+            EventsSearchResult result = this.searchService.search(request, new EmptySubject());
+
+            if (result.totalEvents() > 0) {
+                LOG.debug("Found {} events for aggregation", result.totalEvents());
+
+                Optional<EventsSearchResult.Event> existingEvent = result.events().stream().filter(x -> x.event().groupByFields().equals(eventWithContext.event().getGroupByFields())).findFirst();
+
+                if (existingEvent.isPresent()) {
+                    String existingId = existingEvent.get().event().fields().getOrDefault(fieldName, UUID.randomUUID().toString());
+                    LOG.debug("Find existing Event with aggregation Id {}", existingId);
+
+                    return FieldValue.create(FieldValueType.STRING, existingId);
+                }
+            }
+        }
+
+        return getRandomFieldValue();
     }
 
+    public FieldValue getRandomFieldValue() {
+        return FieldValue.create(FieldValueType.STRING, UUID.randomUUID().toString());
+    }
 
     @AutoValue
     @JsonTypeName(AggregationFieldValueProvider.Config.TYPE_NAME)
@@ -64,7 +118,7 @@ public class AggregationFieldValueProvider extends AbstractFieldValueProvider {
         private static final String FIELD_AGGREGATION_TIME_RANGE = "aggregation_time_range";
 
         @JsonProperty(FIELD_AGGREGATION_TIME_RANGE)
-        public abstract Long aggregationTimeRange();
+        public abstract Integer aggregationTimeRange();
 
         public static AggregationFieldValueProvider.Config.Builder builder() {
             return AggregationFieldValueProvider.Config.Builder.create();
@@ -80,7 +134,7 @@ public class AggregationFieldValueProvider extends AbstractFieldValueProvider {
             }
 
             @JsonProperty(FIELD_AGGREGATION_TIME_RANGE)
-            public abstract AggregationFieldValueProvider.Config.Builder aggregationTimeRange(Long aggregationTimeRange);
+            public abstract AggregationFieldValueProvider.Config.Builder aggregationTimeRange(Integer aggregationTimeRange);
 
             public abstract AggregationFieldValueProvider.Config build();
         }

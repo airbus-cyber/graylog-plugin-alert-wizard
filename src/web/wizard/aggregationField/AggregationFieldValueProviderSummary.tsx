@@ -31,7 +31,6 @@ const AggregationFieldValueProviderSummary = ({ fieldName, config, keys }: Props
 
     const toggleDisplayDetails = () => {
         setDisplayDetails(!displayDetails);
-        console.log(config);
     };
 
     return (
