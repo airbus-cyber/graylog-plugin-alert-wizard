@@ -66,6 +66,7 @@ public abstract class AlertWizardConfig {
 						FieldWizard.create("Rule", false)))
 				.accessDefaultValues(DefaultValues.create("",
 						1,
+						0,
 						"AND",
 						">",
 						0,

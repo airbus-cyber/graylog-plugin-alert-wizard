@@ -116,6 +116,7 @@
   "wizard.matchingType": "Type de correspondance",
   "wizard.thresholdType": "Type de seuil",
   "wizard.threshold": "Seuil",
+  "wizard.aggregationTime": "Intervalle de temps pour l'aggrégation (en minutes)",
   "wizard.time": "Intervalle de temps",
   "wizard.timeType": "Unité de temps",
   "wizard.select": "Sélectionner...",

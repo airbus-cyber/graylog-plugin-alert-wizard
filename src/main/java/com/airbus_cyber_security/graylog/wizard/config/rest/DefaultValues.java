@@ -38,6 +38,10 @@ public abstract class DefaultValues {
     @JsonProperty("priority")
     @Nullable
     public abstract Integer getPriority();
+
+    @JsonProperty("aggregation_time")
+    @Nullable
+    public abstract Integer getAggregationTime();
 	
     @JsonProperty("matching_type")
     @NotNull
@@ -65,6 +69,7 @@ public abstract class DefaultValues {
     @JsonCreator
     public static DefaultValues create(@JsonProperty("title") String title,
     		@JsonProperty("priority") Integer priority,
+            @JsonProperty("aggregation_time") Integer aggregationTime,
     		@JsonProperty("matching_type") String matchingType,
     		@JsonProperty("threshold_type") String thresholdType,
     		@JsonProperty("threshold") int threshold,
@@ -72,7 +77,7 @@ public abstract class DefaultValues {
     		@JsonProperty("time_type") int timeType,
             @JsonProperty("grace") int grace,
             @JsonProperty("backlog") int backlog){
-        return new AutoValue_DefaultValues(title, priority, matchingType, thresholdType, threshold, time, timeType,
+        return new AutoValue_DefaultValues(title, priority, aggregationTime, matchingType, thresholdType, threshold, time, timeType,
                 grace, backlog);
     }
 }

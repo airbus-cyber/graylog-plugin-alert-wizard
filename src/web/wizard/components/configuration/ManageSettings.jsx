@@ -319,6 +319,9 @@ const ManageSettings = createReactClass({
                         clearable={false}
                     />
                 </Input>
+                <Input ref="aggregation_time" id="aggregation_time" name="aggregation_time" type="number" min="0"
+                       label={<FormattedMessage id="wizard.aggregationTime" defaultMessage="Aggregation Time Range (minutes)" />}
+                       onChange={this._onValueChanged("aggregation_time")} value={this.state.config.default_values.aggregation_time}/>
               </fieldset>
               <h3><FormattedMessage id="wizard.conditionDefaultValues" defaultMessage="Default values of the event" /></h3>
               <p><FormattedMessage id="wizard.changeDefaultValues" defaultMessage="Change the default values." /></p>

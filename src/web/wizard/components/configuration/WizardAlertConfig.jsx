@@ -205,6 +205,12 @@ export default function WizardAlertConfig() {
                         {_timeTypeToString(configuration.default_values.time_type)}
                     </dd>
                 </dl>
+                <dl className="deflist">
+                    <dt>Aggregation time range:</dt>
+                    <dd>
+                        {`${configuration.default_values.aggregation_time ?? 0} minutes`}
+                    </dd>
+                </dl>
                 <span style={{fontStyle: 'italic'}}>Alert default values:</span>
                 <dl className="deflist">
                     <dt>Message Backlog:</dt>
