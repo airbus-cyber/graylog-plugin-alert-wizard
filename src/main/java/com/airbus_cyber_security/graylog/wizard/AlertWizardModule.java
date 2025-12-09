@@ -21,6 +21,7 @@ import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleService;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.AlertRuleResource;
 import com.airbus_cyber_security.graylog.wizard.audit.AlertWizardAuditEventTypes;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfigResource;
+import com.airbus_cyber_security.graylog.wizard.fields.AggregationFieldValueProvider;
 import com.airbus_cyber_security.graylog.wizard.list.business.AlertListService;
 import com.airbus_cyber_security.graylog.wizard.list.rest.AlertListResource;
 import com.airbus_cyber_security.graylog.wizard.permissions.AlertRuleRestPermissions;
@@ -54,5 +55,9 @@ public class AlertWizardModule extends PluginModule {
         addAuditEventTypes(AlertWizardAuditEventTypes.class);
         addRestResource(AlertWizardConfigResource.class);
         addRestResource(AlertListResource.class);
+        addEventFieldValueProvider(AggregationFieldValueProvider.Config.TYPE_NAME,
+                AggregationFieldValueProvider.class,
+                AggregationFieldValueProvider.Factory.class,
+                AggregationFieldValueProvider.Config.class);
     }
 }
