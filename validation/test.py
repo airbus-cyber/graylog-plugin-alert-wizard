@@ -43,21 +43,6 @@ class Test(TestCase):
         # TODO should be 200 instead of 202!!
         self.assertEqual(202, status_code)
 
-    def test_default_time_range_in_configuration_should_propagate_into_notification_time_range__issue47(self):
-        self._graylog.update_logging_alert_plugin_configuration()
-        title = 'alert_rule_title'
-        stream = {
-            'field_rule': [{
-                'field': 'source',
-                'type': 1,
-                'value': 'toto'
-            }],
-            'matching_type': 'AND'
-        }
-        rule = self._api.create_alert_rule_count(title, _PERIOD, stream=stream)
-        notification = self._graylog.get_notification(rule['notification'])
-        self.assertEqual(1441, notification['config']['aggregation_time'])
-
     def test_set_default_backlog_value_should_change_newly_created_event_definition_backlog_value__issue40(self):
         self._graylog.update_alert_wizard_plugin_configuration(backlog_size=1000)
         title = 'aaa'

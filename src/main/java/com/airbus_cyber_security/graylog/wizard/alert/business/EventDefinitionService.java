@@ -84,7 +84,7 @@ public class EventDefinitionService {
         EventFieldSpec aggregationFieldSpec = EventFieldSpec.builder()
                 .dataType(FieldValueType.STRING)
                 .providers(ImmutableList.of(AggregationFieldValueProvider.Config.builder()
-                        .aggregationTimeRange(defaultValues.getAggregationTime())
+                        .aggregationTimeRange(defaultValues.getAggregationTime() != null ? defaultValues.getAggregationTime() : 0)
                         .build()))
                 .build();
         EventDefinitionDto eventDefinition = EventDefinitionDto.builder()
