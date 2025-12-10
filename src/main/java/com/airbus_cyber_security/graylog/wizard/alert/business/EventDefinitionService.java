@@ -20,7 +20,11 @@ package com.airbus_cyber_security.graylog.wizard.alert.business;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfigurationService;
 import com.airbus_cyber_security.graylog.wizard.config.rest.DefaultValues;
+import com.airbus_cyber_security.graylog.wizard.fields.AggregationFieldValueProvider;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import org.graylog.events.fields.EventFieldSpec;
+import org.graylog.events.fields.FieldValueType;
 import org.graylog.events.notifications.EventNotificationHandler;
 import org.graylog.events.notifications.EventNotificationSettings;
 import org.graylog.events.processor.DBEventDefinitionService;
@@ -35,10 +39,10 @@ import org.slf4j.LoggerFactory;
 import jakarta.inject.Inject;
 import java.util.Optional;
 
-// TODO I am not sure to like this name EventDefinitionHandler? EventDefinitionBusiness? EventDefinitionOperations?
 public class EventDefinitionService {
 
     private static final Logger LOG = LoggerFactory.getLogger(EventDefinitionService.class);
+    private static final String AGGREGATION_TIME_RANGE_FIELD_NAME = "aggregation_id";
 
     private final EventDefinitionHandler eventDefinitionHandler;
 
@@ -77,6 +81,12 @@ public class EventDefinitionService {
 
         AlertWizardConfig pluginConfiguration = this.configurationService.getConfiguration();
         DefaultValues defaultValues = pluginConfiguration.accessDefaultValues();
+        EventFieldSpec aggregationFieldSpec = EventFieldSpec.builder()
+                .dataType(FieldValueType.STRING)
+                .providers(ImmutableList.of(AggregationFieldValueProvider.Config.builder()
+                        .aggregationTimeRange(defaultValues.getAggregationTime())
+                        .build()))
+                .build();
         EventDefinitionDto eventDefinition = EventDefinitionDto.builder()
                 .title(alertTitle)
                 .description(description)
@@ -84,6 +94,7 @@ public class EventDefinitionService {
                 .alert(true)
                 .priority(priority)
                 .keySpec(ImmutableList.of())
+                .fieldSpec(ImmutableMap.of(AGGREGATION_TIME_RANGE_FIELD_NAME, aggregationFieldSpec))
                 .notifications(ImmutableList.<EventNotificationHandler.Config>builder().add(notificationConfiguration).build())
                 .notificationSettings(EventNotificationSettings.builder()
                         .gracePeriodMs(0L)

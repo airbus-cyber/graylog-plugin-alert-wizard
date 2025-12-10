@@ -69,17 +69,10 @@ public class NotificationService {
         return generalConfig.accessLogBody();
     }
 
-    private int getDefaultTime() {
-        LoggingAlertConfig configuration = this.clusterConfigService.getOrDefault(LoggingAlertConfig.class,
-                LoggingAlertConfig.createDefault());
-        return configuration.accessAggregationTime();
-    }
-
     public String createNotification(String alertTitle, UserContext userContext) {
         LoggingNotificationConfig loggingNotificationConfig = LoggingNotificationConfig.builder()
                 .singleMessage(false)
                 .logBody(this.getDefaultLogBody())
-                .aggregationTime(this.getDefaultTime())
                 .build();
         NotificationDto notification = NotificationDto.builder()
                 .config(loggingNotificationConfig)
@@ -94,7 +87,7 @@ public class NotificationService {
                 .orElseThrow(() -> new jakarta.ws.rs.NotFoundException("Notification " + notificationIdentifier + " doesn't exist"));
         LoggingNotificationConfig loggingNotificationConfig = (LoggingNotificationConfig) notification.config();
         if (!notification.title().equals(title)) {
-            LOG.debug("Update Notification " + title);
+            LOG.debug("Update Notification {}", title);
             notification = NotificationDto.builder()
                     .id(notification.id())
                     .config(loggingNotificationConfig)
