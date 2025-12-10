@@ -149,7 +149,8 @@ const AlertRuleStore = Reflux.createStore({
             condition_parameters: newAlert.condition_parameters,
             stream: newAlert.stream,
             second_stream: newAlert.second_stream,
-            disabled: newAlert.disabled
+            disabled: newAlert.disabled,
+            aggregation_time: newAlert.aggregation_time
         };
 
         const promise = fetch('POST', url, request)

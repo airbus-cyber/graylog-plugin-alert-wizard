@@ -98,7 +98,10 @@ function normalizeConditionParameters(rule) {
 }
 
 function normalizeNotificationParameters(notification_parameters) {
-    const { split_fields, severity, ...result } = notification_parameters;
+    const { split_fields, severity, aggregation_time, ...result } = notification_parameters;
+    if (result.log_body) {
+        result.log_body = result.log_body.replace('{logging_alert.id}', '{event.fields.aggregation_id}');
+    }
     return result;
 }
 
@@ -140,14 +143,24 @@ function normalizeConditionType(rule) {
     return rule.condition_type;
 }
 
+function normalizeAggregationTime(rule) {
+    const aggregation_time = rule.aggregation_time;
+    if (aggregation_time === null || aggregation_time === undefined) {
+        return rule.notification_parameters.aggregation_time;
+    }
+    return aggregation_time;
+}
+
 function normalizeImportedRule(rule) {
     const condition_parameters = normalizeConditionParameters(rule);
     const notification_parameters = normalizeNotificationParameters(rule.notification_parameters);
     const condition_type = normalizeConditionType(rule);
     const priority = normalizePriority(rule);
     const description = normalizeDescription(rule.description);
+    const aggregation_time = normalizeAggregationTime(rule);
+
     return {
-        priority, description, condition_type, condition_parameters, notification_parameters,
+        priority, description, condition_type, condition_parameters, notification_parameters, aggregation_time: aggregation_time,
         title: rule.title, stream: rule.stream, second_stream: rule.second_stream, disabled: rule.disabled
     };
 }
