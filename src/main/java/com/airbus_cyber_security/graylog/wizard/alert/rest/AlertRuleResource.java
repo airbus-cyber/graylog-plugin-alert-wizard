@@ -38,6 +38,7 @@ import com.airbus_cyber_security.graylog.wizard.audit.AlertWizardAuditEventTypes
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfigurationService;
 import com.airbus_cyber_security.graylog.wizard.config.rest.ImportPolicyType;
+import com.airbus_cyber_security.graylog.wizard.fields.AggregationFieldValueProvider;
 import com.airbus_cyber_security.graylog.wizard.permissions.AlertRuleRestPermissions;
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.collect.ImmutableMap;
@@ -60,6 +61,8 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.graylog.events.fields.EventFieldSpec;
+import org.graylog.events.fields.providers.FieldValueProvider;
 import org.graylog.events.notifications.NotificationDto;
 import org.graylog.events.processor.EventDefinition;
 import org.graylog.events.processor.EventDefinitionDto;
@@ -217,11 +220,19 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String eventIdentifier = null;
         String description = null;
         Integer priority = null;
+        Integer aggregationTime = null;
         if (event.isPresent()) {
             EventDefinitionDto eventDefinitionDto = event.get();
             eventIdentifier = eventDefinitionDto.id();
             description = eventDefinitionDto.description();
             priority = eventDefinitionDto.priority();
+            EventFieldSpec fieldSpec = eventDefinitionDto.fieldSpec().get(EventDefinitionService.AGGREGATION_TIME_RANGE_FIELD_NAME);
+            if (fieldSpec != null && fieldSpec.providers() != null && !fieldSpec.providers().isEmpty()) {
+                Optional<FieldValueProvider.Config> fieldValueProvider = fieldSpec.providers().stream().filter(provider -> provider.type().equals(AggregationFieldValueProvider.Config.TYPE_NAME)).findFirst();
+                if (fieldValueProvider.isPresent()) {
+                    aggregationTime = ((AggregationFieldValueProvider.Config) fieldValueProvider.get()).aggregationTimeRange();
+                }
+            }
             if (EventDefinition.State.DISABLED.equals(eventDefinitionDto.state())) {
                 isDisabled = true;
             }
@@ -251,7 +262,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 alert.getAlertType(),
                 parametersCondition,
                 alertRuleStream,
-                alertRuleStream2);
+                alertRuleStream2,
+                aggregationTime);
     }
 
     private Map<String, Object> getConditionParameters(Optional<EventDefinitionDto> event) {
@@ -363,13 +375,14 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String title = request.getTitle();
         String alertTitle = checkImportPolicyAndGetTitle(title, userContext);
         AlertType alertType = request.getConditionType();
+        Integer aggregationTime = request.getAggregationTime();
 
         String notificationIdentifier = this.notificationService.createNotification(alertTitle, userContext);
-        GetDataAlertRule result = createPatternAndRule(request, userContext, notificationIdentifier, alertTitle, userName, alertType);
+        GetDataAlertRule result = createPatternAndRule(request, userContext, notificationIdentifier, alertTitle, userName, alertType, aggregationTime);
         return Response.ok().entity(result).build();
     }
 
-    private GetDataAlertRule createPatternAndRule(AlertRuleRequest request, UserContext userContext, String notificationIdentifier, String alertTitle, String userName, AlertType alertType) throws ValidationException {
+    private GetDataAlertRule createPatternAndRule(AlertRuleRequest request, UserContext userContext, String notificationIdentifier, String alertTitle, String userName, AlertType alertType, Integer aggregationTime) throws ValidationException {
         AlertPattern pattern = createAlertPattern(notificationIdentifier, request, alertTitle, userContext, userName);
 
         AlertRule alertRule = AlertRule.create(
@@ -401,11 +414,12 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             default:
                 String description = request.getDescription();
                 Integer priority = request.getPriority();
+                Integer aggregationTime = request.getAggregationTime();
                 Map<String, Object> conditionParameters = request.conditionParameters();
                 String streamIdentifier = conditions.outputStreamIdentifier();
                 EventProcessorConfig configuration = this.conversions.createEventConfiguration(alertType, conditionParameters, streamIdentifier);
 
-                String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, priority, notificationIdentifier, configuration, userContext, request.isDisabled());
+                String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, priority, notificationIdentifier, configuration, aggregationTime, userContext, request.isDisabled());
 
                 return AggregationAlertPattern.builder().conditions(conditions).eventIdentifier(eventIdentifier).build();
         }
@@ -414,15 +428,16 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private DisjunctionAlertPattern createDisjunctionAlertPattern(String notificationIdentifier, AlertRuleRequest request, String alertTitle, UserContext userContext, String userName, TriggeringConditions conditions) throws ValidationException {
         String description = request.getDescription();
         Integer priority = request.getPriority();
+        Integer aggregationTime = request.getAggregationTime();
         Map<String, Object> conditionParameters = request.conditionParameters();
 
         TriggeringConditions conditions2 = this.triggeringConditionsService.createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName, request.isDisabled());
         String streamIdentifier = conditions.outputStreamIdentifier();
         EventProcessorConfig configuration = this.conversions.createAggregationCondition(streamIdentifier, conditionParameters);
-        String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, priority, notificationIdentifier, configuration, userContext, request.isDisabled());
+        String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, priority, notificationIdentifier, configuration, aggregationTime, userContext, request.isDisabled());
         String streamIdentifier2 = conditions2.outputStreamIdentifier();
         EventProcessorConfig configuration2 = this.conversions.createAdditionalAggregationCondition(streamIdentifier2, conditionParameters);
-        String eventIdentifier2 = this.eventDefinitionService.createEvent(alertTitle + "#2", description, priority, notificationIdentifier, configuration2, userContext, request.isDisabled());
+        String eventIdentifier2 = this.eventDefinitionService.createEvent(alertTitle + "#2", description, priority, notificationIdentifier, configuration2, aggregationTime, userContext, request.isDisabled());
 
         return DisjunctionAlertPattern.builder()
                 .conditions1(conditions).conditions2(conditions2).eventIdentifier1(eventIdentifier).eventIdentifier2(eventIdentifier2)
@@ -433,13 +448,14 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String description = request.getDescription();
         Integer priority = request.getPriority();
         AlertType alertType = request.getConditionType();
+        Integer aggregationTime = request.getAggregationTime();
         Map<String, Object> conditionParameters = request.conditionParameters();
 
         TriggeringConditions conditions2 = this.triggeringConditionsService.createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName, request.isDisabled());
         String streamIdentifier = conditions.outputStreamIdentifier();
         String streamIdentifier2 = conditions2.outputStreamIdentifier();
         EventProcessorConfig configuration = this.conversions.createCorrelationCondition(alertType, streamIdentifier, streamIdentifier2, conditionParameters);
-        String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, priority, notificationIdentifier, configuration, userContext, request.isDisabled());
+        String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, priority, notificationIdentifier, configuration, aggregationTime,userContext, request.isDisabled());
         return CorrelationAlertPattern.builder().conditions1(conditions).conditions2(conditions2).eventIdentifier(eventIdentifier).build();
     }
 
@@ -611,14 +627,15 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String userName = getCurrentUser().getName();
         String title = request.getTitle();
         String description = request.getDescription();
+        Integer aggregationTime = sourceAlert.getAggregationTime();
         String alertTitle = checkImportPolicyAndGetTitle(title, userContext);
         AlertType alertType = sourceAlert.getConditionType();
 
         String notificationIdentifier = createNotificationFromCloneRequest(alertTitle, userContext, sourceAlert.getNotificationID(), request.getCloneNotification());
         AlertRuleRequest alertRuleRequest = AlertRuleRequest.create(title, sourceAlert.getPriority(), description, sourceAlert.isDisabled(), sourceAlert.getConditionType(),
-                sourceAlert.conditionParameters(), sourceAlert.getStream(), sourceAlert.getSecondStream());
+                sourceAlert.conditionParameters(), sourceAlert.getStream(), sourceAlert.getSecondStream(), aggregationTime);
 
-        GetDataAlertRule result = createPatternAndRule(alertRuleRequest, userContext, notificationIdentifier, alertTitle, userName, alertType);
+        GetDataAlertRule result = createPatternAndRule(alertRuleRequest, userContext, notificationIdentifier, alertTitle, userName, alertType, aggregationTime);
         return Response.ok().entity(result).build();
     }
 

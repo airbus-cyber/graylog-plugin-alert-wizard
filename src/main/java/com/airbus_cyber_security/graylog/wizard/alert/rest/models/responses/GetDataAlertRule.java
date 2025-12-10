@@ -52,6 +52,7 @@ public abstract class GetDataAlertRule {
 	public static final String FIELD_CREATOR_USER_ID = "creator_user_id";
 	public static final String FIELD_LAST_MODIFIED = "last_modified";
 	public static final String FIELD_DISABLED = "disabled";
+	public static final String FIELD_AGGREGATION_TIME = "aggregation_time";
 
 	@Id
 	@ObjectId
@@ -116,6 +117,10 @@ public abstract class GetDataAlertRule {
 	@JsonProperty(FIELD_DISABLED)
 	public abstract boolean isDisabled();
 
+	@JsonProperty(FIELD_AGGREGATION_TIME)
+	@Nullable
+	public abstract Integer getAggregationTime();
+
 	// TODO
 	//      I guess all annotations on this method create can be removed
 	//      since, if I understand well, this @JsonCreator is used to deserialize
@@ -137,10 +142,11 @@ public abstract class GetDataAlertRule {
                                           @JsonProperty(FIELD_CONDITION_TYPE) AlertType alertType,
                                           @JsonProperty(FIELD_CONDITION_PARAMETERS) Map<String, Object> conditionParameters,
                                           @JsonProperty(FIELD_STREAM) AlertRuleStream stream,
-                                          @JsonProperty(FIELD_SECOND_STREAM) AlertRuleStream stream2) {
+                                          @JsonProperty(FIELD_SECOND_STREAM) AlertRuleStream stream2,
+										  @JsonProperty(FIELD_AGGREGATION_TIME) Integer aggregationTime) {
 		return new AutoValue_GetDataAlertRule(id, title, priority, description, alertType, conditionParameters, stream, stream2,
 				eventDefinitionIdentifier, secondEventDefinitionIdentifier, notificationIdentifier, createdAt, creatorUserIdentifier,
-				lastModified, isDisabled);
+				lastModified, isDisabled, aggregationTime);
 	}
 
 }

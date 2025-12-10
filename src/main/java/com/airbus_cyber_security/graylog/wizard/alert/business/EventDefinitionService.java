@@ -42,7 +42,7 @@ import java.util.Optional;
 public class EventDefinitionService {
 
     private static final Logger LOG = LoggerFactory.getLogger(EventDefinitionService.class);
-    private static final String AGGREGATION_TIME_RANGE_FIELD_NAME = "aggregation_id";
+    public static final String AGGREGATION_TIME_RANGE_FIELD_NAME = "aggregation_id";
 
     private final EventDefinitionHandler eventDefinitionHandler;
 
@@ -73,7 +73,7 @@ public class EventDefinitionService {
         return result.id();
     }
 
-    public String createEvent(String alertTitle, String description, Integer priority, String notificationIdentifier, EventProcessorConfig configuration, UserContext userContext, boolean disabled) {
+    public String createEvent(String alertTitle, String description, Integer priority, String notificationIdentifier, EventProcessorConfig configuration, Integer aggregationTime, UserContext userContext, boolean disabled) {
         LOG.debug("Create Event: " + alertTitle);
         EventNotificationHandler.Config notificationConfiguration = EventNotificationHandler.Config.builder()
                 .notificationId(notificationIdentifier)
@@ -81,10 +81,11 @@ public class EventDefinitionService {
 
         AlertWizardConfig pluginConfiguration = this.configurationService.getConfiguration();
         DefaultValues defaultValues = pluginConfiguration.accessDefaultValues();
+        int computedAggregationTime = computeAggregationTime(aggregationTime, defaultValues.getAggregationTime());
         EventFieldSpec aggregationFieldSpec = EventFieldSpec.builder()
                 .dataType(FieldValueType.STRING)
                 .providers(ImmutableList.of(AggregationFieldValueProvider.Config.builder()
-                        .aggregationTimeRange(defaultValues.getAggregationTime() != null ? defaultValues.getAggregationTime() : 0)
+                        .aggregationTimeRange(computedAggregationTime)
                         .build()))
                 .build();
         EventDefinitionDto eventDefinition = EventDefinitionDto.builder()
@@ -103,6 +104,18 @@ public class EventDefinitionService {
                 .build();
 
         return this.createEventFromDto(eventDefinition, userContext, disabled);
+    }
+
+    private int computeAggregationTime(Integer requestAggregationTime, Integer configAggregationTime) {
+        if (requestAggregationTime != null) {
+            return requestAggregationTime;
+        }
+
+        if (configAggregationTime != null) {
+            return configAggregationTime;
+        }
+
+        return 0;
     }
 
     public void updateEvent(String alertTitle, String description, Integer priority, String eventIdentifier, EventProcessorConfig configuration, boolean disabled) {
