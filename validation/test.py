@@ -83,7 +83,7 @@ class Test(TestCase):
         self._api.create_alert_rule_count('A', _PERIOD, stream=stream)
 
         # Send a log with user=toto and source=sourceABC. It will be placed in the Stream because the pipeline function found the user in the list. So the rule will trigger but it is wrong because "source" is not equal to "source123"
-        # Send a log with user=xxx and source=source123. It will be placed in the Stream beauce the only Stream rule is field "source" match exactly "source123". So the rule will trigger but it is wrong because "user" is not present in the list
+        # Send a log with user=xxx and source=source123. It will be placed in the Stream because the only Stream rule is field "source" match exactly "source123". So the rule will trigger but it is wrong because "user" is not present in the list
         with self._graylog.access_gelf_input(self._gelf_input_identifier) as inputs:
             inputs.send({'host': 'source123'})
             aggregation_events_count = self._graylog.get_events_count('aggregation-v1')
@@ -170,3 +170,121 @@ class Test(TestCase):
             for i in range(events['total_events']):
                 print(events['events'][i])
             self.assertEqual(starting_events_count, self._graylog.get_events_count('aggregation-v1'))
+
+    def test_notification_should_generate_identifier_for_aggregation_id__issue170(self):
+        stream = {
+            'field_rule': [{
+                'field': 'x',
+                'type': 1,
+                'value': 'test_value'
+            }],
+            'matching_type': 'AND'
+        }
+        self._api.create_alert_rule_count('A', _PERIOD, stream=stream)
+
+        # Send a log with _x=test_value
+        with self._graylog.access_gelf_input(self._gelf_input_identifier) as inputs:
+            inputs.send({'_x': 'test_value'})
+
+            for i in range(60*_PERIOD + 20):
+                events_count = self._graylog.get_events_count('aggregation-v1')
+                print(f'events count: {events_count}')
+                if events_count > 0:
+                    break
+                time.sleep(1)
+
+            events = self._graylog.get_events()
+
+            aggregation_id = events['events'][0]['event']['fields']['aggregation_id']
+            self.assertIsNotNone(aggregation_id)
+
+    def test_notification_should_generate_new_identifier_for_aggregation_id__issue170(self):
+        # Prepare config
+        self._graylog.update_alert_wizard_plugin_configuration(aggregation_time=0)
+        stream = {
+            'field_rule': [{
+                'field': 'x',
+                'type': 1,
+                'value': 'test_value'
+            }],
+            'matching_type': 'AND'
+        }
+        self._api.create_alert_rule_count('A', _PERIOD, stream=stream)
+
+        with self._graylog.access_gelf_input(self._gelf_input_identifier) as inputs:
+            # Send a message with _x=test_value
+            inputs.send({'_x': 'test_value'})
+
+            for i in range(60*_PERIOD + 20):
+                events_count = self._graylog.get_events_count('aggregation-v1')
+                print(f'events count: {events_count}')
+                if events_count > 0:
+                    break
+                time.sleep(1)
+
+            # Send a second message with _x=test_value
+            inputs.send({'_x': 'test_value'})
+
+            for i in range(60*_PERIOD + 20):
+                events_count = self._graylog.get_events_count('aggregation-v1')
+                print(f'events count: {events_count}')
+                if events_count > 1:
+                    break
+                time.sleep(1)
+
+            events = self._graylog.get_events()
+
+            # Check if all aggregation_id are the same
+            aggregation_id_1 = events['events'][0]['event']['fields']['aggregation_id']
+            aggregation_id_2 = events['events'][1]['event']['fields']['aggregation_id']
+
+            self.assertNotEquals(aggregation_id_1, aggregation_id_2)
+
+    def test_notification_should_reuse_identifier_for_aggregation_id__issue170(self):
+        # Prepare config
+        self._graylog.update_alert_wizard_plugin_configuration(aggregation_time=10)
+        stream = {
+            'field_rule': [{
+                'field': 'x',
+                'type': 1,
+                'value': 'test_value'
+            }],
+            'matching_type': 'AND'
+        }
+        self._api.create_alert_rule_count('A', _PERIOD, stream=stream)
+
+        with self._graylog.access_gelf_input(self._gelf_input_identifier) as inputs:
+            # Send a message with _x=test_value
+            inputs.send({'_x': 'test_value'})
+
+            for i in range(60*_PERIOD + 20):
+                events_count = self._graylog.get_events_count('aggregation-v1')
+                print(f'events count: {events_count}')
+                if events_count > 0:
+                    break
+                time.sleep(1)
+
+            events = self._graylog.get_events()
+
+            # Store aggregation_id
+            aggregation_id = events['events'][0]['event']['fields']['aggregation_id']
+
+            # Send a second message with _x=test_value
+            inputs.send({'_x': 'test_value'})
+
+            for i in range(60*_PERIOD + 20):
+                events_count = self._graylog.get_events_count('aggregation-v1')
+                print(f'events count: {events_count}')
+                if events_count > 1:
+                    break
+                time.sleep(1)
+
+            events = self._graylog.get_events()
+
+            # Check if all aggregation_id are the same
+            aggregation_id_1 = events['events'][0]['event']['fields']['aggregation_id']
+            aggregation_id_2 = events['events'][1]['event']['fields']['aggregation_id']
+
+            self.assertEqual(aggregation_id, aggregation_id_1)
+            self.assertEqual(aggregation_id, aggregation_id_2)
+

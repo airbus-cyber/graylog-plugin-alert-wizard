@@ -61,8 +61,8 @@ class Graylog:
     def update_logging_alert_plugin_configuration(self):
         return self._api.update_logging_alert_plugin_configuration()
     
-    def update_alert_wizard_plugin_configuration(self, default_time=1, backlog_size=500):
-        return self._api.update_alert_wizard_plugin_configuration(default_time=default_time, backlog_size=backlog_size)
+    def update_alert_wizard_plugin_configuration(self, default_time=1, backlog_size=500, aggregation_time=0):
+        return self._api.update_alert_wizard_plugin_configuration(default_time=default_time, backlog_size=backlog_size, aggregation_time=aggregation_time)
     
     def get_alert_wizard_plugin_configuration(self):
         return self._api.get_alert_wizard_plugin_configuration()
@@ -179,4 +179,4 @@ class Graylog:
 
     def wait_until_new_event(self, initial_event_count, wait_duration):
         has_new_event = lambda: self.get_events_count('aggregation-v1') == initial_event_count + 1
-        self._wait(has_new_event, 60*wait_duration)
+        self._wait(has_new_event, 60 * wait_duration)

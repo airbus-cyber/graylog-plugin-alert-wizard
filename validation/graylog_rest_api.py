@@ -244,10 +244,9 @@ class GraylogRestApi:
 
     def update_logging_alert_plugin_configuration(self):
         configuration = {
-            'aggregation_time': '1441',
             'alert_tag': 'LoggingAlert',
             'field_alert_id': 'id',
-            'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
+            'log_body': 'type: alert\nid: ${event.fields.aggregation_id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}\n${if backlog && backlog[0]} src: ${backlog[0].fields.src_ip}\nsrc_category: ${backlog[0].fields.src_category}\ndest: ${backlog[0].fields.dest_ip}\ndest_category: ${backlog[0].fields.dest_category}\n${end}',
             'overflow_tag': 'LoggingOverflow',
             'separator': ' | '
         }
@@ -258,11 +257,12 @@ class GraylogRestApi:
         response = self._get('plugins/com.airbus_cyber_security.graylog.wizard/config')
         return response.json()
 
-    def update_alert_wizard_plugin_configuration(self, default_time=1, backlog_size=500):
+    def update_alert_wizard_plugin_configuration(self, default_time=1, backlog_size=500, aggregation_time=0):
         configuration = {
             'default_values': {
                 'matching_type': '',
                 'threshold_type': '',
+                'aggregation_time': aggregation_time,
                 'time': default_time,
                 'backlog': backlog_size
             },
