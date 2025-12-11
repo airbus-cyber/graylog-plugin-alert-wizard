@@ -86,7 +86,7 @@ function normalizeConditionParameters(rule) {
     const grouping_fields = normalizeGroupingFields(rule);
     const distinct_by = normalizeDistinctBy(condition_parameters, rule.title);
     const search_query = normalizeSearchQuery(condition_parameters.search_query);
-    fixAdditionalThresholdForORCondition(rule.condition_type, condition_parameters)
+    fixAdditionalThresholdForORCondition(rule.condition_type, condition_parameters);
     const result = { ...condition_parameters, type, search_query, threshold_type, grouping_fields, distinct_by };
     if (['COUNT', 'GROUP_DISTINCT', 'STATISTICAL'].includes(rule.condition_type)) {
         return result;
@@ -176,8 +176,8 @@ export default {
 
     createExportDataFromRules(rules) {
         return {
-            version: '1.0.2',
+            version: '1.0.3',
             rules: rules
-        }
+        };
     }
-}
+};

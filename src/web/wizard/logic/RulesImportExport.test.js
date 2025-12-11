@@ -15,7 +15,7 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-import RulesImportExport from './RulesImportExport'
+import RulesImportExport from './RulesImportExport';
 
 describe('RulesImport.normalizeImportedRules', () => {
     it('should convert condition type MEAN to AVG', () => {
@@ -48,8 +48,8 @@ describe('RulesImport.normalizeImportedRules', () => {
             'second_stream': {'matching_type': '', 'field_rule': [], 'id': ''},
             'condition_type': 'STATISTICAL'
         }];
-        const result = RulesImportExport.normalizeImportedRules(rule)
-        expect(result[0].condition_parameters.type).toBe('AVG')
+        const result = RulesImportExport.normalizeImportedRules(rule);
+        expect(result[0].condition_parameters.type).toBe('AVG');
     });
 
     it('should convert threshold type HIGHER to >', () => {
@@ -81,8 +81,8 @@ describe('RulesImport.normalizeImportedRules', () => {
             'second_stream': {'matching_type': '', 'field_rule': [], 'id': ''}
         }];
 
-        const result = RulesImportExport.normalizeImportedRules(rule)
-        expect(result[0].condition_parameters.threshold_type).toBe('>')
+        const result = RulesImportExport.normalizeImportedRules(rule);
+        expect(result[0].condition_parameters.threshold_type).toBe('>');
     });
 
     it('should convert threshold type LOWER to <', () => {
@@ -113,8 +113,8 @@ describe('RulesImport.normalizeImportedRules', () => {
             'condition_type': 'COUNT',
             'second_stream': {'matching_type': '', 'field_rule': [], 'id': ''}
         }];
-        const result = RulesImportExport.normalizeImportedRules(rule)
-        expect(result[0].condition_parameters.threshold_type).toBe('<')
+        const result = RulesImportExport.normalizeImportedRules(rule);
+        expect(result[0].condition_parameters.threshold_type).toBe('<');
     });
     
     it('should convert condition parameter distinction_fields to distinct_by', () => {
@@ -145,8 +145,8 @@ describe('RulesImport.normalizeImportedRules', () => {
             'condition_type': 'COUNT',
             'second_stream': {'matching_type': '', 'field_rule': [], 'id': ''}
         }];
-        const result = RulesImportExport.normalizeImportedRules(rule)
-        expect(result[0].condition_parameters.distinct_by).toBe('')
+        const result = RulesImportExport.normalizeImportedRules(rule);
+        expect(result[0].condition_parameters.distinct_by).toBe('');
     });
 
     it('should use the first value of distinction_fields as distinct_by', () => {
@@ -177,8 +177,8 @@ describe('RulesImport.normalizeImportedRules', () => {
             'condition_type': 'COUNT',
             'second_stream': {'matching_type': '', 'field_rule': [], 'id': ''}
         }];
-        const result = RulesImportExport.normalizeImportedRules(rule)
-        expect(result[0].condition_parameters.distinct_by).toBe('x')
+        const result = RulesImportExport.normalizeImportedRules(rule);
+        expect(result[0].condition_parameters.distinct_by).toBe('x');
     });
     
     it('should convert threshold type MORE into >', () => {
@@ -209,8 +209,8 @@ describe('RulesImport.normalizeImportedRules', () => {
             'condition_type': 'COUNT',
             'second_stream': {'matching_type': '', 'field_rule': [], 'id': ''}
         }];
-        const result = RulesImportExport.normalizeImportedRules(rule)
-        expect(result[0].condition_parameters.threshold_type).toBe('>')
+        const result = RulesImportExport.normalizeImportedRules(rule);
+        expect(result[0].condition_parameters.threshold_type).toBe('>');
     });
 
     it('should convert threshold type LESS into <', () => {
@@ -241,8 +241,8 @@ describe('RulesImport.normalizeImportedRules', () => {
             'condition_type': 'COUNT',
             'second_stream': {'matching_type': '', 'field_rule': [], 'id': ''}
         }];
-        const result = RulesImportExport.normalizeImportedRules(rule)
-        expect(result[0].condition_parameters.threshold_type).toBe('<')
+        const result = RulesImportExport.normalizeImportedRules(rule);
+        expect(result[0].condition_parameters.threshold_type).toBe('<');
     });
 
     it('should handle new format with version number correctly', () => {
@@ -277,9 +277,9 @@ describe('RulesImport.normalizeImportedRules', () => {
                 'second_stream': {'matching_type': '', 'field_rule': [], 'id': ''},
                 'condition_type': 'GROUP_DISTINCT'
             }]
-        }
-        const result = RulesImportExport.normalizeImportedRules(exportData)
-        expect(result.length).toBe(1)
+        };
+        const result = RulesImportExport.normalizeImportedRules(exportData);
+        expect(result.length).toBe(1);
     });
 
     it('should set priority and remove severity', () => {
@@ -311,10 +311,10 @@ describe('RulesImport.normalizeImportedRules', () => {
             'condition_type': 'COUNT',
             'second_stream': {'matching_type': '', 'field_rule': [], 'id': ''}
         }];
-        const result = RulesImportExport.normalizeImportedRules(rule)
-        expect(result[0].priority).toBe(2)
-        expect(result[0].severity).toBe(undefined)
-        expect(result[0].notification_parameters.severity).toBe(undefined)
+        const result = RulesImportExport.normalizeImportedRules(rule);
+        expect(result[0].priority).toBe(2);
+        expect(result[0].severity).toBe(undefined);
+        expect(result[0].notification_parameters.severity).toBe(undefined);
     });
 
     it('should convert additional threshold type LESS into <', () => {
@@ -346,8 +346,8 @@ describe('RulesImport.normalizeImportedRules', () => {
             'condition_type': 'AND',
             'second_stream': {'matching_type': 'OR', 'field_rule': [{'field': 'b', 'type': 1, 'value': 'b', 'id': '62ea1a644022c1284fe4a2f0'}], 'id': '62ea1a644022c1284fe4a2ee'}
         }];
-        const result = RulesImportExport.normalizeImportedRules(rule)
-        expect(result[0].condition_parameters.additional_threshold_type).toBe('<')
+        const result = RulesImportExport.normalizeImportedRules(rule);
+        expect(result[0].condition_parameters.additional_threshold_type).toBe('<');
     });
 
     it('should keep threshold_type for STATISTICAL rules', () => {
@@ -480,8 +480,8 @@ describe('RulesImport.normalizeImportedRules', () => {
             'condition_type': 'COUNT',
             'second_stream': {'matching_type': '', 'field_rule': [], 'id': ''}
         }];
-        const result = RulesImportExport.normalizeImportedRules(rule)
-        expect(result[0].description).toBe('')
+        const result = RulesImportExport.normalizeImportedRules(rule);
+        expect(result[0].description).toBe('');
     });
 
     it('should add notification split fields to the event group-by fields for GROUP/DISTINCT rules', () => {
@@ -593,7 +593,7 @@ describe('RulesImport.normalizeImportedRules', () => {
             'disabled': false,
             'notification': '673703a8f7f848355f0a2efb',
             'second_stream': null
-        }]
+        }];
         const result = RulesImportExport.normalizeImportedRules(rule);
         expect(result[0].condition_type).toBe('GROUP_DISTINCT');
     });
@@ -630,8 +630,81 @@ describe('RulesImport.normalizeImportedRules', () => {
             'disabled': false,
             'notification': '673703a8f7f848355f0a2efb',
             'second_stream': null
-        }]
+        }];
         const result = RulesImportExport.normalizeImportedRules(rule);
         expect(result[0].condition_parameters.grouping_fields[0]).toBe('source');
+    });
+
+    it('should replace logging_alert.id in log_body', () => {
+        const rule = [{
+            'notification_parameters': {
+                'type': 'logging-alert-notification',
+                'log_body': 'type: alert\nid: ${logging_alert.id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}',
+                'single_notification': false,
+                'alert_tag': 'LoggingAlert'
+            },
+            'condition_parameters': {
+                'distinct_by': '',
+                'grace': 1,
+                'threshold': 0,
+                'threshold_type': '>',
+                'grouping_fields': [],
+                'time': 1,
+                'search_query': 'src: x',
+                'type': 'COUNT'
+            },
+            'stream': {
+                'matching_type': 'AND',
+                'field_rule': [{'field': 'b', 'type': 1, 'value': 'b', 'id': '62e7ae768a47ae63221aad48'}],
+                'id': '62e7ae768a47ae63221aad46'
+            },
+            'title': 'COUNT RULE',
+            'description': 'COUNT DESC',
+            'second_stream': null,
+            'condition_type': 'COUNT',
+            'notification': '693969b7b51b2928d2bad8b3',
+            'priority': 1,
+            'aggregation_time': 15,
+            'disabled': false
+        }];
+        const result = RulesImportExport.normalizeImportedRules(rule);
+        expect(result[0].notification_parameters.log_body).toBe('type: alert\nid: ${event.fields.aggregation_id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}');
+    });
+
+    it('should move notification aggregation_time on rule level', () => {
+        const rule = [{
+            'notification_parameters': {
+                'type': 'logging-alert-notification',
+                'log_body': 'type: alert\nid: ${event.fields.aggregation_id}\nseverity: ${logging_alert.severity}\napp: graylog\nsubject: ${event_definition_title}\nbody: ${event_definition_description}',
+                'single_notification': false,
+                'alert_tag': 'LoggingAlert',
+                'aggregation_time': 15
+            },
+            'condition_parameters': {
+                'distinct_by': '',
+                'grace': 1,
+                'threshold': 0,
+                'threshold_type': '>',
+                'grouping_fields': [],
+                'time': 1,
+                'search_query': 'src: x',
+                'type': 'COUNT'
+            },
+            'stream': {
+                'matching_type': 'AND',
+                'field_rule': [{'field': 'b', 'type': 1, 'value': 'b', 'id': '62e7ae768a47ae63221aad48'}],
+                'id': '62e7ae768a47ae63221aad46'
+            },
+            'title': 'COUNT RULE',
+            'description': 'COUNT DESC',
+            'second_stream': null,
+            'condition_type': 'COUNT',
+            'notification': '693969b7b51b2928d2bad8b3',
+            'priority': 1,
+            'disabled': false
+        }];
+        const result = RulesImportExport.normalizeImportedRules(rule);
+        expect(result[0].aggregation_time).toBe(15);
+        expect(result[0].notification_parameters.aggregation_time).toBeUndefined();
     });
 });
