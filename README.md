@@ -43,12 +43,12 @@ Perfect for example to configure together and at the same time a stream, an aler
 
 ## Upgrading
 
-### Upgrading to 6.x.x
+### Upgrading to 6.1.6
 
-The internal representation of alert rules has slightly changed and is not backward-compatible. The following migration procedure must be followed:
+The aggregation feature has changed and requires a rules update. The following migration procedure must be followed:
 1. Export rules from the preceding version,
 2. Delete all rules,
-3. Install version 6.x.x,
+3. Install version 6.1.6,
 4. Import rules.
 
 ### Upgrading to 6.1.0
@@ -178,16 +178,16 @@ Restart `graylog-server` and you are done.
 
 ### Manage the alert rules
 
-![](https://raw.githubusercontent.com/airbus-cyber/graylog-plugin-alert-wizard/master/images/alert_rules.png)
+![](images/alert_rules.png)
 
 ### Create an alert rule
 
-![](https://raw.githubusercontent.com/airbus-cyber/graylog-plugin-alert-wizard/master/images/create_alert_rule.png)
+![](images/create_alert_rule.png)
 
 ### Use of lists
 > **WARNING**: The first time your create a rule with a list, the Wizard automatically create a lookup with cache and data adapter. But you must manually set up the authorization key with your login:password in base 64 for the data adapter.
 
-![](https://raw.githubusercontent.com/airbus-cyber/graylog-plugin-alert-wizard/master/images/Wizard_List4.png)
+![](images/Wizard_List4.png)
 
 The field "Name" should be filled by "Authorization"
 
