@@ -40,5 +40,5 @@ test('Edit Wizard Configuration Aggregation Time Range should work', async ({ pa
     await page.getByLabel('Aggregation Time Range (').fill('30');
     await page.locator('button').filter({ hasText: 'Save' }).click();
 
-    await expect(page.getByText('Aggregation time range:30')).toBeVisible();
+    await expect(page.getByText('Notification aggregationtime range:30 minutes')).toBeVisible();
 });
