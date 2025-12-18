@@ -206,7 +206,7 @@ export default function WizardAlertConfig() {
                     </dd>
                 </dl>
                 <dl className="deflist">
-                    <dt>Aggregation time range:</dt>
+                    <dt style={{textAlign: 'center'}}>Notification aggregation<br></br>time range:</dt>
                     <dd>
                         {`${configuration.default_values.aggregation_time ?? 0} minutes`}
                     </dd>

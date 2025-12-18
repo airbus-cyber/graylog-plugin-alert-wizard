@@ -49,7 +49,8 @@ The aggregation feature has changed and requires a rules update. The following m
 1. Export rules from the preceding version,
 2. Delete all rules,
 3. Install version 6.1.6,
-4. Import rules.
+4. Go to the Wizard Alert Configuration Page and update the Notification aggregation time range value. Even if you leave the value at 0, you must Save the configuration. 
+5. Import rules.
 
 ### Upgrading to 6.1.0
 

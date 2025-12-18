@@ -65,7 +65,7 @@ public class AggregationFieldValueProvider extends AbstractFieldValueProvider {
 
         // Check if alert already exist in time range
         if (this.config.aggregationTimeRange() > 0) {
-            LOG.debug("Aggregation Time Range is defined");
+            LOG.debug("Notification Aggregation Time Range is defined");
 
             String eventDefinitionId = eventWithContext.event().getEventDefinitionId();
             int timeRange = this.config.aggregationTimeRange() * 60;

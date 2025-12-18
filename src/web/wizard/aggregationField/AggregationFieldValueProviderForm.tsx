@@ -54,7 +54,7 @@ const AggregationFieldValueProviderForm = ({config, onChange}: Props) => {
         <Input
             id="aggregation_time_range"
             type="number"
-            label="Aggregation Time Range"
+            label="Notification Aggregation Time Range"
             help="The default number of minutes to use previous aggregate id"
             name="aggregation_time_range"
             min="0"

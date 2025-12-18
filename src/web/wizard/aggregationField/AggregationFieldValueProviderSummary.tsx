@@ -48,7 +48,7 @@ const AggregationFieldValueProviderSummary = ({ fieldName, config, keys }: Props
                             <td>{keys.includes(fieldName) ? 'Yes' : 'No'}</td>
                         </tr>
                         <tr>
-                            <td>Aggregation Time Range</td>
+                            <td>Notification Aggregation Time Range</td>
                             <td>{`${config.providers[0].aggregation_time_range} min`}</td>
                         </tr>
                     </tbody>
