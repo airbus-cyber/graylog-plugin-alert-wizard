@@ -27,7 +27,7 @@ import Description from 'wizard/components/inputs/Description';
 import GroupByInput from 'wizard/components/inputs/GroupByInput';
 import IconArrowsV from 'wizard/components/icons/ArrowsV';
 import HighlightedDiv from 'wizard/components/containers/HighlightedDiv';
-import SearchQueryInput from "wizard/components/inputs/SearchQueryInput";
+import SearchQueryInput from 'wizard/components/inputs/SearchQueryInput';
 
 const STREAM = {
     matching_type: '',

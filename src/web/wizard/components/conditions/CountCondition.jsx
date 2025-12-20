@@ -18,7 +18,6 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import createReactClass from 'create-react-class';
 
 import ObjectUtils from 'util/ObjectUtils';
 
@@ -30,19 +29,18 @@ import SearchQueryInput from 'wizard/components/inputs/SearchQueryInput';
 
 
 // TODO rewrite this component in functional style
-const CountCondition = createReactClass({
-    displayName: 'CountCondition',
+class CountCondition extends React.Component {
 
-    propTypes: {
+    static propTypes = {
         alert: PropTypes.object.isRequired,
         onUpdate: PropTypes.func
-    },
-    getInitialState() {
-        return {
-            alert: ObjectUtils.clone(this.props.alert),
-        };
-    },
-    _handleChangeCondition(field, value){
+    }
+
+    state = {
+        alert: ObjectUtils.clone(this.props.alert)
+    }
+
+    _handleChangeCondition(field, value) {
         let update = ObjectUtils.clone(this.state.alert);
         if (field === "threshold" || field === "additional_threshold" || field === "time") {
             update.condition_parameters[field] = parseInt(value);
@@ -51,14 +49,14 @@ const CountCondition = createReactClass({
         }
         this.setState({alert: update});
         this.props.onUpdate('condition_parameters', update.condition_parameters);
-    },
+    }
 
     _handleChangeStream(field, value) {
         let update = ObjectUtils.clone(this.state.alert);
         update.stream[field] = value;
         this.setState({alert: update});
         this.props.onUpdate('stream', update.stream);
-    },
+    }
     
     render() {
         // TODO should factor this code block that seemed to have been copy-pasted
@@ -92,7 +90,7 @@ const CountCondition = createReactClass({
                 <br/>
             </>
         );
-    },
-});
+    }
+}
 
 export default CountCondition;

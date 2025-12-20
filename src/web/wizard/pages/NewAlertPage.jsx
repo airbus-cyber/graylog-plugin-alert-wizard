@@ -22,7 +22,6 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { LinkContainer } from 'react-router-bootstrap';
 import { IntlProvider, FormattedMessage } from 'react-intl';
-
 import { Button, Col, Row } from 'components/bootstrap';
 import { DocumentTitle, PageHeader, Spinner } from 'components/common';
 import useHistory from 'routing/useHistory';

@@ -20,7 +20,6 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import createReactClass from 'create-react-class';
 import { Button, BootstrapModalForm, Col, FormGroup, Input, Table, Tooltip } from 'components/bootstrap';
 import { Select, SortableList, Spinner, OverlayTrigger, IfPermitted } from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
@@ -28,46 +27,43 @@ import { FormattedMessage } from 'react-intl';
 import FormsUtils from 'util/FormsUtils';
 
 // TODO convert into functional component
-const ManageSettings = createReactClass({
-    displayName: 'ManageSettings',
+class ManageSettings extends React.Component {
 
-    propTypes: {
+    static propTypes = {
         onSave: PropTypes.func.isRequired,
         config: PropTypes.object.isRequired,
-    },
+    }
 
-    getInitialState() {
-        return {
-            config: {
-                field_order: this.props.config.field_order,
-                default_values: this.props.config.default_values,
-                import_policy: this.props.config.import_policy,
-            },
-            showModal: false
-        };
-    },
+    state = {
+        config: {
+            field_order: this.props.config.field_order,
+            default_values: this.props.config.default_values,
+            import_policy: this.props.config.import_policy,
+        },
+        showModal: false
+    }
     
     componentDidMount(){
         this.setState({config: this.props.config});
-    },
+    }
 
     _openModal() {
         this.setState({ showModal: true });
-    },
+    }
 
     _closeModal() {
         this.setState({ showModal: false });
-    },
+    }
 
     _saveConfig() {
         this.props.onSave(this.state.config);
         this._closeModal();
-    },
+    }
 
     _resetConfig() {
         // Reset to initial state when the modal is closed without saving.
         this.setState(this.getInitialState());
-    },
+    }
 
     _availableFieldName() {
         return [
@@ -79,11 +75,11 @@ const ManageSettings = createReactClass({
             {value: 'Status', label: <FormattedMessage id="wizard.status" defaultMessage="Status" />},
             {value: 'Rule', label: <FormattedMessage id="wizard.rule" defaultMessage="Rule" />},
         ];
-    },
+    }
     
     _getFieldName(field) {
         return this._availableFieldName().filter((t) => t.value === field)[0].label;
-    },
+    }
     
     _updateSorting(newSorting) {
         const update = ObjectUtils.clone(this.state.config);
@@ -93,13 +89,13 @@ const ManageSettings = createReactClass({
         });
 
         this.setState({config: update});
-    },
+    }
 
     _sortableItems() {
         return this.state.config.field_order.map((field) => {
             return {id: field.name, title: this._getFieldName(field.name), enabled: field.enabled};
         });
-    },
+    }
 
     _toggleStatus(idx) {
         return () => {
@@ -107,7 +103,7 @@ const ManageSettings = createReactClass({
             update.field_order[idx].enabled = this.refs[idx].checked;
             this.setState({config: update});
         };
-    },
+    }
 
     _statusForm() {
         return ObjectUtils.clone(this.state.config.field_order).map((field, idx) => {
@@ -123,11 +119,11 @@ const ManageSettings = createReactClass({
                 </tr>
             );
         });
-    },
+    }
 
     _isLoading() {
         return !this.state.config;
-    },
+    }
 
     _availablePriorityTypes() {
         return [
@@ -135,58 +131,67 @@ const ManageSettings = createReactClass({
             {value: '2', label: <FormattedMessage id="wizard.medium" defaultMessage="Normal" />},
             {value: '3', label: <FormattedMessage id="wizard.high" defaultMessage="High" />},
         ];
-    },
+    }
+
     _availableMatchingType() {
         return [
             {value: 'AND', label: <FormattedMessage id="wizard.all" defaultMessage="all" />},
             {value: 'OR', label: <FormattedMessage id="wizard.atLeastOne" defaultMessage="at least one" />},
         ];
-    },
+    }
     // TODO should factor constant with AlertRuleText.jsx?
     _availableThresholdTypes() {
         return [
             {value: '>', label: <FormattedMessage id="wizard.more" defaultMessage="more than" />},
             {value: '<', label: <FormattedMessage id="wizard.less" defaultMessage="less than" />},
         ];
-    },
+    }
+
     _availableTimeTypes() {
         return [
             {value: '1', label: <FormattedMessage id="wizard.minutes" defaultMessage="minutes" />},
             {value: '60', label: <FormattedMessage id="wizard.hours" defaultMessage="hours" />},
             {value: '1440', label: <FormattedMessage id="wizard.days" defaultMessage="days" />},
         ];
-    },
+    }
 
     _updateConfig(field, value) {
         const update = ObjectUtils.clone(this.state.config);
         update.default_values[field] = value;
         this.setState({config: update});
-    },
+    }
+
     _onValueChanged(field) {
         return e => {
             this._updateConfig(field, e.target.value);
         };
-    },
+    }
+
     _onPriorityTypeSelect(value) {
         this._updateConfig('priority', parseInt(value))
-    },
+    }
+
     _onMatchingTypeSelect(value) {
         this._updateConfig('matching_type', value)
-    },
+    }
+
     _onThresholdTypeSelect(value) {
         this._updateConfig('threshold_type', value)
-    },
+    }
+
     _onTimeTypeSelect(value) {
         this._updateConfig('time_type', parseInt(value))
-    },
+    }
+
     _onCheckboxClick(event) {
         this._updateConfig(event.target.name, event.target.checked);
-    },
+    }
+
     _onRadioChange(event){
         const update = ObjectUtils.clone(this.state.config);
         update.import_policy = FormsUtils.getValueFromInput(event.target);
         this.setState({config: update});
-    },
+    }
 
     render() {
         if (this._isLoading()) {
@@ -338,7 +343,7 @@ const ManageSettings = createReactClass({
         </BootstrapModalForm>
       </span>
         );
-    },
-});
+    }
+}
 
 export default ManageSettings;

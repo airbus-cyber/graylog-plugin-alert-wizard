@@ -17,29 +17,30 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import createReactClass from 'create-react-class';
 import { Spinner } from 'components/common';
 import { FormattedMessage } from 'react-intl';
 import { AVAILABLE_AGGREGATION_TYPES } from 'wizard/components/inputs/StatisticalInput';
 
-const AlertRuleText = createReactClass({
-    displayName: 'AlertRuleText',
+class AlertRuleText extends React.Component {
 
-    propTypes: {
+    static propTypes = {
         alert: PropTypes.object,
-    },
+    }
+
     _isLoading() {
         return !(this.props.alert);
-    },
+    }
+
     _availableMatchingTypes() {
         return [
             {value: 'AND', label: <FormattedMessage id= "wizard.all" defaultMessage= "all" />},
             {value: 'OR', label: <FormattedMessage id= "wizard.atLeastOne" defaultMessage= "at least one" />},
         ];
-    },
+    }
+
     _getMatchingType(type) {
         return this._availableMatchingTypes().filter((t) => t.value === type)[0].label;
-    },
+    }
 
     // TODO should split this in two methods: there is a different meaning to > and < (also would be easier if it were a dictionary)
     _availableThresholdTypes() {
@@ -52,13 +53,15 @@ const AlertRuleText = createReactClass({
             {value: '<=', label: <FormattedMessage id= "wizard.lowerEqual" defaultMessage= "lower or equal than" />},
             {value: '==', label: <FormattedMessage id= "wizard.equal" defaultMessage= "equal" />},
         ];
-    },
+    }
+
     _getThresholdType(type) {
         return this._availableThresholdTypes().filter((t) => t.value === type)[0].label;
-    },
+    }
+
     _getAggregationType(type) {
         return AVAILABLE_AGGREGATION_TYPES.filter((t) => t.value === type)[0].label;
-    },
+    }
 
     // TODO try to factor this code with the one in FieldRule.jsx and ManageSettings
     _availableRuleType() {
@@ -78,10 +81,11 @@ const AlertRuleText = createReactClass({
             {value: 7, label: <FormattedMessage id= "wizard.listpresent" defaultMessage= "is present in list" />},
             {value: -7, label: <FormattedMessage id= "wizard.listnotpresent" defaultMessage= "is not present in list" />},
         ];
-    },
+    }
+
     _getRuleType(type) {
         return this._availableRuleType().filter((t) => t.value === type)[0].label;
-    },
+    }
     
     _getTextFieldRule(stream){
         let textFieldRule = [];
@@ -95,30 +99,34 @@ const AlertRuleText = createReactClass({
             }  
         }
         return textFieldRule;
-    },
+    }
+
     _getTriggerRule(){
         return (<FormattedMessage id ="wizard.TriggerRule" 
                 defaultMessage={"Trigger an alert when there are {threshold_type} {threshold} messages in the last {time} minutes "}
                 values={{threshold_type: <strong>{this._getThresholdType(this.props.alert.condition_parameters.threshold_type)}</strong>, 
                     threshold: <strong>{this.props.alert.condition_parameters.threshold}</strong>, 
                     time: <strong>{this.props.alert.condition_parameters.time}</strong> }}/> );
-    },
+    }
+
     _getMatchRule(matching_type){
         return (<FormattedMessage id ="wizard.MatchRule" 
                 defaultMessage={"matching {matching_type} of the following rules: \n"}
                 values={{matching_type: <strong>{this._getMatchingType(matching_type)}</strong> }}/> );
-    },
+    }
+
     _getGroupByRule(){
         return (<FormattedMessage id ="wizard.GroupByRule" 
                 defaultMessage={"with the same value of {groupBy}, "}
                 values={{groupBy: <strong>{Array.isArray(this.props.alert.condition_parameters.grouping_fields) ? 
                         this.props.alert.condition_parameters.grouping_fields.join(' ') : this.props.alert.condition_parameters.grouping_fields}</strong> }}/> );
-    },
+    }
+
     _getDistinctByRule(){
         return (<FormattedMessage id ="wizard.DistinctByRule" 
                 defaultMessage={"with distinct value of {distinctBy}, "}
                 values={{distinctBy: <strong>{this.props.alert.condition_parameters.distinct_by}</strong> }}/> );
-    },
+    }
     
     render() {
         if (this._isLoading()) {
@@ -209,7 +217,7 @@ const AlertRuleText = createReactClass({
                     <span></span>
             );
         }
-    },
-});
+    }
+}
 
 export default AlertRuleText;

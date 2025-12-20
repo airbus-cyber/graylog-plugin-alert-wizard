@@ -19,7 +19,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { LinkContainer } from 'react-router-bootstrap';
-import createReactClass from 'create-react-class';
 import Reflux from 'reflux';
 import { Button, Tooltip } from 'components/bootstrap';
 import { toDateObject } from 'util/DateTime';
@@ -32,17 +31,17 @@ import AlertListCloneForm from './AlertListCloneForm';
 import { CurrentUserStore } from 'stores/users/CurrentUserStore';
 
 
-const AlertListDisplay = createReactClass({
-        displayName: 'AlertListDisplay',
+class AlertListDisplay extends React.Component {
 
-    mixins: [Reflux.connect(CurrentUserStore), Reflux.connect(AlertListStore), PermissionsMixin],
+    mixins = [Reflux.connect(CurrentUserStore), Reflux.connect(AlertListStore), PermissionsMixin]
 
-    propTypes: {
+    static propTypes = {
         config: PropTypes.object.isRequired,
-    },
+    }
 
-    // TODO replace deprecated componentWillMount into a combination of getInitialState and componentDidMount
-    componentWillMount() {
+    constructor(props) {
+        super(props);
+
         const { intl } = this.props;
         const fieldsTitle = {
             title: intl.formatMessage({id: "wizard.title", defaultMessage: "Title"}),
@@ -64,27 +63,38 @@ const AlertListDisplay = createReactClass({
             confirmDeletion: intl.formatMessage({id: "wizard.confirmDeletionList",  defaultMessage :"Do you really want to delete the alert list"}),
         };
 
-        this.setState({fieldsTitle:fieldsTitle});
-        this.setState({messages:messages});
+        this.state = {
+            fieldsTitle: fieldsTitle,
+            messages: messages,
+            lists: []
+        };
+    }
+
+    componentDidMount() {
         this.list();
-    },
+    }
 
     list() {
         AlertListActions.list().then(lists => {
-            this.setState({lists: lists});
+            this.setState({
+                fieldsTitle: this.state.fieldsTitle,
+                messages: this.state.messages,
+                lists: lists
+            });
         });
-    },
+    }
 
     deleteAlertList(name) {
         AlertListActions.deleteByName(name);
-    },
+    }
+
     _deleteAlertListFunction(name) {
         return () => {
             if (window.confirm(`${this.state.messages.confirmDeletion} "${name}" ?`)) {
                 this.deleteAlertList(name);
             }
         };
-    },
+    }
 
     _headerCellFormatter(header) {
         let formattedHeaderCell;
@@ -98,7 +108,7 @@ const AlertListDisplay = createReactClass({
         }
 
         return formattedHeaderCell;
-    },
+    }
 
     _onCloneSubmit(name, title, description) {
         AlertListActions.get(name).then(list => {
@@ -109,7 +119,7 @@ const AlertListDisplay = createReactClass({
             }
             AlertListActions.create(newList).finally(() => this.list());
         });
-    },
+    }
 
     _availableFieldName() {
         return [
@@ -120,10 +130,11 @@ const AlertListDisplay = createReactClass({
             {value: 'Usage', label: this.state.fieldsTitle.usage},
             {value: 'Lists', label: this.state.fieldsTitle.lists},
         ];
-    },
+    }
+
     _getFieldName(field) {
         return this._availableFieldName().filter((t) => t.value === field)[0].label;
-    },
+    }
 
     // TODO shouldn't it be Button instead of button here?
     _listInfoFormatter(list) {
@@ -198,7 +209,7 @@ const AlertListDisplay = createReactClass({
                 <td style={{whiteSpace: 'nowrap'}}>{actions}</td>
             </tr>
         );
-    },
+    }
 
     render () {
 
@@ -247,7 +258,7 @@ const AlertListDisplay = createReactClass({
               );
           }
           return <Spinner/>
-    },
-});
+    }
+}
 
 export default injectIntl(AlertListDisplay);

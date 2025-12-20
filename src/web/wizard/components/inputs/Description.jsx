@@ -17,31 +17,28 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import createReactClass from 'create-react-class';
 import { Input, Row, Col } from 'components/bootstrap';
 import { FormattedMessage } from 'react-intl';
 
-const Description = createReactClass({
-    displayName: 'Description',
+class Description extends React.Component {
 
-    propTypes: {
+    static propTypes = {
         onUpdate: PropTypes.func,
-    },   
-    getDefaultProps() {
-        return {
-            description:'',
-        };
-    },
-    getInitialState() {
-        return {
-            description:this.props.description,
-        };
-    },
+    };
+
+    static defaultProps = {
+        description:'',
+    };
+
+    state = {
+        description: this.props.description
+    };
+
     _onValueChanged(field) {
         return e => {
             this.props.onUpdate(field, e.target.value);
         };
-    },
+    }
     
     render() {
         return (
@@ -55,7 +52,7 @@ const Description = createReactClass({
                 </Col>
             </Row>
         );
-    },
-});
+    }
+}
 
 export default Description;
