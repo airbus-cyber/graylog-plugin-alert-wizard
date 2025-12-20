@@ -8,7 +8,8 @@
   },
   "scripts": {
     "build": "webpack --bail",
-    "test": "jest"
+    "test": "jest",
+    "generate:apidefs": "echo skipGenerateApiDefs"
   },
   "keywords": [
     "graylog"

@@ -28,7 +28,7 @@ import { IntlProvider, FormattedMessage } from 'react-intl';
 import packageJson from '../../../../package.json';
 import messages_fr from 'translations/fr.json';
 import WizardConfigurationResource from 'wizard/resources/WizardConfigurationResource';
-import AlertRulesContainer from "../components/rules/AlertRulesContainer";
+import AlertRulesContainer from '../components/rules/AlertRulesContainer';
 
 
 const language = navigator.language.split(/[-_]/)[0];

@@ -18,7 +18,6 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import createReactClass from 'create-react-class';
 import { FormattedMessage } from 'react-intl';
 import { Input, Row, Col } from 'components/bootstrap';
 import { MultiSelect, Text } from 'components/common';
@@ -26,23 +25,22 @@ import styled, { css } from 'styled-components';
 
 import withFormattedFields from './withFormattedFields';
 
-const GroupByInput = createReactClass({
-    displayName: 'GroupByInput',
+class GroupByInput extends React.Component {
 
-    propTypes: {
+    static propTypes = {
         onUpdate: PropTypes.func,
         formattedFields: PropTypes.array.isRequired,
-    },
-    getInitialState() {
-        return {
-            grouping_fields:this.props.grouping_fields,
-        };
-    },
+    }
+
+    state = {
+        grouping_fields:this.props.grouping_fields,
+    }
+
     _onGroupingFieldsChange(nextValue) {
         const values = (nextValue === '' ? [] : nextValue.split(','));
         this.setState({grouping_fields: values});
         this.props.onUpdate('grouping_fields', values);
-    },
+    }
 
     render() {
         const StyledText = styled(Text)(({ theme }) => css`
@@ -79,7 +77,7 @@ const GroupByInput = createReactClass({
                 </Row>
             </>
         );
-    },
-});
+    }
+}
 
 export default withFormattedFields(GroupByInput);

@@ -17,7 +17,6 @@
 
 // sources of inspiration for this page: components/event-notifications/event-notification-form/EventNotificationFormContainer.jsx
 import React from 'react';
-import createReactClass from 'create-react-class';
 import { LinkContainer } from 'react-router-bootstrap';
 import { IntlProvider, FormattedMessage } from 'react-intl';
 import { DocumentTitle, PageHeader } from 'components/common';
@@ -36,18 +35,15 @@ const messages = {
 };
 
 // TODO should try to factor import code between this page and ImportListPage
-const ImportAlertPage = createReactClass({
-    displayName: 'ImportAlertPage',
+class ImportAlertPage extends React.Component {
 
-    getInitialState() {
-        return {
-            selectedAlertTitles: new Set()
-        };
-    },
+    state = {
+        selectedAlertTitles: new Set()
+    }
 
     onSelectUploadFile(event) {
         this.setState({selectedFile: event.target.files[0]})
-    },
+    }
 
     onSubmitUploadFile(submitEvent) {
         submitEvent.preventDefault();
@@ -63,11 +59,11 @@ const ImportAlertPage = createReactClass({
         };
 
         reader.readAsText(this.state.selectedFile);
-    },
+    }
 
     handleRuleSelectionChanged(selection) {
         this.setState({ selectedAlertTitles: selection });
-    },
+    }
 
     async onSubmitApplyAlertRules(evt) {
         evt.preventDefault();
@@ -93,7 +89,7 @@ const ImportAlertPage = createReactClass({
             }
             EventNotificationsActions.update(alert.notification, notification);
         }
-    },
+    }
     
     render() {
         const emptyMessage = <FormattedMessage id="wizard.noAlertRulesToImport" defaultMessage="There are no alert rules to import." />
@@ -143,7 +139,7 @@ const ImportAlertPage = createReactClass({
                 </DocumentTitle>   
             </IntlProvider>
         );        
-    },
-});
+    }
+}
 
 export default ImportAlertPage;

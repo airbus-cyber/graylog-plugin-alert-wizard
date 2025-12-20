@@ -16,7 +16,6 @@
  */
 
 import React from 'react';
-import createReactClass from 'create-react-class';
 import Routes from 'routing/Routes';
 import { IntlProvider, FormattedMessage } from 'react-intl';
 import { LinkContainer } from 'react-router-bootstrap';
@@ -31,12 +30,9 @@ const messages = {
     'fr': messages_fr
 };
 
-const ImportListPage = createReactClass({
-    displayName: 'ImportListPage',
+class ImportListPage  extends React.Component {
 
-    getInitialState() {
-        return {};
-    },
+    state = {}
 
     onSubmitUploadFile(submitEvent) {
         submitEvent.preventDefault();
@@ -50,18 +46,20 @@ const ImportListPage = createReactClass({
         };
 
         reader.readAsText(this.refs.uploadedFile.files[0]);
-    },
+    }
 
     isEmpty(obj) {
         return ((obj === undefined) || (typeof obj.count === 'function' ? obj.count() === 0 : obj.length === 0));
-    },
+    }
+
     selectAllAlertLists(){
         Object.keys(this.refs).forEach((key) => {
             if (key.indexOf('alertLists') === 0) {
                 this.refs[key].checked = true;
             }
         });
-    },
+    }
+
     formatAlertList(alertList) {
         return (
             <div className="checkbox" key={`alertList_checkbox-${alertList.title}`}>
@@ -70,7 +68,8 @@ const ImportListPage = createReactClass({
                 <span className="help-inline"><FormattedMessage id= "wizard.fieldLists" defaultMessage= "Lists" />: <tt>{alertList.lists}</tt></span>
             </div>
         );
-    },
+    }
+
     onSubmitApplyAlertLists(evt){
         evt.preventDefault();
         const request = [];
@@ -82,7 +81,7 @@ const ImportListPage = createReactClass({
         });
 
         AlertListActions.importAlertLists(request);
-    },
+    }
 
     render() {
 
@@ -154,7 +153,7 @@ const ImportListPage = createReactClass({
                 </DocumentTitle>
             </IntlProvider>
         );
-    },
-});
+    }
+}
 
 export default ImportListPage;

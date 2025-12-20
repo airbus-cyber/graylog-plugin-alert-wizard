@@ -18,7 +18,6 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import createReactClass from 'create-react-class';
 import ObjectUtils from 'util/ObjectUtils';
 import FieldsInput from 'wizard/components/inputs/FieldsInput';
 import NumberInput from 'wizard/components/inputs/NumberInput';
@@ -26,19 +25,18 @@ import TimeRangeInput from 'wizard/components/inputs/TimeRangeInput';
 import GroupByInput from 'wizard/components/inputs/GroupByInput';
 import DistinctInput from 'wizard/components/inputs/DistinctInput';
 import Description from 'wizard/components/inputs/Description';
-import SearchQueryInput from "../inputs/SearchQueryInput";
+import SearchQueryInput from '../inputs/SearchQueryInput';
 
-const GroupDistinctCondition = createReactClass({
-    displayName: 'GroupDistinctCondition',
+class GroupDistinctCondition extends React.Component {
 
-    propTypes: {
+    static propTypes = {
         onUpdate: PropTypes.func,
-    },
-    getInitialState() {
-        return {
-            alert: ObjectUtils.clone(this.props.alert),
-        };
-    },
+    }
+
+    state = {
+        alert: ObjectUtils.clone(this.props.alert),
+    }
+
     _handleChangeCondition(field, value) {
         let update = ObjectUtils.clone(this.state.alert);
         if (field === "threshold" || field === "additional_threshold" || field === "time") {
@@ -48,14 +46,14 @@ const GroupDistinctCondition = createReactClass({
         }
         this.setState({alert: update});
         this.props.onUpdate('condition_parameters', update.condition_parameters)
-    },
+    }
 
     _handleChangeStream(field, value) {
         let update = ObjectUtils.clone(this.state.alert);
         update.stream[field] = value;
         this.setState({alert: update});
         this.props.onUpdate('stream', update.stream)
-    },
+    }
     
     render() {
         let time;
@@ -91,8 +89,7 @@ const GroupDistinctCondition = createReactClass({
                 <br/>
             </>
         );
-
-    },
-});
+    }
+}
 
 export default GroupDistinctCondition;

@@ -18,29 +18,25 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import createReactClass from 'create-react-class';
-
 import ObjectUtils from 'util/ObjectUtils';
-
 import FieldsInput from 'wizard/components/inputs/FieldsInput';
 import TimeRangeInput from 'wizard/components/inputs/TimeRangeInput';
 import StatisticalInput from 'wizard/components/inputs/StatisticalInput';
 import Description from 'wizard/components/inputs/Description';
-import SearchQueryInput from "../inputs/SearchQueryInput";
+import SearchQueryInput from '../inputs/SearchQueryInput';
 
 
 // TODO convert into a functional component
-const StatisticsCondition = createReactClass({
-    displayName: 'StatisticsCondition',
+class StatisticsCondition extends React.Component {
 
-    propTypes: {
+    static propTypes = {
         onUpdate: PropTypes.func,
-    },
-    getInitialState() {
-        return {
-            alert: ObjectUtils.clone(this.props.alert),
-        };
-    },
+    }
+
+    state = {
+        alert: ObjectUtils.clone(this.props.alert),
+    }
+
     _handleChangeCondition(field, value) {
         let update = ObjectUtils.clone(this.state.alert);
         if (field === "threshold" || field === "additional_threshold" || field === "time") {
@@ -49,15 +45,15 @@ const StatisticsCondition = createReactClass({
             update.condition_parameters[field] = value;
         }
         this.setState({alert: update});
-        this.props.onUpdate('condition_parameters', update.condition_parameters)
-    },
+        this.props.onUpdate('condition_parameters', update.condition_parameters);
+    }
 
     _handleChangeStream(field, value) {
         let update = ObjectUtils.clone(this.state.alert);
         update.stream[field] = value;
         this.setState({alert: update});
-        this.props.onUpdate('stream', update.stream)
-    },
+        this.props.onUpdate('stream', update.stream);
+    }
     
     render() {
         let time;
@@ -90,8 +86,7 @@ const StatisticsCondition = createReactClass({
                 <br/>
             </>
         );
-
-    },
-});
+    }
+}
 
 export default StatisticsCondition;

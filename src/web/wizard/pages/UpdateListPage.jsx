@@ -18,7 +18,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import Reflux from 'reflux';
-import createReactClass from 'create-react-class';
 import { Button, Col, Row } from 'components/bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { DocumentTitle, PageHeader, Spinner } from 'components/common';
@@ -36,28 +35,27 @@ const messages = {
     'fr': messages_fr
 };
 
-const UpdateListPage = createReactClass({
-    displayName: 'UpdateListPage',
+class  UpdateListPage extends React.Component {
 
-    mixins: [Reflux.connect(CurrentUserStore)],
+    mixins = [Reflux.connect(CurrentUserStore)];
 
-    propTypes: {
+    static propTypes = {
         params: PropTypes.object.isRequired,
-    },
+    }
 
     componentDidMount() {
         AlertListActions.get(this.props.params.alertListTitle).then(list => {
             this.setState({list: list});
         });
-    },
+    }
 
     _isLoading() {
         return !this.state.list;
-    },
+    }
 
     _update(list) {
         AlertListActions.update(this.state.list.title, list);
-    },
+    }
 
     render() {
         if (this._isLoading()) {
@@ -93,7 +91,7 @@ const UpdateListPage = createReactClass({
                 </DocumentTitle>
             </IntlProvider>
         );
-    },
-});
+    }
+}
 
 export default withParams(UpdateListPage);

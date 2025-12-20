@@ -18,7 +18,6 @@
 // sources of inspiration for this code: 
 // * views/components/views/MissingRequirements.tsx
 import React from 'react';
-import createReactClass from 'create-react-class';
 import { IntlProvider, FormattedMessage } from 'react-intl';
 import { LinkContainer } from 'react-router-bootstrap';
 import messages_fr from 'translations/fr.json';
@@ -37,27 +36,28 @@ const messages = {
     'fr': messages_fr
 };
 
-const ExportListPage = createReactClass({
-    displayName: 'ExportListPage',
+class ExportListPage extends React.Component {
 
-    getInitialState() {
-        return {};
-    },
+    state = {};
+
     componentDidMount() {
         AlertListActions.list().then(newLists => {
             this.setState({alertLists: newLists});
         });
-    },
+    }
+
     isEmpty(obj) {
         return ((obj === undefined) || (typeof obj.count === 'function' ? obj.count() === 0 : obj.length === 0));
-    },
+    }
+
     selectAllAlertLists(){
         Object.keys(this.refs).forEach((key) => {
             if (key.indexOf('alertLists') === 0) {
                 this.refs[key].checked = true;
             }
         });
-    },
+    }
+
     formatAlertList(alertList) {
         return (
             <div className="checkbox" key={`alertList_checkbox-${alertList.title}`}>
@@ -66,7 +66,8 @@ const ExportListPage = createReactClass({
                 <span className="help-inline"><FormattedMessage id= "wizard.fieldLists" defaultMessage= "Lists" />: <tt>{alertList.lists}</tt></span>
             </div>
         );
-    },
+    }
+
     onSubmit(evt) {
         evt.preventDefault();
         const request = {
@@ -84,8 +85,7 @@ const ExportListPage = createReactClass({
             let date = adjustFormat(new Date()).replace(/:/g, '').replace(/ /g, '_')
             FileSaver.save(response, date+'_alert_lists.json', 'application/json', 'utf-8');
         });
-    },
-
+    }
 
     render() {
 
@@ -146,7 +146,7 @@ const ExportListPage = createReactClass({
                 </DocumentTitle>
             </IntlProvider>
         );
-    },
-});
+    }
+}
 
 export default ExportListPage;

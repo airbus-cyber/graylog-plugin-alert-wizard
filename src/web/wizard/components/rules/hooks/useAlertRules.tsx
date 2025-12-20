@@ -20,7 +20,7 @@ import UserNotification from 'util/UserNotification';
 import type { SearchParams } from 'stores/PaginationTypes';
 import AlertRuleStore from 'wizard/stores/AlertRuleStore';
 import { AlertRule } from 'wizard/model/AlertRule';
-import * as React from "react";
+import * as React from 'react';
 
 type Options = {
     enabled: boolean,

@@ -16,7 +16,6 @@
  */
 
 import React from 'react';
-import createReactClass from 'create-react-class';
 import { IntlProvider, FormattedMessage } from 'react-intl';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Row, Col, Button } from 'components/bootstrap';
@@ -38,24 +37,20 @@ const messages = {
     'fr': messages_fr
 };
 
-const ExportAlertPage = createReactClass({
-    displayName: 'ExportAlertPage',
-
-    getInitialState() {
-        return {
-            selectedAlertTitles: []
-        };
-    },
+class ExportAlertPage extends React.Component {
+    state = {
+        selectedAlertTitles: []
+    };
 
     componentDidMount() {
         AlertRuleActions.list().then(newAlerts => {
             this.setState({ alertRules: newAlerts });
         });
-    },
+    }
 
     handleRuleSelectionChanged(selection) {
-        this.setState({ selectedAlertTitles: Array.from(selection) })
-    },
+        this.setState({ selectedAlertTitles: Array.from(selection) });
+    }
 
     async onSubmit(evt) {
         evt.preventDefault();
@@ -73,7 +68,7 @@ const ExportAlertPage = createReactClass({
         let exportData = RulesImportExport.createExportDataFromRules(alerts);
         let date = adjustFormat(new Date()).replace(/:/g, '').replace(/ /g, '_');
         FileSaver.save(JSON.stringify(exportData), date+'_alert_rules.json', 'application/json', 'utf-8');
-    },
+    }
 
     render() {
         const emptyMessage = <FormattedMessage id ="wizard.noAlertRulesToExport" defaultMessage="There are no alert rules to export." />
@@ -113,7 +108,7 @@ const ExportAlertPage = createReactClass({
                 </DocumentTitle>
             </IntlProvider>
         );
-    },
-});
+    }
+}
 
 export default ExportAlertPage;

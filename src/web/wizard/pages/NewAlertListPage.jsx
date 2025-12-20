@@ -19,7 +19,6 @@
 // * pages/ShowNodePage.jsx
 // * pages/ConfigurationsPage.tsx
 // * pages/NodesPage.jsx
-import PropTypes from 'prop-types';
 import React from 'react';
 import { Button, Col, Row } from 'components/bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
@@ -29,7 +28,6 @@ import { IntlProvider, FormattedMessage } from 'react-intl';
 import messages_fr from 'translations/fr.json';
 import CreateListFormInput from 'wizard/components/lists/CreateListFormInput';
 import AlertListActions from 'wizard/actions/AlertListActions';
-import Navigation from "../routing/Navigation";
 
 const language = navigator.language.split(/[-_]/)[0];
 

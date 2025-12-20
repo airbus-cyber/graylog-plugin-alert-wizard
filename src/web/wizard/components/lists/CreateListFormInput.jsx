@@ -17,9 +17,7 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import createReactClass from 'create-react-class';
 import { FormattedMessage } from 'react-intl';
-import Reflux from 'reflux';
 import { Spinner } from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import Routes from 'routing/Routes';
@@ -33,42 +31,36 @@ const INIT_LIST = {
     lists: '',
 };
 
-const CreateListFormInput = createReactClass({
-    displayName: 'CreateListFormInput',
+class CreateListFormInput extends React.Component {
 
-    propTypes: {
+    static propTypes = {
         list: PropTypes.object,
         onSave: PropTypes.func.isRequired,
-    },
+    }
 
-    getDefaultProps() {
-        return {
-            list: INIT_LIST
-        };
-    },
+    static defaultProps = {
+        list: INIT_LIST
+    }
 
-    getInitialState() {
-        let list = ObjectUtils.clone(this.props.list);
+    state = {
+        list: ObjectUtils.clone(this.props.list),
+        contentComponent: <Spinner/>,
 
-        return {
-            list: list,
-            contentComponent: <Spinner/>,
-        };
-    },
+    }
 
     _updateConfigField(field, value) {
         const update = ObjectUtils.clone(this.state.list);
         update[field] = value;
         this.setState({ list: update });
-    },
+    }
 
     _onUpdate(field) {
         return e => {
             this._updateConfigField(field, e.target.value);
         };
-    },
+    }
 
-    render: function() {
+    render() {
 
         const buttonCancel = (
             <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
@@ -116,7 +108,7 @@ const CreateListFormInput = createReactClass({
                 </Row>
             </div>
         );
-    },
-});
+    }
+}
 
 export default CreateListFormInput;

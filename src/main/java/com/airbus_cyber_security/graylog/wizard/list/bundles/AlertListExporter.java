@@ -47,7 +47,7 @@ public class AlertListExporter {
                         list.description(),
                         list.lists()));
 
-            }catch(Exception e) {
+            } catch(Exception e) {
                 /* Can't find stream, condition or notification */
                 LOG.warn("Can't export alert list "+ title + ": "+e.getMessage());
             }

@@ -15,12 +15,12 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-import React, {useEffect, useState} from "react";
-import ManageSettings from "./ManageSettings";
-import WizardConfigurationResource from "../../resources/WizardConfigurationResource";
-import { Spinner } from "components/common";
-import { IntlProvider } from "react-intl";
-import messages_fr from "../../../translations/fr.json";
+import React, {useEffect, useState} from 'react';
+import ManageSettings from './ManageSettings';
+import WizardConfigurationResource from '../../resources/WizardConfigurationResource';
+import { Spinner } from 'components/common';
+import { IntlProvider } from 'react-intl';
+import messages_fr from '../../../translations/fr.json';
 
 
 export default function WizardAlertConfig() {

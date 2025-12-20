@@ -17,29 +17,27 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import createReactClass from 'create-react-class';
 import { Input, Row, Col } from 'components/bootstrap';
 import { Select } from 'components/common';
 import { FormattedMessage } from 'react-intl';
 
 import withFormattedFields from './withFormattedFields';
 
-const DistinctInput = createReactClass({
-    displayName: 'DistinctInput',
+class DistinctInput extends React.Component {
 
-    propTypes: {
+    static propTypes = {
         onUpdate: PropTypes.func,
         formattedFields: PropTypes.array.isRequired,
-    },   
-    getInitialState() {
-        return {
-            distinct_by: this.props.distinct_by,
-        };
-    },
+    }
+
+    state = {
+        distinct_by: this.props.distinct_by,
+    }
+
     _onDistinctionFieldsChange(nextValue) {
         this.setState({distinct_by: nextValue});
         this.props.onUpdate('distinct_by', nextValue);
-    },
+    }
 
     render() {
         const { formattedFields } = this.props;
@@ -63,7 +61,7 @@ const DistinctInput = createReactClass({
                 </Col>
             </Row>
         );
-    },
-});
+    }
+}
 
 export default withFormattedFields(DistinctInput);

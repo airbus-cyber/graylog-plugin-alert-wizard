@@ -16,7 +16,6 @@
  */
 
 import React from 'react';
-import createReactClass from 'create-react-class';
 import { IntlProvider, FormattedMessage } from 'react-intl';
 import { Col, Row } from 'components/bootstrap';
 import messages_fr from 'translations/fr.json';
@@ -29,8 +28,7 @@ const messages = {
     'fr': messages_fr
 };
 
-const WizardListsPage = createReactClass ({
-    displayName: 'WizardListsPage',
+class WizardListsPage extends React.Component {
 
     _getConfig() {
         return {
@@ -44,7 +42,7 @@ const WizardListsPage = createReactClass ({
             },
             import_policy: "DONOTHING"
         };
-    },
+    }
 
     render() {
 
@@ -72,7 +70,7 @@ const WizardListsPage = createReactClass ({
                 </DocumentTitle>
             </IntlProvider>
         );
-    },
-});
+    }
+}
 
 export default WizardListsPage;

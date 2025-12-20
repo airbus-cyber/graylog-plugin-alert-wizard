@@ -18,7 +18,6 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import createReactClass from 'create-react-class';
 import ObjectUtils from 'util/ObjectUtils';
 import { FormattedMessage } from 'react-intl';
 import FieldsInput from 'wizard/components/inputs/FieldsInput';
@@ -35,17 +34,16 @@ const STREAM = {
     field_rule: [{field: '', type: '', value: ''}],
 };
 
-const OrCondition = createReactClass({
-    displayName: 'OrCondition',
+class OrCondition extends React.Component {
 
-    propTypes: {
+    static propTypes = {
         onUpdate: PropTypes.func,
-    },
-    getInitialState() {
-        return {
-            alert: ObjectUtils.clone(this.props.alert),
-        };
-    },
+    }
+
+    state = {
+        alert: ObjectUtils.clone(this.props.alert),
+    }
+
     _handleChangeCondition(field, value) {
         let update = ObjectUtils.clone(this.state.alert);
         if (field === "threshold" || field === "additional_threshold" || field === "time") {
@@ -55,14 +53,15 @@ const OrCondition = createReactClass({
         }
         this.setState({alert: update});
         this.props.onUpdate('condition_parameters', update.condition_parameters);
-    },
+    }
 
     _handleChangeStream(field, value) {
         let update = ObjectUtils.clone(this.state.alert);
         update.stream[field] = value;
         this.setState({alert: update});
         this.props.onUpdate('stream', update.stream);
-    },
+    }
+
     _handleChangeSecondStream(field, value) {
         let update = ObjectUtils.clone(this.state.alert);
         if(update.second_stream === null){
@@ -71,7 +70,8 @@ const OrCondition = createReactClass({
         update.second_stream[field] = value;
         this.setState({alert: update});
         this.props.onUpdate('second_stream', update.second_stream);
-    },
+    }
+
     _handleChangeAdditionalNbrCond(field, value) {
         if (field === "threshold") {
             this._handleChangeCondition("additional_threshold", value);
@@ -80,7 +80,7 @@ const OrCondition = createReactClass({
         } else {
             this._handleChangeCondition(field, value);
         }
-    },
+    }
     
     render() {
         let time;
@@ -127,8 +127,7 @@ const OrCondition = createReactClass({
                 <br/>
             </>
         );
-
-    },
-});
+    }
+}
 
 export default OrCondition;
