@@ -18,6 +18,7 @@
 // TODO should rename package rest into resources
 package com.airbus_cyber_security.graylog.wizard.alert.rest;
 
+import com.airbus_cyber_security.graylog.wizard.alert.business.PaginatedAlertRuleService;
 import com.airbus_cyber_security.graylog.wizard.alert.business.TriggeringConditionsService;
 import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleService;
 import com.airbus_cyber_security.graylog.wizard.alert.business.EventDefinitionService;
@@ -61,6 +62,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.bson.types.ObjectId;
 import org.graylog.events.fields.EventFieldSpec;
 import org.graylog.events.fields.providers.FieldValueProvider;
 import org.graylog.events.notifications.NotificationDto;
@@ -74,6 +76,7 @@ import org.graylog2.database.NotFoundException;
 import org.graylog2.database.PaginatedList;
 import org.graylog2.plugin.database.ValidationException;
 import org.graylog2.plugin.rest.PluginRestResource;
+import org.graylog2.rest.models.SortOrder;
 import org.graylog2.rest.models.tools.responses.PageListResponse;
 import org.graylog2.rest.resources.entities.EntityDefaults;
 import org.graylog2.rest.resources.entities.Sorting;
@@ -141,6 +144,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private final EventDefinitionService eventDefinitionService;
 
     private final AlertRuleService alertRuleService;
+    private final PaginatedAlertRuleService paginatedAlertRuleService;
     private final Conversions conversions;
     private final TriggeringConditionsService triggeringConditionsService;
     private final NotificationService notificationService;
@@ -149,14 +153,15 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
     @Inject
     public AlertRuleResource(AlertRuleService alertRuleService,
+                             PaginatedAlertRuleService paginatedAlertRuleService,
                              TriggeringConditionsService triggeringConditionsService,
                              AlertWizardConfigurationService configurationService,
                              EventNotificationsResource eventNotificationsResource,
                              Conversions conversions,
                              EventDefinitionService eventDefinitionService,
                              NotificationService notificationService) {
-        // TODO should probably move these fields down into the business namespace
         this.alertRuleService = alertRuleService;
+        this.paginatedAlertRuleService = paginatedAlertRuleService;
         this.triggeringConditionsService = triggeringConditionsService;
         this.configurationService = configurationService;
         this.eventNotificationsResource = eventNotificationsResource;
@@ -174,7 +179,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
     private GetDataAlertRule constructDataAlertRule(AlertRule alert) {
         AlertPattern alertPattern = alert.pattern();
-        DateTime lastModified = alert.getLastModified();
+        DateTime lastModified = alert.lastModified();
         Optional<EventDefinitionDto> event = Optional.empty();
         Optional<EventDefinitionDto> event2 = Optional.empty();
         Map<String, Object> parametersCondition = null;
@@ -210,7 +215,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             alertRuleStream = this.constructAlertRuleStream(conditions);
             isDisabled = this.triggeringConditionsService.isDisabled(conditions);
         }
-        Optional<NotificationDto> notification = this.notificationService.get(alert.getNotificationID());
+        Optional<NotificationDto> notification = this.notificationService.get(alert.notificationID());
         String notificationIdentifier = null;
         if (notification.isPresent()) {
             NotificationDto notificationDto = notification.get();
@@ -249,17 +254,17 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         return GetDataAlertRule.create(
                 alert.id(),
-                alert.getTitle(),
+                alert.title(),
                 priority,
                 eventIdentifier,
                 eventIdentifier2,
                 notificationIdentifier,
-                alert.getCreatedAt(),
-                alert.getCreatorUserId(),
+                alert.createdAt(),
+                alert.creatorUserId(),
                 lastModified,
                 isDisabled,
                 description,
-                alert.getAlertType(),
+                alert.alertType(),
                 parametersCondition,
                 alertRuleStream,
                 alertRuleStream2,
@@ -345,8 +350,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             } else if (importPolicy != null && importPolicy.equals(ImportPolicyType.REPLACE)) {
                 try {
                     AlertRule alert = this.alertRuleService.load(alertTitle);
-                    this.delete(alert.id(), userContext);
-                } catch (MongoException | UnsupportedEncodingException | NotFoundException e) {
+                    if (alert != null) {
+                        this.delete(alert.id(), userContext);
+                    }
+                } catch (MongoException | UnsupportedEncodingException e) {
                     LOG.error("Failed to replace alert rule");
                     throw new BadRequestException("Failed to replace alert rule.");
                 }
@@ -385,15 +392,17 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     private GetDataAlertRule createPatternAndRule(AlertRuleRequest request, UserContext userContext, String notificationIdentifier, String alertTitle, String userName, AlertType alertType, Integer aggregationTime) throws ValidationException {
         AlertPattern pattern = createAlertPattern(notificationIdentifier, request, alertTitle, userContext, userName);
 
-        AlertRule alertRule = AlertRule.create(
-                null,
-                alertTitle,
-                alertType,
-                pattern,
-                notificationIdentifier,
-                DateTime.now(DateTimeZone.UTC),
-                userName,
-                DateTime.now(DateTimeZone.UTC));
+        AlertRule alertRule = AlertRule.Builder.create()
+                .id(new ObjectId().toHexString())
+                .title(alertTitle)
+                .alertType(alertType)
+                .pattern(pattern)
+                .notificationID(notificationIdentifier)
+                .createdAt(DateTime.now(DateTimeZone.UTC))
+                .creatorUserId(userName)
+                .lastModified(DateTime.now(DateTimeZone.UTC))
+                .build();
+
         alertRule = this.alertRuleService.create(alertRule);
 
         return this.constructDataAlertRule(alertRule);
@@ -532,24 +541,26 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         if (previousAlertOpt.isPresent()) {
             AlertRule previousAlert = previousAlertOpt.get();
 
-            String notificationIdentifier = previousAlert.getNotificationID();
+            String notificationIdentifier = previousAlert.notificationID();
             String userName = getCurrentUser().getName();
 
             this.notificationService.updateNotification(request.getTitle(), notificationIdentifier);
 
-            AlertType previousAlertType = previousAlert.getAlertType();
+            AlertType previousAlertType = previousAlert.alertType();
             AlertPattern pattern = updateAlertPattern(previousAlert.pattern(), notificationIdentifier, request,
                     previousAlertType, request.getTitle(), userContext, userName);
 
-            AlertRule alertRule = AlertRule.create(
-                    id,
-                    request.getTitle(),
-                    request.getConditionType(),
-                    pattern,
-                    previousAlert.getNotificationID(),
-                    previousAlert.getCreatedAt(),
-                    userName,
-                    DateTime.now(DateTimeZone.UTC));
+            AlertRule alertRule = AlertRule.Builder.create()
+                    .id(id)
+                    .title(request.getTitle())
+                    .alertType(request.getConditionType())
+                    .pattern(pattern)
+                    .notificationID(previousAlert.notificationID())
+                    .createdAt(previousAlert.createdAt())
+                    .creatorUserId(userName)
+                    .lastModified(DateTime.now(DateTimeZone.UTC))
+                    .build();
+
             alertRule = this.alertRuleService.update(alertRule);
 
             GetDataAlertRule result = this.constructDataAlertRule(alertRule);
@@ -602,9 +613,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             AlertRule alertRule = alertRuleOptional.get();
 
             deleteAlertPattern(alertRule.pattern());
-            if (alertRule.getNotificationID() != null && !alertRule.getNotificationID().isEmpty()) {
+            if (alertRule.notificationID() != null && !alertRule.notificationID().isEmpty()) {
                 // TODO move this down into AlertRuleUtilsService and remove the use for eventNotificationsResource
-                this.eventNotificationsResource.delete(alertRule.getNotificationID(), userContext);
+                this.eventNotificationsResource.delete(alertRule.notificationID(), userContext);
             }
 
             this.alertRuleService.delete(id);
@@ -678,7 +689,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                                                               allowableValues = "title,user,created,lastModified")
                                                       @DefaultValue(DEFAULT_SORT_FIELD) @QueryParam("sort") String sort,
                                                       @ApiParam(name = "order", value = "The sort direction", allowableValues = "asc, desc")
-                                                      @DefaultValue(DEFAULT_SORT_DIRECTION) @QueryParam("order") String order) {
+                                                      @DefaultValue(DEFAULT_SORT_DIRECTION) @QueryParam("order") SortOrder order) {
 
         SearchQuery searchQuery;
         try {
@@ -687,13 +698,13 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             throw new BadRequestException("Invalid argument in search query: " + e.getMessage());
         }
         String sortAttr = FIELD_MAP.getOrDefault(sort, sort);
-        final PaginatedList<AlertRule> result = this.alertRuleService.searchPaginated(
+        final PaginatedList<AlertRule> result = this.paginatedAlertRuleService.findPaginated(
                 searchQuery,
                 alertRule -> true,
-                order,
-                sortAttr,
                 page,
-                perPage);
+                perPage,
+                sortAttr,
+                order);
 
         PaginatedList<AlertRule> alertRules = new PaginatedList<>(
                 result.delegate(), result.pagination().total(), result.pagination().page(), result.pagination().perPage()

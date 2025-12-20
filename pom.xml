@@ -23,12 +23,12 @@
     <parent>
         <groupId>org.graylog.plugins</groupId>
         <artifactId>graylog-plugin-web-parent</artifactId>
-        <version>6.1.4</version>
+        <version>6.3.7</version>
     </parent>
 
     <groupId>com.airbus-cyber-security.graylog</groupId>
     <artifactId>graylog-plugin-alert-wizard</artifactId>
-    <version>6.1.7</version>
+    <version>6.3.0</version>
     <packaging>jar</packaging>
     <name>${project.artifactId}</name>
     <description>Graylog ${project.artifactId} plugin.</description>
@@ -75,8 +75,8 @@
         <graylog.version>${project.parent.version}</graylog.version>
         <graylog.plugin-dir>/usr/share/graylog-server/plugin</graylog.plugin-dir>
         <!-- versions -->
-        <graylog-plugin-correlation-count.version>6.1.0</graylog-plugin-correlation-count.version>
-        <graylog-plugin-logging-alert.version>6.1.8</graylog-plugin-logging-alert.version>
+        <graylog-plugin-correlation-count.version>6.3.0</graylog-plugin-correlation-count.version>
+        <graylog-plugin-logging-alert.version>6.3.0</graylog-plugin-logging-alert.version>
         <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
         <opencsv.version>2.4</opencsv.version>
     </properties>
