@@ -49,6 +49,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.bson.types.ObjectId;
 import org.graylog2.audit.jersey.AuditEvent;
 import org.graylog2.database.NotFoundException;
 import org.graylog2.plugin.configuration.ConfigurationException;
@@ -166,31 +167,34 @@ public class AlertListResource extends RestResource implements PluginRestResourc
         this.alertListUtilsService.checkIsValidRequest(request);
         String listTitle = checkImportPolicyAndGetTitle(request.getTitle());
 
-        this.alertListService.create(AlertList.create(
-                listTitle,
-                DateTime.now(DateTimeZone.UTC),
-                getCurrentUser().getName(),
-                DateTime.now(DateTimeZone.UTC),
-                request.getDescription(),
-                0,
-                request.getLists()));
+        this.alertListService.create(AlertList.Builder.create()
+                .id(new ObjectId().toHexString())
+                .title(listTitle)
+                .createdAt(DateTime.now(DateTimeZone.UTC))
+                .creatorUserId(getCurrentUser().getName())
+                .lastModified(DateTime.now(DateTimeZone.UTC))
+                .description(request.getDescription())
+                .usage(0)
+                .lists(request.getLists())
+                .build());
 
         return Response.accepted().build();
     }
-
 
     private void importAlertList(ExportAlertList alertList)
             throws BadRequestException, IOException {
         String listTitle = checkImportPolicyAndGetTitle(alertList.getTitle());
 
-        this.alertListService.create(AlertList.create(
-                listTitle,
-                DateTime.now(DateTimeZone.UTC),
-                getCurrentUser().getName(),
-                DateTime.now(DateTimeZone.UTC),
-                alertList.getDescription(),
-                0,
-                alertList.getLists()));
+        this.alertListService.create(AlertList.Builder.create()
+                .id(new ObjectId().toHexString())
+                .title(listTitle)
+                .createdAt(DateTime.now(DateTimeZone.UTC))
+                .creatorUserId(getCurrentUser().getName())
+                .lastModified(DateTime.now(DateTimeZone.UTC))
+                .description(alertList.getDescription())
+                .usage(0)
+                .lists(alertList.getLists())
+                .build());
     }
 
     @PUT
@@ -239,14 +243,16 @@ public class AlertListResource extends RestResource implements PluginRestResourc
         String listTitle = request.getTitle();
 
         this.alertListService.update(java.net.URLDecoder.decode(title, ENCODING),
-                AlertList.create(
-                        listTitle,
-                        oldAlert.getCreatedAt(),
-                        getCurrentUser().getName(),
-                        DateTime.now(DateTimeZone.UTC),
-                        request.getDescription(),
-                        request.getUsage(),
-                        request.getLists()));
+                AlertList.Builder.create()
+                        .id(oldAlert.id())
+                        .title(listTitle)
+                        .createdAt(oldAlert.createdAt())
+                        .creatorUserId(getCurrentUser().getName())
+                        .lastModified(DateTime.now(DateTimeZone.UTC))
+                        .description(request.getDescription())
+                        .usage(request.getUsage())
+                        .lists(request.getLists())
+                        .build());
 
         return Response.accepted().build();
     }
@@ -267,7 +273,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
         String listTitle = java.net.URLDecoder.decode(title, ENCODING);
 
         AlertList alertList = this.alertListService.load(listTitle);
-        if (alertList.getUsage() <= 0) {
+        if (alertList.usage() <= 0) {
             this.alertListService.destroy(listTitle);
         } else {
             throw new jakarta.ws.rs.BadRequestException("List " + listTitle + " used in alert rules");

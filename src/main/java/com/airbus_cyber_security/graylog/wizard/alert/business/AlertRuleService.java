@@ -18,28 +18,13 @@
 package com.airbus_cyber_security.graylog.wizard.alert.business;
 
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRule;
-import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetDataAlertRule;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.ImmutableSet;
 import com.mongodb.BasicDBObject;
-import com.mongodb.client.AggregateIterable;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Aggregates;
-import com.mongodb.client.model.Field;
-import com.mongodb.client.model.Variable;
-import org.bson.Document;
-import org.bson.conversions.Bson;
-import org.graylog.events.processor.DBEventDefinitionService;
-import org.graylog2.bindings.providers.MongoJackObjectMapperProvider;
-import org.graylog2.database.MongoConnection;
-import org.graylog2.database.NotFoundException;
-import org.graylog2.database.PaginatedDbService;
-import org.graylog2.database.PaginatedList;
-import org.graylog2.search.SearchQuery;
-import org.graylog2.search.SearchQueryParser;
-import org.mongojack.DBCursor;
-import org.mongojack.DBQuery;
+import com.mongodb.client.model.FindOneAndReplaceOptions;
+import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.model.ReturnDocument;
+import org.graylog2.database.MongoCollection;
+import org.graylog2.database.MongoCollections;
+import org.graylog2.database.utils.MongoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,35 +32,33 @@ import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
-import java.util.function.Predicate;
-import java.util.stream.StreamSupport;
 
 
-// TODO split this into AlertRuleCollection and move it down in the persistence namespace
-public class AlertRuleService extends PaginatedDbService<AlertRule> {
+public class AlertRuleService {
 
-	private static final String COLLECTION_NAME = "wizard_alerts";
-	private final Validator validator;
 	private static final Logger LOG = LoggerFactory.getLogger(AlertRuleService.class);
+	private static final String COLLECTION_NAME = "wizard_alerts";
+
+	private final Validator validator;
+
 	private static final String TITLE = "title";
-	private static final List<String> STRING_FIELDS = List.of("title", "description", "creator_user_id");
-	private final MongoCollection<Document> collection;
+	private final MongoCollection<AlertRule> collection;
 
 	@Inject
-	public AlertRuleService(MongoConnection mongoConnection, MongoJackObjectMapperProvider mapperProvider,
-							Validator validator) {
-		super(mongoConnection, mapperProvider, AlertRule.class, COLLECTION_NAME);
+	public AlertRuleService(MongoCollections mongoCollections, Validator validator) {
 		this.validator = validator;
-		this.db.createIndex(new BasicDBObject(TITLE, 1), new BasicDBObject("unique", true));
-		this.collection = mongoConnection.getMongoDatabase().getCollection(COLLECTION_NAME);
+		this.collection = mongoCollections.collection(COLLECTION_NAME, AlertRule.class);
+		this.collection.createIndex(new BasicDBObject(TITLE, 1), new IndexOptions().unique(true));
 	}
 
 	public AlertRule create(AlertRule alert) {
 		Set<ConstraintViolation<AlertRule>> violations = validator.validate(alert);
 		if (violations.isEmpty()) {
-			return this.save(alert);
+			return this.collection.getOrCreate(alert);
 		} else {
 			throw new IllegalArgumentException("Specified object failed validation: " + violations);
 		}
@@ -89,105 +72,30 @@ public class AlertRuleService extends PaginatedDbService<AlertRule> {
 			throw new IllegalArgumentException("Specified object failed validation: " + violations);
 		}
 
-		return this.save(alert);
+		return this.collection.findOneAndReplace(MongoUtils.idEq(alert.id()), alert, new FindOneAndReplaceOptions().returnDocument(ReturnDocument.AFTER));
 	}
 
 	public List<AlertRule> all() {
-		try (DBCursor<AlertRule> cursor = this.db.find(DBQuery.empty())) {
-			return cursor.toArray();
-		}
+		return this.collection.find().into(new ArrayList<>());
 	}
 
 	public void destroy(String alertTitle) {
-		this.db.remove(DBQuery.is(TITLE, alertTitle)).getN();
-		// TODO would be simpler: this.delete(alertTitle);
+		this.collection.deleteOne(new BasicDBObject(TITLE, alertTitle));
 	}
 	
-	public AlertRule load(String title) throws NotFoundException {
-		return this.db.findOne(DBQuery.is(TITLE, title));
+	public AlertRule load(String title) {
+		return this.collection.find(new BasicDBObject(TITLE, title)).first();
 	}
-	
+
 	public boolean isPresent(String title) {
-		return (this.db.getCount(DBQuery.is(TITLE, title)) > 0);
+		return this.collection.countDocuments(new BasicDBObject(TITLE, title)) > 0;
 	}
 
-	public PaginatedList<AlertRule> searchPaginated(SearchQuery query, Predicate<AlertRule> predicate,
-													String order, String sortField, int page, int perPage) {
-		final Bson dbQuery = query.toBson();
-
-		var pipelineBuilder = ImmutableList.<Bson>builder();
-
-		if (!(query.getQueryMap().containsKey(GetDataAlertRule.FIELD_DESCRIPTION)
-				|| query.getQueryMap().containsKey(GetDataAlertRule.FIELD_PRIORITY))) {
-			pipelineBuilder.add(Aggregates.match(dbQuery));
-		} else {
-			final ImmutableMultimap.Builder<String, SearchQueryParser.FieldValue> builder = ImmutableMultimap.builder();
-			final ImmutableSet.Builder<String> disallowedKeys = ImmutableSet.builder();
-			final Bson emptyDbQuery = new SearchQuery("", builder.build(), disallowedKeys.build()).toBson();
-			pipelineBuilder.add(Aggregates.match(emptyDbQuery));
-		}
-
-		if (sortField.equals(GetDataAlertRule.FIELD_PRIORITY)
-				|| sortField.equals(GetDataAlertRule.FIELD_DESCRIPTION)
-				|| query.getQueryMap().containsKey(GetDataAlertRule.FIELD_DESCRIPTION)
-				|| query.getQueryMap().containsKey(GetDataAlertRule.FIELD_PRIORITY)) {
-			pipelineBuilder.add(Aggregates.lookup(
-							DBEventDefinitionService.COLLECTION_NAME,
-							List.of(new Variable<>("event_identifier", doc("$toObjectId", "$alert_pattern.event_identifier")),
-									new Variable<>("event_identifier1", doc("$toObjectId", "$alert_pattern.event_identifier1"))),
-							List.of(Aggregates.match(doc("$or",
-									List.of(
-											doc("$expr", doc("$eq", List.of("$_id", "$$event_identifier"))),
-											doc("$expr", doc("$eq", List.of("$_id", "$$event_identifier1")))
-									)))),
-							"event_definition"
-					))
-					.add(Aggregates.set(
-							new Field<>("priority", doc("$first", "$event_definition.priority")),
-							new Field<>("description", doc("$first", "$event_definition.description"))))
-					.add(Aggregates.unset("event_definition"));
-		}
-
-		if (query.getQueryMap().containsKey(GetDataAlertRule.FIELD_DESCRIPTION)
-				|| query.getQueryMap().containsKey(GetDataAlertRule.FIELD_PRIORITY)) {
-			pipelineBuilder.add(Aggregates.match(dbQuery));
-		}
-
-		if (isStringField(sortField)) {
-			pipelineBuilder.add(Aggregates.set(new Field<>("lower" + sortField, doc("$toLower", "$" + sortField))))
-					.add(Aggregates.sort(getSortBuilder(order, "lower" + sortField)))
-					.add(Aggregates.unset("lower" + sortField));
-		} else {
-			pipelineBuilder.add(Aggregates.sort(getSortBuilder(order, sortField)));
-		}
-
-		final AggregateIterable<Document> result = collection.aggregate(pipelineBuilder.build());
-
-		final List<AlertRule> alertRuleList = StreamSupport.stream(result.spliterator(), false)
-				.map(AlertRule::fromDocument)
-				.filter(predicate)
-				.toList();
-
-		final long grandTotal = db.find(DBQuery.empty()).toArray()
-				.stream()
-				.filter(predicate)
-				.count();
-
-		final List<AlertRule> paginatedAlerts = perPage > 0
-				? alertRuleList.stream()
-				.skip((long) perPage * Math.max(0, page - 1))
-				.limit(perPage)
-				.toList()
-				: alertRuleList;
-
-		return new PaginatedList<>(paginatedAlerts, alertRuleList.size(), page, perPage, grandTotal);
+	public Optional<AlertRule> get(String id) {
+		return Optional.ofNullable(this.collection.find(MongoUtils.idEq(id)).first());
 	}
 
-	private Document doc(String key, Object value) {
-		return new Document(key, value);
-	}
-
-	private boolean isStringField(String sortField) {
-		return STRING_FIELDS.contains(sortField);
+	public void delete(String id) {
+		this.collection.deleteOne(MongoUtils.idEq(id));
 	}
 }

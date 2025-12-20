@@ -51,14 +51,16 @@ public class AlertListUtilsService {
             AlertList oldAlertList = alertListService.load(title);
             if (oldAlertList != null) {
                 alertListService.update(java.net.URLDecoder.decode(title, ENCODING),
-                        AlertList.create(
-                                title,
-                                oldAlertList.getCreatedAt(),
-                                oldAlertList.getCreatorUserId(),
-                                oldAlertList.getCreatedAt(),
-                                oldAlertList.getDescription(),
-                                oldAlertList.getUsage() + 1,
-                                oldAlertList.getLists()));
+                AlertList.Builder.create()
+                        .id(oldAlertList.id())
+                        .title(title)
+                        .createdAt(oldAlertList.createdAt())
+                        .creatorUserId(oldAlertList.creatorUserId())
+                        .lastModified(oldAlertList.lastModified())
+                        .description(oldAlertList.description())
+                        .usage(oldAlertList.usage() + 1)
+                        .lists(oldAlertList.lists())
+                        .build());
             } else {
                 LOG.error("Failed to increment list, " + title + " does not exist");
             }
@@ -71,19 +73,21 @@ public class AlertListUtilsService {
         try {
             AlertList oldAlertList = alertListService.load(title);
             if(oldAlertList != null) {
-                int usage = oldAlertList.getUsage() - 1;
+                int usage = oldAlertList.usage() - 1;
                 if (usage < 0) {
                     usage = 0;
                 }
                 alertListService.update(java.net.URLDecoder.decode(title, ENCODING),
-                        AlertList.create(
-                                title,
-                                oldAlertList.getCreatedAt(),
-                                oldAlertList.getCreatorUserId(),
-                                oldAlertList.getCreatedAt(),
-                                oldAlertList.getDescription(),
-                                usage,
-                                oldAlertList.getLists()));
+                        AlertList.Builder.create()
+                                .id(oldAlertList.id())
+                                .title(title)
+                                .createdAt(oldAlertList.createdAt())
+                                .creatorUserId(oldAlertList.creatorUserId())
+                                .lastModified(oldAlertList.lastModified())
+                                .description(oldAlertList.description())
+                                .usage(usage)
+                                .lists(oldAlertList.lists())
+                                .build());
             }else{
                 LOG.error("Failed to decrement list, " + title + " does not exist");
             }

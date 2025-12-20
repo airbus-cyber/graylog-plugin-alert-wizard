@@ -18,67 +18,57 @@
 package com.airbus_cyber_security.graylog.wizard.list.persistence;
 
 import com.airbus_cyber_security.graylog.wizard.list.model.AlertList;
-import com.google.common.collect.Lists;
 import com.mongodb.BasicDBObject;
-import org.graylog2.bindings.providers.MongoJackObjectMapperProvider;
-import org.graylog2.database.MongoConnection;
-import org.graylog2.database.PaginatedDbService;
-import org.mongojack.DBCursor;
-import org.mongojack.DBQuery;
+import com.mongodb.client.model.FindOneAndReplaceOptions;
+import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.model.ReturnDocument;
+import org.graylog2.database.MongoCollection;
+import org.graylog2.database.MongoCollections;
+
 
 import jakarta.inject.Inject;
+
+import java.util.ArrayList;
 import java.util.List;
 
-public class AlertListCollection extends PaginatedDbService<AlertList>  {
+public class AlertListCollection {
 
     private static final String COLLECTION_NAME = "wizard_lists";
     private static final String TITLE = "title";
 
+    private final MongoCollection<AlertList> collection;
+
     @Inject
-    public AlertListCollection(MongoConnection mongoConnection, MongoJackObjectMapperProvider mapperProvider) {
-        super(mongoConnection, mapperProvider, AlertList.class, COLLECTION_NAME);
-        this.db.createIndex(new BasicDBObject(TITLE, 1), new BasicDBObject("unique", true));
+    public AlertListCollection(MongoCollections mongoCollections) {
+        this.collection = mongoCollections.collection(COLLECTION_NAME, AlertList.class);
+        this.collection.createIndex(new BasicDBObject(TITLE, 1), new IndexOptions().unique(true));
     }
 
     public AlertList create(AlertList list) {
-        return this.save(list);
+        return this.collection.getOrCreate(list);
     }
 
     public AlertList update(String title, AlertList list) {
-        return this.db.findAndModify(DBQuery.is(TITLE, title), new BasicDBObject(), new BasicDBObject(),
-                false, list, true, false);
+        return this.collection.findOneAndReplace(new BasicDBObject(TITLE, title), list, new FindOneAndReplaceOptions().returnDocument(ReturnDocument.AFTER));
     }
 
     public List<AlertList> all() {
-        try (DBCursor<AlertList> cursor = this.db.find(DBQuery.empty())) {
-            return cursor.toArray();
-        }
+        return this.collection.find().into(new ArrayList<>());
     }
 
     public long count() {
-        return this.db.count();
+        return this.collection.countDocuments();
     }
 
-    public int destroy(String title) {
-        return this.db.remove(DBQuery.is(TITLE, title)).getN();
+    public void destroy(String title) {
+        this.collection.deleteOne(new BasicDBObject(TITLE, title));
     }
 
     public AlertList load(String title) {
-        return this.db.findOne(DBQuery.is(TITLE, title));
+        return this.collection.find(new BasicDBObject(TITLE, title)).first();
     }
 
     public boolean isPresent(String title) {
-        return (this.db.getCount(DBQuery.is(TITLE, title)) > 0);
-    }
-
-    private List<AlertList> toAbstractListType(List<AlertList> lists) {
-        final List<AlertList> result = Lists.newArrayListWithCapacity(lists.size());
-        result.addAll(lists);
-
-        return result;
-    }
-
-    private List<AlertList> toAbstractListType(DBCursor<AlertList> lists) {
-        return toAbstractListType(lists.toArray());
+        return this.collection.countDocuments(new BasicDBObject(TITLE, title)) > 0;
     }
 }

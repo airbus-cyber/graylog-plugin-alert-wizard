@@ -44,8 +44,8 @@ public class AlertListExporter {
 
                 listAlertLists.add(ExportAlertList.create(
                         title,
-                        list.getDescription(),
-                        list.getLists()));
+                        list.description(),
+                        list.lists()));
 
             }catch(Exception e) {
                 /* Can't find stream, condition or notification */

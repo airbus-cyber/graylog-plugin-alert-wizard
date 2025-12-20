@@ -17,6 +17,7 @@
 
 package com.airbus_cyber_security.graylog.wizard.database;
 
+import com.mongodb.BasicDBObject;
 import org.graylog2.database.entities.DefaultEntityScope;
 import org.graylog2.lookup.LookupDefaultMultiValue;
 import org.graylog2.lookup.LookupDefaultSingleValue;
@@ -30,12 +31,15 @@ import org.graylog2.lookup.dto.LookupTableDto;
 import org.graylog2.plugin.lookup.LookupDataAdapterConfiguration;
 
 import jakarta.inject.Inject;
+import org.graylog2.rest.models.SortOrder;
+import org.graylog2.search.SearchQuery;
 
 import java.util.Collection;
 import java.util.Optional;
 
 public class LookupService {
-
+    private static final String FIELD_TITLE = "title";
+    private static final String WIZARD_TITLE = "wizard cache";
     private final DBDataAdapterService dataAdapterService;
     private final DBCacheService cacheService;
     private final DBLookupTableService lookupTableService;
@@ -70,11 +74,10 @@ public class LookupService {
 
     // source of inspiration org.graylog2.rest.resources.system.lookup.LookupTableResource.createCache
     private String createUniqueCache() {
-        Collection<CacheDto> caches = this.cacheService.findAll();
-        for (CacheDto cacheDto: caches) {
-            if(cacheDto.title().equals("wizard cache")){
-                return cacheDto.id();
-            }
+
+        Collection<CacheDto> caches = this.cacheService.findPaginated(new BasicDBObject(FIELD_TITLE, WIZARD_TITLE), SortOrder.DESCENDING.toBsonSort(FIELD_TITLE), 1, 10).stream().toList();
+        if (!caches.isEmpty()) {
+            return caches.iterator().next().id();
         }
 
         NullCache.Config config = NullCache.Config.builder()
@@ -85,7 +88,7 @@ public class LookupService {
                 .scope(DefaultEntityScope.NAME)
                 .name("wizard-cache")
                 .description(Description.COMMENT_ALERT_WIZARD)
-                .title("wizard cache")
+                .title(WIZARD_TITLE)
                 .contentPack(null)
                 .config(config)
                 .build();

@@ -135,7 +135,7 @@ public class StreamPipelineService {
         DateTime now = DateTime.now(DateTimeZone.UTC);
 
         String pipelineID = RandomStringUtils.random(RANDOM_COUNT, RANDOM_CHARS);
-        PipelineDao cr = PipelineDao.create(pipelineID, title, Description.COMMENT_ALERT_WIZARD, createPipelineStringSource(title, matchingType), now, now);
+        PipelineDao cr = PipelineDao.create(pipelineID, null, title, Description.COMMENT_ALERT_WIZARD, createPipelineStringSource(title, matchingType), now, now);
         PipelineDao save = pipelineService.save(cr);
 
         Set<String> pipelineIds;
@@ -168,7 +168,7 @@ public class StreamPipelineService {
             Stream stream = this.streamService.load(streamIdentifier);
             this.streamService.destroy(stream);
             this.clusterEventBus.post(StreamsChangedEvent.create(stream.getId()));
-            this.clusterEventBus.post(StreamDeletedEvent.create(stream.getId()));
+            this.clusterEventBus.post(new StreamDeletedEvent(stream.getId(), stream.getTitle()));
         } catch(NotFoundException | StreamGuardException e) {
             LOG.debug("Couldn't find the stream when deleting", e);
         }

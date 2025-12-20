@@ -20,9 +20,9 @@ package com.airbus_cyber_security.graylog.wizard.alert.model;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.auto.value.AutoValue;
-import org.bson.Document;
+import org.graylog2.database.BuildableMongoEntity;
 import org.joda.time.DateTime;
 
 import jakarta.annotation.Nullable;
@@ -33,7 +33,8 @@ import org.mongojack.ObjectId;
 
 @AutoValue
 @JsonAutoDetect
-public abstract class AlertRule {
+@JsonDeserialize(builder = AlertRule.Builder.class)
+public abstract class AlertRule implements BuildableMongoEntity<AlertRule, AlertRule.Builder> {
     public static final String FIELD_ID = "_id";
     public static final String FIELD_TITLE = "title";
     public static final String FIELD_ALERT_TYPE = "alert_type";
@@ -51,69 +52,66 @@ public abstract class AlertRule {
 
     @JsonProperty(FIELD_TITLE)
     @NotNull
-    public abstract String getTitle();
+    public abstract String title();
 
     @JsonProperty(FIELD_ALERT_TYPE)
     @Nullable
-    public abstract AlertType getAlertType();
+    public abstract AlertType alertType();
 
     @JsonProperty(FIELD_ALERT_PATTERN)
     @NotNull
     public abstract AlertPattern pattern();
 
-    // TODO rename into notificationIdentifier
     @JsonProperty(FIELD_NOTIFICATION)
     @Nullable
-    public abstract String getNotificationID();
+    public abstract String notificationID();
 
     @JsonProperty(FIELD_CREATED_AT)
     @Nullable
-    public abstract DateTime getCreatedAt();
+    public abstract DateTime createdAt();
 
-    // TODO rename int creatorUserIdentifier
     @JsonProperty(FIELD_CREATOR_USER_ID)
     @Nullable
-    public abstract String getCreatorUserId();
+    public abstract String creatorUserId();
 
     @JsonProperty(FIELD_LAST_MODIFIED)
     @Nullable
-    public abstract DateTime getLastModified();
+    public abstract DateTime lastModified();
 
-    // TODO should replace the create functions by a Builder (see EventDefinitionDTO)
-    @JsonCreator
-    public static AlertRule create(@JsonProperty("_id") String objectId,
-                                   @JsonProperty(FIELD_TITLE) String title,
-                                   @JsonProperty(FIELD_ALERT_TYPE) AlertType alertType,
-                                   @JsonProperty(FIELD_ALERT_PATTERN) AlertPattern pattern,
-                                   @JsonProperty(FIELD_NOTIFICATION) String notificationID,
-                                   @JsonProperty(FIELD_CREATED_AT) DateTime createdAt,
-                                   @JsonProperty(FIELD_CREATOR_USER_ID) String creatorUserId,
-                                   @JsonProperty(FIELD_LAST_MODIFIED) DateTime lastModified){
-        return new AutoValue_AlertRule(objectId, title, alertType, pattern, notificationID, createdAt, creatorUserId, lastModified);
+    public abstract Builder toBuilder();
+
+    static Builder builder() {
+        return Builder.create();
     }
 
-    public static AlertRule fromDocument(Document document) {
-        Document patternDoc = document.get(FIELD_ALERT_PATTERN, Document.class);
-        AlertPattern pattern = null;
-        if (patternDoc != null) {
-            String patternClass = patternDoc.getString(JsonTypeInfo.Id.CLASS.getDefaultPropertyName());
-            if (patternClass.equals(AutoValue_AggregationAlertPattern.class.getName())) {
-                pattern = AggregationAlertPattern.fromDocument(patternDoc);
-            } else if (patternClass.equals(AutoValue_CorrelationAlertPattern.class.getName())) {
-                pattern =  CorrelationAlertPattern.fromDocument(patternDoc);
-            } else if (patternClass.equals(AutoValue_DisjunctionAlertPattern.class.getName())) {
-                pattern = DisjunctionAlertPattern.fromDocument(patternDoc);
-            }
+    @AutoValue.Builder
+    public abstract static class Builder implements BuildableMongoEntity.Builder<AlertRule, AlertRule.Builder> {
+        @JsonCreator
+        public static Builder create() {
+            return new AutoValue_AlertRule.Builder();
         }
 
-        return new AutoValue_AlertRule(
-                document.getObjectId(FIELD_ID).toHexString(),
-                document.getString(FIELD_TITLE),
-                AlertType.valueOf(document.getString(FIELD_ALERT_TYPE)),
-                pattern,
-                document.getString(FIELD_NOTIFICATION),
-                new DateTime(document.getDate(FIELD_CREATED_AT)),
-                document.getString(FIELD_CREATOR_USER_ID),
-                new DateTime(document.getDate(FIELD_LAST_MODIFIED)));
+        @JsonProperty(FIELD_ID)
+        public abstract Builder id(String id);
+        @JsonProperty(FIELD_TITLE)
+        public abstract Builder title(String title);
+        @JsonProperty(FIELD_ALERT_TYPE)
+        public abstract Builder alertType(AlertType alertType);
+        @JsonProperty(FIELD_ALERT_PATTERN)
+        public abstract Builder pattern(AlertPattern alertPattern);
+        @JsonProperty(FIELD_NOTIFICATION)
+        public abstract Builder notificationID(String notificationID);
+        @JsonProperty(FIELD_CREATED_AT)
+        public abstract Builder createdAt(DateTime  createdAt);
+        @JsonProperty(FIELD_CREATOR_USER_ID)
+        public abstract Builder creatorUserId(String creatorUserId);
+        @JsonProperty(FIELD_LAST_MODIFIED)
+        public abstract Builder lastModified(DateTime lastModified);
+
+        public abstract AlertRule autoBuild();
+
+        public AlertRule build() {
+            return autoBuild();
+        }
     }
 }

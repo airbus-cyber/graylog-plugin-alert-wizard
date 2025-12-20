@@ -77,7 +77,7 @@ public class AlertListService {
     // TODO should not need this code: the AlertList object should directly return an array of Strings
     private String[] getListValues(AlertList list) {
         // TODO getLists should never return null
-        String[] results = list.getLists().split(";");
+        String[] results = list.lists().split(";");
         for (int i = 0; i < results.length; i++) {
             results[i] = results[i].trim();
         }
@@ -107,7 +107,7 @@ public class AlertListService {
                 .caseInsensitiveLookup(false)
                 .build();
 
-        String title = list.getTitle();
+        String title = list.title();
         String adapterIdentifier = this.lookupService.createDataAdapter(title, dataAdapterConfiguration);
         this.lookupService.createLookupTable(adapterIdentifier, title);
 
@@ -116,7 +116,7 @@ public class AlertListService {
 
     private Path writeCSV(AlertList list) throws IOException {
         Files.createDirectories(LISTS_PATH);
-        Path path = getCSVFilePath(list.getTitle());
+        Path path = getCSVFilePath(list.title());
         // TODO shouldn't use the title here, rather an identifier
 
         try (Writer writer = Files.newBufferedWriter(path);
@@ -141,11 +141,11 @@ public class AlertListService {
         return this.collection.update(title, list);
     }
 
-    public int destroy(String title) throws IOException {
+    public void destroy(String title) throws IOException {
         this.lookupService.deleteLookupTable(title);
         this.lookupService.deleteDataAdapter(title);
         Files.delete(getCSVFilePath(title));
-        return this.collection.destroy(title);
+        this.collection.destroy(title);
     }
 
     private boolean isValidTitle(String title) {
