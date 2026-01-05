@@ -21,6 +21,7 @@
 // * pages/NodesPage.jsx
 import React from 'react';
 import { Button, Col, Row } from 'components/bootstrap';
+import useHistory from 'routing/useHistory';
 import { LinkContainer } from 'react-router-bootstrap';
 import { DocumentTitle, PageHeader } from 'components/common';
 import Routes from 'routing/Routes';
@@ -28,6 +29,7 @@ import { IntlProvider, FormattedMessage } from 'react-intl';
 import messages_fr from 'translations/fr.json';
 import CreateListFormInput from 'wizard/components/lists/CreateListFormInput';
 import AlertListActions from 'wizard/actions/AlertListActions';
+import Navigation from "../routing/Navigation";
 
 const language = navigator.language.split(/[-_]/)[0];
 
@@ -35,11 +37,18 @@ const messages = {
     'fr': messages_fr
 };
 
-function _save(list) {
-    AlertListActions.create(list);
-}
-
 const NewAlertListPage = () => {
+    const history = useHistory();
+
+    const _save = (list) => {
+        AlertListActions.create(list).then(response => {
+            if (response !== true) {
+                return;
+            }
+            history.push(Navigation.getWizardListRoute());
+        });
+    };
+
     return (
         <IntlProvider locale={language} messages={messages[language]}>
             <DocumentTitle title="New list">
