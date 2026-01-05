@@ -15,134 +15,107 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-import PropTypes from 'prop-types';
-import React from 'react';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import React, {useEffect, useState} from 'react';
+import { useIntl, FormattedMessage } from 'react-intl';
 import { LinkContainer } from 'react-router-bootstrap';
 import Reflux from 'reflux';
-import { Button, Tooltip } from 'components/bootstrap';
+import { Button } from 'components/bootstrap';
 import { toDateObject } from 'util/DateTime';
 import { DataTable, IfPermitted, OverlayTrigger, Spinner, Timestamp } from 'components/common';
-import PermissionsMixin from 'util/PermissionsMixin';
 import Routes from 'routing/Routes';
-import AlertListStore from 'wizard/stores/AlertListStore';
 import AlertListActions from 'wizard/actions/AlertListActions';
+import AlertListStore from 'wizard/stores/AlertListStore';
 import AlertListCloneForm from './AlertListCloneForm';
-import { CurrentUserStore } from 'stores/users/CurrentUserStore';
 
+const AlertListDisplay = ({config}) => {
+    const intl = useIntl();
 
-class AlertListDisplay extends React.Component {
+    const fieldsTitle = {
+        title: intl.formatMessage({id: "wizard.title", defaultMessage: "Title"}),
+        description: intl.formatMessage({id: "wizard.fieldDescription", defaultMessage: "Description"}),
+        created: intl.formatMessage({id: "wizard.created", defaultMessage: "Created"}),
+        lastModified: intl.formatMessage({id: "wizard.lastModified", defaultMessage: "Last Modified"}),
+        user: intl.formatMessage({id: "wizard.user", defaultMessage: "User"}),
+        usage: intl.formatMessage({id: "wizard.usage", defaultMessage: "Usage"}),
+        lists: intl.formatMessage({id: "wizard.lists", defaultMessage: "Lists"}),
+        actions: intl.formatMessage({id: "wizard.actions", defaultMessage: "Actions"}),
+    };
 
-    mixins = [Reflux.connect(CurrentUserStore), Reflux.connect(AlertListStore), PermissionsMixin]
+    const messages = {
+        infoDelete: intl.formatMessage({id: "wizard.buttonInfoDeleteList", defaultMessage: "Delete this alert list"}),
+        infoNoDelete: intl.formatMessage({id: "wizard.buttonInfoNoDeleteList", defaultMessage: "List used in alert rules"}),
+        infoUpdate: intl.formatMessage({id: "wizard.buttonInfoUpdateList", defaultMessage: "Edit this alert list"}),
+        createAlertList: intl.formatMessage({id: "wizard.createAlertList", defaultMessage: "Create alert list"}),
+        importAlertList: intl.formatMessage({id: "wizard.importAlertList", defaultMessage: "Import alert list"}),
+        exportAlertList: intl.formatMessage({id: "wizard.exportAlertList",  defaultMessage :"Export alert list"}),
+        confirmDeletion: intl.formatMessage({id: "wizard.confirmDeletionList",  defaultMessage :"Do you really want to delete the alert list"}),
+    };
 
-    static propTypes = {
-        config: PropTypes.object.isRequired,
-    }
+    const availableFieldName = [
+        {value: 'Description', label: fieldsTitle.description},
+        {value: 'Created', label: fieldsTitle.created},
+        {value: 'Last Modified', label: fieldsTitle.lastModified},
+        {value: 'User', label: fieldsTitle.user},
+        {value: 'Usage', label: fieldsTitle.usage},
+        {value: 'Lists', label: fieldsTitle.lists},
+    ];
 
-    constructor(props) {
-        super(props);
+    const [lists, setLists] = useState([]);
 
-        const { intl } = this.props;
-        const fieldsTitle = {
-            title: intl.formatMessage({id: "wizard.title", defaultMessage: "Title"}),
-            description: intl.formatMessage({id: "wizard.fieldDescription", defaultMessage: "Description"}),
-            created: intl.formatMessage({id: "wizard.created", defaultMessage: "Created"}),
-            lastModified: intl.formatMessage({id: "wizard.lastModified", defaultMessage: "Last Modified"}),
-            user: intl.formatMessage({id: "wizard.user", defaultMessage: "User"}),
-            usage: intl.formatMessage({id: "wizard.usage", defaultMessage: "Usage"}),
-            lists: intl.formatMessage({id: "wizard.lists", defaultMessage: "Lists"}),
-            actions: intl.formatMessage({id: "wizard.actions", defaultMessage: "Actions"}),
-        };
-        const messages = {
-            infoDelete: intl.formatMessage({id: "wizard.buttonInfoDeleteList", defaultMessage: "Delete this alert list"}),
-            infoNoDelete: intl.formatMessage({id: "wizard.buttonInfoNoDeleteList", defaultMessage: "List used in alert rules"}),
-            infoUpdate: intl.formatMessage({id: "wizard.buttonInfoUpdateList", defaultMessage: "Edit this alert list"}),
-            createAlertList: intl.formatMessage({id: "wizard.createAlertList", defaultMessage: "Create alert list"}),
-            importAlertList: intl.formatMessage({id: "wizard.importAlertList", defaultMessage: "Import alert list"}),
-            exportAlertList: intl.formatMessage({id: "wizard.exportAlertList",  defaultMessage :"Export alert list"}),
-            confirmDeletion: intl.formatMessage({id: "wizard.confirmDeletionList",  defaultMessage :"Do you really want to delete the alert list"}),
-        };
+    useEffect(() => {
+        Reflux.connect(AlertListStore);
+        _loadList();
+    }, []);
 
-        this.state = {
-            fieldsTitle: fieldsTitle,
-            messages: messages,
-            lists: []
-        };
-    }
-
-    componentDidMount() {
-        this.list();
-    }
-
-    list() {
+    const _loadList = () => {
         AlertListActions.list().then(lists => {
-            this.setState({
-                fieldsTitle: this.state.fieldsTitle,
-                messages: this.state.messages,
-                lists: lists
-            });
+            setLists(lists);
         });
-    }
+    };
 
-    deleteAlertList(name) {
-        AlertListActions.deleteByName(name);
-    }
-
-    _deleteAlertListFunction(name) {
+    const _deleteAlertListFunction = (name) => {
         return () => {
-            if (window.confirm(`${this.state.messages.confirmDeletion} "${name}" ?`)) {
-                this.deleteAlertList(name);
+            if (window.confirm(`${messages.confirmDeletion} "${name}" ?`)) {
+                AlertListActions.deleteByName(name);
             }
         };
-    }
+    };
 
-    _headerCellFormatter(header) {
+    const _headerCellFormatter = (header) => {
         let formattedHeaderCell;
 
         switch (header.toLocaleLowerCase()) {
             case 'actions':
-                formattedHeaderCell = <th className="actions">{header}</th>;
+                formattedHeaderCell = (<th className="actions">{header}</th>);
                 break;
             default:
-                formattedHeaderCell = <th>{header}</th>;
+                formattedHeaderCell = (<th>{header}</th>);
         }
 
         return formattedHeaderCell;
-    }
+    };
 
-    _onCloneSubmit(name, title, description) {
+    const _onCloneSubmit = (name, title, description) => {
         AlertListActions.get(name).then(list => {
             const newList = {
                 title: title,
                 description: description,
                 lists: list.lists
             }
-            AlertListActions.create(newList).finally(() => this.list());
+            AlertListActions.create(newList).finally(() => _loadList());
         });
-    }
+    };
 
-    _availableFieldName() {
-        return [
-            {value: 'Description', label: this.state.fieldsTitle.description},
-            {value: 'Created', label: this.state.fieldsTitle.created},
-            {value: 'Last Modified', label: this.state.fieldsTitle.lastModified},
-            {value: 'User', label: this.state.fieldsTitle.user},
-            {value: 'Usage', label: this.state.fieldsTitle.usage},
-            {value: 'Lists', label: this.state.fieldsTitle.lists},
-        ];
-    }
+    const _getFieldName = (field) => {
+        return availableFieldName.filter((t) => t.value === field)[0].label;
+    };
 
-    _getFieldName(field) {
-        return this._availableFieldName().filter((t) => t.value === field)[0].label;
-    }
-
-    // TODO shouldn't it be Button instead of button here?
-    _listInfoFormatter(list) {
+    const _listInfoFormatter = (list) => {
         const deleteAction = (
             <IfPermitted permissions="wizard_alerts_rules:delete">
                 <button id="delete-list" type="button" className="btn btn-primary" disabled={list.usage > 0}
-                        title={list.usage ? this.state.messages.infoNoDelete : this.state.messages.infoDelete}
-                        onClick={this._deleteAlertListFunction(list.title)}>
+                        title={list.usage ? messages.infoNoDelete : messages.infoDelete}
+                        onClick={_deleteAlertListFunction(list.title)}>
                     <FormattedMessage id ="wizard.delete" defaultMessage="Delete" />
                 </button>
             </IfPermitted>
@@ -151,14 +124,14 @@ class AlertListDisplay extends React.Component {
         const updateList = (
             <IfPermitted permissions="wizard_alerts_rules:read">
                 <LinkContainer to={Routes.pluginRoute('WIZARD_UPDATELIST_ALERTLISTTITLE')(list.title.replace(/\//g, '%2F'))}>
-                    <Button bsStyle="info" type="submit" title={this.state.messages.infoUpdate} >
+                    <Button bsStyle="info" type="submit" title={messages.infoUpdate} >
                         <FormattedMessage id ="wizard.edit" defaultMessage="Edit" />
                     </Button>
                 </LinkContainer>
             </IfPermitted>
         );
 
-        const cloneList = <AlertListCloneForm listTitle={list.title} onSubmit={this._onCloneSubmit}/>
+        const cloneList = <AlertListCloneForm listTitle={list.title} onSubmit={_onCloneSubmit}/>
 
         const actions = (
             <div className="pull-left">
@@ -171,7 +144,7 @@ class AlertListDisplay extends React.Component {
         const tooltipUser = (<FormattedMessage id ="wizard.tooltipUserList" defaultMessage="The last user who modified the list" />);
 
         let tabFields = [<td className="limited">{list.title}</td>];
-        this.props.config.field_order.map((field) => {
+        config.field_order.map((field) => {
             if (field.enabled) {
                 switch (field.name) {
                     case 'Description':
@@ -209,56 +182,54 @@ class AlertListDisplay extends React.Component {
                 <td style={{whiteSpace: 'nowrap'}}>{actions}</td>
             </tr>
         );
-    }
+    };
 
-    render () {
-
+    if(lists) {
         const filterKeys = ['title', 'created_at', 'last_modified', 'creator_user_id', 'lists'];
-        let headers = [this.state.fieldsTitle.title];
-        this.props.config.field_order.map((field) => {
+        const headers = [fieldsTitle.title];
+        config.field_order.map((field) => {
             if (field.enabled) {
-                headers.push(this._getFieldName(field.name));
+                headers.push(_getFieldName(field.name));
             }
         });
-        headers.push(this.state.fieldsTitle.actions);
+        headers.push(fieldsTitle.actions);
 
-        if(this.state.lists) {
-              return (
-                  <div>
-                      <div className="pull-right has-bm">
-                          <LinkContainer to={Routes.pluginRoute('WIZARD_NEWLIST')}>
-                              <Button bsStyle="success" type="submit" title={this.state.messages.createAlertList}>
-                                  <FormattedMessage id="wizard.create" defaultMessage="Create"/>
-                              </Button>
-                          </LinkContainer>
-                          {' '}
-                          <LinkContainer to={Routes.pluginRoute('WIZARD_IMPORTLIST')}>
-                              <Button bsStyle="success" type="submit" title={this.state.messages.importAlertList}>
-                                  <FormattedMessage id="wizard.import" defaultMessage="Import"/>
-                              </Button>
-                          </LinkContainer>
-                          {' '}
-                          <LinkContainer to={Routes.pluginRoute('WIZARD_EXPORTLIST')}>
-                              <Button bsStyle="success" type="submit" title={this.state.messages.exportAlertList}>
-                                  <FormattedMessage id="wizard.export" defaultMessage="Export"/>
-                              </Button>
-                          </LinkContainer>
-                      </div>
-                      <DataTable id="alert-list"
-                                 className="table-hover"
-                                 headers={headers}
-                                 headerCellFormatter={this._headerCellFormatter}
-                                 sortByKey={"title"}
-                                 rows={this.state.lists}
-                                 filterBy="title"
-                                 dataRowFormatter={this._listInfoFormatter}
-                                 filterLabel={<FormattedMessage id="wizard.filterlists" defaultMessage="Filter lists"/>}
-                                 filterKeys={filterKeys}/>
-                  </div>
-              );
-          }
-          return <Spinner/>
+        return (
+            <div>
+                <div className="pull-right has-bm">
+                    <LinkContainer to={Routes.pluginRoute('WIZARD_NEWLIST')}>
+                        <Button bsStyle="success" type="submit" title={messages.createAlertList}>
+                            <FormattedMessage id="wizard.create" defaultMessage="Create"/>
+                        </Button>
+                    </LinkContainer>
+                    {' '}
+                    <LinkContainer to={Routes.pluginRoute('WIZARD_IMPORTLIST')}>
+                        <Button bsStyle="success" type="submit" title={messages.importAlertList}>
+                            <FormattedMessage id="wizard.import" defaultMessage="Import"/>
+                        </Button>
+                    </LinkContainer>
+                    {' '}
+                    <LinkContainer to={Routes.pluginRoute('WIZARD_EXPORTLIST')}>
+                        <Button bsStyle="success" type="submit" title={messages.exportAlertList}>
+                            <FormattedMessage id="wizard.export" defaultMessage="Export"/>
+                        </Button>
+                    </LinkContainer>
+                </div>
+                <DataTable id="alert-list"
+                           className="table-hover"
+                           headers={headers}
+                           headerCellFormatter={_headerCellFormatter}
+                           sortByKey={"title"}
+                           rows={lists}
+                           filterBy="title"
+                           dataRowFormatter={_listInfoFormatter}
+                           filterLabel={<FormattedMessage id="wizard.filterlists" defaultMessage="Filter lists"/>}
+                           filterKeys={filterKeys}/>
+            </div>
+        );
+    } else {
+        return <Spinner/>
     }
-}
+};
 
-export default injectIntl(AlertListDisplay);
+export default AlertListDisplay;

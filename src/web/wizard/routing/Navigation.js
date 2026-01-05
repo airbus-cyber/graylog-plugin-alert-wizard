@@ -30,9 +30,19 @@ function getWizardNewAlertRoute() {
     return Routes.pluginRoute('WIZARD_NEWALERT');
 }
 
+function getWizardListRoute() {
+    return Routes.pluginRoute('WIZARD_LISTS');
+}
+
+function getWizardNewListRoute() {
+    return Routes.pluginRoute('WIZARD_NEWLIST');
+}
+
 const Navigation = {
     getWizardRoute,
-    getWizardNewAlertRoute
+    getWizardNewAlertRoute,
+    getWizardListRoute,
+    getWizardNewListRoute
 };
 
 export default Navigation;
