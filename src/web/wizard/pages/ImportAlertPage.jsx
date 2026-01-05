@@ -34,7 +34,6 @@ const messages = {
     'fr': messages_fr
 };
 
-// TODO should try to factor import code between this page and ImportListPage
 class ImportAlertPage extends React.Component {
 
     state = {
