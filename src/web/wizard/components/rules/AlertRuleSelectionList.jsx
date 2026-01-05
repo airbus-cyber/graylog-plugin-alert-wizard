@@ -29,7 +29,7 @@ const AlertRuleSelectionList = ({alertRules, emptyMessage, onRuleSelectionChange
 
     useEffect(() => {
         setSelectedAlertTitles(new Set());
-    }, [alertRules])
+    }, [alertRules]);
 
     const onSearch = (filter) => {
         setAlertTitlesFilter(filter);
@@ -42,7 +42,7 @@ const AlertRuleSelectionList = ({alertRules, emptyMessage, onRuleSelectionChange
     const onQueryChange = () => { };
 
     const handleRuleSelect = (event, title) => {
-        let newSelection = selectedAlertTitles
+        let newSelection = new Set([...selectedAlertTitles]);
         if (event.target.checked) {
             newSelection.add(title);
         } else {

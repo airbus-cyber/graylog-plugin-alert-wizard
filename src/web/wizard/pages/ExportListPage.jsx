@@ -17,11 +17,11 @@
 
 // sources of inspiration for this code: 
 // * views/components/views/MissingRequirements.tsx
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { IntlProvider, FormattedMessage } from 'react-intl';
 import { LinkContainer } from 'react-router-bootstrap';
 import messages_fr from 'translations/fr.json';
-import { Row, Col, Button } from 'components/bootstrap';
+import { Input, Row, Col, Button } from 'components/bootstrap';
 import { DocumentTitle, PageHeader} from 'components/common';
 import UserNotification from 'util/UserNotification';
 import { adjustFormat } from 'util/DateTime';
@@ -36,117 +36,122 @@ const messages = {
     'fr': messages_fr
 };
 
-class ExportListPage extends React.Component {
+const ExportListPage = () => {
 
-    state = {};
+    const [alertLists, setAlertLists] = useState([]);
+    const [selectedAlertLists, setSelectedAlertLists] = useState(new Set());
 
-    componentDidMount() {
+    useEffect(() => {
         AlertListActions.list().then(newLists => {
-            this.setState({alertLists: newLists});
+            setAlertLists(newLists);
         });
-    }
+    }, []);
 
-    isEmpty(obj) {
+    const isEmpty = (obj) => {
         return ((obj === undefined) || (typeof obj.count === 'function' ? obj.count() === 0 : obj.length === 0));
-    }
+    };
 
-    selectAllAlertLists(){
-        Object.keys(this.refs).forEach((key) => {
-            if (key.indexOf('alertLists') === 0) {
-                this.refs[key].checked = true;
-            }
-        });
-    }
+    const selectAllAlertLists = () => {
+        const newSelection = new Set();
+        alertLists.forEach((alertList) => newSelection.add(alertList.title));
+        setSelectedAlertLists(newSelection);
+    };
 
-    formatAlertList(alertList) {
+    const handleAlertListSelect = (event, title) => {
+        const newSelection = new Set([...selectedAlertLists]);
+        if (event.target.checked) {
+            newSelection.add(title);
+        } else {
+            newSelection.delete(title);
+        }
+        setSelectedAlertLists(newSelection);
+    };
+
+    const formatAlertList = (alertList) => {
         return (
-            <div className="checkbox" key={`alertList_checkbox-${alertList.title}`}>
-                <label className="checkbox"><input ref={`alertLists.${alertList.title}`} type="checkbox" name="alertLists" id={`alertList_${alertList.title}`} value={alertList.title} />{alertList.title}</label>
-                <span className="help-inline"><FormattedMessage id= "wizard.fieldDescription" defaultMessage= "Description" />: <tt>{alertList.description}</tt></span>
-                <span className="help-inline"><FormattedMessage id= "wizard.fieldLists" defaultMessage= "Lists" />: <tt>{alertList.lists}</tt></span>
+            <div className="checkbox">
+                <Input id={`alertList_${alertList.title}`}
+                       type="checkbox"
+                       checked={selectedAlertLists.has(alertList.title)}
+                       label={alertList.title}
+                       onChange={event => handleAlertListSelect(event, alertList.title)}
+                />
+                <div className="help-inline"><FormattedMessage id= "wizard.fieldDescription" defaultMessage= "Description" />: <tt>{alertList.description}</tt></div>
+                <div className="help-inline"><FormattedMessage id= "wizard.fieldLists" defaultMessage= "Lists" />: <tt>{alertList.lists}</tt></div>
             </div>
         );
-    }
+    };
 
-    onSubmit(evt) {
+    const onSubmit = (evt) => {
         evt.preventDefault();
         const request = {
-            titles: [],
+            titles: [...selectedAlertLists],
         };
-        Object.keys(this.refs).forEach((key) => {
-            if (key.indexOf('alertLists') === 0 && this.refs[key].checked === true) {
-                request['titles'].push(this.refs[key].value);
-            }
-        });
 
         AlertListActions.exportAlertLists(request).then((response) => {
             UserNotification.success('Successfully export alert lists. Starting download...', 'Success!');
-            // TODO factor with ExportAlertPage?
             let date = adjustFormat(new Date()).replace(/:/g, '').replace(/ /g, '_')
             FileSaver.save(response, date+'_alert_lists.json', 'application/json', 'utf-8');
         });
-    }
+    };
 
-    render() {
-
-        return (
-            <IntlProvider locale={language} messages={messages[language]}>
-                <DocumentTitle title="Export list">
-                    <div>
-                        <PageHeader title={<FormattedMessage id= "wizard.exportWizardList" defaultMessage= "Wizard: Export lists" />}
-                                    actions={(
-                                        <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
-                                            <Button bsStyle="info"><FormattedMessage id="wizard.backlist" defaultMessage= "Back to lists" /></Button>
-                                        </LinkContainer>
-                                    )}>
-                            <span>
-                                <FormattedMessage id= "wizard.exportAlertList" defaultMessage= "You can export a list." />
-                            </span>
-                            <span>
-                                <FormattedMessage id="wizard.documentationlist"
-                                                  defaultMessage= "Read more about Wizard lists in the documentation." />
-                            </span>
-                        </PageHeader>
-                        <Row className="content">
-                            <Col md={6}>
-                                <form className="form-horizontal build-content-pack" onSubmit={this.onSubmit}>
-                                    <div className="form-group">
-                                        <Col sm={2}>
-                                            <label className="control-label" htmlFor="name">
-                                                <FormattedMessage id ="wizard.alertsLists" defaultMessage="Lists" />
-                                            </label>
-                                        </Col>
-                                        <Col sm={10}>
-                                            {this.isEmpty(this.state.alertLists) ?
-                                                <span className="help-block help-standalone">
-                                                    <FormattedMessage id ="wizard.noListsToExport" defaultMessage="There is no lists to export." />
-                                                </span>
-                                                :
-                                                <span>
-                                                  <Button className="btn btn-sm btn-link select-all" onClick={this.selectAllAlertLists}>
-                                                      <FormattedMessage id ="wizard.selectAll" defaultMessage="Select all" />
-                                                  </Button>
-                                                    {this.state.alertLists.sort((i1, i2) => { return i1.title.localeCompare(i2.title); }).map(this.formatAlertList)}
-                                                </span>
-                                            }
-                                        </Col>
-                                    </div>
-                                    <div className="form-group">
-                                        <Col smOffset={2} sm={10}>
-                                            <Button bsStyle="success" type="submit">
-                                                <IconDownload/>
-                                                <FormattedMessage id ="wizard.downloadContentPack" defaultMessage="Download my content pack" />
-                                            </Button>
-                                        </Col>
-                                    </div>
-                                </form>
-                            </Col>
-                        </Row>
-                    </div>
-                </DocumentTitle>
-            </IntlProvider>
-        );
-    }
+    return (
+        <IntlProvider locale={language} messages={messages[language]}>
+            <DocumentTitle title="Export list">
+                <div>
+                    <PageHeader title={<FormattedMessage id= "wizard.exportWizardList" defaultMessage= "Wizard: Export lists" />}
+                                actions={(
+                                    <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
+                                        <Button bsStyle="info"><FormattedMessage id="wizard.backlist" defaultMessage= "Back to lists" /></Button>
+                                    </LinkContainer>
+                                )}>
+                        <span>
+                            <FormattedMessage id= "wizard.exportAlertList" defaultMessage= "You can export a list." />
+                        </span>
+                        <span>
+                            <FormattedMessage id="wizard.documentationlist"
+                                              defaultMessage= "Read more about Wizard lists in the documentation." />
+                        </span>
+                    </PageHeader>
+                    <Row className="content">
+                        <Col md={6}>
+                            <form className="form-horizontal build-content-pack" onSubmit={onSubmit}>
+                                <div className="form-group">
+                                    <Col sm={2}>
+                                        <label className="control-label" htmlFor="name">
+                                            <FormattedMessage id ="wizard.alertsLists" defaultMessage="Lists" />
+                                        </label>
+                                    </Col>
+                                    <Col sm={10}>
+                                        {isEmpty(alertLists) ?
+                                            <span className="help-block help-standalone">
+                                                <FormattedMessage id ="wizard.noListsToExport" defaultMessage="There is no lists to export." />
+                                            </span>
+                                            :
+                                            <span>
+                                              <Button className="btn btn-sm btn-link select-all" onClick={selectAllAlertLists}>
+                                                  <FormattedMessage id ="wizard.selectAll" defaultMessage="Select all" />
+                                              </Button>
+                                                {alertLists.sort((i1, i2) => { return i1.title.localeCompare(i2.title); }).map(formatAlertList)}
+                                            </span>
+                                        }
+                                    </Col>
+                                </div>
+                                <div className="form-group">
+                                    <Col smOffset={2} sm={10}>
+                                        <Button bsStyle="success" type="submit">
+                                            <IconDownload/>
+                                            <FormattedMessage id ="wizard.downloadContentPack" defaultMessage="Download my content pack" />
+                                        </Button>
+                                    </Col>
+                                </div>
+                            </form>
+                        </Col>
+                    </Row>
+                </div>
+            </DocumentTitle>
+        </IntlProvider>
+    );
 }
 
 export default ExportListPage;
