@@ -15,98 +15,82 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, {useState} from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Spinner } from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import Routes from 'routing/Routes';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Input, Button, Col, Row } from 'components/bootstrap';
 
+const CreateListFormInput = ({list, onSave}) =>  {
 
-const INIT_LIST = {
-    title: '',
-    description: '',
-    lists: '',
+    const [newList, setNewList] = useState(list);
+
+    const _updateConfigField = (field, value) => {
+        const update = ObjectUtils.clone(newList);
+        update[field] = value;
+        setNewList(update);
+    };
+
+    const _onUpdate = (field) => {
+        return e => {
+            _updateConfigField(field, e.target.value);
+        };
+    };
+
+    const buttonCancel = (
+        <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
+            <Button><FormattedMessage id= "wizard.cancel" defaultMessage="Cancel" /></Button>
+        </LinkContainer>
+    );
+
+    const buttonSave = (
+        <Button onClick={() => onSave(newList)}
+                disabled={newList.title === '' || newList.lists === ''}
+                bsStyle="primary" className="btn btn-primary">
+            <FormattedMessage id="wizard.save" defaultMessage="Save" />
+        </Button>
+    );
+
+    const actions = (
+        <div className="pull-left">
+            {buttonCancel}{' '}
+            {buttonSave}{' '}
+        </div>);
+
+    const style = { display: 'flex', alignItems: 'center' };
+
+    return (
+        <div>
+            <Row>
+                <Col md={4}>
+                    <Input id="title" type="text" required label={<FormattedMessage id ="wizard.title" defaultMessage="Title" />}
+                           onChange={_onUpdate('title')} defaultValue={newList.title} name="title" disabled={newList.usage}/>
+                    <Input id="description" type="text" label={<FormattedMessage id= "wizard.fieldOptionalDescription" defaultMessage="Description (optional)" />}
+                           onChange={_onUpdate('description')}
+                           defaultValue={newList.description}
+                           name="description"/>
+                </Col>
+            </Row>
+            <Row style={style}>
+                <Col md={5}>
+                <Input style={{minWidth: 600}} id="lists" name="lists" type="textarea" rows="10"
+                       label={<FormattedMessage id="wizard.fieldListwithexemple" defaultMessage="List (example : 172.10.0.1; 192.168.1.4; ...)" />}
+                       onChange={_onUpdate('lists')} defaultValue={newList.lists} />
+                    {actions}
+                </Col>
+            </Row>
+        </div>
+    );
 };
 
-class CreateListFormInput extends React.Component {
-
-    static propTypes = {
-        list: PropTypes.object,
-        onSave: PropTypes.func.isRequired,
-    }
-
-    static defaultProps = {
-        list: INIT_LIST
-    }
-
-    state = {
-        list: ObjectUtils.clone(this.props.list),
-        contentComponent: <Spinner/>,
-
-    }
-
-    _updateConfigField(field, value) {
-        const update = ObjectUtils.clone(this.state.list);
-        update[field] = value;
-        this.setState({ list: update });
-    }
-
-    _onUpdate(field) {
-        return e => {
-            this._updateConfigField(field, e.target.value);
-        };
-    }
-
-    render() {
-
-        const buttonCancel = (
-            <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
-                <Button><FormattedMessage id= "wizard.cancel" defaultMessage="Cancel" /></Button>
-            </LinkContainer>
-        );
-
-        const buttonSave = (
-            <Button onClick={() => this.props.onSave(this.state.list)}
-                    disabled={this.state.list.title === '' || this.state.list.lists === ''}
-                    bsStyle="primary" className="btn btn-primary">
-                <FormattedMessage id="wizard.save" defaultMessage="Save" />
-            </Button>
-        );
-
-        const actions = (
-            <div className="pull-left">
-                {buttonCancel}{' '}
-                {buttonSave}{' '}
-            </div>);
-
-        const style = { display: 'flex', alignItems: 'center' };
-
-        return (
-            <div>
-                <Row>
-                    <Col md={4}>
-                        <Input id="title" type="text" required label={<FormattedMessage id ="wizard.title" defaultMessage="Title" />}
-                               onChange={this._onUpdate('title')} defaultValue={this.state.list.title} name="title" disabled={this.state.list.usage}/>
-                        <Input id="description" type="text" label={<FormattedMessage id= "wizard.fieldOptionalDescription" defaultMessage="Description (optional)" />}
-                               onChange={this._onUpdate('description')}
-                               defaultValue={this.state.list.description}
-                               name="description"/>
-                    </Col>
-                </Row>
-                <Row style={style}>
-                    <Col md={5}>
-                    <Input style={{minWidth: 600}} ref="lists" id="lists" name="lists" type="textarea" rows="10"
-                           label={<FormattedMessage id="wizard.fieldListwithexemple" defaultMessage="List (example : 172.10.0.1; 192.168.1.4; ...)" />}
-                           onChange={this._onUpdate('lists')} defaultValue={this.state.list.lists} />
-                        {actions}
-                    </Col>
-                </Row>
-            </div>
-        );
-    }
+CreateListFormInput.defaultProps = {
+    list: {
+        title: '',
+        description: '',
+        lists: ''
+    },
+    onSave: () => {}
 }
 
 export default CreateListFormInput;

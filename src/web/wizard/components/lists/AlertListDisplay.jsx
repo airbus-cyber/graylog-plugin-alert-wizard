@@ -76,7 +76,9 @@ const AlertListDisplay = ({config}) => {
     const _deleteAlertListFunction = (name) => {
         return () => {
             if (window.confirm(`${messages.confirmDeletion} "${name}" ?`)) {
-                AlertListActions.deleteByName(name);
+                AlertListActions.deleteByName(name).finally(() => {
+                    _loadList();
+                });
             }
         };
     };
