@@ -15,14 +15,16 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-import React from 'react';
-import Routes from 'routing/Routes';
+import React, {useState} from 'react';
 import { IntlProvider, FormattedMessage } from 'react-intl';
+import Routes from 'routing/Routes';
+import useHistory from 'routing/useHistory';
 import { LinkContainer } from 'react-router-bootstrap';
-import { Row, Col, Button } from 'components/bootstrap';
+import { Input, Row, Col, Button } from 'components/bootstrap';
 import messages_fr from 'translations/fr.json';
 import AlertListActions from 'wizard/actions/AlertListActions';
 import { DocumentTitle, PageHeader } from 'components/common';
+import Navigation from 'wizard/routing/Navigation';
 
 const language = navigator.language.split(/[-_]/)[0];
 
@@ -30,130 +32,150 @@ const messages = {
     'fr': messages_fr
 };
 
-class ImportListPage  extends React.Component {
+const ImportListPage = () => {
+    const history = useHistory();
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [alertLists, setAlertLists] = useState([]);
+    const [selectedAlertLists, setSelectedAlertLists] = useState(new Set());
 
-    state = {}
+    const onSelectUploadFile = (event) => {
+        setSelectedFile(event.target.files[0]);
+    };
 
-    onSubmitUploadFile(submitEvent) {
+    const onSubmitUploadFile = (submitEvent) => {
         submitEvent.preventDefault();
-        if (!this.refs.uploadedFile.files || !this.refs.uploadedFile.files[0]) {
-            return;
+
+        if (selectedFile !== null) {
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                setAlertLists(JSON.parse(evt.target.result));
+            };
+
+            reader.readAsText(selectedFile);
         }
+    };
 
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-            this.setState({alertLists: JSON.parse(evt.target.result)});
-        };
-
-        reader.readAsText(this.refs.uploadedFile.files[0]);
-    }
-
-    isEmpty(obj) {
+    const isEmpty = (obj) => {
         return ((obj === undefined) || (typeof obj.count === 'function' ? obj.count() === 0 : obj.length === 0));
-    }
+    };
 
-    selectAllAlertLists(){
-        Object.keys(this.refs).forEach((key) => {
-            if (key.indexOf('alertLists') === 0) {
-                this.refs[key].checked = true;
-            }
-        });
-    }
+    const selectAllAlertLists = () => {
+        const newSelection = new Set();
+        alertLists.forEach((alertList) => newSelection.add(alertList.title));
+        setSelectedAlertLists(newSelection);
+    };
 
-    formatAlertList(alertList) {
+    const handleAlertListSelect = (event, title) => {
+        const newSelection = new Set([...selectedAlertLists]);
+        if (event.target.checked) {
+            newSelection.add(title);
+        } else {
+            newSelection.delete(title);
+        }
+        setSelectedAlertLists(newSelection);
+    };
+
+    const formatAlertList = (alertList) => {
         return (
-            <div className="checkbox" key={`alertList_checkbox-${alertList.title}`}>
-                <label className="checkbox"><input ref={`alertLists.${alertList.title}`} type="checkbox" name="alertLists" id={`alertList_${alertList.title}`} value={JSON.stringify(alertList)} />{alertList.title}</label>
-                <span className="help-inline"><FormattedMessage id= "wizard.fieldDescription" defaultMessage= "Description" />: <tt>{alertList.description}</tt></span>
-                <span className="help-inline"><FormattedMessage id= "wizard.fieldLists" defaultMessage= "Lists" />: <tt>{alertList.lists}</tt></span>
+            <div className="checkbox">
+                <Input id={`alertList_${alertList.title}`}
+                       type="checkbox"
+                       checked={selectedAlertLists.has(alertList.title)}
+                       onChange={event => handleAlertListSelect(event, alertList.title)}
+                       label={alertList.title}
+                />
+                <div className="help-inline"><FormattedMessage id= "wizard.fieldDescription" defaultMessage= "Description" />: <tt>{alertList.description}</tt></div>
+                <div className="help-inline"><FormattedMessage id= "wizard.fieldLists" defaultMessage= "Lists" />: <tt>{alertList.lists}</tt></div>
             </div>
         );
-    }
+    };
 
-    onSubmitApplyAlertLists(evt){
+    const onSubmitApplyAlertLists = (evt) => {
         evt.preventDefault();
         const request = [];
 
-        Object.keys(this.refs).forEach((key, idx) => {
-            if (key.indexOf('alertLists') === 0 && this.refs[key].checked === true) {
-                request.push(JSON.parse(this.refs[key].value));
-            }
+        alertLists.forEach((alertList) => {
+           if (selectedAlertLists.has(alertList.title)) {
+               request.push(alertList);
+           }
         });
 
-        AlertListActions.importAlertLists(request);
-    }
+        AlertListActions.importAlertLists(request).then(response => {
+            if (response !== true) {
+                return;
+            }
+            history.push(Navigation.getWizardListRoute());
+        });
+    };
 
-    render() {
-
-        return (
-            <IntlProvider locale={language} messages={messages[language]}>
-                <DocumentTitle title="Import list">
-                    <div>
-                        <PageHeader title={<FormattedMessage id= "wizard.importWizardList" defaultMessage= "Wizard: Import lists" />}
-                                    actions={(
-                                        <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
-                                            <Button bsStyle="info"><FormattedMessage id="wizard.backlist" defaultMessage= "Back to lists" /></Button>
-                                        </LinkContainer>
-                                    )}>
-                            <span>
-                                <FormattedMessage id= "wizard.importLists" defaultMessage= "You can import a list." />
-                            </span>
-                            <span>
-                                <FormattedMessage id="wizard.documentationlist"
-                                                  defaultMessage= "Read more about Wizard lists in the documentation." />
-                            </span>
-                        </PageHeader>
-                        <Row className="content">
-                            <Col md={12}>
-                                <form onSubmit={this.onSubmitUploadFile} className="upload" encType="multipart/form-data">
-                                    <div className="form-group">
-                                        <input ref="uploadedFile" type="file" name="bundle" />
-                                    </div>
-                                    <button type="submit" className="btn btn-success">
-                                        <FormattedMessage id="wizard.upload" defaultMessage= "Upload" />
-                                    </button>
-                                </form>
-                            </Col>
-                        </Row>
-                        <Row className="content">
-                            <Col md={6}>
-                                <form className="form-horizontal build-content-pack" onSubmit={this.onSubmitApplyAlertLists}>
-                                    <div className="form-group">
-                                        <Col sm={2}>
-                                            <label className="control-label" htmlFor="name">
-                                                <FormattedMessage id ="wizard.alertsList" defaultMessage="Lists" />
-                                            </label>
-                                        </Col>
-                                        <Col sm={10}>
-                                            {this.isEmpty(this.state.alertLists) ?
-                                                <span className="help-block help-standalone">
-                                                    <FormattedMessage id ="wizard.noAlertListsToExport" defaultMessage="There is no list to import." />
-                                                </span>
-                                                :
-                                                <span>
-                                                  <Button className="btn btn-sm btn-link select-all" onClick={this.selectAllAlertLists}>
-                                                      <FormattedMessage id ="wizard.selectAll" defaultMessage="Select all" />
-                                                  </Button>
-                                                    {this.state.alertLists.map(this.formatAlertList)}
-                                                </span>
-                                            }
-                                        </Col>
-                                    </div>
-                                    <div className="form-group">
-                                        <Col smOffset={2} sm={10}>
-                                            <Button bsStyle="success" type="submit">
-                                                <FormattedMessage id ="wizard.applyLists" defaultMessage="Apply lists" />
-                                            </Button>
-                                        </Col>
-                                    </div>
-                                </form>
-                            </Col>
-                        </Row>
-                    </div>
-                </DocumentTitle>
-            </IntlProvider>
-        );
-    }
+    return (
+        <IntlProvider locale={language} messages={messages[language]}>
+            <DocumentTitle title="Import list">
+                <div>
+                    <PageHeader title={<FormattedMessage id= "wizard.importWizardList" defaultMessage= "Wizard: Import lists" />}
+                                actions={(
+                                    <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
+                                        <Button bsStyle="info"><FormattedMessage id="wizard.backlist" defaultMessage= "Back to lists" /></Button>
+                                    </LinkContainer>
+                                )}>
+                        <span>
+                            <FormattedMessage id= "wizard.importLists" defaultMessage= "You can import a list." />
+                        </span>
+                        <span>
+                            <FormattedMessage id="wizard.documentationlist"
+                                              defaultMessage= "Read more about Wizard lists in the documentation." />
+                        </span>
+                    </PageHeader>
+                    <Row className="content">
+                        <Col md={12}>
+                            <form onSubmit={onSubmitUploadFile} className="upload" encType="multipart/form-data">
+                                <div className="form-group">
+                                    <Input type="file" name="bundle" onChange={onSelectUploadFile} />
+                                </div>
+                                <button type="submit" className="btn btn-success">
+                                    <FormattedMessage id="wizard.upload" defaultMessage= "Upload" />
+                                </button>
+                            </form>
+                        </Col>
+                    </Row>
+                    <Row className="content">
+                        <Col md={6}>
+                            <form className="form-horizontal build-content-pack" onSubmit={onSubmitApplyAlertLists}>
+                                <div className="form-group">
+                                    <Col sm={2}>
+                                        <label className="control-label" htmlFor="name">
+                                            <FormattedMessage id ="wizard.alertsList" defaultMessage="Lists" />
+                                        </label>
+                                    </Col>
+                                    <Col sm={10}>
+                                        {isEmpty(alertLists) ?
+                                            <span className="help-block help-standalone">
+                                                <FormattedMessage id ="wizard.noAlertListsToExport" defaultMessage="There is no list to import." />
+                                            </span>
+                                            :
+                                            <span>
+                                              <Button className="btn btn-sm btn-link select-all" onClick={selectAllAlertLists}>
+                                                  <FormattedMessage id ="wizard.selectAll" defaultMessage="Select all" />
+                                              </Button>
+                                                {alertLists.map(formatAlertList)}
+                                            </span>
+                                        }
+                                    </Col>
+                                </div>
+                                <div className="form-group">
+                                    <Col smOffset={2} sm={10}>
+                                        <Button bsStyle="success" type="submit">
+                                            <FormattedMessage id ="wizard.applyLists" defaultMessage="Apply lists" />
+                                        </Button>
+                                    </Col>
+                                </div>
+                            </form>
+                        </Col>
+                    </Row>
+                </div>
+            </DocumentTitle>
+        </IntlProvider>
+    );
 }
 
 export default ImportListPage;
