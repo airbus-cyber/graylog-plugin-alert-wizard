@@ -15,19 +15,18 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-import PropTypes from 'prop-types';
-import React from 'react';
-import Reflux from 'reflux';
+import React, {useEffect, useState} from 'react';
 import { Button, Col, Row } from 'components/bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { DocumentTitle, PageHeader, Spinner } from 'components/common';
-import CreateListFormInput from 'wizard/components/lists/CreateListFormInput';
-import AlertListActions from 'wizard/actions/AlertListActions';
 import Routes from 'routing/Routes';
+import withParams from 'routing/withParams';
+import useHistory from 'routing/useHistory';
 import { FormattedMessage, IntlProvider } from 'react-intl';
 import messages_fr from 'translations/fr.json';
-import withParams from 'routing/withParams';
-import { CurrentUserStore } from 'stores/users/CurrentUserStore';
+import CreateListFormInput from 'wizard/components/lists/CreateListFormInput';
+import AlertListActions from 'wizard/actions/AlertListActions';
+import Navigation from 'wizard/routing/Navigation';
 
 const language = navigator.language.split(/[-_]/)[0];
 
@@ -35,63 +34,60 @@ const messages = {
     'fr': messages_fr
 };
 
-class  UpdateListPage extends React.Component {
+const UpdateListPage = ({params}) => {
 
-    mixins = [Reflux.connect(CurrentUserStore)];
+    const history = useHistory();
+    const [list, setList] = useState(null);
 
-    static propTypes = {
-        params: PropTypes.object.isRequired,
-    }
-
-    componentDidMount() {
-        AlertListActions.get(this.props.params.alertListTitle).then(list => {
-            this.setState({list: list});
+    useEffect(() => {
+        AlertListActions.get(params.alertListTitle).then(list => {
+            setList(list);
         });
+    }, []);
+
+    const _isLoading = () => {
+        return !list;
+    };
+
+    const _update = (newList) => {
+        AlertListActions.update(list.title, newList).finally(() => {
+            history.push(Navigation.getWizardListRoute());
+        });
+    };
+
+    if (_isLoading()) {
+        return <Spinner/>;
     }
 
-    _isLoading() {
-        return !this.state.list;
-    }
-
-    _update(list) {
-        AlertListActions.update(this.state.list.title, list);
-    }
-
-    render() {
-        if (this._isLoading()) {
-            return <Spinner/>;
-        }
-
-        return (
-            <IntlProvider locale={language} messages={messages[language]}>
-                <DocumentTitle title="Edit list">
-                    <div>
-                        <PageHeader title={<FormattedMessage id="wizard.updateList"
-                                                             defaultMessage='Wizard: Editing list "{title}"'
-                                                             values={{title: this.state.list.title}}/>}
-                                    actions={(
-                                        <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
-                                            <Button bsStyle="info"><FormattedMessage id="wizard.backlist" defaultMessage= "Back to lists" /></Button>
-                                        </LinkContainer>
-                                    )}>
+    return (
+        <IntlProvider locale={language} messages={messages[language]}>
+            <DocumentTitle title="Edit list">
+                <div>
+                    <PageHeader title={<FormattedMessage id="wizard.updateList"
+                                                         defaultMessage='Wizard: Editing list "{title}"'
+                                                         values={{title: list.title}}/>}
+                                actions={(
+                                    <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
+                                        <Button bsStyle="info"><FormattedMessage id="wizard.backlist" defaultMessage= "Back to lists" /></Button>
+                                    </LinkContainer>
+                                )}>
+                        <span>
+                            <FormattedMessage id="wizard.definelist" defaultMessage="You can define a list."/>
+                        </span>
                             <span>
-                                <FormattedMessage id="wizard.definelist" defaultMessage="You can define a list."/>
-                            </span>
-                                <span>
-                                <FormattedMessage id="wizard.documentationlist"
-                                                  defaultMessage="Read more about Wizard lists in the documentation."/>
-                            </span>
-                        </PageHeader>
-                        <Row className="content">
-                            <Col md={12}>
-                                <CreateListFormInput list={this.state.list} onSave={this._update}/>
-                            </Col>
-                        </Row>
-                    </div>
-                </DocumentTitle>
-            </IntlProvider>
-        );
-    }
+                            <FormattedMessage id="wizard.documentationlist"
+                                              defaultMessage="Read more about Wizard lists in the documentation."/>
+                        </span>
+                    </PageHeader>
+                    <Row className="content">
+                        <Col md={12}>
+                            <CreateListFormInput list={list} onSave={_update}/>
+                        </Col>
+                    </Row>
+                </div>
+            </DocumentTitle>
+        </IntlProvider>
+    );
 }
 
 export default withParams(UpdateListPage);

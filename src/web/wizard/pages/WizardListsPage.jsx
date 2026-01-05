@@ -28,49 +28,42 @@ const messages = {
     'fr': messages_fr
 };
 
-class WizardListsPage extends React.Component {
+const WizardListsPage = () => {
 
-    _getConfig() {
-        return {
-            field_order: [{name: 'Description', enabled: true},
-                {name: 'Created', enabled: true},
-                {name: 'Last Modified', enabled: true},
-                {name: 'User', enabled: true},
-                {name: 'Usage', enabled: true},
-                {name: 'Lists', enabled: true}],
-            default_values: {
-            },
-            import_policy: "DONOTHING"
-        };
-    }
+    const configWizard = {
+        field_order: [{name: 'Description', enabled: true},
+            {name: 'Created', enabled: true},
+            {name: 'Last Modified', enabled: true},
+            {name: 'User', enabled: true},
+            {name: 'Usage', enabled: true},
+            {name: 'Lists', enabled: true}],
+        default_values: {
+        },
+        import_policy: "DONOTHING"
+    };
 
-    render() {
+    return (
+        <IntlProvider locale={language} messages={messages[language]}>
+            <DocumentTitle title="Lists">
+                <div>
+                    <span>
+                        <PageHeader title={<FormattedMessage id="wizard.lists" defaultMessage= "Lists" />}>
+                            <span>
+                                <FormattedMessage id="wizard.documentationlist"
+                                          defaultMessage= "Read more about Wizard lists in the documentation." />
+                            </span>
+                        </PageHeader>
+                    </span>
 
-        const configWizard = this._getConfig();
-
-        return (
-            <IntlProvider locale={language} messages={messages[language]}>
-                <DocumentTitle title="Lists">
-                    <div>
-                        <span>
-                            <PageHeader title={<FormattedMessage id="wizard.lists" defaultMessage= "Lists" />}>
-                                <span>
-                                    <FormattedMessage id="wizard.documentationlist"
-                                              defaultMessage= "Read more about Wizard lists in the documentation." />
-                                </span>
-                            </PageHeader>
-                        </span>
-
-                        <Row className="content">
-                            <Col md={12}>
-                                <AlertListDisplay config={configWizard}/>
-                            </Col>
-                        </Row>
-                    </div>
-                </DocumentTitle>
-            </IntlProvider>
-        );
-    }
+                    <Row className="content">
+                        <Col md={12}>
+                            <AlertListDisplay config={configWizard}/>
+                        </Col>
+                    </Row>
+                </div>
+            </DocumentTitle>
+        </IntlProvider>
+    );
 }
 
 export default WizardListsPage;
