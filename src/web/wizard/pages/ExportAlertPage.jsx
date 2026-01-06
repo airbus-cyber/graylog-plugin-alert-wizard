@@ -15,7 +15,7 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { IntlProvider, FormattedMessage } from 'react-intl';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Row, Col, Button } from 'components/bootstrap';
@@ -37,26 +37,26 @@ const messages = {
     'fr': messages_fr
 };
 
-class ExportAlertPage extends React.Component {
-    state = {
-        selectedAlertTitles: []
+const ExportAlertPage = () => {
+
+    const [alertRules, setAlertRules] = useState([]);
+    const [selectedAlertTitles, setSelectedAlertTitles] = useState(new Set());
+
+    useEffect(() => {
+        AlertRuleActions.list().then(newAlerts => {
+            setAlertRules(newAlerts);
+        });
+    }, []);
+
+    const handleRuleSelectionChanged = (selection) => {
+        setSelectedAlertTitles(selection);
     };
 
-    componentDidMount() {
-        AlertRuleActions.list().then(newAlerts => {
-            this.setState({ alertRules: newAlerts });
-        });
-    }
-
-    handleRuleSelectionChanged(selection) {
-        this.setState({ selectedAlertTitles: Array.from(selection) });
-    }
-
-    async onSubmit(evt) {
+    const onSubmit = async (evt) => {
         evt.preventDefault();
 
         const alerts = [];
-        for (const title of this.state.selectedAlertTitles) {
+        for (const title of [...selectedAlertTitles]) {
             const alert = await AlertRuleActions.getByTitle(title);
             const notification = await EventNotificationsActions.get(alert.notification);
             // TODO write a test that checks that the notification_parameters are present in the result (using mswjs or selenium?)
@@ -68,47 +68,45 @@ class ExportAlertPage extends React.Component {
         let exportData = RulesImportExport.createExportDataFromRules(alerts);
         let date = adjustFormat(new Date()).replace(/:/g, '').replace(/ /g, '_');
         FileSaver.save(JSON.stringify(exportData), date+'_alert_rules.json', 'application/json', 'utf-8');
-    }
+    };
 
-    render() {
-        const emptyMessage = <FormattedMessage id ="wizard.noAlertRulesToExport" defaultMessage="There are no alert rules to export." />
+    const emptyMessage = <FormattedMessage id ="wizard.noAlertRulesToExport" defaultMessage="There are no alert rules to export." />;
 
-        // TODO should rather use ControlledTableList (see components/sidecar/administration/CollectorsAdministration)
-        return (
-            <IntlProvider locale={language} messages={messages[language]}> 
-                <DocumentTitle title="Export alert rule">
-                    <div>
-                        <PageHeader title={<FormattedMessage id= "wizard.exportWizardAlertRule" defaultMessage= "Wizard: Export alert rules" />}
-                                    actions={(
-                                        <LinkContainer to={Navigation.getWizardRoute()}>
-                                            <Button bsStyle="info"><FormattedMessage id= "wizard.back" defaultMessage= "Back to alert rules" /></Button>
-                                        </LinkContainer>
-                                    )}>
-                            <span>
-                                <FormattedMessage id= "wizard.exportAlertRule" defaultMessage= "You can export an alert rule." />
-                            </span>
-                            <span>
-                                <FormattedMessage id="wizard.documentation" 
-                                defaultMessage= "Read more about Wizard alert rules in the documentation." />
-                            </span>
-                        </PageHeader>
-                        <Row className="content">
-                            <Col md={12}>
-                                <AlertRuleSelectionList emptyMessage={emptyMessage}
-                                                        alertRules={this.state.alertRules}
-                                                        onRuleSelectionChanged={this.handleRuleSelectionChanged}
-                                />
-                                <Button bsStyle="success" onClick={this.onSubmit}>
-                                    <IconDownload/>
-                                    <FormattedMessage id="wizard.downloadContentPack" defaultMessage="Download my content pack" />
-                                </Button>
-                            </Col>
-                        </Row>
-                    </div>
-                </DocumentTitle>
-            </IntlProvider>
-        );
-    }
+    // TODO should rather use ControlledTableList (see components/sidecar/administration/CollectorsAdministration)
+    return (
+        <IntlProvider locale={language} messages={messages[language]}>
+            <DocumentTitle title="Export alert rule">
+                <div>
+                    <PageHeader title={<FormattedMessage id= "wizard.exportWizardAlertRule" defaultMessage= "Wizard: Export alert rules" />}
+                                actions={(
+                                    <LinkContainer to={Navigation.getWizardRoute()}>
+                                        <Button bsStyle="info"><FormattedMessage id= "wizard.back" defaultMessage= "Back to alert rules" /></Button>
+                                    </LinkContainer>
+                                )}>
+                        <span>
+                            <FormattedMessage id= "wizard.exportAlertRule" defaultMessage= "You can export an alert rule." />
+                        </span>
+                        <span>
+                            <FormattedMessage id="wizard.documentation"
+                            defaultMessage= "Read more about Wizard alert rules in the documentation." />
+                        </span>
+                    </PageHeader>
+                    <Row className="content">
+                        <Col md={12}>
+                            <AlertRuleSelectionList emptyMessage={emptyMessage}
+                                                    alertRules={alertRules}
+                                                    onRuleSelectionChanged={handleRuleSelectionChanged}
+                            />
+                            <Button bsStyle="success" onClick={onSubmit}>
+                                <IconDownload/>
+                                <FormattedMessage id="wizard.downloadContentPack" defaultMessage="Download my content pack" />
+                            </Button>
+                        </Col>
+                    </Row>
+                </div>
+            </DocumentTitle>
+        </IntlProvider>
+    );
 }
 
 export default ExportAlertPage;
