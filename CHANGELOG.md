@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.3.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/6.1.7...6.3.0)
+### Features
+* Add compatibility with [Graylog 6.3.7](https://graylog.org/post/announcing-graylog-6-3-7/)
+
 ## [6.1.7](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/6.1.6...6.1.7)
 ### Bug Fixes
 * Bump graylog-plugin-logging-alert version to 6.1.8 ([issue #60](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/60))
