@@ -16,7 +16,7 @@
  */
 
 // sources of inspiration for this page: components/event-notifications/event-notification-form/EventNotificationFormContainer.jsx
-import React from 'react';
+import React, {useState} from 'react';
 import { LinkContainer } from 'react-router-bootstrap';
 import { IntlProvider, FormattedMessage } from 'react-intl';
 import { DocumentTitle, PageHeader } from 'components/common';
@@ -34,19 +34,20 @@ const messages = {
     'fr': messages_fr
 };
 
-class ImportAlertPage extends React.Component {
+const ImportAlertPage = () => {
 
-    state = {
-        selectedAlertTitles: new Set()
-    }
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [alertRules, setAlertRules] = useState([]);
+    const [selectedAlertTitles, setSelectedAlertTitles] = useState(new Set());
 
-    onSelectUploadFile(event) {
-        this.setState({selectedFile: event.target.files[0]})
-    }
+    const onSelectUploadFile = (event) => {
+        setSelectedFile(event.target.files[0]);
+    };
 
-    onSubmitUploadFile(submitEvent) {
+    const onSubmitUploadFile = (submitEvent) => {
         submitEvent.preventDefault();
-        if (!this.state.selectedFile) {
+
+        if (!selectedFile) {
             return;
         }
 
@@ -54,20 +55,19 @@ class ImportAlertPage extends React.Component {
         reader.onload = (evt) => {
             const importedRules = JSON.parse(evt.target.result);
             const rules = RulesImportExport.normalizeImportedRules(importedRules);
-            this.setState({alertRules: rules});
+            setAlertRules(rules);
         };
 
-        reader.readAsText(this.state.selectedFile);
-    }
+        reader.readAsText(selectedFile);
+    };
 
-    handleRuleSelectionChanged(selection) {
-        this.setState({ selectedAlertTitles: selection });
-    }
+    const handleRuleSelectionChanged = (selection) => {
+        setSelectedAlertTitles(selection);
+    };
 
-    async onSubmitApplyAlertRules(evt) {
+    const onSubmitApplyAlertRules = async (evt) => {
         evt.preventDefault();
-        
-        const { alertRules, selectedAlertTitles } = this.state;
+
         const rules = alertRules.filter(alertRule => selectedAlertTitles.has(alertRule.title));
 
         for (const rule of rules) {
@@ -85,60 +85,58 @@ class ImportAlertPage extends React.Component {
                 'description': '',
                 'id': alert.notification,
                 'title': rule.title
-            }
-            EventNotificationsActions.update(alert.notification, notification);
+            };
+            await EventNotificationsActions.update(alert.notification, notification);
         }
-    }
-    
-    render() {
-        const emptyMessage = <FormattedMessage id="wizard.noAlertRulesToImport" defaultMessage="There are no alert rules to import." />
+    };
 
-        return (
-            <IntlProvider locale={language} messages={messages[language]}>    
-                <DocumentTitle title="Import alert rule">
-                    <div>
-                        <PageHeader title={<FormattedMessage id="wizard.importWizardAlertRule" defaultMessage="Wizard: Import alert rules" />}
-                                    actions={(
-                                        <LinkContainer to={Navigation.getWizardRoute()}>
-                                            <Button bsStyle="info"><FormattedMessage id= "wizard.back" defaultMessage= "Back to alert rules" /></Button>
-                                        </LinkContainer>
-                                    )}>
-                            <span>
-                                <FormattedMessage id="wizard.importAlertRule" defaultMessage="You can import an alert rule." />
-                            </span>
-                            <span>
-                                <FormattedMessage id="wizard.documentation"
-                                                  defaultMessage= "Read more about Wizard alert rules in the documentation." />
-                            </span>
-                        </PageHeader>
-                        <Row className="content"> 
-                            <Col md={12}>
-                                <form onSubmit={this.onSubmitUploadFile} className="upload" encType="multipart/form-data">
-                                    <div className="form-group">
-                                        <Input type="file" name="bundle" onChange={this.onSelectUploadFile} />
-                                    </div>
-                                    <button type="submit" className="btn btn-success">
-                                        <FormattedMessage id="wizard.upload" defaultMessage="Upload" />
-                                    </button>
-                                </form>
-                            </Col>
-                        </Row>
-                        <Row className="content">
-                            <Col md={12}>
-                                <AlertRuleSelectionList emptyMessage={emptyMessage}
-                                                        alertRules={this.state.alertRules}
-                                                        onRuleSelectionChanged={this.handleRuleSelectionChanged}
-                                />
-                                <Button bsStyle="success" onClick={this.onSubmitApplyAlertRules}>
-                                    <FormattedMessage id="wizard.applyAlertRules" defaultMessage="Apply alert rules" />
-                                </Button>
-                            </Col>
-                        </Row>        
-                    </div>
-                </DocumentTitle>   
-            </IntlProvider>
-        );        
-    }
+    const emptyMessage = <FormattedMessage id="wizard.noAlertRulesToImport" defaultMessage="There are no alert rules to import." />;
+
+    return (
+        <IntlProvider locale={language} messages={messages[language]}>
+            <DocumentTitle title="Import alert rule">
+                <div>
+                    <PageHeader title={<FormattedMessage id="wizard.importWizardAlertRule" defaultMessage="Wizard: Import alert rules" />}
+                                actions={(
+                                    <LinkContainer to={Navigation.getWizardRoute()}>
+                                        <Button bsStyle="info"><FormattedMessage id= "wizard.back" defaultMessage= "Back to alert rules" /></Button>
+                                    </LinkContainer>
+                                )}>
+                        <span>
+                            <FormattedMessage id="wizard.importAlertRule" defaultMessage="You can import an alert rule." />
+                        </span>
+                        <span>
+                            <FormattedMessage id="wizard.documentation"
+                                              defaultMessage= "Read more about Wizard alert rules in the documentation." />
+                        </span>
+                    </PageHeader>
+                    <Row className="content">
+                        <Col md={12}>
+                            <form onSubmit={onSubmitUploadFile} className="upload" encType="multipart/form-data">
+                                <div className="form-group">
+                                    <Input type="file" name="bundle" onChange={onSelectUploadFile} />
+                                </div>
+                                <button type="submit" className="btn btn-success">
+                                    <FormattedMessage id="wizard.upload" defaultMessage="Upload" />
+                                </button>
+                            </form>
+                        </Col>
+                    </Row>
+                    <Row className="content">
+                        <Col md={12}>
+                            <AlertRuleSelectionList emptyMessage={emptyMessage}
+                                                    alertRules={alertRules}
+                                                    onRuleSelectionChanged={handleRuleSelectionChanged}
+                            />
+                            <Button bsStyle="success" onClick={onSubmitApplyAlertRules}>
+                                <FormattedMessage id="wizard.applyAlertRules" defaultMessage="Apply alert rules" />
+                            </Button>
+                        </Col>
+                    </Row>
+                </div>
+            </DocumentTitle>
+        </IntlProvider>
+    );
 }
 
 export default ImportAlertPage;
