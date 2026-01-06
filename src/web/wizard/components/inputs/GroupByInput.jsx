@@ -15,9 +15,7 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, {useState} from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Input, Row, Col } from 'components/bootstrap';
 import { MultiSelect, Text } from 'components/common';
@@ -25,59 +23,49 @@ import styled, { css } from 'styled-components';
 
 import withFormattedFields from './withFormattedFields';
 
-class GroupByInput extends React.Component {
+const GroupByInput = ({onUpdate, formattedFields, grouping_fields}) => {
 
-    static propTypes = {
-        onUpdate: PropTypes.func,
-        formattedFields: PropTypes.array.isRequired,
-    }
+    const [state, setState] = useState({ grouping_fields });
 
-    state = {
-        grouping_fields:this.props.grouping_fields,
-    }
-
-    _onGroupingFieldsChange(nextValue) {
+    const _onGroupingFieldsChange = (nextValue) => {
         const values = (nextValue === '' ? [] : nextValue.split(','));
-        this.setState({grouping_fields: values});
-        this.props.onUpdate('grouping_fields', values);
-    }
+        setState({ grouping_fields: values });
+        onUpdate('grouping_fields', values);
+    };
 
-    render() {
-        const StyledText = styled(Text)(({ theme }) => css`
-            color: ${theme.colors.gray[50]};
-            padding-left: 10px;
-        `);
-        const { formattedFields } = this.props;
+    const StyledText = styled(Text)(({ theme }) => css`
+        color: ${theme.colors.gray[50]};
+        padding-left: 10px;
+    `);
 
-        return (
-            <>
-                <Row>
-                    <Col md={2} style={{ marginTop: 5, marginBottom: 0 }}>
-                        <label className="pull-right" ><FormattedMessage id= "wizard.groupBy" defaultMessage= "Group by Condition" /></label>
-                    </Col>
-                    <Col md={10}>
-                        <label><FormattedMessage id= "wizard.groupByLabel" defaultMessage= "Messages must be grouped by" /></label>
-                        <Input ref="grouping_fields" id="grouping_fields" name="grouping_fields">
-                            <div style={{minWidth:'300px'}}>
-                                <MultiSelect autoFocus={false}
-                                             options={formattedFields}
-                                             value={this.state.grouping_fields ? (Array.isArray(this.state.grouping_fields) ? this.state.grouping_fields.join(',') : this.state.grouping_fields) : undefined}
-                                             onChange={this._onGroupingFieldsChange}
-                                             allowCreate={true}/>
-                            </div>
-                        </Input>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <StyledText>
-                            <FormattedMessage id="wizard.groupByDescription" defaultMessage="Note: These fields will be used to aggregate alerts"/>
-                        </StyledText>
-                    </Col>
-                </Row>
-            </>
-        );
-    }
+    return (
+        <>
+            <Row>
+                <Col md={2} style={{ marginTop: 5, marginBottom: 0 }}>
+                    <label className="pull-right" ><FormattedMessage id= "wizard.groupBy" defaultMessage= "Group by Condition" /></label>
+                </Col>
+                <Col md={10}>
+                    <label><FormattedMessage id= "wizard.groupByLabel" defaultMessage= "Messages must be grouped by" /></label>
+                    <Input id="grouping_fields" name="grouping_fields">
+                        <div style={{minWidth:'300px'}}>
+                            <MultiSelect autoFocus={false}
+                                         options={formattedFields}
+                                         value={state.grouping_fields ? (Array.isArray(state.grouping_fields) ? state.grouping_fields.join(',') : state.grouping_fields) : undefined}
+                                         onChange={_onGroupingFieldsChange}
+                                         allowCreate={true}/>
+                        </div>
+                    </Input>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <StyledText>
+                        <FormattedMessage id="wizard.groupByDescription" defaultMessage="Note: These fields will be used to aggregate alerts"/>
+                    </StyledText>
+                </Col>
+            </Row>
+        </>
+    );
 }
 
 export default withFormattedFields(GroupByInput);
