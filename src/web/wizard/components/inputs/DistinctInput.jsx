@@ -15,53 +15,40 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, {useState} from 'react';
 import { Input, Row, Col } from 'components/bootstrap';
 import { Select } from 'components/common';
 import { FormattedMessage } from 'react-intl';
 
 import withFormattedFields from './withFormattedFields';
 
-class DistinctInput extends React.Component {
+const DistinctInput = ({onUpdate, formattedFields, distinct_by}) => {
 
-    static propTypes = {
-        onUpdate: PropTypes.func,
-        formattedFields: PropTypes.array.isRequired,
-    }
+    const [state, setState] = useState({ distinct_by });
 
-    state = {
-        distinct_by: this.props.distinct_by,
-    }
+    const _onDistinctionFieldsChange = (nextValue) => {
+        setState({distinct_by: nextValue});
+        onUpdate('distinct_by', nextValue);
+    };
 
-    _onDistinctionFieldsChange(nextValue) {
-        this.setState({distinct_by: nextValue});
-        this.props.onUpdate('distinct_by', nextValue);
-    }
-
-    render() {
-        const { formattedFields } = this.props;
-
-        // TODO remove the ref property on the input :(
-        return (
-            <Row>
-                <Col md={2} style={{ marginTop: 5, marginBottom: 0 }}>
-                    <label className="pull-right" ><FormattedMessage id= "wizard.distinctBy" defaultMessage= "Distinct by Condition" /></label>
-                </Col>
-                <Col md={10}>
-                    <label><FormattedMessage id= "wizard.distinctByLabel" defaultMessage= "Messages must be distincted by" /></label>
-                    <Input ref="distinct_by" id="distinct_by" name="distinct_by">
-                        <div style={{minWidth:'300px'}}>
-                        <Select options={formattedFields}
-                                value={this.state.distinct_by}
-                                onChange={this._onDistinctionFieldsChange}
-                                allowCreate={true}/>
-                        </div>
-                    </Input>
-                </Col>
-            </Row>
-        );
-    }
+    return (
+        <Row>
+            <Col md={2} style={{ marginTop: 5, marginBottom: 0 }}>
+                <label className="pull-right" ><FormattedMessage id= "wizard.distinctBy" defaultMessage= "Distinct by Condition" /></label>
+            </Col>
+            <Col md={10}>
+                <label><FormattedMessage id= "wizard.distinctByLabel" defaultMessage= "Messages must be distincted by" /></label>
+                <Input id="distinct_by" name="distinct_by">
+                    <div style={{minWidth:'300px'}}>
+                    <Select options={formattedFields}
+                            value={state.distinct_by}
+                            onChange={_onDistinctionFieldsChange}
+                            allowCreate={true}/>
+                    </div>
+                </Input>
+            </Col>
+        </Row>
+    );
 }
 
 export default withFormattedFields(DistinctInput);

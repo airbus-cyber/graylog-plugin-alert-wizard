@@ -16,39 +16,20 @@
  */
 
 import React, {useEffect, useState} from 'react';
-
 import ObjectUtils from 'util/ObjectUtils';
-
 import FieldsInput from 'wizard/components/inputs/FieldsInput';
 import NumberInput from 'wizard/components/inputs/NumberInput';
 import TimeRangeInput from 'wizard/components/inputs/TimeRangeInput';
 import Description from 'wizard/components/inputs/Description';
 import SearchQueryInput from 'wizard/components/inputs/SearchQueryInput';
-
-const _computeTime = (newAlert) => {
-    let time;
-    let time_type;
-
-    if (newAlert.condition_parameters.time >= 1440) {
-        time = newAlert.condition_parameters.time / 1440;
-        time_type = 1440;
-    } else if (newAlert.condition_parameters.time >= 60) {
-        time = newAlert.condition_parameters.time / 60;
-        time_type = 60;
-    } else {
-        time = newAlert.condition_parameters.time;
-        time_type = 1;
-    }
-
-    return { time, time_type };
-};
+import TimeHook from './TimeHook';
 
 const CountCondition = ({alert, onUpdate}) => {
 
     const [state, setState] = useState({ alert: ObjectUtils.clone(alert), time: 0, time_type: 0 });
 
     useEffect(() => {
-        const { time, time_type } = _computeTime(alert);
+        const { time, time_type } = TimeHook.computeTime(alert);
         setState({ alert, time, time_type });
     }, []);
 
@@ -61,7 +42,7 @@ const CountCondition = ({alert, onUpdate}) => {
             update.condition_parameters[field] = value;
         }
 
-        const { time, time_type } = _computeTime(update);
+        const { time, time_type } = TimeHook.computeTime(update);
         setState({ alert: update, time, time_type });
         onUpdate('condition_parameters', update.condition_parameters);
     };
@@ -70,7 +51,7 @@ const CountCondition = ({alert, onUpdate}) => {
         const update = ObjectUtils.clone(state.alert);
         update.stream[field] = value;
 
-        const { time, time_type } = _computeTime(update);
+        const { time, time_type } = TimeHook.computeTime(update);
         setState({ alert: update, time, time_type });
         onUpdate('stream', update.stream);
     };
