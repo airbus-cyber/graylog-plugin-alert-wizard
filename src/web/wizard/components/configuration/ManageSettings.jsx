@@ -15,213 +15,190 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-// TODO remove all the refs!!!
-// TODO move into sub-namespace configuration?
-
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {useState} from 'react';
 import { Button, BootstrapModalForm, Col, FormGroup, Input, Table, Tooltip } from 'components/bootstrap';
 import { Select, SortableList, Spinner, OverlayTrigger, IfPermitted } from 'components/common';
 import ObjectUtils from 'util/ObjectUtils';
 import { FormattedMessage } from 'react-intl';
 import FormsUtils from 'util/FormsUtils';
 
-// TODO convert into functional component
-class ManageSettings extends React.Component {
+const ManageSettings = ({config, onSave}) => {
 
-    static propTypes = {
-        onSave: PropTypes.func.isRequired,
-        config: PropTypes.object.isRequired,
-    }
+    const _availableFieldName = [
+        {value: 'Priority', label: <FormattedMessage id="wizard.priority" defaultMessage="Priority" />},
+        {value: 'Description', label: <FormattedMessage id="wizard.fieldDescription" defaultMessage="Description" />},
+        {value: 'Created', label: <FormattedMessage id="wizard.created" defaultMessage="Created" />},
+        {value: 'Last Modified', label: <FormattedMessage id="wizard.lastModified" defaultMessage="Last Modified" />},
+        {value: 'User', label: <FormattedMessage id="wizard.user" defaultMessage="User" />},
+        {value: 'Status', label: <FormattedMessage id="wizard.status" defaultMessage="Status" />},
+        {value: 'Rule', label: <FormattedMessage id="wizard.rule" defaultMessage="Rule" />},
+    ];
 
-    state = {
-        config: {
-            field_order: this.props.config.field_order,
-            default_values: this.props.config.default_values,
-            import_policy: this.props.config.import_policy,
-        },
+    const [state, setState] = useState({
+        config: config,
         showModal: false
-    }
+    });
+
+    const _openModal = () => {
+        setState({ ...state, showModal: true });
+    };
+
+    const _closeModal = () => {
+        setState({ ...state, showModal: false });
+    };
+
+    const _saveConfig = () => {
+        onSave(state.config);
+        _closeModal();
+    };
+
+    const _resetConfig = () => {
+        setState({
+            config: config,
+            showModal: false
+        });
+    };
     
-    componentDidMount(){
-        this.setState({config: this.props.config});
-    }
-
-    _openModal() {
-        this.setState({ showModal: true });
-    }
-
-    _closeModal() {
-        this.setState({ showModal: false });
-    }
-
-    _saveConfig() {
-        this.props.onSave(this.state.config);
-        this._closeModal();
-    }
-
-    _resetConfig() {
-        // Reset to initial state when the modal is closed without saving.
-        this.setState(this.getInitialState());
-    }
-
-    _availableFieldName() {
-        return [
-            {value: 'Priority', label: <FormattedMessage id="wizard.priority" defaultMessage="Priority" />},
-            {value: 'Description', label: <FormattedMessage id="wizard.fieldDescription" defaultMessage="Description" />},
-            {value: 'Created', label: <FormattedMessage id="wizard.created" defaultMessage="Created" />},
-            {value: 'Last Modified', label: <FormattedMessage id="wizard.lastModified" defaultMessage="Last Modified" />},
-            {value: 'User', label: <FormattedMessage id="wizard.user" defaultMessage="User" />},
-            {value: 'Status', label: <FormattedMessage id="wizard.status" defaultMessage="Status" />},
-            {value: 'Rule', label: <FormattedMessage id="wizard.rule" defaultMessage="Rule" />},
-        ];
-    }
+    const _getFieldName = (field) => {
+        return _availableFieldName.filter((t) => t.value === field)[0].label;
+    };
     
-    _getFieldName(field) {
-        return this._availableFieldName().filter((t) => t.value === field)[0].label;
-    }
-    
-    _updateSorting(newSorting) {
-        const update = ObjectUtils.clone(this.state.config);
+    const _updateSorting = (newSorting) => {
+        const update = ObjectUtils.clone(state.config);
 
         update.field_order = newSorting.map((item) => {
             return {name: item.id, enabled: item.enabled};
         });
 
-        this.setState({config: update});
-    }
+        setState({ ...state, config: update});
+    };
 
-    _sortableItems() {
-        return this.state.config.field_order.map((field) => {
-            return {id: field.name, title: this._getFieldName(field.name), enabled: field.enabled};
+    const _sortableItems = () => {
+        return state.config.field_order.map((field) => {
+            return {id: field.name, title: _getFieldName(field.name), enabled: field.enabled};
         });
-    }
+    };
 
-    _toggleStatus(idx) {
-        return () => {
-            let update = ObjectUtils.clone(this.state.config);
-            update.field_order[idx].enabled = this.refs[idx].checked;
-            this.setState({config: update});
-        };
-    }
+    const _toggleStatus = (event, idx) => {
+        let update = ObjectUtils.clone(state.config);
+        update.field_order[idx].enabled = event.target.checked;
+        setState({...state, config: update});
+    };
 
-    _statusForm() {
-        return ObjectUtils.clone(this.state.config.field_order).map((field, idx) => {
+    const _statusForm = () => {
+        return ObjectUtils.clone(state.config.field_order).map((field, idx) => {
             return (
                 <tr key={idx}>
-                    <td>{this._getFieldName(field.name)}</td>
+                    <td>{_getFieldName(field.name)}</td>
                     <td>
-                        <input ref={idx}
-                               type="checkbox"
+                        <Input type="checkbox"
                                checked={field.enabled}
-                               onChange={this._toggleStatus(idx)}/>
+                               onChange={event => _toggleStatus(event, idx)}/>
                     </td>
                 </tr>
             );
         });
-    }
+    };
 
-    _isLoading() {
-        return !this.state.config;
-    }
+    const _isLoading = () => {
+        return !state.config;
+    };
 
-    _availablePriorityTypes() {
+    const _availablePriorityTypes = () => {
         return [
             {value: '1', label: <FormattedMessage id="wizard.low" defaultMessage="Low" />},
             {value: '2', label: <FormattedMessage id="wizard.medium" defaultMessage="Normal" />},
             {value: '3', label: <FormattedMessage id="wizard.high" defaultMessage="High" />},
         ];
-    }
+    };
 
-    _availableMatchingType() {
+    const _availableMatchingType = () => {
         return [
             {value: 'AND', label: <FormattedMessage id="wizard.all" defaultMessage="all" />},
             {value: 'OR', label: <FormattedMessage id="wizard.atLeastOne" defaultMessage="at least one" />},
         ];
-    }
-    // TODO should factor constant with AlertRuleText.jsx?
-    _availableThresholdTypes() {
+    };
+
+    const _availableThresholdTypes = () => {
         return [
             {value: '>', label: <FormattedMessage id="wizard.more" defaultMessage="more than" />},
             {value: '<', label: <FormattedMessage id="wizard.less" defaultMessage="less than" />},
         ];
-    }
+    };
 
-    _availableTimeTypes() {
+    const _availableTimeTypes = () => {
         return [
             {value: '1', label: <FormattedMessage id="wizard.minutes" defaultMessage="minutes" />},
             {value: '60', label: <FormattedMessage id="wizard.hours" defaultMessage="hours" />},
             {value: '1440', label: <FormattedMessage id="wizard.days" defaultMessage="days" />},
         ];
-    }
+    };
 
-    _updateConfig(field, value) {
-        const update = ObjectUtils.clone(this.state.config);
+    const _updateConfig = (field, value) => {
+        const update = ObjectUtils.clone(state.config);
         update.default_values[field] = value;
-        this.setState({config: update});
-    }
+        setState({...state, config: update});
+    };
 
-    _onValueChanged(field) {
+    const _onValueChanged = (field) => {
         return e => {
-            this._updateConfig(field, e.target.value);
+            _updateConfig(field, e.target.value);
         };
-    }
+    };
 
-    _onPriorityTypeSelect(value) {
-        this._updateConfig('priority', parseInt(value))
-    }
+    const _onPriorityTypeSelect = (value) => {
+        _updateConfig('priority', parseInt(value));
+    };
 
-    _onMatchingTypeSelect(value) {
-        this._updateConfig('matching_type', value)
-    }
+    const _onMatchingTypeSelect = (value) => {
+        _updateConfig('matching_type', value);
+    };
 
-    _onThresholdTypeSelect(value) {
-        this._updateConfig('threshold_type', value)
-    }
+    const _onThresholdTypeSelect = (value) => {
+        _updateConfig('threshold_type', value);
+    };
 
-    _onTimeTypeSelect(value) {
-        this._updateConfig('time_type', parseInt(value))
-    }
+    const _onTimeTypeSelect = (value) => {
+        _updateConfig('time_type', parseInt(value));
+    };
 
-    _onCheckboxClick(event) {
-        this._updateConfig(event.target.name, event.target.checked);
-    }
+    const _onCheckboxClick = (event) => {
+        _updateConfig(event.target.name, event.target.checked);
+    };
 
-    _onRadioChange(event){
-        const update = ObjectUtils.clone(this.state.config);
+    const _onRadioChange = (event) => {
+        const update = ObjectUtils.clone(state.config);
         update.import_policy = FormsUtils.getValueFromInput(event.target);
-        this.setState({config: update});
+        setState({...state, config: update});
     }
 
-    render() {
-        if (this._isLoading()) {
-            return <Spinner/>;
-        }
+    const tooltipReplace = (<FormattedMessage id ="wizard.tooltipReplace" defaultMessage="Replace the alert rule with the one you are importing" />);
+    const tooltipDoNothing = (<FormattedMessage id ="wizard.tooltipDoNothing" defaultMessage="No alert rules will be changed" />);
+    const tooltipRename = (<FormattedMessage id ="wizard.tooltipRename" defaultMessage="The alert rule you are importing will be renamed <title(1)>" />);
 
-        const tooltipReplace = (<FormattedMessage id ="wizard.tooltipReplace" defaultMessage="Replace the alert rule with the one you are importing" />);
-        
-        const tooltipDoNothing = (<FormattedMessage id ="wizard.tooltipDoNothing" defaultMessage="No alert rules will be changed" />);
-        
-        const tooltipRename = (<FormattedMessage id ="wizard.tooltipRename" defaultMessage="The alert rule you are importing will be renamed <title(1)>" />);
+    if (_isLoading()) {
+        return <Spinner/>;
+    }
 
-        return (
-            <span>
-                <IfPermitted permissions="clusterconfigentry:edit">
-                    <Button bsStyle="info" bsSize="xs" onClick={this._openModal}>Edit configuration</Button>
-                </IfPermitted>
+    return (
+        <span>
+            <IfPermitted permissions="clusterconfigentry:edit">
+                <Button bsStyle="info" bsSize="xs" onClick={_openModal}>Edit configuration</Button>
+            </IfPermitted>
 
-        <BootstrapModalForm show={this.state.showModal}
-                            title={<FormattedMessage id="wizard.manageWizardSettings" defaultMessage="Manage Wizard settings" />}
-                            onSubmitForm={this._saveConfig}
-                            onCancel={this._resetConfig}
-                            cancelButtonText={<FormattedMessage id="wizard.cancel" defaultMessage="Cancel" />}
-                            submitButtonText={<FormattedMessage id="wizard.save" defaultMessage="Save" />}>
+            <BootstrapModalForm show={state.showModal}
+                                title={<FormattedMessage id="wizard.manageWizardSettings" defaultMessage="Manage Wizard settings" />}
+                                onSubmitForm={_saveConfig}
+                                onCancel={_resetConfig}
+                                cancelButtonText={<FormattedMessage id="wizard.cancel" defaultMessage="Cancel" />}
+                                submitButtonText={<FormattedMessage id="wizard.save" defaultMessage="Save" />}>
             <div>
               <Col md={6}>
                 <h3><FormattedMessage id="wizard.order" defaultMessage="Order" /></h3>
                 <p><FormattedMessage id="wizard.descriptionOrder" defaultMessage="Use drag and drop to change the order." /></p>
-                <SortableList items={this._sortableItems()} onMoveItem={this._updateSorting}/>
-                
+                <SortableList items={_sortableItems()} onMoveItem={_updateSorting}/>
+
                 <h3><FormattedMessage id="wizard.status" defaultMessage="Status" /></h3>
                 <p><FormattedMessage id="wizard.checkboxesStatus" defaultMessage="Change the checkboxes to change the status." /></p>
                 <Table striped bordered condensed>
@@ -232,17 +209,17 @@ class ManageSettings extends React.Component {
                   </tr>
                 </thead>
                 <tbody>
-                  {this._statusForm()}
+                  {_statusForm()}
                 </tbody>
                 </Table>
-                  
+
                 <h3><FormattedMessage id="wizard.importPolicy" defaultMessage="Import strategy" /></h3>
                 <p><FormattedMessage id="wizard.descriptionImportPolicy" defaultMessage="Choose the action when the alert rule already exists." /></p>
                 <FormGroup>
                   <OverlayTrigger overlay={tooltipDoNothing} placement="top" trigger={['hover', 'focus']}>
                       <div className="radio">
                         <label>
-                          <input type="radio" value="DONOTHING" checked={this.state.config.import_policy === 'DONOTHING'} onChange={this._onRadioChange}/>
+                          <input type="radio" value="DONOTHING" checked={state.config.import_policy === 'DONOTHING'} onChange={_onRadioChange}/>
                             <FormattedMessage id="wizard.doNothing" defaultMessage="Don't import" />
                         </label>
                       </div>
@@ -250,7 +227,7 @@ class ManageSettings extends React.Component {
                   <OverlayTrigger overlay={tooltipReplace} placement="top" trigger={['hover', 'focus']}>
                       <div className="radio">
                         <label>
-                          <input type="radio" value="REPLACE" checked={this.state.config.import_policy === 'REPLACE'} onChange={this._onRadioChange}/>
+                          <input type="radio" value="REPLACE" checked={state.config.import_policy === 'REPLACE'} onChange={_onRadioChange}/>
                             <FormattedMessage id="wizard.replace" defaultMessage="Import and Replace" />
                           </label>
                       </div>
@@ -258,92 +235,95 @@ class ManageSettings extends React.Component {
                   <OverlayTrigger overlay={tooltipRename} placement="top" trigger={['hover', 'focus']}>
                       <div className="radio">
                         <label>
-                          <input type="radio" value="RENAME" checked={this.state.config.import_policy === 'RENAME'} onChange={this._onRadioChange}/>
+                          <input type="radio" value="RENAME" checked={state.config.import_policy === 'RENAME'} onChange={_onRadioChange}/>
                             <FormattedMessage id="wizard.rename" defaultMessage="Import, but keep both alert rules" />
                         </label>
                       </div>
                   </OverlayTrigger>
                 </FormGroup>
               </Col>
-              <Col md={6}> 
+              <Col md={6}>
                 <h3><FormattedMessage id="wizard.defaultValues" defaultMessage="Default values of the alert rule" /></h3>
                 <p><FormattedMessage id="wizard.changeDefaultValues" defaultMessage="Change the default values." /></p>
                 <fieldset style={{ marginBottom: '15px' }}>
-                <Input ref="title" id="title" name="title" type="text" label={<FormattedMessage id ="wizard.title" defaultMessage="Title" />}
-                       value={this.state.config.default_values.title} onChange={this._onValueChanged("title")}/>
+                <Input id="title" name="title" type="text" label={<FormattedMessage id ="wizard.title" defaultMessage="Title" />}
+                       value={state.config.default_values.title} onChange={_onValueChanged("title")}/>
                 <Input
-                    ref="priority"
                     id="priority"
                     label={<FormattedMessage id ="wizard.alertPriority" defaultMessage="Alert Priority" />}
                     help={<FormattedMessage id ="wizard.descriptionAlertPriority" defaultMessage="The default priority of logged alerts when adding a new notification" />}
                     name="priority">
                   <Select placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..." />}
-                          options={this._availablePriorityTypes()}
+                          options={_availablePriorityTypes()}
                           matchProp="value"
-                          value={this.state.config.default_values.priority? this.state.config.default_values.priority.toString() : ''}
-                          onChange={this._onPriorityTypeSelect}
+                          value={state.config.default_values.priority? state.config.default_values.priority.toString() : ''}
+                          onChange={_onPriorityTypeSelect}
                           clearable={false}
                   />
-                </Input>     
-                <Input ref="matching_type" id="matching_type" name="matching_type" 
+                </Input>
+                <Input id="matching_type" name="matching_type"
                        label={<FormattedMessage id="wizard.matchingType" defaultMessage="Matching type" />}>
                     <Select placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..." />}
                         autosize={false}
-                        value={this.state.config.default_values.matching_type}
-                        options={this._availableMatchingType()}
+                        value={state.config.default_values.matching_type}
+                        options={_availableMatchingType()}
                         matchProp="value"
-                        onChange={this._onMatchingTypeSelect}
+                        onChange={_onMatchingTypeSelect}
                         clearable={false}
                     />
                 </Input>
-                <Input ref="threshold_type" id="threshold_type" name="threshold_type" 
+                <Input id="threshold_type" name="threshold_type"
                        label={<FormattedMessage id="wizard.thresholdType" defaultMessage="Threshold type" />}>
                     <Select placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..." />}
                         autosize={false}
-                        value={this.state.config.default_values.threshold_type}
-                        options={this._availableThresholdTypes()}
+                        value={state.config.default_values.threshold_type}
+                        options={_availableThresholdTypes()}
                         matchProp="value"
-                        onChange={this._onThresholdTypeSelect}
+                        onChange={_onThresholdTypeSelect}
                         clearable={false}
                     />
                 </Input>
-                <Input ref="threshold" id="threshold" name="threshold" type="number" min="0"
+                <Input id="threshold" name="threshold" type="number" min="0"
                        label={<FormattedMessage id="wizard.threshold" defaultMessage="Threshold" />}
-                       onChange={this._onValueChanged("threshold")} value={this.state.config.default_values.threshold}/> 
-                <Input ref="time" id="time" name="time" type="number" min="1"
+                       onChange={_onValueChanged("threshold")} value={state.config.default_values.threshold}/>
+                <Input id="time" name="time" type="number" min="1"
                        label={<FormattedMessage id="wizard.time" defaultMessage="Time Range" />}
-                       onChange={this._onValueChanged("time")} value={this.state.config.default_values.time}/>
-                <Input ref="time_type" id="time_type" name="time_type" 
+                       onChange={_onValueChanged("time")} value={state.config.default_values.time}/>
+                <Input id="time_type" name="time_type"
                        label={<FormattedMessage id="wizard.timeType" defaultMessage="Time Range unit" />}>
                     <Select placeholder={<FormattedMessage id="wizard.select" defaultMessage="Select..." />}
                         autosize={false}
-                        value={this.state.config.default_values.time_type? this.state.config.default_values.time_type.toString() : ''}
-                        options={this._availableTimeTypes()}
+                        value={state.config.default_values.time_type? state.config.default_values.time_type.toString() : ''}
+                        options={_availableTimeTypes()}
                         matchProp="value"
-                        onChange={this._onTimeTypeSelect}
+                        onChange={_onTimeTypeSelect}
                         clearable={false}
                     />
                 </Input>
-                <Input ref="aggregation_time" id="aggregation_time" name="aggregation_time" type="number" min="0"
+                <Input id="aggregation_time" name="aggregation_time" type="number" min="0"
                        label={<FormattedMessage id="wizard.aggregationTime" defaultMessage="Notification Aggregation Time Range (minutes)" />}
-                       onChange={this._onValueChanged("aggregation_time")} value={this.state.config.default_values.aggregation_time}/>
+                       onChange={_onValueChanged("aggregation_time")} value={state.config.default_values.aggregation_time}/>
               </fieldset>
               <h3><FormattedMessage id="wizard.conditionDefaultValues" defaultMessage="Default values of the event" /></h3>
               <p><FormattedMessage id="wizard.changeDefaultValues" defaultMessage="Change the default values." /></p>
               <fieldset>
-                <Input ref="backlog" id="backlog" name="backlog" type="number" min="0"
+                <Input id="backlog" name="backlog" type="number" min="0"
                        label={<FormattedMessage id="wizard.msgBacklog" defaultMessage="Message Backlog" />}
-                       onChange={this._onValueChanged("backlog")} value={this.state.config.default_values.backlog}/>
-                <Input ref="grace" id="grace" name="grace" type="number" min="1"
+                       onChange={_onValueChanged("backlog")} value={state.config.default_values.backlog}/>
+                <Input id="grace" name="grace" type="number" min="1"
                        label={<FormattedMessage id="wizard.gracePeriod" defaultMessage="Execute search every (minutes)" />}
-                       onChange={this._onValueChanged("grace")} value={this.state.config.default_values.grace}/> 
+                       onChange={_onValueChanged("grace")} value={state.config.default_values.grace}/>
               </fieldset>
             </Col>
           </div>
         </BootstrapModalForm>
-      </span>
-        );
-    }
+    </span>
+    );
+}
+
+ManageSettings.propTypes = {
+    onSave: PropTypes.func.isRequired,
+    config: PropTypes.object.isRequired,
 }
 
 export default ManageSettings;
