@@ -15,9 +15,7 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 
 import ObjectUtils from 'util/ObjectUtils';
 
@@ -27,70 +25,71 @@ import TimeRangeInput from 'wizard/components/inputs/TimeRangeInput';
 import Description from 'wizard/components/inputs/Description';
 import SearchQueryInput from 'wizard/components/inputs/SearchQueryInput';
 
+const _computeTime = (newAlert) => {
+    let time;
+    let time_type;
 
-// TODO rewrite this component in functional style
-class CountCondition extends React.Component {
-
-    static propTypes = {
-        alert: PropTypes.object.isRequired,
-        onUpdate: PropTypes.func
+    if (newAlert.condition_parameters.time >= 1440) {
+        time = newAlert.condition_parameters.time / 1440;
+        time_type = 1440;
+    } else if (newAlert.condition_parameters.time >= 60) {
+        time = newAlert.condition_parameters.time / 60;
+        time_type = 60;
+    } else {
+        time = newAlert.condition_parameters.time;
+        time_type = 1;
     }
 
-    state = {
-        alert: ObjectUtils.clone(this.props.alert)
-    }
+    return { time, time_type };
+};
 
-    _handleChangeCondition(field, value) {
-        let update = ObjectUtils.clone(this.state.alert);
+const CountCondition = ({alert, onUpdate}) => {
+
+    const [state, setState] = useState({ alert: ObjectUtils.clone(alert), time: 0, time_type: 0 });
+
+    useEffect(() => {
+        const { time, time_type } = _computeTime(alert);
+        setState({ alert, time, time_type });
+    }, []);
+
+    const _handleChangeCondition = (field, value) => {
+        const update = ObjectUtils.clone(state.alert);
+
         if (field === "threshold" || field === "additional_threshold" || field === "time") {
             update.condition_parameters[field] = parseInt(value);
         } else {
             update.condition_parameters[field] = value;
         }
-        this.setState({alert: update});
-        this.props.onUpdate('condition_parameters', update.condition_parameters);
-    }
 
-    _handleChangeStream(field, value) {
-        let update = ObjectUtils.clone(this.state.alert);
+        const { time, time_type } = _computeTime(update);
+        setState({ alert: update, time, time_type });
+        onUpdate('condition_parameters', update.condition_parameters);
+    };
+
+    const _handleChangeStream = (field, value) => {
+        const update = ObjectUtils.clone(state.alert);
         update.stream[field] = value;
-        this.setState({alert: update});
-        this.props.onUpdate('stream', update.stream);
-    }
-    
-    render() {
-        // TODO should factor this code block that seemed to have been copy-pasted
-        let time;
-        let time_type;
-        // TODO extract alert before with deconstruction syntax
-        if (this.props.alert.condition_parameters.time >= 1440) {
-            time = this.props.alert.condition_parameters.time / 1440;
-            time_type = 1440;
-        } else if (this.props.alert.condition_parameters.time >= 60) {
-            time = this.props.alert.condition_parameters.time / 60;
-            time_type = 60;
-        } else {
-            time = this.props.alert.condition_parameters.time;
-            time_type = 1;
-        }
-        
-        return (
-            <>
-                <SearchQueryInput onUpdate={this._handleChangeCondition} search_query={this.props.alert.condition_parameters.search_query}/>
-                <br/>
-                <FieldsInput stream={this.props.alert.stream} onSaveStream={this._handleChangeStream} message={this.props.message}
-                    matchData={this.props.matchData} />
-                <br/>
-                <NumberInput onUpdate={this._handleChangeCondition} threshold={this.props.alert.condition_parameters.threshold}
-                                threshold_type={this.props.alert.condition_parameters.threshold_type} />
-                <br/>
-                <TimeRangeInput onUpdate={this._handleChangeCondition} time={time.toString()} time_type={time_type.toString()} />
-                <br/>
-                <Description onUpdate={this.props.onUpdate} description={this.props.alert.description}/>
-                <br/>
-            </>
-        );
-    }
+
+        const { time, time_type } = _computeTime(update);
+        setState({ alert: update, time, time_type });
+        onUpdate('stream', update.stream);
+    };
+
+    return (
+        <>
+            <SearchQueryInput onUpdate={_handleChangeCondition} search_query={state.alert.condition_parameters.search_query}/>
+            <br/>
+            <FieldsInput stream={state.alert.stream} onSaveStream={_handleChangeStream} />
+            <br/>
+            <NumberInput onUpdate={_handleChangeCondition} threshold={state.alert.condition_parameters.threshold}
+                            threshold_type={state.alert.condition_parameters.threshold_type} />
+            <br/>
+            <TimeRangeInput onUpdate={_handleChangeCondition} time={state.time.toString()} time_type={state.time_type.toString()} />
+            <br/>
+            <Description onUpdate={onUpdate} description={state.alert.description}/>
+            <br/>
+        </>
+    );
 }
 
 export default CountCondition;
