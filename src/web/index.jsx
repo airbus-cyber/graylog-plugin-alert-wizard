@@ -53,6 +53,7 @@ PluginStore.register(new PluginManifest(packageJson, {
     navigation: [
         {
             description: 'Wizard',
+            position: { last: true},
             children: [
                 { path: appPrefixed('/wizard/AlertRules'), description: 'Alert Rules' },
                 { path: appPrefixed('/wizard/Lists'), description: 'Lists' },
