@@ -63,9 +63,7 @@ public class PaginatedAlertRuleService {
                                                   SortOrder order) {
         final Bson dbQuery = query.toBson();
 
-        var pipelineBuilder = ImmutableList.<Bson>builder()
-                .add(Aggregates.match(dbQuery));
-
+        var pipelineBuilder = ImmutableList.<Bson>builder();
 
         if (!(query.getQueryMap().containsKey(GetDataAlertRule.FIELD_DESCRIPTION)
                 || query.getQueryMap().containsKey(GetDataAlertRule.FIELD_PRIORITY))) {
@@ -110,6 +108,8 @@ public class PaginatedAlertRuleService {
         } else {
             pipelineBuilder.add(Aggregates.sort(order.toBsonSort(sortField)));
         }
+
+        pipelineBuilder.add(Aggregates.unset("priority", "description"));
 
         final List<AlertRule> alertRuleList;
         try (final var results = MongoUtils.stream(collection.aggregate(pipelineBuilder.build()))) {
