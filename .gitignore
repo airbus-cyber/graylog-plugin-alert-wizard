@@ -6,6 +6,7 @@
 
 # Location for built plugin
 /runtime/graylog/plugin/
+/runtime/.env
 
 # For backend tests in python
 /validation/__pycache__/

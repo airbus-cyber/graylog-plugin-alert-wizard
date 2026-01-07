@@ -293,14 +293,14 @@ test('use switch button should works - #158', async ({ page }) => {
   await page.waitForTimeout(200);
 
   // Change 1st count condition
-  await page.getByText('arrow_drop_down').nth(3).click();
+  await page.getByText('arrow_drop_down').nth(4).click();
   await page.getByRole('option', { name: 'less than' }).click();
   await page.waitForTimeout(200);
   await page.locator('#threshold').first().fill('5');
   await page.waitForTimeout(200);
 
   // Add 2nd Field Condition
-  await fill_field_condition(page, 'user', 'contains', 'def', 1);
+  await fill_field_condition(page, 'source', 'contains', 'def', 1);
 
   // Fill 2nd Search Query
   const searchQuery2 = 'b?d';
@@ -318,9 +318,11 @@ test('use switch button should works - #158', async ({ page }) => {
   await expect(page.locator('#matching_type_select').first()).toContainText('all');
   await expect(page.locator('#matching_type_select').nth(1)).toContainText('at least one');
 
-  await expect(page.locator('#field-input').first()).toHaveValue('user');
+  const fieldText1 = await page.getByTestId('typeAheadId').first().innerText();
+  await expect(fieldText1.includes('source')).toBeTruthy();
   await expect(page.locator('#value').first()).toHaveValue('def');
-  await expect(page.locator('#field-input').nth(1)).toHaveValue('message');
+  const fieldText2 = await page.getByTestId('typeAheadId').nth(1).innerText();
+  await expect(fieldText2.includes('message')).toBeTruthy();
   await expect(page.locator('#value').nth(1)).toHaveValue('abc');
 
   await expect(page.locator('#threshold').first()).toHaveValue('0');

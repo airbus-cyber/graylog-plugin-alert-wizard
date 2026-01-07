@@ -22,47 +22,41 @@ import { useIntl, FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 
 import { Input } from 'components/bootstrap';
-import { Select, Spinner } from 'components/common';
+import { Select, Spinner, TypeAheadFieldInput } from 'components/common';
 import FormsUtils from 'util/FormsUtils';
-
 import AlertListActions from 'wizard/actions/AlertListActions';
 import IconRemove from 'wizard/components/icons/Remove';
-import TypeAheadFieldInput from './TypeAheadFieldInput';
 
-
-// TODO transform this into a constant? _AVAILABLE_RULE_TYPE
-const _availableRuleType = () => {
-    return [
-        {value: "1", label: <FormattedMessage id="wizard.matchesExactly" defaultMessage="matches exactly"/>},
-        {
-            value: "-1",
-            label: <FormattedMessage id="wizard.notMatchesExactly" defaultMessage="does not match exactly"/>
-        },
-        {
-            value: "2",
-            label: <FormattedMessage id="wizard.matchesRegularExpression"
-                                     defaultMessage="matches regular expression"/>
-        },
-        {
-            value: "-2",
-            label: <FormattedMessage id="wizard.notMatchRegularExpression"
-                                     defaultMessage="does not match regular expression"/>
-        },
-        {value: "3", label: <FormattedMessage id="wizard.greaterThan" defaultMessage="is greater than"/>},
-        {value: "-3", label: <FormattedMessage id="wizard.notGreaterThan" defaultMessage="is not greater than"/>},
-        {value: "4", label: <FormattedMessage id="wizard.smallerThan" defaultMessage="is smaller than"/>},
-        {value: "-4", label: <FormattedMessage id="wizard.notSmallerThan" defaultMessage="is not smaller than"/>},
-        {value: "5", label: <FormattedMessage id="wizard.present" defaultMessage="is present"/>},
-        {value: "-5", label: <FormattedMessage id="wizard.notPresent" defaultMessage="is not present"/>},
-        {value: "6", label: <FormattedMessage id="wizard.contains" defaultMessage="contains"/>},
-        {value: "-6", label: <FormattedMessage id="wizard.notContain" defaultMessage="does not contain"/>},
-        {value: "7", label: <FormattedMessage id="wizard.listpresent" defaultMessage="is present in list"/>},
-        {
-            value: "-7",
-            label: <FormattedMessage id="wizard.listnotpresent" defaultMessage="is not present in list"/>
-        },
-    ];
-};
+const AVAILABLE_RULE_TYPE = [
+    {value: "1", label: <FormattedMessage id="wizard.matchesExactly" defaultMessage="matches exactly"/>},
+    {
+        value: "-1",
+        label: <FormattedMessage id="wizard.notMatchesExactly" defaultMessage="does not match exactly"/>
+    },
+    {
+        value: "2",
+        label: <FormattedMessage id="wizard.matchesRegularExpression"
+                                 defaultMessage="matches regular expression"/>
+    },
+    {
+        value: "-2",
+        label: <FormattedMessage id="wizard.notMatchRegularExpression"
+                                 defaultMessage="does not match regular expression"/>
+    },
+    {value: "3", label: <FormattedMessage id="wizard.greaterThan" defaultMessage="is greater than"/>},
+    {value: "-3", label: <FormattedMessage id="wizard.notGreaterThan" defaultMessage="is not greater than"/>},
+    {value: "4", label: <FormattedMessage id="wizard.smallerThan" defaultMessage="is smaller than"/>},
+    {value: "-4", label: <FormattedMessage id="wizard.notSmallerThan" defaultMessage="is not smaller than"/>},
+    {value: "5", label: <FormattedMessage id="wizard.present" defaultMessage="is present"/>},
+    {value: "-5", label: <FormattedMessage id="wizard.notPresent" defaultMessage="is not present"/>},
+    {value: "6", label: <FormattedMessage id="wizard.contains" defaultMessage="contains"/>},
+    {value: "-6", label: <FormattedMessage id="wizard.notContain" defaultMessage="does not contain"/>},
+    {value: "7", label: <FormattedMessage id="wizard.listpresent" defaultMessage="is present in list"/>},
+    {
+        value: "-7",
+        label: <FormattedMessage id="wizard.listnotpresent" defaultMessage="is not present in list"/>
+    },
+];
 
 const FieldRule = ({rule, onUpdate, onDelete}) => {
     const [lists, setLists] = useState(null);
@@ -107,20 +101,17 @@ const FieldRule = ({rule, onUpdate, onDelete}) => {
     const selectValueBox = () => {
         if (rule.type !== 5 && rule.type !== -5 && rule.type !== 7 && rule.type !== -7) {
             return (
-                <Input style={{
-                           borderTopLeftRadius: '0px',
-                           borderBottomLeftRadius: '0px',
-                           height: '36px'
-                       }}
+                <Input
                        id="value" name="value" type="text"
+                       style={{height: "35px"}}
                        onChange={(e) => _onValueChanged(e.target.value)}
                        value={rule.value}/>
             );
         } else if (rule.type === 7 || rule.type === -7)  {
             return (
                 <Input id="alertLists" name="alertLists">
-                    <div style={{width: '150px'}}>
-                        <Select style={{borderRadius: '0px'}}
+                    <div style={{height: "35px"}}>
+                        <Select
                                 autosize={false}
                                 required
                                 clearable={false}
@@ -144,8 +135,11 @@ const FieldRule = ({rule, onUpdate, onDelete}) => {
     };
 
     const deleteAction = (
-        <button id="delete-alert" type="button" className="btn btn-primary"
-                title={messages.delete} style={{marginRight: '0.5em'}}
+        <button id="delete-alert"
+                type="button"
+                className="btn btn-primary"
+                style={{height: "35px"}}
+                title={messages.delete}
                 onClick={onDelete}>
             <IconRemove/>
         </button>
@@ -159,17 +153,17 @@ const FieldRule = ({rule, onUpdate, onDelete}) => {
             <div className="form-inline">
                 {deleteAction}
                 <Input id="field" name="field">
-                    <div style={{width: '200px'}}>
-                        <TypeAheadFieldInput defaultValue={rule.field} onChange={_onRuleFieldSelect} />
+                    <div data-testid="typeAheadId" style={{height: "33px"}}>
+                        <TypeAheadFieldInput id={rule.identifier} defaultValue={rule.field} onChange={_onRuleFieldSelect} />
                     </div>
                 </Input>
                 <Input id="type" name="type">
-                    <div style={{width: '200px'}}>
+                    <div style={{height: "33px"}}>
                         <Select
                                 required
                                 clearable={false}
                                 value={rule.type.toString()}
-                                options={_availableRuleType()}
+                                options={AVAILABLE_RULE_TYPE}
                                 matchProp="value"
                                 onChange={_onRuleTypeSelect}
                                 placeholder={messages.select}

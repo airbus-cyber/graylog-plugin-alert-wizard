@@ -6,7 +6,7 @@ services:
 
   # MongoDB: https://hub.docker.com/_/mongo/
   mongo:
-    image: "mongo:6.0"
+    image: "mongo:7.0"
     container_name: mongo
     networks:
       - eh-network
@@ -18,8 +18,8 @@ services:
   # * https://hub.docker.com/r/opensearchproject/opensearch
   # * https://opensearch.org/docs/2.15/install-and-configure/install-opensearch/docker/#sample-docker-composeyml
   opensearch:
-    image: "opensearchproject/opensearch:2.15.0"
-    container_name: opensearch2.15
+    image: "opensearchproject/opensearch:2.19.3"
+    container_name: opensearch
     environment:
       - plugins.security.disabled=true
       - discovery.type=single-node

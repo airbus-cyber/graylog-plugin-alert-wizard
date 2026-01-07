@@ -23,12 +23,12 @@
     <parent>
         <groupId>org.graylog.plugins</groupId>
         <artifactId>graylog-plugin-web-parent</artifactId>
-        <version>6.3.7</version>
+        <version>7.0.1</version>
     </parent>
 
     <groupId>com.airbus-cyber-security.graylog</groupId>
     <artifactId>graylog-plugin-alert-wizard</artifactId>
-    <version>6.3.0</version>
+    <version>7.0.0</version>
     <packaging>jar</packaging>
     <name>${project.artifactId}</name>
     <description>Graylog ${project.artifactId} plugin.</description>
@@ -75,8 +75,8 @@
         <graylog.version>${project.parent.version}</graylog.version>
         <graylog.plugin-dir>/usr/share/graylog-server/plugin</graylog.plugin-dir>
         <!-- versions -->
-        <graylog-plugin-correlation-count.version>6.3.0</graylog-plugin-correlation-count.version>
-        <graylog-plugin-logging-alert.version>6.3.0</graylog-plugin-logging-alert.version>
+        <graylog-plugin-correlation-count.version>7.0.0</graylog-plugin-correlation-count.version>
+        <graylog-plugin-logging-alert.version>7.0.0</graylog-plugin-logging-alert.version>
         <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
         <opencsv.version>2.4</opencsv.version>
     </properties>
@@ -201,7 +201,6 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>${jackson.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -332,10 +331,10 @@
                                     </ignores>
                                 </banDynamicVersions>
                                 <requireMavenVersion>
-                                    <version>[3.9.0,)</version>
+                                    <version>[3.9.6,3.99.99]</version>
                                 </requireMavenVersion>
                                 <requireJavaVersion>
-                                    <version>[17.0,17.99]</version>
+                                    <version>[21.0,21.99]</version>
                                 </requireJavaVersion>
                                 <requireOS>
                                     <family>unix</family>

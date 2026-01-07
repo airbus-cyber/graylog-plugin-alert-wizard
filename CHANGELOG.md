@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.0.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/6.3.0...7.0.0)
+### Features
+* Add compatibility with [Graylog 7.0.1](https://graylog.org/post/announcing-graylog-7-0-1/) ([issue #167](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/167))
+
 ## [6.3.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/6.1.7...6.3.0)
 ### Features
 * Add compatibility with [Graylog 6.3.7](https://graylog.org/post/announcing-graylog-6-3-7/)

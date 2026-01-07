@@ -56,15 +56,7 @@ test('disable stream#2 should disable rule', async ({ page }) => {
     await page.locator('#title').fill(title);
 
     await fill_field_condition(page, 'message', 'matches exactly', 'abc');
-
-    await page.getByRole('button', { name: 'add_circle' }).nth(1).click();
-    await page.waitForTimeout(200);
-    await page.locator('#field-input').nth(1).fill('message');
-    await page.waitForTimeout(200);
-    await page.getByText('arrow_drop_down').nth(5).click();
-    await page.getByRole('option', { name: 'matches exactly' }).click();
-    await page.locator('#value').nth(1).fill('cba');
-    await page.waitForTimeout(200);
+    await fill_field_condition(page, 'message', 'matches exactly', 'cba', 1);
 
     await page.getByRole('button', { name: 'Save' }).click();
 

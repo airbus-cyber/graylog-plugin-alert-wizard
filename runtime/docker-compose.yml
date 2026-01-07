@@ -9,7 +9,7 @@ services:
 
   # Graylog: https://hub.docker.com/r/graylog/graylog/
   graylog:
-    image: "graylog/graylog:6.3.7"
+    image: "graylog/graylog:${GRAYLOG_VERSION?Missing GRAYLOG_VERSION. Create a .env from pom: echo GRAYLOG_VERSION=$(cd ..&&mvn help:evaluate -Dexpression=project.parent.version -q -DforceStdout) > .env}"
     container_name: graylog
     links:
       - mongo:mongo

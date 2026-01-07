@@ -24,21 +24,22 @@ import com.google.common.collect.Maps;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.BadRequestException;
 import org.bson.types.ObjectId;
+import org.graylog2.database.NotFoundException;
 import org.graylog2.events.ClusterEventBus;
 import org.graylog2.indexer.IndexSetRegistry;
 import org.graylog2.plugin.database.ValidationException;
 import org.graylog2.plugin.streams.Stream;
 import org.graylog2.plugin.streams.StreamRule;
+import org.graylog2.rest.models.streams.requests.UpdateStreamRequest;
 import org.graylog2.rest.resources.streams.requests.CreateStreamRequest;
 import org.graylog2.streams.StreamRuleImpl;
 import org.graylog2.streams.StreamRuleService;
-import org.graylog2.streams.events.StreamsChangedEvent;
 import org.graylog2.streams.StreamService;
+import org.graylog2.streams.events.StreamsChangedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -73,41 +74,54 @@ public class StreamFacade {
     }
 
     public Stream createStream(Stream.MatchingType matchingType, String title, String userName, boolean disabled) throws ValidationException {
-        LOG.debug("Create Stream: " + title);
+        LOG.debug("Create Stream: {}", title);
         CreateStreamRequest request = CreateStreamRequest.create(title, Description.COMMENT_ALERT_WIZARD,
                 Collections.emptyList(), "", matchingType.name(), false, indexSetID);
         Stream stream = this.streamService.create(request, userName);
-        stream.setDisabled(disabled);
 
         if (!stream.getIndexSet().getConfig().isWritable()) {
             throw new BadRequestException("Assigned index set must be writable!");
         }
-        this.streamService.save(stream);
 
-        return stream;
+        String streamId = this.streamService.save(stream);
+
+        if (disabled) {
+            this.streamService.pause(stream);
+        } else {
+            this.streamService.resume(stream);
+        }
+
+        try {
+            return this.streamService.load(streamId);
+        } catch (NotFoundException e) {
+            throw new BadRequestException("Stream not found after creation !");
+        }
     }
 
     public void updateStream(Stream stream, AlertRuleStream alertRuleStream, String title) throws ValidationException {
-        LOG.debug("Update Stream: " + stream.getId());
-        stream.setTitle(title);
-        try {
-            stream.setMatchingType(alertRuleStream.getMatchingType());
-        } catch (IllegalArgumentException e) {
-            throw new BadRequestException("Invalid matching type '" + alertRuleStream.getMatchingType()
-                    + "' specified. Should be one of: " + Arrays.toString(Stream.MatchingType.values()));
-        }
-        this.streamService.save(stream);
+        LOG.debug("Update Stream: {}", stream.getId());
 
-        //TODO do it better (don't destroy if update)
-        // Destroy existing stream rules
+        UpdateStreamRequest request = UpdateStreamRequest.create(title, stream.getDescription(),
+                alertRuleStream.getMatchingType().name(), alertRuleStream.getFieldRules(), stream.getRemoveMatchesFromDefaultStream(), stream.getIndexSetId());
+
+        try {
+            this.streamService.update(stream.getId(), request);
+        } catch (NotFoundException e) {
+            throw new BadRequestException("Stream with id '" + stream.getId()
+                    + "' does not exists.");
+        }
+
         for (StreamRule streamRule: stream.getStreamRules()) {
             this.streamRuleService.destroy(streamRule);
         }
-        // Create stream rules.
-        List<FieldRule> streamFieldRules = this.getStreamFieldRules(alertRuleStream.getFieldRules());
-        createStreamRule(streamFieldRules, stream.getId());
 
-        this.clusterEventBus.post(StreamsChangedEvent.create(stream.getId()));
+        if (alertRuleStream.getFieldRules() != null) {
+            // Create stream rules.
+            List<FieldRule> streamFieldRules = this.getStreamFieldRules(alertRuleStream.getFieldRules());
+            createStreamRule(streamFieldRules, stream.getId());
+
+            this.clusterEventBus.post(StreamsChangedEvent.create(stream.getId()));
+        }
     }
 
     private void createStreamRule(List<FieldRule> fieldRules, String streamID) throws ValidationException {

@@ -116,7 +116,7 @@ public class StreamPipelineService {
 
         String ruleID = RandomStringUtils.random(RANDOM_COUNT, RANDOM_CHARS);
         String ruleSource = createRuleSource(alertTitle, listfieldRule, matchingType, targetStreamIdentifier);
-        RuleDao cr = RuleDao.create(ruleID, "function " + alertTitle, Description.COMMENT_ALERT_WIZARD, ruleSource, now, now, null, null);
+        RuleDao cr = RuleDao.create(ruleID, null, "function " + alertTitle, Description.COMMENT_ALERT_WIZARD, ruleSource, now, now, null, null);
 
         return ruleService.save(cr);
     }
@@ -187,6 +187,10 @@ public class StreamPipelineService {
     }
 
     public Stream loadStream(String streamIdentifier) {
+        if (streamIdentifier == null || streamIdentifier.isEmpty()) {
+            return null;
+        }
+
         try {
             return this.streamService.load(streamIdentifier);
         } catch (NotFoundException e) {
