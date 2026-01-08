@@ -26,6 +26,7 @@ services:
       - action.auto_create_index=false
       - bootstrap.memory_lock=true
       - OPENSEARCH_INITIAL_ADMIN_PASSWORD=T3st-P@ssword!
+      - node.search.cache.size=1gb
     ulimits:
       memlock:
         soft: -1
