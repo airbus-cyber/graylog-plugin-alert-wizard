@@ -18,7 +18,7 @@ services:
   # * https://hub.docker.com/r/opensearchproject/opensearch
   # * https://opensearch.org/docs/2.15/install-and-configure/install-opensearch/docker/#sample-docker-composeyml
   opensearch:
-    image: "opensearchproject/opensearch:2.19.3"
+    image: "opensearchproject/opensearch:2.15.0"
     container_name: opensearch
     environment:
       - plugins.security.disabled=true
@@ -26,7 +26,6 @@ services:
       - action.auto_create_index=false
       - bootstrap.memory_lock=true
       - OPENSEARCH_INITIAL_ADMIN_PASSWORD=T3st-P@ssword!
-      - node.search.cache.size=1gb
     ulimits:
       memlock:
         soft: -1
