@@ -127,6 +127,8 @@ class Test(TestCase):
                 events_count = self._graylog.get_events_count('aggregation-v1')
                 print(f'events count: {events_count}')
                 if events_count == 1:
+                    events = self._graylog.get_events()
+                    print(events['events'][0])
                     return
                 time.sleep(1)
             events = self._graylog.get_events()
