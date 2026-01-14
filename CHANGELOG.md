@@ -20,6 +20,7 @@ All notable changes to this project will be documented in this file.
 * A saved rule cannot change his type ([issue #136](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/136))
 * Use custom event field to compute aggregation identifier ([issue #170](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/170))
 * Bump graylog-plugin-logging-alert version to 6.1.7 ([issue #53](https://github.com/airbus-cyber/graylog-plugin-logging-alert/issues/53))
+* Most of API endpoints now use rules's id instead of rules's title
 
 ### Bug Fixes
 * The button to switch blocks in a THEN rule does not work ([issue #158](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/158))
