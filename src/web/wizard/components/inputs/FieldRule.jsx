@@ -22,10 +22,11 @@ import { useIntl, FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 
 import { Input } from 'components/bootstrap';
-import { Select, Spinner, TypeAheadFieldInput } from 'components/common';
+import { Select, Spinner } from 'components/common';
 import FormsUtils from 'util/FormsUtils';
 import AlertListActions from 'wizard/actions/AlertListActions';
 import IconRemove from 'wizard/components/icons/Remove';
+import CaseSensitiveTypeAheadFieldInput from './CaseSensitiveTypeAheadFieldInput';
 
 const AVAILABLE_RULE_TYPE = [
     {value: "1", label: <FormattedMessage id="wizard.matchesExactly" defaultMessage="matches exactly"/>},
@@ -154,7 +155,7 @@ const FieldRule = ({rule, onUpdate, onDelete}) => {
                 {deleteAction}
                 <Input id="field" name="field">
                     <div data-testid="typeAheadId" style={{height: "33px"}}>
-                        <TypeAheadFieldInput id={rule.identifier} defaultValue={rule.field} onChange={_onRuleFieldSelect} />
+                        <CaseSensitiveTypeAheadFieldInput id={rule.identifier} defaultValue={rule.field} onChange={_onRuleFieldSelect} />
                     </div>
                 </Input>
                 <Input id="type" name="type">
