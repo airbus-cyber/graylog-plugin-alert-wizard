@@ -14,52 +14,18 @@
  * along with this program. If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-
 // TODO should rename package rest into resources
 package com.airbus_cyber_security.graylog.wizard.alert.rest;
 
-import com.airbus_cyber_security.graylog.wizard.alert.business.PaginatedAlertRuleService;
-import com.airbus_cyber_security.graylog.wizard.alert.business.TriggeringConditionsService;
-import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleService;
-import com.airbus_cyber_security.graylog.wizard.alert.business.EventDefinitionService;
-import com.airbus_cyber_security.graylog.wizard.alert.business.NotificationService;
-import com.airbus_cyber_security.graylog.wizard.alert.model.TriggeringConditions;
-import com.airbus_cyber_security.graylog.wizard.alert.model.AlertPattern;
-import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRule;
-import com.airbus_cyber_security.graylog.wizard.alert.model.AlertType;
-import com.airbus_cyber_security.graylog.wizard.alert.model.AggregationAlertPattern;
-import com.airbus_cyber_security.graylog.wizard.alert.model.CorrelationAlertPattern;
-import com.airbus_cyber_security.graylog.wizard.alert.model.DisjunctionAlertPattern;
-import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
-import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
-import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
-import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.CloneAlertRuleRequest;
-import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetDataAlertRule;
-import com.airbus_cyber_security.graylog.wizard.audit.AlertWizardAuditEventTypes;
-import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
-import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfigurationService;
-import com.airbus_cyber_security.graylog.wizard.config.rest.ImportPolicyType;
-import com.airbus_cyber_security.graylog.wizard.fields.AggregationFieldValueProvider;
-import com.airbus_cyber_security.graylog.wizard.permissions.AlertRuleRestPermissions;
-import com.codahale.metrics.annotation.Timed;
-import com.google.common.collect.ImmutableMap;
-import com.mongodb.MongoException;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import jakarta.ws.rs.BadRequestException;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.DefaultValue;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.bson.types.ObjectId;
@@ -89,24 +55,62 @@ import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleService;
+import com.airbus_cyber_security.graylog.wizard.alert.business.EventDefinitionService;
+import com.airbus_cyber_security.graylog.wizard.alert.business.NotificationService;
+import com.airbus_cyber_security.graylog.wizard.alert.business.PaginatedAlertRuleService;
+import com.airbus_cyber_security.graylog.wizard.alert.business.TriggeringConditionsService;
+import com.airbus_cyber_security.graylog.wizard.alert.model.AggregationAlertPattern;
+import com.airbus_cyber_security.graylog.wizard.alert.model.AlertPattern;
+import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRule;
+import com.airbus_cyber_security.graylog.wizard.alert.model.AlertType;
+import com.airbus_cyber_security.graylog.wizard.alert.model.CorrelationAlertPattern;
+import com.airbus_cyber_security.graylog.wizard.alert.model.DisjunctionAlertPattern;
+import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
+import com.airbus_cyber_security.graylog.wizard.alert.model.TriggeringConditions;
+import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
+import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
+import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.CloneAlertRuleRequest;
+import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetDataAlertRule;
+import com.airbus_cyber_security.graylog.wizard.audit.AlertWizardAuditEventTypes;
+import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
+import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfigurationService;
+import com.airbus_cyber_security.graylog.wizard.config.rest.ImportPolicyType;
+import com.airbus_cyber_security.graylog.wizard.fields.AggregationFieldValueProvider;
+import com.airbus_cyber_security.graylog.wizard.permissions.AlertRuleRestPermissions;
+import com.codahale.metrics.annotation.Timed;
+import com.google.common.collect.ImmutableMap;
+import com.mongodb.MongoException;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
 
 @Api(value = "Wizard/Alerts", description = "Management of Wizard alerts rules.")
 @Path("/alerts")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class AlertRuleResource extends RestResource implements PluginRestResource {
+
     private static final Logger LOG = LoggerFactory.getLogger(AlertRuleResource.class);
 
     private static final String ENCODING = "UTF-8";
@@ -135,7 +139,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             .sort(Sorting.create(DEFAULT_SORT_FIELD, Sorting.Direction.valueOf(DEFAULT_SORT_DIRECTION.toUpperCase(Locale.ROOT))))
             .build();
 
-
     // TODO try to remove this field => move it down in business
     private final AlertWizardConfigurationService configurationService;
 
@@ -153,13 +156,13 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
     @Inject
     public AlertRuleResource(AlertRuleService alertRuleService,
-                             PaginatedAlertRuleService paginatedAlertRuleService,
-                             TriggeringConditionsService triggeringConditionsService,
-                             AlertWizardConfigurationService configurationService,
-                             EventNotificationsResource eventNotificationsResource,
-                             Conversions conversions,
-                             EventDefinitionService eventDefinitionService,
-                             NotificationService notificationService) {
+            PaginatedAlertRuleService paginatedAlertRuleService,
+            TriggeringConditionsService triggeringConditionsService,
+            AlertWizardConfigurationService configurationService,
+            EventNotificationsResource eventNotificationsResource,
+            Conversions conversions,
+            EventDefinitionService eventDefinitionService,
+            NotificationService notificationService) {
         this.alertRuleService = alertRuleService;
         this.paginatedAlertRuleService = paginatedAlertRuleService;
         this.triggeringConditionsService = triggeringConditionsService;
@@ -295,7 +298,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         List<AlertRule> alerts = this.alertRuleService.all();
 
         List<GetDataAlertRule> alertsData = new ArrayList<>();
-        for (AlertRule alert: alerts) {
+        for (AlertRule alert : alerts) {
             alertsData.add(this.constructDataAlertRule(alert));
         }
 
@@ -309,8 +312,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_READ)
     @ApiResponses(value = {
-            @ApiResponse(code = 404, message = "Alert not found."),
-    })
+        @ApiResponse(code = 404, message = "Alert not found."),})
     public GetDataAlertRule get(@ApiParam(name = ID, required = true) @PathParam(ID) String id)
             throws UnsupportedEncodingException, NotFoundException {
         String alertId = java.net.URLDecoder.decode(id, ENCODING);
@@ -324,8 +326,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_READ)
     @ApiResponses(value = {
-            @ApiResponse(code = 404, message = "Alert not found."),
-    })
+        @ApiResponse(code = 404, message = "Alert not found."),})
     public GetDataAlertRule getByTitle(@ApiParam(name = TITLE, required = true) @PathParam(TITLE) String title)
             throws UnsupportedEncodingException, NotFoundException {
         String alertTitle = java.net.URLDecoder.decode(title, ENCODING);
@@ -371,7 +372,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     @ApiOperation(value = "Create an alert")
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_CREATE)
-    @ApiResponses(value = {@ApiResponse(code = 400, message = "The supplied request is not valid.")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 400, message = "The supplied request is not valid.")})
     @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_CREATE)
     public Response create(@ApiParam(name = "JSON body", required = true) @Valid @NotNull AlertRuleRequest request, @Context UserContext userContext)
             throws ValidationException, BadRequestException {
@@ -409,7 +411,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     }
 
     private AlertPattern createAlertPattern(String notificationIdentifier, AlertRuleRequest request, String alertTitle,
-                                            UserContext userContext, String userName) throws ValidationException {
+            UserContext userContext, String userName) throws ValidationException {
         AlertType alertType = request.getConditionType();
 
         TriggeringConditions conditions = this.triggeringConditionsService.createTriggeringConditions(request.getStream(), alertTitle, userName, request.isDisabled());
@@ -464,13 +466,13 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String streamIdentifier = conditions.outputStreamIdentifier();
         String streamIdentifier2 = conditions2.outputStreamIdentifier();
         EventProcessorConfig configuration = this.conversions.createCorrelationCondition(alertType, streamIdentifier, streamIdentifier2, conditionParameters);
-        String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, priority, notificationIdentifier, configuration, aggregationTime,userContext, request.isDisabled());
+        String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, priority, notificationIdentifier, configuration, aggregationTime, userContext, request.isDisabled());
         return CorrelationAlertPattern.builder().conditions1(conditions).conditions2(conditions2).eventIdentifier(eventIdentifier).build();
     }
 
     private AlertPattern updateAlertPattern(AlertPattern previousAlertPattern, String notificationIdentifier,
-                                            AlertRuleRequest request, AlertType previousAlertType, String title,
-                                            UserContext userContext, String userName) throws ValidationException {
+            AlertRuleRequest request, AlertType previousAlertType, String title,
+            UserContext userContext, String userName) throws ValidationException {
         AlertRuleStream streamConfiguration = request.getStream();
         AlertRuleStream streamConfiguration2 = request.getSecondStream();
         AlertType alertType = request.getConditionType();
@@ -527,12 +529,13 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_UPDATE)
     @ApiOperation(value = "Update a alert")
-    @ApiResponses(value = {@ApiResponse(code = 400, message = "The supplied request is not valid.")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 400, message = "The supplied request is not valid.")})
     @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_UPDATE)
     public Response update(@ApiParam(name = ID, required = true)
-                           @PathParam(ID) String id,
-                           @ApiParam(name = "JSON body", required = true) @Valid @NotNull AlertRuleRequest request,
-                           @Context UserContext userContext
+            @PathParam(ID) String id,
+            @ApiParam(name = "JSON body", required = true) @Valid @NotNull AlertRuleRequest request,
+            @Context UserContext userContext
     ) throws UnsupportedEncodingException, NotFoundException, ValidationException {
 
         this.conversions.checkIsValidRequest(request);
@@ -599,13 +602,13 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_DELETE)
     @ApiOperation(value = "Delete a alert")
     @ApiResponses(value = {
-            @ApiResponse(code = 404, message = "Alert not found."),
-            @ApiResponse(code = 400, message = "Invalid ObjectId.")
+        @ApiResponse(code = 404, message = "Alert not found."),
+        @ApiResponse(code = 400, message = "Invalid ObjectId.")
     })
     @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_DELETE)
     public void delete(@ApiParam(name = ID, required = true)
-                       @PathParam(ID) String id,
-                       @Context UserContext userContext
+            @PathParam(ID) String id,
+            @Context UserContext userContext
     ) throws MongoException, UnsupportedEncodingException {
         Optional<AlertRule> alertRuleOptional = this.alertRuleService.get(id);
 
@@ -629,7 +632,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     @ApiOperation(value = "Clone an alert")
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_CREATE)
-    @ApiResponses(value = {@ApiResponse(code = 400, message = "The supplied request is not valid.")})
+    @ApiResponses(value = {
+        @ApiResponse(code = 400, message = "The supplied request is not valid.")})
     @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_CREATE)
     @Path("/clone")
     public Response clone(@ApiParam(name = "JSON body", required = true) @Valid @NotNull CloneAlertRuleRequest request, @Context UserContext userContext)
@@ -640,14 +644,48 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String description = request.getDescription();
         Integer aggregationTime = sourceAlert.getAggregationTime();
         String alertTitle = checkImportPolicyAndGetTitle(title, userContext);
+        Map<String, Object> conditionParameters = sourceAlert.conditionParameters();
+        if (null == conditionParameters) {
+            conditionParameters = new HashMap<>();
+        }
+        String conditionType = request.getConditionType();
         AlertType alertType = sourceAlert.getConditionType();
-
+        if (null != conditionType && !conditionType.isEmpty()) {
+            alertType = AlertType.valueOf(conditionType);
+            this.appendIfMissing(conditionParameters, "threshold_type", ">");
+            this.appendIfMissing(conditionParameters, "additional_threshold_type", ">");
+            this.appendIfMissing(conditionParameters, "threshold", 0);
+            this.appendIfMissing(conditionParameters, "additional_threshold", 0);
+            this.appendIfMissing(conditionParameters, "time", 1);
+            this.appendIfMissing(conditionParameters, "grace", 1);
+            this.appendIfMissing(conditionParameters, "backlog", 500);
+            this.appendIfMissing(conditionParameters, "grouping_fields", Collections.emptyList());
+            this.appendIfMissing(conditionParameters, "distinct_by", "");
+            this.appendIfMissing(conditionParameters, "field", "");
+            this.appendIfMissing(conditionParameters, "type", "");
+            this.appendIfMissing(conditionParameters, "search_query", "*");
+            this.appendIfMissing(conditionParameters, "additional_search_query", "*");
+            if (AlertType.STATISTICAL == alertType) {
+                this.appendIfMissing(conditionParameters, "field", "action"); // TODO how to find an existing value?
+                this.appendIfMissing(conditionParameters, "type", "AVG");
+            }
+        }
+        AlertRuleStream stream = sourceAlert.getStream();
+        AlertRuleStream secondStream = sourceAlert.getSecondStream();
+        if (AlertType.COUNT != alertType && null == secondStream && null != stream) {
+            secondStream = AlertRuleStream.create(stream.getID(), stream.getMatchingType(), stream.getFieldRules());
+        }
         String notificationIdentifier = createNotificationFromCloneRequest(alertTitle, userContext, sourceAlert.getNotificationID(), request.getCloneNotification());
-        AlertRuleRequest alertRuleRequest = AlertRuleRequest.create(title, sourceAlert.getPriority(), description, sourceAlert.isDisabled(), sourceAlert.getConditionType(),
-                sourceAlert.conditionParameters(), sourceAlert.getStream(), sourceAlert.getSecondStream(), aggregationTime);
+        AlertRuleRequest alertRuleRequest = AlertRuleRequest.create(title, sourceAlert.getPriority(), description, sourceAlert.isDisabled(), alertType,
+                conditionParameters, stream, secondStream, aggregationTime);
 
         GetDataAlertRule result = createPatternAndRule(alertRuleRequest, userContext, notificationIdentifier, alertTitle, userName, alertType, aggregationTime);
         return Response.ok().entity(result).build();
+    }
+
+    private Map<String, Object> appendIfMissing(Map<String, Object> conditionParameters, String field, Object value) {
+        conditionParameters.computeIfAbsent(field, k -> value);
+        return conditionParameters;
     }
 
     private GetDataAlertRule getGetDataAlertRule(String id) throws NotFoundException {
@@ -667,7 +705,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     }
 
     private String createNotificationFromCloneRequest(String alertTitle, UserContext userContext, String notificationID, Boolean cloneNotification) throws NotFoundException {
-        if(cloneNotification) {
+        if (cloneNotification) {
             return this.notificationService.cloneNotification(notificationID, alertTitle, userContext);
         } else {
             return this.notificationService.createNotification(alertTitle, userContext);
@@ -681,15 +719,15 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     @ApiOperation(value = "Get a paginated list of alerts")
     @Produces(MediaType.APPLICATION_JSON)
     public PageListResponse<GetDataAlertRule> getPage(@ApiParam(name = "page") @QueryParam("page") @DefaultValue("1") int page,
-                                                      @ApiParam(name = "per_page") @QueryParam("per_page") @DefaultValue("50") int perPage,
-                                                      @ApiParam(name = "query") @QueryParam("query") @DefaultValue("") String query,
-                                                      @ApiParam(name = "sort",
-                                                              value = "The field to sort the result on",
-                                                              required = true,
-                                                              allowableValues = "title,user,created,lastModified")
-                                                      @DefaultValue(DEFAULT_SORT_FIELD) @QueryParam("sort") String sort,
-                                                      @ApiParam(name = "order", value = "The sort direction", allowableValues = "asc, desc")
-                                                      @DefaultValue(DEFAULT_SORT_DIRECTION) @QueryParam("order") SortOrder order) {
+            @ApiParam(name = "per_page") @QueryParam("per_page") @DefaultValue("50") int perPage,
+            @ApiParam(name = "query") @QueryParam("query") @DefaultValue("") String query,
+            @ApiParam(name = "sort",
+                    value = "The field to sort the result on",
+                    required = true,
+                    allowableValues = "title,user,created,lastModified")
+            @DefaultValue(DEFAULT_SORT_FIELD) @QueryParam("sort") String sort,
+            @ApiParam(name = "order", value = "The sort direction", allowableValues = "asc, desc")
+            @DefaultValue(DEFAULT_SORT_DIRECTION) @QueryParam("order") SortOrder order) {
 
         SearchQuery searchQuery;
         try {

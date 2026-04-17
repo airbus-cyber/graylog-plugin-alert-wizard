@@ -59,7 +59,7 @@ const AlertRuleStore = Reflux.createStore({
 
     init() {
         // TODO try to remove
-        this.trigger({alerts: this.alerts});
+        this.trigger({ alerts: this.alerts });
     },
 
     list() {
@@ -114,7 +114,7 @@ const AlertRuleStore = Reflux.createStore({
         const promise = fetch('GET', URLUtils.qualifyUrl(SOURCE_URL + '/' + encodeURIComponent(id)))
             .then(
                 response => {
-                    this.trigger({alert: response});
+                    this.trigger({ alert: response });
                     return response;
                 },
                 error => {
@@ -128,7 +128,7 @@ const AlertRuleStore = Reflux.createStore({
         const promise = fetch('GET', URLUtils.qualifyUrl(SOURCE_URL + '/title/' + encodeURIComponent(title)))
             .then(
                 response => {
-                    this.trigger({alert: response});
+                    this.trigger({ alert: response });
                     return response;
                 },
                 error => {
@@ -165,14 +165,15 @@ const AlertRuleStore = Reflux.createStore({
         AlertRuleActions.create.promise(promise);
     },
 
-    clone(source_title, title, description, shouldCloneNotification) {
+    clone(source_title, title, description, shouldCloneNotification, conditionType) {
         const url = URLUtils.qualifyUrl(SOURCE_URL + '/clone');
 
         const request = {
             source_title: source_title,
             title: title,
             description: description,
-            clone_notification: shouldCloneNotification
+            clone_notification: shouldCloneNotification,
+            condition_type: conditionType,
         };
 
         const promise = fetch('POST', url, request)

@@ -253,8 +253,8 @@ const AlertRulesContainer = ({ fieldOrder }) => {
         return Promise.all(promises);
     }
 
-    const _onCloneSubmit = (name, title, description, shouldCloneNotification) => {
-        AlertRuleActions.clone(name, title, description, shouldCloneNotification)
+    const _onCloneSubmit = (name, title, description, shouldCloneNotification, conditionType) => {
+        AlertRuleActions.clone(name, title, description, shouldCloneNotification, conditionType)
             .then(() => {}).finally(() => _loadAlertRules());
     }
 

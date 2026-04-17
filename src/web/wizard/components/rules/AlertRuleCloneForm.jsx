@@ -21,13 +21,23 @@ import { useIntl, FormattedMessage } from 'react-intl';
 
 import { Input } from 'components/bootstrap';
 import { Button } from 'components/bootstrap';
+import Select from 'components/common/Select/Select';
 import BootstrapModalForm from 'components/bootstrap/BootstrapModalForm';
 
 // source of inspiration: components/common/URLWhiteListFormModal
 
 const CloneButton = ({title, disabled = false, onSubmit, messages}) => {
-    const [state, setState] = useState({title: '', description: '', shouldCloneNotification: false});
+    const [state, setState] = useState({title: '', description: '', shouldCloneNotification: false, conditionType: ''});
     const [showConfigModal, setShowConfigModal] = useState(false);
+    const intl = useIntl();
+    const AVAILABLE_CONDITION_TYPES = [
+        {value: 'COUNT', label: intl.formatMessage({id: "wizard.countCondition", defaultMessage: "Count"})},
+        {value: 'GROUP_DISTINCT', label: intl.formatMessage({id: "wizard.groupDistinctCondition", defaultMessage: "Group / Distinct"})},
+        {value: 'STATISTICAL', label: intl.formatMessage({id: "wizard.StatisticsCondition", defaultMessage: "Statistics"})},
+        {value: 'THEN', label: intl.formatMessage({id: "wizard.thenCondition", defaultMessage: "THEN"})},
+        {value: 'AND', label: intl.formatMessage({id: "wizard.andCondition", defaultMessage: "AND"})},
+        {value: 'OR', label: intl.formatMessage({id: "wizard.orCondition", defaultMessage: "OR"})},
+    ];
 
     const openModal = () => {
         setShowConfigModal(true);
@@ -38,7 +48,7 @@ const CloneButton = ({title, disabled = false, onSubmit, messages}) => {
     };
 
     const submit = () => {
-        onSubmit(title, state.title, state.description, state.shouldCloneNotification);
+        onSubmit(title, state.title, state.description, state.shouldCloneNotification, state.conditionType);
         closeModal();
     };
 
@@ -46,6 +56,14 @@ const CloneButton = ({title, disabled = false, onSubmit, messages}) => {
         const newState = {
             ...state,
             [event.target.name]: event.target.value
+        };
+        setState(newState);
+    };
+
+    const onConditionTypeChanged = (value) => {
+        const newState = {
+            ...state,
+            conditionType: value
         };
         setState(newState);
     };
@@ -58,6 +76,7 @@ const CloneButton = ({title, disabled = false, onSubmit, messages}) => {
         setState(newState);
     };
 
+    // <!-- TODO Select with condition_type -->
     return (
         <>
             <Button type="button" bsStyle="info" onClick={openModal} disabled={disabled} title={messages.infoClone} >
@@ -74,6 +93,13 @@ const CloneButton = ({title, disabled = false, onSubmit, messages}) => {
                        onChange={onValueChanged} autoFocus />
                 <Input id="description" type="text" label={<FormattedMessage id="wizard.fieldDescription" defaultMessage="Description" />} name="description"
                        onChange={onValueChanged} />
+                <Input label={<FormattedMessage id="wizard.ruleType" defaultMessage="Type de règle" />} >
+                    <Select id="condition_type"
+                            options={AVAILABLE_CONDITION_TYPES}
+                            matchProp="value"
+                            onChange={onConditionTypeChanged}
+                    />
+                </Input>
                 <Input id="should-clone-notification"
                        type="checkbox"
                        label={<FormattedMessage id ="wizard.cloneNotification" defaultMessage="Clone notification" />}

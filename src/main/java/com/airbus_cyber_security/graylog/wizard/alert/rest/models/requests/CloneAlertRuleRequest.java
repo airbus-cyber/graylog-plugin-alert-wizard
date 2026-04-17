@@ -14,7 +14,6 @@
  * along with this program. If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-
 package com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -45,11 +44,17 @@ public abstract class CloneAlertRuleRequest {
     @NotNull
     public abstract Boolean getCloneNotification();
 
+    @JsonProperty("condition_type")
+    @Nullable
+    public abstract String getConditionType();
+
     @JsonCreator
-    public static CloneAlertRuleRequest create(@JsonProperty("source_title") String sourceTitle,
-                                               @JsonProperty("title") String title,
-                                               @JsonProperty("description") String description,
-                                               @JsonProperty("clone_notification") Boolean cloneNotification) {
-        return new AutoValue_CloneAlertRuleRequest(sourceTitle, title, description, cloneNotification);
+    public static CloneAlertRuleRequest create(
+            @JsonProperty("source_title") String sourceTitle,
+            @JsonProperty("title") String title,
+            @JsonProperty("description") String description,
+            @JsonProperty("clone_notification") Boolean cloneNotification,
+            @JsonProperty("condition_type") String conditionType) {
+        return new AutoValue_CloneAlertRuleRequest(sourceTitle, title, description, cloneNotification, conditionType);
     }
 }
