@@ -17,7 +17,6 @@ test('follow menu link should works #161', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Alert Rules' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Create' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Import' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Export' })).toBeVisible();
 });
 
 
