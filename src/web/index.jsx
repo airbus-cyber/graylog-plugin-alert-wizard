@@ -21,7 +21,6 @@ import { appPrefixed } from 'util/URLUtils';
 import WizardPage from './wizard/pages/WizardPage';
 import NewAlertPage from './wizard/pages/NewAlertPage';
 import UpdateAlertPage from './wizard/pages/UpdateAlertPage';
-import ExportAlertPage from './wizard/pages/ExportAlertPage';
 import ImportAlertPage from './wizard/pages/ImportAlertPage';
 import WizardListsPage from './wizard/pages/WizardListsPage';
 import NewAlertListPage from './wizard/pages/NewAlertListPage';
@@ -41,7 +40,6 @@ PluginStore.register(new PluginManifest(packageJson, {
         {path: '/wizard/AlertRules', component: WizardPage, permissions: 'WIZARD_ALERTS_RULES_READ'},
         {path: '/wizard/NewAlert', component: NewAlertPage, permissions: 'WIZARD_ALERTS_RULES_CREATE'},
         {path: '/wizard/UpdateAlert/:alertId', component: UpdateAlertPage, permissions: 'WIZARD_ALERTS_RULES_UPDATE'},
-        {path: '/wizard/ExportAlert', component: ExportAlertPage, permissions: 'WIZARD_ALERTS_RULES_READ'},
         {path: '/wizard/ImportAlert', component: ImportAlertPage, permissions: 'WIZARD_ALERTS_RULES_READ'},
         {path: '/wizard/Lists', component: WizardListsPage},
         {path: '/wizard/NewList', component: NewAlertListPage},

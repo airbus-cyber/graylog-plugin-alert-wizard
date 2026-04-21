@@ -130,7 +130,6 @@ const AlertListStore = Reflux.createStore({
     exportAlertLists(titles){
         const url = URLUtils.qualifyUrl(this.sourceUrl + '/export');
         const method = 'POST';
-
         const promise = fetch(method, url, titles)
             .then(
                 response => {

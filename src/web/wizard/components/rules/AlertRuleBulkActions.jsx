@@ -26,9 +26,10 @@ const ACTION_TYPES = {
     DELETE: 'delete',
     DISABLE: 'disable',
     ENABLE: 'enable',
+    EXPORT: 'export',
 };
 
-const AlertRuleBulkActions = ({ deleteAlertRulesFunction, enableAlertRulesFunction, disableAlertRulesFunction }) => {
+const AlertRuleBulkActions = ({ deleteAlertRulesFunction, enableAlertRulesFunction, disableAlertRulesFunction, exportAlertRulesFunction }) => {
 
     const intl = useIntl();
 
@@ -74,6 +75,9 @@ const AlertRuleBulkActions = ({ deleteAlertRulesFunction, enableAlertRulesFuncti
             case ACTION_TYPES.DISABLE:
                 updateState({ show: true, type: ACTION_TYPES.DISABLE });
                 break;
+            case ACTION_TYPES.EXPORT:
+                exportAlertRulesFunction(selectedEntities);
+                break;
             default:
                 break;
         }
@@ -94,6 +98,9 @@ const AlertRuleBulkActions = ({ deleteAlertRulesFunction, enableAlertRulesFuncti
             case ACTION_TYPES.ENABLE:
                 enableAlertRulesFunction(selectedEntities);
                 break;
+            case ACTION_TYPES.EXPORT:
+                exportAlertRulesFunction(selectedEntities);
+                break;
             default:
                 break;
         }
@@ -111,6 +118,7 @@ const AlertRuleBulkActions = ({ deleteAlertRulesFunction, enableAlertRulesFuncti
                 <MenuItem onSelect={() => handleAction(ACTION_TYPES.ENABLE)}><FormattedMessage id="wizard.enable" defaultMessage="Enable" /></MenuItem>
                 <MenuItem onSelect={() => handleAction(ACTION_TYPES.DISABLE)}><FormattedMessage id="wizard.disable" defaultMessage="Disable" /></MenuItem>
                 <MenuItem onSelect={() => handleAction(ACTION_TYPES.DELETE)} variant="danger"><FormattedMessage id="wizard.delete" defaultMessage="Delete"/></MenuItem>
+                <MenuItem onSelect={() => handleAction(ACTION_TYPES.EXPORT)}><FormattedMessage id="wizard.export" defaultMessage="Export" /></MenuItem>
             </BulkActionsDropdown>
             {showDialog && (
                 <ConfirmDialog title={ACTION_TEXT[actionType]?.dialogTitle}

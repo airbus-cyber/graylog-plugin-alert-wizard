@@ -19,7 +19,6 @@ import React from 'react';
 import { useState, useCallback } from 'react';
 import { useIntl, FormattedMessage } from 'react-intl';
 import { useQueryClient } from '@tanstack/react-query';
-import { toDateObject } from 'util/DateTime';
 import StreamsStore from 'stores/streams/StreamsStore';
 import { PaginatedEntityTable, Timestamp, QueryHelper } from 'components/common';
 import ButtonToEventDefinition from 'wizard/components/buttons/ButtonToEventDefinition';
@@ -34,6 +33,11 @@ import AlertRuleBulkActions from './AlertRuleBulkActions';
 import AlertRuleText from './AlertRuleText';
 import AlertRuleCloneForm from './AlertRuleCloneForm';
 import { DEFAULT_LAYOUT } from './Constants';
+import RulesImportExport from 'wizard/logic/RulesImportExport';
+import { EventNotificationsActions } from 'stores/event-notifications/EventNotificationsStore';
+import UserNotification from 'util/UserNotification';
+import { toDateObject, adjustFormat } from 'util/DateTime';
+import FileSaver from 'wizard/logic/FileSaver';
 
 function _convertAlertToElement(alert) {
     let alertValid = !AlertValidation.isAlertCorrupted(alert);
@@ -170,7 +174,8 @@ const AlertRulesContainer = ({ fieldOrder }) => {
     const renderBulkActions = () => (
         <AlertRuleBulkActions deleteAlertRulesFunction={deleteAlertRules}
                               disableAlertRulesFunction={disableAlertRules}
-                              enableAlertRulesFunction={enableAlertRules} />
+                              enableAlertRulesFunction={enableAlertRules}
+                              exportAlertRulesFunction={exportAlertRules} />
     );
     const renderAlertRuleActions = useCallback((alert) => {
         const element = _convertAlertToElement(alert);
@@ -217,6 +222,21 @@ const AlertRulesContainer = ({ fieldOrder }) => {
             promises.push(_onResume(elt.condition, elt.streamId, elt.secondEventDefinition, elt.streamId2));
         }
         Promise.all(promises).then(() => {}).finally(() => _loadAlertRules());
+    }
+
+    const exportAlertRules = async (alertRulesIds) => {
+        const alerts = [];
+        for(const id of alertRulesIds) {
+            const alert = await AlertRuleActions.get(id);
+            const notification = await EventNotificationsActions.get(alert.notification);
+            alert.notification_parameters = notification.config;
+            alerts.push(alert);
+        }
+        UserNotification.success('Successfully export alert rules. Starting download...', 'Success!');
+        let exportData = RulesImportExport.createExportDataFromRules(alerts);
+        let date = adjustFormat(new Date()).replace(/:/g, '').replace(/ /g, '_');
+        FileSaver.save(JSON.stringify(exportData), date+'_alert_rules.json', 'application/json', 'utf-8');
+        _loadAlertRules();
     }
 
     const _onResume = (eventDefinitionIdentifier, stream, secondEventDefinitionIdentifier, stream2) => {

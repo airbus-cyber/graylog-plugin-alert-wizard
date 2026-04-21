@@ -65,11 +65,6 @@ const WizardPage = () => {
                                     <FormattedMessage id="wizard.import" defaultMessage="Import" />
                                 </Button>
                             </LinkContainer>
-                            <LinkContainer to={Routes.pluginRoute('WIZARD_EXPORTALERT')}>
-                                <Button bsStyle="success" type="submit">
-                                    <FormattedMessage id="wizard.export" defaultMessage="Export" />
-                                </Button>
-                            </LinkContainer>
                         </div>
                     </IfPermitted>
                 )}>
