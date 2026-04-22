@@ -14,22 +14,17 @@
  * along with this program. If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-
 package com.airbus_cyber_security.graylog.wizard.alert.rest;
 
-import com.airbus_cyber_security.graylog.wizard.alert.business.EventDefinitionService;
-import com.airbus_cyber_security.graylog.wizard.alert.business.FieldRulesUtilities;
-import com.airbus_cyber_security.graylog.wizard.alert.model.TriggeringConditions;
-import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
-import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
-import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
-import com.airbus_cyber_security.graylog.events.processor.correlation.CorrelationCountProcessorConfig;
-import com.airbus_cyber_security.graylog.events.processor.correlation.checks.OrderType;
-import com.airbus_cyber_security.graylog.wizard.alert.model.AlertType;
-import com.airbus_cyber_security.graylog.wizard.database.Description;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+
 import org.graylog.events.conditions.Expr;
 import org.graylog.events.conditions.Expression;
 import org.graylog.events.processor.EventProcessorConfig;
@@ -49,22 +44,23 @@ import org.graylog.plugins.views.search.searchtypes.pivot.series.Sum;
 import org.graylog.plugins.views.search.searchtypes.pivot.series.SumOfSquares;
 import org.graylog.plugins.views.search.searchtypes.pivot.series.Variance;
 import org.graylog2.plugin.streams.Stream;
-import org.graylog2.plugin.streams.StreamRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.airbus_cyber_security.graylog.events.processor.correlation.CorrelationCountProcessorConfig;
+import com.airbus_cyber_security.graylog.events.processor.correlation.checks.OrderType;
+import com.airbus_cyber_security.graylog.wizard.alert.business.FieldRulesUtilities;
+import com.airbus_cyber_security.graylog.wizard.alert.model.AlertType;
+import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
+import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
+import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
+import com.airbus_cyber_security.graylog.wizard.database.Description;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
+
 import jakarta.inject.Inject;
 import jakarta.ws.rs.BadRequestException;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
 
 /**
  * Converts from business model to rest model and vice versa
@@ -92,6 +88,8 @@ public class Conversions {
     private static final String THRESHOLD_TYPE_LESS = "<";
     private static final String SEARCH_QUERY = "search_query";
     private static final String ADDITIONAL_SEARCH_QUERY = "additional_search_query";
+
+    public static final List<String> STATISTICAL_CONDITION_PARAMETER_TYPES = Arrays.asList("AVG", "MIN", "MAX", "SUM", "STDDEV", "CARD", "COUNT", "SUMOFSQUARES", "VARIANCE");
 
     private final FieldRulesUtilities fieldRulesUtilities;
 
@@ -199,7 +197,7 @@ public class Conversions {
         if (!stream.getMatchingType().equals(Stream.MatchingType.AND) && !stream.getMatchingType().equals(Stream.MatchingType.OR)) {
             return false;
         }
-        for (FieldRule fieldRule: stream.getFieldRules()) {
+        for (FieldRule fieldRule : stream.getFieldRules()) {
             if (!fieldRulesUtilities.isValidFieldRule(fieldRule)) {
                 return false;
             }
@@ -208,8 +206,8 @@ public class Conversions {
     }
 
     private boolean isValidStatThresholdType(String thresholdType) {
-        return (thresholdType.equals("<") || thresholdType.equals("<=") ||
-                thresholdType.equals(">") || thresholdType.equals(">=") || thresholdType.equals("=="));
+        return (thresholdType.equals("<") || thresholdType.equals("<=")
+                || thresholdType.equals(">") || thresholdType.equals(">=") || thresholdType.equals("=="));
     }
 
     private boolean isValidCondStatistical(Map<String, Object> conditionParameters) {
@@ -234,19 +232,19 @@ public class Conversions {
     }
 
     private boolean isValidCondCorrelation(Map<String, Object> conditionParameters, AlertRuleStream secondStream) {
-        return (conditionParameters.containsKey(ADDITIONAL_THRESHOLD) &&
-                conditionParameters.containsKey(ADDITIONAL_THRESHOLD_TYPE) &&
-                isValidThresholdType(conditionParameters.get(THRESHOLD_TYPE).toString()) &&
-                isValidThresholdType(conditionParameters.get(ADDITIONAL_THRESHOLD_TYPE).toString()) &&
-                isValidStream(secondStream));
+        return (conditionParameters.containsKey(ADDITIONAL_THRESHOLD)
+                && conditionParameters.containsKey(ADDITIONAL_THRESHOLD_TYPE)
+                && isValidThresholdType(conditionParameters.get(THRESHOLD_TYPE).toString())
+                && isValidThresholdType(conditionParameters.get(ADDITIONAL_THRESHOLD_TYPE).toString())
+                && isValidStream(secondStream));
     }
 
     private boolean isValidCondOr(Map<String, Object> conditionParameters, AlertRuleStream secondStream) {
-        return (conditionParameters.containsKey(ADDITIONAL_THRESHOLD) &&
-                conditionParameters.containsKey(ADDITIONAL_THRESHOLD_TYPE) &&
-                isValidThresholdType(conditionParameters.get(THRESHOLD_TYPE).toString()) &&
-                isValidThresholdType(conditionParameters.get(ADDITIONAL_THRESHOLD_TYPE).toString()) &&
-                isValidStream(secondStream));
+        return (conditionParameters.containsKey(ADDITIONAL_THRESHOLD)
+                && conditionParameters.containsKey(ADDITIONAL_THRESHOLD_TYPE)
+                && isValidThresholdType(conditionParameters.get(THRESHOLD_TYPE).toString())
+                && isValidThresholdType(conditionParameters.get(ADDITIONAL_THRESHOLD_TYPE).toString())
+                && isValidStream(secondStream));
     }
 
     private boolean isValidCondition(AlertType alertType, Map<String, Object> conditionParameters, AlertRuleStream secondStream) {
@@ -263,17 +261,21 @@ public class Conversions {
             return false;
         }
         return switch (alertType) {
-            case STATISTICAL -> isValidCondStatistical(conditionParameters);
-            case THEN, AND -> isValidCondCorrelation(conditionParameters, secondStream);
-            case OR -> isValidCondOr(conditionParameters, secondStream);
-            default -> true;
+            case STATISTICAL ->
+                isValidCondStatistical(conditionParameters);
+            case THEN, AND ->
+                isValidCondCorrelation(conditionParameters, secondStream);
+            case OR ->
+                isValidCondOr(conditionParameters, secondStream);
+            default ->
+                true;
         };
     }
 
-    public boolean isValidRequest(AlertRuleRequest request){
-        return (isValidTitle(request.getTitle()) &&
-                isValidStream(request.getStream()) &&
-                isValidCondition(request.getConditionType(), request.conditionParameters(), request.getSecondStream()));
+    public boolean isValidRequest(AlertRuleRequest request) {
+        return (isValidTitle(request.getTitle())
+                && isValidStream(request.getStream())
+                && isValidCondition(request.getConditionType(), request.conditionParameters(), request.getSecondStream()));
     }
 
     public void checkIsValidRequest(AlertRuleRequest request) {
@@ -387,7 +389,7 @@ public class Conversions {
         int threshold = this.accessThreshold(conditionParameter);
 
         String identifier = UUID.randomUUID().toString();
-        SeriesSpecBuilder<?,?> seriesBuilder = createSeriesBuilder(identifier, distinctBy);
+        SeriesSpecBuilder<?, ?> seriesBuilder = createSeriesBuilder(identifier, distinctBy);
 
         SeriesSpec series = (SeriesSpec) seriesBuilder.build();
 

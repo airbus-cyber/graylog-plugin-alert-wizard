@@ -666,8 +666,13 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             this.appendIfMissing(conditionParameters, "search_query", "*");
             this.appendIfMissing(conditionParameters, "additional_search_query", "*");
             if (AlertType.STATISTICAL == alertType) {
-                this.appendIfMissing(conditionParameters, "field", "action"); // TODO how to find an existing value?
-                this.appendIfMissing(conditionParameters, "type", "AVG");
+                if ("".equals(conditionParameters.get("field"))) {
+                    conditionParameters.put("field", "action"); // TODO how to find an existing value?
+                }
+                String conditionParamType = conditionParameters.get("type").toString();
+                if (! Conversions.STATISTICAL_CONDITION_PARAMETER_TYPES.contains(conditionParamType)) {
+                    conditionParameters.put("type", Conversions.STATISTICAL_CONDITION_PARAMETER_TYPES.get(0));
+                }
             }
         }
         AlertRuleStream stream = sourceAlert.getStream();
