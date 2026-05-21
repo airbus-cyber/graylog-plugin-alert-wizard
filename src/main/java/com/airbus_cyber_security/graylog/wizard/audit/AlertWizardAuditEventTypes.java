@@ -17,10 +17,11 @@
 
 package com.airbus_cyber_security.graylog.wizard.audit;
 
-import com.google.common.collect.ImmutableSet;
+import java.util.Set;
+
 import org.graylog2.audit.PluginAuditEventTypes;
 
-import java.util.Set;
+import com.google.common.collect.ImmutableSet;
 
 public class AlertWizardAuditEventTypes implements PluginAuditEventTypes {
     public static final String NAMESPACE = "wizard";

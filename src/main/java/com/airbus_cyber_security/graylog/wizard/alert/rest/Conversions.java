@@ -52,8 +52,10 @@ import com.airbus_cyber_security.graylog.events.processor.correlation.checks.Ord
 import com.airbus_cyber_security.graylog.wizard.alert.business.FieldRulesUtilities;
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertType;
 import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
+import com.airbus_cyber_security.graylog.wizard.alert.model.ImportAlertRule;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
+import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.ImportAlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.database.Description;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -278,10 +280,25 @@ public class Conversions {
                 && isValidCondition(request.getConditionType(), request.conditionParameters(), request.getSecondStream()));
     }
 
+    public boolean isValidAlertImport(ImportAlertRule request) {
+        return (isValidTitle(request.getTitle())
+                && isValidStream(request.getStream())
+                && isValidCondition(request.getConditionType(), request.getConditionParameters(), request.getSecondStream()));
+    }
+
     public void checkIsValidRequest(AlertRuleRequest request) {
         if (!this.isValidRequest(request)) {
             LOG.error("Invalid alert rule request");
             throw new BadRequestException("Invalid alert rule request.");
+        }
+    }
+
+    public void checkIsValidImportRequest(ImportAlertRuleRequest request) {
+        for (ImportAlertRule alert: request.getRules()) {
+            if (!this.isValidAlertImport(alert)) {
+                LOG.error("Invalid alert rule in imported content");
+                throw new BadRequestException("Invalid alert rule in imported content.");
+            }
         }
     }
 

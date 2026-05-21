@@ -49,6 +49,7 @@ import fetch from 'logic/rest/FetchProvider';
 import AlertRuleActions from 'wizard/actions/AlertRuleActions';
 import RestUtils from './RestUtils';
 import PaginationURL from 'util/PaginationURL';
+import RulesImportExport from 'wizard/logic/RulesImportExport';
 
 const SOURCE_URL = RestUtils.buildSourceURL('alerts');
 
@@ -228,6 +229,22 @@ const AlertRuleStore = Reflux.createStore({
                     'Could not delete alert rule');
             });
         AlertRuleActions.delete.promise(promise);
+    },
+    import(alertRules) {
+        const url = URLUtils.qualifyUrl(SOURCE_URL + '/import');
+
+        const request = RulesImportExport.createExportDataFromRules(alertRules);
+
+        const promise = fetch('POST', url, request)
+            .then(() => {
+                UserNotification.success('Alert rules successfully imported');
+                return true;
+            }, error => {
+                UserNotification.error(`Importing alert rules failed with status: ${error.message}`,
+                    'Could not import alert rules');
+            });
+
+        AlertRuleActions.import.promise(promise);
     },
 });
 

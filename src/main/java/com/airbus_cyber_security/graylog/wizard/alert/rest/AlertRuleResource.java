@@ -55,6 +55,7 @@ import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.airbus_cyber_security.graylog.events.notifications.types.LoggingNotificationConfig;
 import com.airbus_cyber_security.graylog.wizard.alert.business.AlertRuleService;
 import com.airbus_cyber_security.graylog.wizard.alert.business.EventDefinitionService;
 import com.airbus_cyber_security.graylog.wizard.alert.business.NotificationService;
@@ -67,10 +68,12 @@ import com.airbus_cyber_security.graylog.wizard.alert.model.AlertType;
 import com.airbus_cyber_security.graylog.wizard.alert.model.CorrelationAlertPattern;
 import com.airbus_cyber_security.graylog.wizard.alert.model.DisjunctionAlertPattern;
 import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
+import com.airbus_cyber_security.graylog.wizard.alert.model.ImportAlertRule;
 import com.airbus_cyber_security.graylog.wizard.alert.model.TriggeringConditions;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.CloneAlertRuleRequest;
+import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.ImportAlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetDataAlertRule;
 import com.airbus_cyber_security.graylog.wizard.audit.AlertWizardAuditEventTypes;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
@@ -391,6 +394,52 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return Response.ok().entity(result).build();
     }
 
+    @POST
+    @Timed
+    @ApiOperation(value = "Import alerts")
+    @RequiresAuthentication
+    @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_CREATE)
+    @ApiResponses(value = {
+        @ApiResponse(code = 400, message = "The supplied request is not valid.")})
+    @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_CREATE)
+    @Path("/import")
+    public Response importRules(@ApiParam(name = "JSON body", required = true) @Valid @NotNull ImportAlertRuleRequest request, @Context UserContext userContext)
+            throws ValidationException, BadRequestException, NotFoundException {
+        // Validate input
+        this.conversions.checkIsValidImportRequest(request);
+        String userName = getCurrentUser().getName();
+        List<GetDataAlertRule> results = new ArrayList<>();
+        for (ImportAlertRule importAlertRule : request.getRules()) {
+            AlertRuleRequest createRequest = AlertRuleRequest.create(
+                    importAlertRule.getTitle(),
+                    importAlertRule.getPriority(),
+                    importAlertRule.getDescription(),
+                    importAlertRule.isDisabled(),
+                    importAlertRule.getConditionType(),
+                    importAlertRule.getConditionParameters(),
+                    importAlertRule.getStream(),
+                    importAlertRule.getSecondStream(),
+                    importAlertRule.getAggregationTime()
+            );
+            String notificationIdentifier = this.notificationService.createNotification(importAlertRule.getTitle(), userContext);
+            GetDataAlertRule result = createPatternAndRule(createRequest, userContext, notificationIdentifier, importAlertRule.getTitle(),
+                    userName, importAlertRule.getConditionType(), importAlertRule.getAggregationTime());
+            NotificationDto notificationBody = NotificationDto.builder()
+                .id(notificationIdentifier)
+                .title(importAlertRule.getTitle())
+                .description(importAlertRule.getDescription())
+                .config(LoggingNotificationConfig.Builder.create()
+                        .logBody(importAlertRule.getNotificationParameters().getLogBody())
+                        .alertTag(importAlertRule.getNotificationParameters().getAlertTag())
+                        .singleMessage(importAlertRule.getNotificationParameters().isSingleNotification())
+                        .build())
+                .build();
+            this.eventNotificationsResource.update(notificationIdentifier, notificationBody, userContext);
+            results.add(result);
+        }
+        return Response.ok().entity(results).build();
+    }
+
     private GetDataAlertRule createPatternAndRule(AlertRuleRequest request, UserContext userContext, String notificationIdentifier, String alertTitle, String userName, AlertType alertType, Integer aggregationTime) throws ValidationException {
         AlertPattern pattern = createAlertPattern(notificationIdentifier, request, alertTitle, userContext, userName);
 
@@ -670,7 +719,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                     conditionParameters.put("field", "action"); // TODO how to find an existing value?
                 }
                 String conditionParamType = conditionParameters.get("type").toString();
-                if (! Conversions.STATISTICAL_CONDITION_PARAMETER_TYPES.contains(conditionParamType)) {
+                if (!Conversions.STATISTICAL_CONDITION_PARAMETER_TYPES.contains(conditionParamType)) {
                     conditionParameters.put("type", Conversions.STATISTICAL_CONDITION_PARAMETER_TYPES.get(0));
                 }
             }

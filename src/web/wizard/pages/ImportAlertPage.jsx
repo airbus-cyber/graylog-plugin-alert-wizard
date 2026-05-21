@@ -69,25 +69,28 @@ const ImportAlertPage = () => {
         evt.preventDefault();
 
         const rules = alertRules.filter(alertRule => selectedAlertTitles.has(alertRule.title));
-
-        for (const rule of rules) {
-            // TODO should try to add a non-regression test for this quite involved import code
-            //      import a rule which has notification with a split fields and check the split fields are present in the system
-            //      => set up selenium tests ? :(
-            await AlertRuleActions.create(rule);
-                // TODO should not need to perform this get: create should return the information of the alert
-            const alert = await AlertRuleActions.getByTitle(rule.title);
-            const notification = {
-                'config': {
-                    ...rule.notification_parameters,
-                    'type': 'logging-alert-notification'
-                },
-                'description': '',
-                'id': alert.notification,
-                'title': rule.title
-            };
-            await EventNotificationsActions.update(alert.notification, notification);
+        if (0 < rules.length) {
+            await AlertRuleActions.import(rules);
         }
+
+        // for (const rule of rules) {
+        //     // TODO should try to add a non-regression test for this quite involved import code
+        //     //      import a rule which has notification with a split fields and check the split fields are present in the system
+        //     //      => set up selenium tests ? :(
+        //     await AlertRuleActions.create(rule);
+        //         // TODO should not need to perform this get: create should return the information of the alert
+        //     const alert = await AlertRuleActions.getByTitle(rule.title);
+        //     const notification = {
+        //         'config': {
+        //             ...rule.notification_parameters,
+        //             'type': 'logging-alert-notification'
+        //         },
+        //         'description': '',
+        //         'id': alert.notification,
+        //         'title': rule.title
+        //     };
+        //     await EventNotificationsActions.update(alert.notification, notification);
+        // }
     };
 
     const emptyMessage = <FormattedMessage id="wizard.noAlertRulesToImport" defaultMessage="There are no alert rules to import." />;

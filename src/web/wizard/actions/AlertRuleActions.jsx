@@ -26,6 +26,7 @@ const AlertRuleActions = Reflux.createActions({
     delete: {asyncResult: true},
     update: {asyncResult: true},
     searchPaginated: { asyncResult: true },
+    import: {asyncResult: true},
 });
 
 export default AlertRuleActions;
