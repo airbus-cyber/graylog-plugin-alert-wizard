@@ -17,9 +17,9 @@
 
 package com.airbus_cyber_security.graylog.wizard.alert.business;
 
-import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
-
 import java.util.List;
+
+import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
 
 public class FieldRulesUtilities {
 

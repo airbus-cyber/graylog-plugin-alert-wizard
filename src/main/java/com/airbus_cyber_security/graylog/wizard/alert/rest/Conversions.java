@@ -16,7 +16,6 @@
  */
 package com.airbus_cyber_security.graylog.wizard.alert.rest;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -51,9 +50,7 @@ import com.airbus_cyber_security.graylog.events.processor.correlation.Correlatio
 import com.airbus_cyber_security.graylog.events.processor.correlation.checks.OrderType;
 import com.airbus_cyber_security.graylog.wizard.alert.business.FieldRulesUtilities;
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertType;
-import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
-import com.airbus_cyber_security.graylog.wizard.alert.model.ImportAlertRule;
-import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
+import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertFields;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.ImportAlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.database.Description;
@@ -76,28 +73,13 @@ public class Conversions {
 
     // TODO should rather parse the conditionParameters as soon as it gets in the system, in order to get a tidy class with getters
     //      there is even a way to do it nicely with Jackson: see jackson-docs polymorphic type handling, jsonsubtypes
-    private static final String FIELD = "field";
-    private static final String TYPE = "type";
-    private static final String GROUPING_FIELDS = "grouping_fields";
-    private static final String DISTINCT_BY = "distinct_by";
-    private static final String TIME = "time";
-    private static final String GRACE = "grace";
-    private static final String ADDITIONAL_THRESHOLD = "additional_threshold";
-    private static final String ADDITIONAL_THRESHOLD_TYPE = "additional_threshold_type";
-    private static final String THRESHOLD_TYPE = "threshold_type";
-    private static final String THRESHOLD = "threshold";
-    private static final String THRESHOLD_TYPE_MORE = ">";
-    private static final String THRESHOLD_TYPE_LESS = "<";
-    private static final String SEARCH_QUERY = "search_query";
-    private static final String ADDITIONAL_SEARCH_QUERY = "additional_search_query";
-
-    public static final List<String> STATISTICAL_CONDITION_PARAMETER_TYPES = Arrays.asList("AVG", "MIN", "MAX", "SUM", "STDDEV", "CARD", "COUNT", "SUMOFSQUARES", "VARIANCE");
-
     private final FieldRulesUtilities fieldRulesUtilities;
+    private final Validator validator;
 
     @Inject
     public Conversions(FieldRulesUtilities fieldRulesUtilities) {
         this.fieldRulesUtilities = fieldRulesUtilities;
+        this.validator = new Validator(fieldRulesUtilities);
     }
 
     // TODO should avoid these conversions by always working with ms (from the IHM down to the server)
@@ -112,9 +94,9 @@ public class Conversions {
     // TODO should introduce constants for MORE and LESS
     private String convertCorrelationCountThresholdType(String thresholdType) {
         if (thresholdType.equals("MORE")) {
-            return THRESHOLD_TYPE_MORE;
+            return AlertFields.THRESHOLD_TYPE_MORE;
         } else {
-            return THRESHOLD_TYPE_LESS;
+            return AlertFields.THRESHOLD_TYPE_LESS;
         }
     }
 
@@ -149,27 +131,27 @@ public class Conversions {
         switch (eventConfig.type()) {
             case "correlation-count":
                 CorrelationCountProcessorConfig correlationConfig = (CorrelationCountProcessorConfig) eventConfig;
-                parametersCondition.put(THRESHOLD, correlationConfig.threshold());
+                parametersCondition.put(AlertFields.THRESHOLD, correlationConfig.threshold());
                 String thresholdType = convertCorrelationCountThresholdType(correlationConfig.thresholdType());
                 String additionalThresholdType = convertCorrelationCountThresholdType(correlationConfig.additionalThresholdType());
-                parametersCondition.put(THRESHOLD_TYPE, thresholdType);
-                parametersCondition.put(ADDITIONAL_THRESHOLD, correlationConfig.additionalThreshold());
-                parametersCondition.put(ADDITIONAL_THRESHOLD_TYPE, additionalThresholdType);
-                parametersCondition.put(TIME, this.convertMillisecondsToMinutes(correlationConfig.searchWithinMs()));
-                parametersCondition.put(GROUPING_FIELDS, correlationConfig.groupingFields());
-                parametersCondition.put(GRACE, this.convertMillisecondsToMinutes(correlationConfig.executeEveryMs()));
-                parametersCondition.put(SEARCH_QUERY, correlationConfig.searchQuery());
-                parametersCondition.put(ADDITIONAL_SEARCH_QUERY, correlationConfig.additionalSearchQuery());
+                parametersCondition.put(AlertFields.THRESHOLD_TYPE, thresholdType);
+                parametersCondition.put(AlertFields.ADDITIONAL_THRESHOLD, correlationConfig.additionalThreshold());
+                parametersCondition.put(AlertFields.ADDITIONAL_THRESHOLD_TYPE, additionalThresholdType);
+                parametersCondition.put(AlertFields.TIME, this.convertMillisecondsToMinutes(correlationConfig.searchWithinMs()));
+                parametersCondition.put(AlertFields.GROUPING_FIELDS, correlationConfig.groupingFields());
+                parametersCondition.put(AlertFields.GRACE, this.convertMillisecondsToMinutes(correlationConfig.executeEveryMs()));
+                parametersCondition.put(AlertFields.SEARCH_QUERY, correlationConfig.searchQuery());
+                parametersCondition.put(AlertFields.ADDITIONAL_SEARCH_QUERY, correlationConfig.additionalSearchQuery());
                 break;
             case "aggregation-v1":
                 AggregationEventProcessorConfig aggregationConfig = (AggregationEventProcessorConfig) eventConfig;
-                parametersCondition.put(TIME, this.convertMillisecondsToMinutes(aggregationConfig.searchWithinMs()));
-                parametersCondition.put(GRACE, this.convertMillisecondsToMinutes(aggregationConfig.executeEveryMs()));
-                parametersCondition.put(SEARCH_QUERY, aggregationConfig.query());
-                parametersCondition.put(THRESHOLD, convertThreshold(aggregationConfig.conditions().get().expression().get()));
-                parametersCondition.put(THRESHOLD_TYPE, aggregationConfig.conditions().get().expression().get().expr());
+                parametersCondition.put(AlertFields.TIME, this.convertMillisecondsToMinutes(aggregationConfig.searchWithinMs()));
+                parametersCondition.put(AlertFields.GRACE, this.convertMillisecondsToMinutes(aggregationConfig.executeEveryMs()));
+                parametersCondition.put(AlertFields.SEARCH_QUERY, aggregationConfig.query());
+                parametersCondition.put(AlertFields.THRESHOLD, convertThreshold(aggregationConfig.conditions().get().expression().get()));
+                parametersCondition.put(AlertFields.THRESHOLD_TYPE, aggregationConfig.conditions().get().expression().get().expr());
                 SeriesSpec series = aggregationConfig.series().get(0);
-                parametersCondition.put(TYPE, series.type().toUpperCase(Locale.ENGLISH));
+                parametersCondition.put(AlertFields.TYPE, series.type().toUpperCase(Locale.ENGLISH));
                 String distinctBy = "";
                 Optional<String> seriesField = Optional.empty();
                 if (series instanceof HasField) {
@@ -180,10 +162,10 @@ public class Conversions {
 
                 if (seriesField.isPresent()) {
                     distinctBy = seriesField.get();
-                    parametersCondition.put(FIELD, distinctBy);
+                    parametersCondition.put(AlertFields.FIELD, distinctBy);
                 }
-                parametersCondition.put(GROUPING_FIELDS, aggregationConfig.groupBy());
-                parametersCondition.put(DISTINCT_BY, distinctBy);
+                parametersCondition.put(AlertFields.GROUPING_FIELDS, aggregationConfig.groupBy());
+                parametersCondition.put(AlertFields.DISTINCT_BY, distinctBy);
                 break;
             default:
                 throw new UnsupportedOperationException();
@@ -191,119 +173,16 @@ public class Conversions {
         return parametersCondition;
     }
 
-    private boolean isValidTitle(String title) {
-        return !(title == null || title.isEmpty());
-    }
-
-    private boolean isValidStream(AlertRuleStream stream) {
-        if (!stream.getMatchingType().equals(Stream.MatchingType.AND) && !stream.getMatchingType().equals(Stream.MatchingType.OR)) {
-            return false;
-        }
-        for (FieldRule fieldRule : stream.getFieldRules()) {
-            if (!fieldRulesUtilities.isValidFieldRule(fieldRule)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private boolean isValidStatThresholdType(String thresholdType) {
-        return (thresholdType.equals("<") || thresholdType.equals("<=")
-                || thresholdType.equals(">") || thresholdType.equals(">=") || thresholdType.equals("=="));
-    }
-
-    private boolean isValidCondStatistical(Map<String, Object> conditionParameters) {
-        if (!conditionParameters.containsKey(TYPE)) {
-            LOG.debug("Missing condition parameter {}", TYPE);
-            return false;
-        }
-        if (!conditionParameters.containsKey(FIELD)) {
-            LOG.debug("Missing condition parameter {}", FIELD);
-            return false;
-        }
-        String thresholdType = conditionParameters.get(THRESHOLD_TYPE).toString();
-        if (!isValidStatThresholdType(thresholdType)) {
-            LOG.debug("Invalid condition parameter {}, {}", THRESHOLD_TYPE, thresholdType);
-            return false;
-        }
-        return true;
-    }
-
-    private boolean isValidThresholdType(String thresholdType) {
-        return (thresholdType.equals(THRESHOLD_TYPE_MORE) || thresholdType.equals(THRESHOLD_TYPE_LESS));
-    }
-
-    private boolean isValidCondCorrelation(Map<String, Object> conditionParameters, AlertRuleStream secondStream) {
-        return (conditionParameters.containsKey(ADDITIONAL_THRESHOLD)
-                && conditionParameters.containsKey(ADDITIONAL_THRESHOLD_TYPE)
-                && isValidThresholdType(conditionParameters.get(THRESHOLD_TYPE).toString())
-                && isValidThresholdType(conditionParameters.get(ADDITIONAL_THRESHOLD_TYPE).toString())
-                && isValidStream(secondStream));
-    }
-
-    private boolean isValidCondOr(Map<String, Object> conditionParameters, AlertRuleStream secondStream) {
-        return (conditionParameters.containsKey(ADDITIONAL_THRESHOLD)
-                && conditionParameters.containsKey(ADDITIONAL_THRESHOLD_TYPE)
-                && isValidThresholdType(conditionParameters.get(THRESHOLD_TYPE).toString())
-                && isValidThresholdType(conditionParameters.get(ADDITIONAL_THRESHOLD_TYPE).toString())
-                && isValidStream(secondStream));
-    }
-
-    private boolean isValidCondition(AlertType alertType, Map<String, Object> conditionParameters, AlertRuleStream secondStream) {
-        if (!conditionParameters.containsKey(TIME)) {
-            LOG.debug("Missing condition parameter: {}", TIME);
-            return false;
-        }
-        if (!conditionParameters.containsKey(THRESHOLD)) {
-            LOG.debug("Missing condition parameter: {}", THRESHOLD);
-            return false;
-        }
-        if (!conditionParameters.containsKey(THRESHOLD_TYPE)) {
-            LOG.debug("Missing condition parameter: {}", THRESHOLD_TYPE);
-            return false;
-        }
-        return switch (alertType) {
-            case STATISTICAL ->
-                isValidCondStatistical(conditionParameters);
-            case THEN, AND ->
-                isValidCondCorrelation(conditionParameters, secondStream);
-            case OR ->
-                isValidCondOr(conditionParameters, secondStream);
-            default ->
-                true;
-        };
-    }
-
-    public boolean isValidRequest(AlertRuleRequest request) {
-        return (isValidTitle(request.getTitle())
-                && isValidStream(request.getStream())
-                && isValidCondition(request.getConditionType(), request.conditionParameters(), request.getSecondStream()));
-    }
-
-    public boolean isValidAlertImport(ImportAlertRule request) {
-        return (isValidTitle(request.getTitle())
-                && isValidStream(request.getStream())
-                && isValidCondition(request.getConditionType(), request.getConditionParameters(), request.getSecondStream()));
-    }
-
     public void checkIsValidRequest(AlertRuleRequest request) {
-        if (!this.isValidRequest(request)) {
-            LOG.error("Invalid alert rule request");
-            throw new BadRequestException("Invalid alert rule request.");
-        }
+        this.validator.checkIsValidRequest(request);
     }
 
     public void checkIsValidImportRequest(ImportAlertRuleRequest request) {
-        for (ImportAlertRule alert: request.getRules()) {
-            if (!this.isValidAlertImport(alert)) {
-                LOG.error("Invalid alert rule in imported content");
-                throw new BadRequestException("Invalid alert rule in imported content.");
-            }
-        }
+        this.validator.checkIsValidImportRequest(request);
     }
 
     private String convertThresholdTypeToCorrelation(String thresholdType) {
-        if (thresholdType.equals(THRESHOLD_TYPE_MORE)) {
+        if (thresholdType.equals(AlertFields.THRESHOLD_TYPE_MORE)) {
             return "MORE";
         } else {
             return "LESS";
@@ -311,11 +190,11 @@ public class Conversions {
     }
 
     private int accessThreshold(Map<String, Object> conditionParameter) {
-        return (int) conditionParameter.get(THRESHOLD);
+        return (int) conditionParameter.get(AlertFields.THRESHOLD);
     }
 
     private int accessAdditionalThreshold(Map<String, Object> conditionParameter) {
-        return (int) conditionParameter.get(ADDITIONAL_THRESHOLD);
+        return (int) conditionParameter.get(AlertFields.ADDITIONAL_THRESHOLD);
     }
 
     // TODO move method to AlertRuleUtils?
@@ -333,15 +212,15 @@ public class Conversions {
         } else {
             messageOrder = OrderType.ANY;
         }
-        String thresholdType = convertThresholdTypeToCorrelation((String) conditionParameter.get(THRESHOLD_TYPE));
-        String additionalThresholdType = convertThresholdTypeToCorrelation((String) conditionParameter.get(ADDITIONAL_THRESHOLD_TYPE));
-        String searchQuery = (String) conditionParameter.get(SEARCH_QUERY);
-        String additionalSearchQuery = (String) conditionParameter.get(ADDITIONAL_SEARCH_QUERY);
+        String thresholdType = convertThresholdTypeToCorrelation((String) conditionParameter.get(AlertFields.THRESHOLD_TYPE));
+        String additionalThresholdType = convertThresholdTypeToCorrelation((String) conditionParameter.get(AlertFields.ADDITIONAL_THRESHOLD_TYPE));
+        String searchQuery = (String) conditionParameter.get(AlertFields.SEARCH_QUERY);
+        String additionalSearchQuery = (String) conditionParameter.get(AlertFields.ADDITIONAL_SEARCH_QUERY);
 
         int threshold = this.accessThreshold(conditionParameter);
 
-        long searchWithinMs = this.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(TIME).toString()));
-        long executeEveryMs = this.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(GRACE).toString()));
+        long searchWithinMs = this.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(AlertFields.TIME).toString()));
+        long executeEveryMs = this.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(AlertFields.GRACE).toString()));
 
         return CorrelationCountProcessorConfig.builder()
                 .stream(streamIdentifier)
@@ -349,12 +228,12 @@ public class Conversions {
                 .threshold(threshold)
                 .additionalStream(streamIdentifier2)
                 .additionalThresholdType(additionalThresholdType)
-                .additionalThreshold((int) conditionParameter.get(ADDITIONAL_THRESHOLD))
+                .additionalThreshold((int) conditionParameter.get(AlertFields.ADDITIONAL_THRESHOLD))
                 .messagesOrder(messageOrder)
                 .searchWithinMs(searchWithinMs)
                 .executeEveryMs(executeEveryMs)
                 // TODO CorrelationCountProcessorConfig.groupingFields should be of type List (or better just Collection/Iterable) rather than Set
-                .groupingFields((List<String>) conditionParameter.get(GROUPING_FIELDS))
+                .groupingFields((List<String>) conditionParameter.get(AlertFields.GROUPING_FIELDS))
                 .comment(Description.COMMENT_ALERT_WIZARD)
                 .searchQuery(searchQuery)
                 .additionalSearchQuery(additionalSearchQuery)
@@ -365,9 +244,9 @@ public class Conversions {
         Expr.NumberReference left = Expr.NumberReference.create(identifier);
         Expr.NumberValue right = Expr.NumberValue.create(threshold);
         switch (thresholdType) {
-            case THRESHOLD_TYPE_MORE:
+            case AlertFields.THRESHOLD_TYPE_MORE:
                 return Expr.Greater.create(left, right);
-            case THRESHOLD_TYPE_LESS:
+            case AlertFields.THRESHOLD_TYPE_LESS:
                 return Expr.Lesser.create(left, right);
             default:
                 throw new BadRequestException("createExpressionFromNumberThreshold: unexpected threshold type " + thresholdType);
@@ -375,15 +254,15 @@ public class Conversions {
     }
 
     public EventProcessorConfig createAggregationCondition(String streamIdentifier, Map<String, Object> conditionParameter) {
-        return createAggregationCondition(streamIdentifier, conditionParameter, SEARCH_QUERY);
+        return createAggregationCondition(streamIdentifier, conditionParameter, AlertFields.SEARCH_QUERY);
     }
 
     public EventProcessorConfig createAdditionalAggregationCondition(String streamIdentifier, Map<String, Object> conditionParameter) {
-        String additionalThresholdType = (String) conditionParameter.get(ADDITIONAL_THRESHOLD_TYPE);
+        String additionalThresholdType = (String) conditionParameter.get(AlertFields.ADDITIONAL_THRESHOLD_TYPE);
         int additionalThreshold = this.accessAdditionalThreshold(conditionParameter);
-        conditionParameter.put(THRESHOLD_TYPE, additionalThresholdType);
-        conditionParameter.put(THRESHOLD, additionalThreshold);
-        return this.createAggregationCondition(streamIdentifier, conditionParameter, ADDITIONAL_SEARCH_QUERY);
+        conditionParameter.put(AlertFields.THRESHOLD_TYPE, additionalThresholdType);
+        conditionParameter.put(AlertFields.THRESHOLD, additionalThreshold);
+        return this.createAggregationCondition(streamIdentifier, conditionParameter, AlertFields.ADDITIONAL_SEARCH_QUERY);
     }
 
     private SeriesSpecBuilder<?, ?> createSeriesBuilder(String identifier, String distinctBy) {
@@ -394,15 +273,15 @@ public class Conversions {
     }
 
     private EventProcessorConfig createAggregationCondition(String streamIdentifier, Map<String, Object> conditionParameter, String searchQueryField) {
-        List<String> groupByFields = (List<String>) conditionParameter.get(GROUPING_FIELDS);
-        String distinctBy = (String) conditionParameter.get(DISTINCT_BY);
+        List<String> groupByFields = (List<String>) conditionParameter.get(AlertFields.GROUPING_FIELDS);
+        String distinctBy = (String) conditionParameter.get(AlertFields.DISTINCT_BY);
 
         // TODO extract method to parse searchWithinMs
-        long searchWithinMs = this.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(TIME).toString()));
+        long searchWithinMs = this.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(AlertFields.TIME).toString()));
         // TODO extract method to parse executeEveryMs
-        long executeEveryMs = this.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(GRACE).toString()));
+        long executeEveryMs = this.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(AlertFields.GRACE).toString()));
 
-        String thresholdType = (String) conditionParameter.get(THRESHOLD_TYPE);
+        String thresholdType = (String) conditionParameter.get(AlertFields.THRESHOLD_TYPE);
         int threshold = this.accessThreshold(conditionParameter);
 
         String identifier = UUID.randomUUID().toString();
@@ -475,22 +354,22 @@ public class Conversions {
     }
 
     public EventProcessorConfig createStatisticalCondition(String streamIdentifier, Map<String, Object> conditionParameter) {
-        String type = conditionParameter.get(TYPE).toString();
+        String type = conditionParameter.get(AlertFields.TYPE).toString();
         // TODO extract method to parse searchWithinMs
-        long searchWithinMs = this.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(TIME).toString()));
+        long searchWithinMs = this.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(AlertFields.TIME).toString()));
         // TODO extract method to parse executeEveryMs
-        long executeEveryMs = this.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(GRACE).toString()));
+        long executeEveryMs = this.convertMinutesToMilliseconds(Long.parseLong(conditionParameter.get(AlertFields.GRACE).toString()));
 
         int threshold = this.accessThreshold(conditionParameter);
 
         String identifier = UUID.randomUUID().toString();
-        SeriesSpec series = createSeriesSpec(type, identifier, conditionParameter.get(FIELD).toString());
+        SeriesSpec series = createSeriesSpec(type, identifier, conditionParameter.get(AlertFields.FIELD).toString());
 
         Expression<Boolean> expression = createExpressionFromThreshold(identifier,
-                conditionParameter.get(THRESHOLD_TYPE).toString(),
+                conditionParameter.get(AlertFields.THRESHOLD_TYPE).toString(),
                 threshold);
 
-        String searchQuery = (String) conditionParameter.get(SEARCH_QUERY);
+        String searchQuery = (String) conditionParameter.get(AlertFields.SEARCH_QUERY);
         Set<String> streams = getStreamsParameterFromOutputStream(streamIdentifier);
 
         return AggregationEventProcessorConfig.builder()

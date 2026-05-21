@@ -18,7 +18,6 @@ package com.airbus_cyber_security.graylog.wizard.alert.model;
 
 import java.util.Map;
 
-import org.joda.time.DateTime;
 import org.mongojack.Id;
 import org.mongojack.ObjectId;
 
@@ -180,27 +179,5 @@ public abstract class ImportAlertRule {
                 notificationParameters
 			);
     }
-
-//     public static ImportAlertRule fromDocument(Document document) {
-//         return create(
-//                 document.getString(FIELD_ID),
-// document.getString(FIELD_CREATOR_USER_ID) ,
-//             document.getString(FIELD_LAST_MODIFIED),
-//             document.getString(FIELD_NOTIFICATION) ,
-//             document.getString(FIELD_TITLE) ,
-//             document.getString(FIELD_PRIORITY),
-//             document.getString(FIELD_DESCRIPTION),
-//             document.getString(FIELD_CONDITION_TYPE) ,
-//             document.get(FIELD_CONDITION_PARAMETERS) Map<String, Object> conditionParameters,
-//             document.getString(FIELD_STREAM) AlertRuleStream stream,
-//             document.getString(FIELD_SECOND_STREAM) AlertRuleStream secondStream,
-//             document.getString(FIELD_CONDITION) String condition,
-//             document.getString(FIELD_SECOND_EVENT_DEFINITION) String secondEventDefinition,
-//             document.getString(FIELD_CREATED_AT) DateTime createdAt,
-//             document.getString(FIELD_DISABLED) boolean disabled,
-//             document.getString(FIELD_AGGREGATION_TIME) Integer aggregationTime,
-//             document.getString(FIELD_NOTIFICATION_PARAMETERS
-//         );
-//     }
 
 }
