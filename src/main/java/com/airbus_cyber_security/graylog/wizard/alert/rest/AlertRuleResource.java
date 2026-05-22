@@ -414,6 +414,13 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String userName = getCurrentUser().getName();
         List<GetDataAlertRule> results = new ArrayList<>();
         for (ImportAlertRule importAlertRule : request.getRules()) {
+            // Check if the alert to import already exists
+            AlertRule existingAlert = this.alertRuleService.load(importAlertRule.getTitle());
+            if (null != existingAlert) {
+                // Raise an error and stop the process
+                throw new BadRequestException("Alert already exists, title=" + importAlertRule.getTitle());
+            }
+            // Create the new alert
             AlertRuleRequest createRequest = AlertRuleRequest.create(
                     importAlertRule.getTitle(),
                     importAlertRule.getPriority(),
@@ -711,7 +718,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             this.appendIfMissing(conditionParameters, AlertFields.ADDITIONAL_THRESHOLD, 0);
             this.appendIfMissing(conditionParameters, AlertFields.TIME, 1);
             this.appendIfMissing(conditionParameters, AlertFields.GRACE, 1);
-            this.appendIfMissing(conditionParameters, "backlog", 500);
+            this.appendIfMissing(conditionParameters, AlertFields.BACKLOG, 500);
             this.appendIfMissing(conditionParameters, AlertFields.GROUPING_FIELDS, Collections.emptyList());
             this.appendIfMissing(conditionParameters, AlertFields.DISTINCT_BY, "");
             this.appendIfMissing(conditionParameters, AlertFields.FIELD, "");
