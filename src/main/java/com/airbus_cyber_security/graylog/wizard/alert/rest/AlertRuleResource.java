@@ -71,7 +71,7 @@ import com.airbus_cyber_security.graylog.wizard.alert.model.DisjunctionAlertPatt
 import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.alert.model.ImportAlertRule;
 import com.airbus_cyber_security.graylog.wizard.alert.model.TriggeringConditions;
-import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertFields;
+import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertConditionParameters;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.CloneAlertRuleRequest;
@@ -712,26 +712,26 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         AlertType alertType = sourceAlert.getConditionType();
         if (null != conditionType && !conditionType.isEmpty()) {
             alertType = AlertType.valueOf(conditionType);
-            this.appendIfMissing(conditionParameters, AlertFields.THRESHOLD_TYPE, ">");
-            this.appendIfMissing(conditionParameters, AlertFields.ADDITIONAL_THRESHOLD_TYPE, ">");
-            this.appendIfMissing(conditionParameters, AlertFields.THRESHOLD, 0);
-            this.appendIfMissing(conditionParameters, AlertFields.ADDITIONAL_THRESHOLD, 0);
-            this.appendIfMissing(conditionParameters, AlertFields.TIME, 1);
-            this.appendIfMissing(conditionParameters, AlertFields.GRACE, 1);
-            this.appendIfMissing(conditionParameters, AlertFields.BACKLOG, 500);
-            this.appendIfMissing(conditionParameters, AlertFields.GROUPING_FIELDS, Collections.emptyList());
-            this.appendIfMissing(conditionParameters, AlertFields.DISTINCT_BY, "");
-            this.appendIfMissing(conditionParameters, AlertFields.FIELD, "");
-            this.appendIfMissing(conditionParameters, AlertFields.TYPE, "");
-            this.appendIfMissing(conditionParameters, AlertFields.SEARCH_QUERY, "*");
-            this.appendIfMissing(conditionParameters, AlertFields.ADDITIONAL_SEARCH_QUERY, "*");
+            this.appendIfMissing(conditionParameters, AlertConditionParameters.THRESHOLD_TYPE, ">");
+            this.appendIfMissing(conditionParameters, AlertConditionParameters.ADDITIONAL_THRESHOLD_TYPE, ">");
+            this.appendIfMissing(conditionParameters, AlertConditionParameters.THRESHOLD, 0);
+            this.appendIfMissing(conditionParameters, AlertConditionParameters.ADDITIONAL_THRESHOLD, 0);
+            this.appendIfMissing(conditionParameters, AlertConditionParameters.TIME, 1);
+            this.appendIfMissing(conditionParameters, AlertConditionParameters.GRACE, 1);
+            this.appendIfMissing(conditionParameters, AlertConditionParameters.BACKLOG, 500);
+            this.appendIfMissing(conditionParameters, AlertConditionParameters.GROUPING_FIELDS, Collections.emptyList());
+            this.appendIfMissing(conditionParameters, AlertConditionParameters.DISTINCT_BY, "");
+            this.appendIfMissing(conditionParameters, AlertConditionParameters.FIELD, "");
+            this.appendIfMissing(conditionParameters, AlertConditionParameters.TYPE, "");
+            this.appendIfMissing(conditionParameters, AlertConditionParameters.SEARCH_QUERY, "*");
+            this.appendIfMissing(conditionParameters, AlertConditionParameters.ADDITIONAL_SEARCH_QUERY, "*");
             if (AlertType.STATISTICAL == alertType) {
-                if ("".equals(conditionParameters.get(AlertFields.FIELD))) {
-                    conditionParameters.put(AlertFields.FIELD, "action"); // TODO how to find an existing value?
+                if ("".equals(conditionParameters.get(AlertConditionParameters.FIELD))) {
+                    conditionParameters.put(AlertConditionParameters.FIELD, "action"); // TODO how to find an existing value?
                 }
-                String conditionParamType = conditionParameters.get(AlertFields.TYPE).toString();
-                if (!AlertFields.STATISTICAL_CONDITION_PARAMETER_TYPES.contains(conditionParamType)) {
-                    conditionParameters.put(AlertFields.TYPE, AlertFields.STATISTICAL_CONDITION_PARAMETER_TYPES.get(0));
+                String conditionParamType = conditionParameters.get(AlertConditionParameters.TYPE).toString();
+                if (!AlertConditionParameters.STATISTICAL_CONDITION_PARAMETER_TYPES.contains(conditionParamType)) {
+                    conditionParameters.put(AlertConditionParameters.TYPE, AlertConditionParameters.STATISTICAL_CONDITION_PARAMETER_TYPES.get(0));
                 }
             }
         }

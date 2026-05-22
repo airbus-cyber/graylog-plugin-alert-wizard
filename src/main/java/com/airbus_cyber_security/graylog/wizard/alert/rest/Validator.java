@@ -26,7 +26,7 @@ import com.airbus_cyber_security.graylog.wizard.alert.business.FieldRulesUtiliti
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertType;
 import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.alert.model.ImportAlertRule;
-import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertFields;
+import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertConditionParameters;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.ImportAlertRuleRequest;
@@ -82,45 +82,45 @@ public class Validator {
     }
 
     private boolean isValidCondStatistical(Map<String, Object> conditionParameters) {
-        if (!this.containsParameter(conditionParameters, AlertFields.TYPE)
-                || !this.containsParameter(conditionParameters, AlertFields.FIELD)) {
+        if (!this.containsParameter(conditionParameters, AlertConditionParameters.TYPE)
+                || !this.containsParameter(conditionParameters, AlertConditionParameters.FIELD)) {
             return false;
         }
-        String thresholdType = conditionParameters.get(AlertFields.THRESHOLD_TYPE).toString();
+        String thresholdType = conditionParameters.get(AlertConditionParameters.THRESHOLD_TYPE).toString();
         if (!isValidStatThresholdType(thresholdType)) {
-            return this.returnError("Invalid statistical condition parameter, " + AlertFields.THRESHOLD_TYPE + "=" + thresholdType);
+            return this.returnError("Invalid statistical condition parameter, " + AlertConditionParameters.THRESHOLD_TYPE + "=" + thresholdType);
         }
         return isValidStatThresholdType(thresholdType);
     }
 
     private boolean isValidThresholdType(Map<String, Object> conditionParameters, String field) {
         Object thresholdType = conditionParameters.get(field);
-        if (AlertFields.THRESHOLD_TYPE_MORE.equals(thresholdType) || AlertFields.THRESHOLD_TYPE_LESS.equals(thresholdType)) {
+        if (AlertConditionParameters.THRESHOLD_TYPE_MORE.equals(thresholdType) || AlertConditionParameters.THRESHOLD_TYPE_LESS.equals(thresholdType)) {
             return true;
         }
         return this.returnError("Invalid condition parameter, " + field + "=" + thresholdType);
     }
 
     private boolean isValidCondCorrelation(Map<String, Object> conditionParameters, AlertRuleStream secondStream) {
-        return (isValidThresholdType(conditionParameters, AlertFields.THRESHOLD_TYPE)
-                && isValidThresholdType(conditionParameters, AlertFields.ADDITIONAL_THRESHOLD_TYPE)
+        return (isValidThresholdType(conditionParameters, AlertConditionParameters.THRESHOLD_TYPE)
+                && isValidThresholdType(conditionParameters, AlertConditionParameters.ADDITIONAL_THRESHOLD_TYPE)
                 && isValidStream(secondStream));
     }
 
     private boolean isValidCondOr(Map<String, Object> conditionParameters, AlertRuleStream secondStream) {
-        return (isValidThresholdType(conditionParameters, AlertFields.THRESHOLD_TYPE)
-                && isValidThresholdType(conditionParameters, AlertFields.ADDITIONAL_THRESHOLD_TYPE)
+        return (isValidThresholdType(conditionParameters, AlertConditionParameters.THRESHOLD_TYPE)
+                && isValidThresholdType(conditionParameters, AlertConditionParameters.ADDITIONAL_THRESHOLD_TYPE)
                 && isValidStream(secondStream));
     }
 
     private boolean isValidCondition(AlertType alertType, Map<String, Object> conditionParameters, AlertRuleStream secondStream) {
-        if (!this.containsParameter(conditionParameters, AlertFields.TIME)) {
+        if (!this.containsParameter(conditionParameters, AlertConditionParameters.TIME)) {
             return false;
         }
-        if (!this.containsParameter(conditionParameters, AlertFields.THRESHOLD)) {
+        if (!this.containsParameter(conditionParameters, AlertConditionParameters.THRESHOLD)) {
             return false;
         }
-        if (!this.containsParameter(conditionParameters, AlertFields.THRESHOLD_TYPE)) {
+        if (!this.containsParameter(conditionParameters, AlertConditionParameters.THRESHOLD_TYPE)) {
             return false;
         }
         return switch (alertType) {

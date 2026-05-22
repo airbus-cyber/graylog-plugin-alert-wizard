@@ -20,9 +20,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public final class AlertFields {
+/**
+ * Available condition parameters of an alert.
+ */
+public final class AlertConditionParameters {
 
-    private AlertFields() {
+    private AlertConditionParameters() {
     }
 
     public static final String FIELD = "field";
