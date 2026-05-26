@@ -36,21 +36,6 @@ import jakarta.validation.constraints.NotNull;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class ImportAlertRule {
 
-    public static final String FIELD_ID = "id";
-    public static final String FIELD_NOTIFICATION = "notification";
-
-    public static final String FIELD_TITLE = "title";
-    public static final String FIELD_PRIORITY = "priority";
-    public static final String FIELD_DESCRIPTION = "description";
-    public static final String FIELD_CONDITION_TYPE = "condition_type";
-    public static final String FIELD_CONDITION_PARAMETERS = "condition_parameters";
-    public static final String FIELD_STREAM = "stream";
-    public static final String FIELD_SECOND_STREAM = "second_stream";
-    public static final String FIELD_SECOND_EVENT_DEFINITION = "second_event_definition";
-    public static final String FIELD_DISABLED = "disabled";
-    public static final String FIELD_AGGREGATION_TIME = "aggregation_time";
-    public static final String FIELD_NOTIFICATION_PARAMETERS = "notification_parameters";
-
     //   "id": "69e87c4c9356332e74f327b7",
     //   "last_modified": "2026-04-22T07:44:12.967Z",
     //   "creator_user_id": "admin",
@@ -97,71 +82,71 @@ public abstract class ImportAlertRule {
     @Id
     @ObjectId
     @Nullable
-    @JsonProperty(FIELD_ID)
+    @JsonProperty(AlertFields.FIELD_ID)
     public abstract String id();
 
     // TODO rename into getNotificationIdentifier
-    @JsonProperty(FIELD_NOTIFICATION)
+    @JsonProperty(AlertFields.FIELD_NOTIFICATION)
     @Nullable
     public abstract String getNotificationID();
 
-    @JsonProperty(FIELD_TITLE)
+    @JsonProperty(AlertFields.FIELD_TITLE)
     @NotNull
     public abstract String getTitle();
 
-    @JsonProperty(FIELD_PRIORITY)
+    @JsonProperty(AlertFields.FIELD_PRIORITY)
     @Nullable
     public abstract Integer getPriority();
 
-    @JsonProperty(FIELD_DESCRIPTION)
+    @JsonProperty(AlertFields.FIELD_DESCRIPTION)
     @Nullable
     public abstract String getDescription();
 
-    @JsonProperty(FIELD_CONDITION_TYPE)
+    @JsonProperty(AlertFields.FIELD_CONDITION_TYPE)
     @Nullable
     public abstract AlertType getConditionType();
 
-    @JsonProperty(FIELD_CONDITION_PARAMETERS)
+    @JsonProperty(AlertFields.FIELD_CONDITION_PARAMETERS)
     @Nullable
     public abstract Map<String, Object> getConditionParameters();
 
-    @JsonProperty(FIELD_STREAM)
+    @JsonProperty(AlertFields.FIELD_STREAM)
     @Nullable
     public abstract AlertRuleStream getStream();
 
-    @JsonProperty(FIELD_SECOND_STREAM)
+    @JsonProperty(AlertFields.FIELD_SECOND_STREAM)
     @Nullable
     public abstract AlertRuleStream getSecondStream();
 
-    @JsonProperty(FIELD_SECOND_EVENT_DEFINITION)
+    @JsonProperty(AlertFields.FIELD_SECOND_EVENT_DEFINITION)
     @Nullable
     public abstract String secondEventDefinitionIdentifier();
 
-    @JsonProperty(FIELD_DISABLED)
+    @JsonProperty(AlertFields.FIELD_DISABLED)
     public abstract boolean isDisabled();
 
-    @JsonProperty(FIELD_AGGREGATION_TIME)
+    @JsonProperty(AlertFields.FIELD_AGGREGATION_TIME)
     @Nullable
     public abstract Integer getAggregationTime();
 
-    @JsonProperty(FIELD_NOTIFICATION_PARAMETERS)
+    @JsonProperty(AlertFields.FIELD_NOTIFICATION_PARAMETERS)
     public abstract NotificationParameters getNotificationParameters();
 
     @JsonCreator
     public static ImportAlertRule create(
-            @JsonProperty(FIELD_ID) String id,
-            @JsonProperty(FIELD_NOTIFICATION) String notification,
-            @JsonProperty(FIELD_TITLE) String title,
-            @JsonProperty(FIELD_PRIORITY) Integer priority,
-            @JsonProperty(FIELD_DESCRIPTION) String description,
-            @JsonProperty(FIELD_CONDITION_TYPE) AlertType conditionType,
-            @JsonProperty(FIELD_CONDITION_PARAMETERS) Map<String, Object> conditionParameters,
-            @JsonProperty(FIELD_STREAM) AlertRuleStream stream,
-            @JsonProperty(FIELD_SECOND_STREAM) AlertRuleStream secondStream,
-            @JsonProperty(FIELD_SECOND_EVENT_DEFINITION) String secondEventDefinition,
-            @JsonProperty(FIELD_DISABLED) boolean disabled,
-            @JsonProperty(FIELD_AGGREGATION_TIME) Integer aggregationTime,
-            @JsonProperty(FIELD_NOTIFICATION_PARAMETERS) NotificationParameters notificationParameters
+            @JsonProperty(AlertFields.FIELD_ID) String id,
+            @JsonProperty(AlertFields.FIELD_NOTIFICATION) String notification,
+            @JsonProperty(AlertFields.FIELD_TITLE) String title,
+            @JsonProperty(AlertFields.FIELD_PRIORITY) Integer priority,
+            @JsonProperty(AlertFields.FIELD_DESCRIPTION) String description,
+            @JsonProperty(AlertFields.FIELD_CONDITION_TYPE) AlertType conditionType,
+            @JsonProperty(AlertFields.FIELD_CONDITION_PARAMETERS) Map<String, Object> conditionParameters,
+            @JsonProperty(AlertFields.FIELD_STREAM) AlertRuleStream stream,
+            @JsonProperty(AlertFields.FIELD_SECOND_STREAM) AlertRuleStream secondStream,
+            @JsonProperty(AlertFields.FIELD_SECOND_EVENT_DEFINITION) String secondEventDefinition,
+            @JsonProperty(AlertFields.FIELD_DISABLED) boolean disabled,
+            @JsonProperty(AlertFields.FIELD_AGGREGATION_TIME) Integer aggregationTime,
+            @JsonProperty(AlertFields.FIELD_NOTIFICATION_PARAMETERS) NotificationParameters notificationParameters
     ) {
         return new AutoValue_ImportAlertRule(
                 id,
@@ -177,7 +162,7 @@ public abstract class ImportAlertRule {
                 disabled,
                 aggregationTime,
                 notificationParameters
-			);
+        );
     }
 
 }

@@ -30,11 +30,11 @@ public class AlertWizardConfigurationService {
         this.clusterConfigurationService = clusterConfigurationService;
     }
 
-    public AlertWizardConfig getConfiguration() {
-        return this.clusterConfigurationService.getOrDefault(AlertWizardConfig.class, AlertWizardConfig.defaultConfig());
+    public AlertWizardConfiguration getConfiguration() {
+        return this.clusterConfigurationService.getOrDefault(AlertWizardConfiguration.class, AlertWizardConfiguration.defaultConfig());
     }
 
-    public void updateConfiguration(AlertWizardConfig configuration) {
+    public void updateConfiguration(AlertWizardConfiguration configuration) {
         this.clusterConfigurationService.write(configuration);
     }
 }

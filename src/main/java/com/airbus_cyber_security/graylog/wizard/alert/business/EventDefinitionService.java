@@ -17,12 +17,13 @@
 
 package com.airbus_cyber_security.graylog.wizard.alert.business;
 
-import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
+import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfiguration;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfigurationService;
 import com.airbus_cyber_security.graylog.wizard.config.rest.DefaultValues;
 import com.airbus_cyber_security.graylog.wizard.fields.AggregationFieldValueProvider;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+
 import org.graylog.events.fields.EventFieldSpec;
 import org.graylog.events.fields.FieldValueType;
 import org.graylog.events.notifications.EventNotificationHandler;
@@ -37,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jakarta.inject.Inject;
+
 import java.util.Optional;
 
 public class EventDefinitionService {
@@ -79,7 +81,7 @@ public class EventDefinitionService {
                 .notificationId(notificationIdentifier)
                 .build();
 
-        AlertWizardConfig pluginConfiguration = this.configurationService.getConfiguration();
+        AlertWizardConfiguration pluginConfiguration = this.configurationService.getConfiguration();
         DefaultValues defaultValues = pluginConfiguration.accessDefaultValues();
         int computedAggregationTime = computeAggregationTime(aggregationTime, defaultValues.getAggregationTime());
         EventFieldSpec aggregationFieldSpec = EventFieldSpec.builder()

@@ -23,10 +23,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.airbus_cyber_security.graylog.wizard.alert.business.FieldRulesUtilities;
+import com.airbus_cyber_security.graylog.wizard.alert.model.AlertConditionParameters;
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertType;
 import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.alert.model.ImportAlertRule;
-import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertConditionParameters;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.ImportAlertRuleRequest;

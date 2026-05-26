@@ -14,7 +14,7 @@
  * along with this program. If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-package com.airbus_cyber_security.graylog.wizard.alert.rest.models;
+package com.airbus_cyber_security.graylog.wizard.alert.model;
 
 import java.util.Arrays;
 import java.util.Collections;

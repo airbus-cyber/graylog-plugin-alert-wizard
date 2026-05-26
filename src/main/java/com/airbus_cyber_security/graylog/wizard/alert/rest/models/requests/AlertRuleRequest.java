@@ -14,9 +14,11 @@
  * along with this program. If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-
 package com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests;
 
+import java.util.Map;
+
+import com.airbus_cyber_security.graylog.wizard.alert.model.AlertFields;
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertType;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -26,21 +28,20 @@ import com.google.auto.value.AutoValue;
 
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
-import java.util.Map;
 
 @AutoValue
 @JsonAutoDetect
 public abstract class AlertRuleRequest {
 
-    @JsonProperty("title")
+    @JsonProperty(AlertFields.FIELD_TITLE)
     @NotNull
     public abstract String getTitle();
 
-    @JsonProperty("priority")
+    @JsonProperty(AlertFields.FIELD_PRIORITY)
     @NotNull
     public abstract Integer getPriority();
 
-    @JsonProperty("description")
+    @JsonProperty(AlertFields.FIELD_DESCRIPTION)
     @NotNull
     public abstract String getDescription();
 
@@ -48,36 +49,37 @@ public abstract class AlertRuleRequest {
     public abstract boolean isDisabled();
 
     // TODO should be an enum. Possible values: COUNT, GROUP_DISTINCT, STATISTICAL, AND, THEN, OR
-    @JsonProperty("condition_type")
+    @JsonProperty(AlertFields.FIELD_CONDITION_TYPE)
     @NotNull
     public abstract AlertType getConditionType();
 
     // TODO this should be typed (its an union of 3 possibilities)...
     //      maybe see how it is done with graylog notifications org.graylog.events.notifications.EventNotificationConfig
-    @JsonProperty("condition_parameters")
+    @JsonProperty(AlertFields.FIELD_CONDITION_PARAMETERS)
     public abstract Map<String, Object> conditionParameters();
-    
-    @JsonProperty("stream")
+
+    @JsonProperty(AlertFields.FIELD_STREAM)
     public abstract AlertRuleStream getStream();
-    
-    @JsonProperty("second_stream")
+
+    @JsonProperty(AlertFields.FIELD_SECOND_STREAM)
     @Nullable
     public abstract AlertRuleStream getSecondStream();
 
-    @JsonProperty("aggregation_time")
+    @JsonProperty(AlertFields.FIELD_AGGREGATION_TIME)
     @Nullable
     public abstract Integer getAggregationTime();
 
-    @JsonCreator    
-    public static AlertRuleRequest create(@JsonProperty("title") String title,
-                                          @JsonProperty("priority") Integer priority,
-                                          @JsonProperty("description") String description,
-                                          @JsonProperty("disabled") boolean disabled,
-                                          @JsonProperty("condition_type") AlertType alertType,
-                                          @JsonProperty("condition_parameters") Map<String, Object> conditionParameters,
-                                          @JsonProperty("stream") AlertRuleStream stream,
-                                          @JsonProperty("second_stream") AlertRuleStream stream2,
-                                          @JsonProperty("aggregation_time") Integer aggregationTime) {
+    @JsonCreator
+    public static AlertRuleRequest create(
+            @JsonProperty(AlertFields.FIELD_TITLE) String title,
+            @JsonProperty(AlertFields.FIELD_PRIORITY) Integer priority,
+            @JsonProperty(AlertFields.FIELD_DESCRIPTION) String description,
+            @JsonProperty(AlertFields.FIELD_DISABLED) boolean disabled,
+            @JsonProperty(AlertFields.FIELD_CONDITION_TYPE) AlertType alertType,
+            @JsonProperty(AlertFields.FIELD_CONDITION_PARAMETERS) Map<String, Object> conditionParameters,
+            @JsonProperty(AlertFields.FIELD_STREAM) AlertRuleStream stream,
+            @JsonProperty(AlertFields.FIELD_SECOND_STREAM) AlertRuleStream stream2,
+            @JsonProperty(AlertFields.FIELD_AGGREGATION_TIME) Integer aggregationTime) {
         return new AutoValue_AlertRuleRequest(title, priority, description, disabled, alertType, conditionParameters, stream, stream2, aggregationTime);
     }
 }

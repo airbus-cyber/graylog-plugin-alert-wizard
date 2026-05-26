@@ -63,6 +63,7 @@ import com.airbus_cyber_security.graylog.wizard.alert.business.NotificationServi
 import com.airbus_cyber_security.graylog.wizard.alert.business.PaginatedAlertRuleService;
 import com.airbus_cyber_security.graylog.wizard.alert.business.TriggeringConditionsService;
 import com.airbus_cyber_security.graylog.wizard.alert.model.AggregationAlertPattern;
+import com.airbus_cyber_security.graylog.wizard.alert.model.AlertConditionParameters;
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertPattern;
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertRule;
 import com.airbus_cyber_security.graylog.wizard.alert.model.AlertType;
@@ -71,14 +72,13 @@ import com.airbus_cyber_security.graylog.wizard.alert.model.DisjunctionAlertPatt
 import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
 import com.airbus_cyber_security.graylog.wizard.alert.model.ImportAlertRule;
 import com.airbus_cyber_security.graylog.wizard.alert.model.TriggeringConditions;
-import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertConditionParameters;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.CloneAlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.ImportAlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetDataAlertRule;
 import com.airbus_cyber_security.graylog.wizard.audit.AlertWizardAuditEventTypes;
-import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
+import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfiguration;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfigurationService;
 import com.airbus_cyber_security.graylog.wizard.config.rest.ImportPolicyType;
 import com.airbus_cyber_security.graylog.wizard.fields.AggregationFieldValueProvider;
@@ -345,7 +345,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         if (this.alertRuleService.isPresent(alertTitle)) {
             // TODO should be get or default here: it will return null when starting with a fresh instance of graylog
             // Idem in AlertListRessource. Add a test that creates two alerts with same title
-            AlertWizardConfig configuration = this.configurationService.getConfiguration();
+            AlertWizardConfiguration configuration = this.configurationService.getConfiguration();
             ImportPolicyType importPolicy = configuration.accessImportPolicy();
             if (importPolicy != null && importPolicy.equals(ImportPolicyType.RENAME)) {
                 String newAlertTitle;
@@ -391,10 +391,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String title = request.getTitle();
         String alertTitle = checkImportPolicyAndGetTitle(title, userContext);
         AlertType alertType = request.getConditionType();
-        Integer aggregationTime = request.getAggregationTime();
 
         String notificationIdentifier = this.notificationService.createNotification(alertTitle, userContext);
-        GetDataAlertRule result = createPatternAndRule(request, userContext, notificationIdentifier, alertTitle, userName, alertType, aggregationTime);
+        GetDataAlertRule result = createPatternAndRule(request, userContext, notificationIdentifier, alertTitle, userName, alertType);
         return Response.ok().entity(result).build();
     }
 
@@ -434,7 +433,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             );
             String notificationIdentifier = this.notificationService.createNotification(importAlertRule.getTitle(), userContext);
             GetDataAlertRule result = createPatternAndRule(createRequest, userContext, notificationIdentifier, importAlertRule.getTitle(),
-                    userName, importAlertRule.getConditionType(), importAlertRule.getAggregationTime());
+                    userName, importAlertRule.getConditionType());
             NotificationDto notificationBody = NotificationDto.builder()
                 .id(notificationIdentifier)
                 .title(importAlertRule.getTitle())
@@ -451,7 +450,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         return Response.ok().entity(results).build();
     }
 
-    private GetDataAlertRule createPatternAndRule(AlertRuleRequest request, UserContext userContext, String notificationIdentifier, String alertTitle, String userName, AlertType alertType, Integer aggregationTime) throws ValidationException {
+    private GetDataAlertRule createPatternAndRule(AlertRuleRequest request, UserContext userContext, String notificationIdentifier, String alertTitle, String userName, AlertType alertType) throws ValidationException {
         AlertPattern pattern = createAlertPattern(notificationIdentifier, request, alertTitle, userContext, userName);
 
         AlertRule alertRule = AlertRule.Builder.create()
@@ -504,8 +503,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
         TriggeringConditions conditions2 = this.triggeringConditionsService.createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName, request.isDisabled());
         String streamIdentifier = conditions.outputStreamIdentifier();
-        EventProcessorConfig configuration = this.conversions.createAggregationCondition(streamIdentifier, conditionParameters);
-        String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, priority, notificationIdentifier, configuration, aggregationTime, userContext, request.isDisabled());
+        EventProcessorConfig configuration1 = this.conversions.createAggregationCondition(streamIdentifier, conditionParameters);
+        String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, priority, notificationIdentifier, configuration1, aggregationTime, userContext, request.isDisabled());
         String streamIdentifier2 = conditions2.outputStreamIdentifier();
         EventProcessorConfig configuration2 = this.conversions.createAdditionalAggregationCondition(streamIdentifier2, conditionParameters);
         String eventIdentifier2 = this.eventDefinitionService.createEvent(alertTitle + "#2", description, priority, notificationIdentifier, configuration2, aggregationTime, userContext, request.isDisabled());
@@ -744,7 +743,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         AlertRuleRequest alertRuleRequest = AlertRuleRequest.create(title, sourceAlert.getPriority(), description, sourceAlert.isDisabled(), alertType,
                 conditionParameters, stream, secondStream, aggregationTime);
 
-        GetDataAlertRule result = createPatternAndRule(alertRuleRequest, userContext, notificationIdentifier, alertTitle, userName, alertType, aggregationTime);
+        GetDataAlertRule result = createPatternAndRule(alertRuleRequest, userContext, notificationIdentifier, alertTitle, userName, alertType);
         return Response.ok().entity(result).build();
     }
 

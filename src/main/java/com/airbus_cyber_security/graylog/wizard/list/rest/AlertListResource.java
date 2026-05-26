@@ -18,7 +18,7 @@
 package com.airbus_cyber_security.graylog.wizard.list.rest;
 
 import com.airbus_cyber_security.graylog.wizard.audit.AlertWizardAuditEventTypes;
-import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
+import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfiguration;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfigurationService;
 import com.airbus_cyber_security.graylog.wizard.config.rest.ImportPolicyType;
 import com.airbus_cyber_security.graylog.wizard.list.model.AlertList;
@@ -33,6 +33,7 @@ import com.airbus_cyber_security.graylog.wizard.list.utilities.AlertListUtilsSer
 import com.airbus_cyber_security.graylog.wizard.permissions.AlertRuleRestPermissions;
 import com.codahale.metrics.annotation.Timed;
 import com.mongodb.MongoException;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -47,6 +48,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.bson.types.ObjectId;
@@ -66,6 +68,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -129,7 +132,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
     private String checkImportPolicyAndGetTitle(String title){
         String listTitle = title;
         if (this.alertListService.isPresent(listTitle)) {
-            AlertWizardConfig configGeneral = configurationService.getConfiguration();
+            AlertWizardConfiguration configGeneral = configurationService.getConfiguration();
             ImportPolicyType importPolicy = configGeneral.accessImportPolicy();
             if (importPolicy != null && importPolicy.equals(ImportPolicyType.RENAME)) {
                 String newListTitle;

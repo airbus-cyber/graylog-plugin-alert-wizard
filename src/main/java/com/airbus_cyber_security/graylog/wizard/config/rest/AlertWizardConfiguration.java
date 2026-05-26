@@ -17,6 +17,8 @@
 
 package com.airbus_cyber_security.graylog.wizard.config.rest;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -25,12 +27,10 @@ import com.google.common.collect.ImmutableList;
 
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
-import java.util.List;
 
-// TODO rename into AlertWizardConfiguration
 @AutoValue
 @JsonAutoDetect
-public abstract class AlertWizardConfig {
+public abstract class AlertWizardConfiguration {
 
 	@JsonProperty("field_order")
 	@NotNull
@@ -44,7 +44,7 @@ public abstract class AlertWizardConfig {
 	public abstract ImportPolicyType accessImportPolicy();
 	
 	@JsonCreator
-    public static AlertWizardConfig create(@JsonProperty("field_order") List<FieldWizard> fieldOrder,
+    public static AlertWizardConfiguration create(@JsonProperty("field_order") List<FieldWizard> fieldOrder,
     		@JsonProperty("default_values") DefaultValues defaultValues, @JsonProperty("import_policy") ImportPolicyType importPolicy ){
         return builder()
                 .accessFieldOrder(fieldOrder)
@@ -54,7 +54,7 @@ public abstract class AlertWizardConfig {
     }
 
 
-	public static AlertWizardConfig defaultConfig() {
+	public static AlertWizardConfiguration defaultConfig() {
 		return builder()
 				.accessFieldOrder(ImmutableList.of(
 						FieldWizard.create("Priority", true),
@@ -79,7 +79,7 @@ public abstract class AlertWizardConfig {
 	}
 	
     public static Builder builder() {
-        return new AutoValue_AlertWizardConfig.Builder();
+        return new AutoValue_AlertWizardConfiguration.Builder();
     }
 
     public abstract Builder toBuilder();
@@ -89,7 +89,7 @@ public abstract class AlertWizardConfig {
 	 	public abstract Builder accessFieldOrder(List<FieldWizard> fieldOrder);
 	 	public abstract Builder accessDefaultValues(DefaultValues defaultValues);
 	 	public abstract Builder accessImportPolicy(ImportPolicyType importPolicy);
-	 	public abstract AlertWizardConfig build();
+	 	public abstract AlertWizardConfiguration build();
 	}
 }
 
