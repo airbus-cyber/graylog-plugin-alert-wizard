@@ -42,7 +42,6 @@ public final class AlertConditionParameters {
     public static final String THRESHOLD_TYPE_LESS = "<";
     public static final String SEARCH_QUERY = "search_query";
     public static final String ADDITIONAL_SEARCH_QUERY = "additional_search_query";
-    public static final String BACKLOG = "backlog";
 
     public static final List<String> STATISTICAL_CONDITION_PARAMETER_TYPES = Collections.unmodifiableList(Arrays.asList("AVG", "MIN", "MAX", "SUM", "STDDEV", "CARD", "COUNT", "SUMOFSQUARES", "VARIANCE"));
 }

@@ -37,6 +37,7 @@ public final class AlertFields {
     public static final String FIELD_DISABLED = "disabled";
     public static final String FIELD_AGGREGATION_TIME = "aggregation_time";
     public static final String FIELD_NOTIFICATION_PARAMETERS = "notification_parameters";
+    public static final String FIELD_BACKLOG = "backlog";
 
     public static final String FIELD_ALERT_TYPE = "alert_type";
     public static final String FIELD_ALERT_PATTERN = "alert_pattern";

@@ -33,6 +33,7 @@ import TitlePriority from 'wizard/components/inputs/TitlePriority';
 import AlertValidation from 'wizard/logic/AlertValidation';
 
 import styles from './AlertRuleForm.css';
+import AdvancedSettings from '../inputs/AdvancedSettings';
 
 const AlertRuleForm = ({initialAlert, navigationToRuleComponents, onSave, disableNavbar}) => {
     const intl = useIntl();
@@ -59,6 +60,23 @@ const AlertRuleForm = ({initialAlert, navigationToRuleComponents, onSave, disabl
         setAlert(newAlert);
         setIsModified(true);
         setIsValid(AlertValidation.isAlertValid(newAlert));
+    }, [alert, isModified, isValid]);
+
+    const _updateAdvancedSettingsChanged = useCallback((field, value) => {
+        const update = ObjectUtils.clone(alert);
+        let normalizedValue = null;
+        if ('' !== value && null !== value) {
+            normalizedValue = +value;
+        }
+        if ('grace' === field) {
+            update.condition_parameters.grace = normalizedValue;
+        } else {
+            update[field] = normalizedValue;
+        }
+        setAlert(update);
+        setIsModified(true);
+        // TODO why is this check necessary???
+        setIsValid(AlertValidation.isAlertValid(update));
     }, [alert, isModified, isValid]);
 
     const _selectContentComponent = () => {
@@ -141,6 +159,7 @@ const AlertRuleForm = ({initialAlert, navigationToRuleComponents, onSave, disabl
                         <TitlePriority onUpdate={_updateAlertField} title={alert.title} priority={alert.priority} />
                         <br/>
                         {_selectContentComponent()}
+                        <AdvancedSettings onUpdate={_updateAdvancedSettingsChanged} alert={alert} />
                     </form>
                     <div className="pull-left">
                         <LinkContainer to={Navigation.getWizardRoute()}>

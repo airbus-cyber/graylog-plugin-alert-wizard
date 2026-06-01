@@ -69,6 +69,10 @@ public abstract class AlertRuleRequest {
     @Nullable
     public abstract Integer getAggregationTime();
 
+    @JsonProperty(AlertFields.FIELD_BACKLOG)
+    @Nullable
+    public abstract Long getBacklog();
+
     @JsonCreator
     public static AlertRuleRequest create(
             @JsonProperty(AlertFields.FIELD_TITLE) String title,
@@ -79,7 +83,8 @@ public abstract class AlertRuleRequest {
             @JsonProperty(AlertFields.FIELD_CONDITION_PARAMETERS) Map<String, Object> conditionParameters,
             @JsonProperty(AlertFields.FIELD_STREAM) AlertRuleStream stream,
             @JsonProperty(AlertFields.FIELD_SECOND_STREAM) AlertRuleStream stream2,
-            @JsonProperty(AlertFields.FIELD_AGGREGATION_TIME) Integer aggregationTime) {
-        return new AutoValue_AlertRuleRequest(title, priority, description, disabled, alertType, conditionParameters, stream, stream2, aggregationTime);
+            @JsonProperty(AlertFields.FIELD_AGGREGATION_TIME) Integer aggregationTime,
+            @JsonProperty(AlertFields.FIELD_BACKLOG) Long backlog) {
+        return new AutoValue_AlertRuleRequest(title, priority, description, disabled, alertType, conditionParameters, stream, stream2, aggregationTime, backlog);
     }
 }

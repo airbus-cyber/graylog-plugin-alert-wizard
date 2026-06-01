@@ -33,6 +33,12 @@ function create(newAlert) {
         stream: newAlert.stream,
         second_stream: newAlert.second_stream,
     };
+    if (undefined !== newAlert.backlog) {
+        request.backlog = newAlert.backlog;
+    }
+    if (undefined !== newAlert.aggregation_time) {
+        request.aggregation_time = newAlert.aggregation_time;
+    }
     return fetch('POST', url, request)
         .then(() => {
             UserNotification.success('Stream successfully created, Alert condition successfully created, Alert notification successfully created');

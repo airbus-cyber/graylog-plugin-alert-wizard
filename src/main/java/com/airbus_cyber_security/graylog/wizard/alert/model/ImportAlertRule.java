@@ -71,6 +71,7 @@ public abstract class ImportAlertRule {
     //   },
     //   "second_stream": null,
     //   "aggregation_time": 0,
+	//   "backlog": null,
     //   "second_event_definition": null,
     //   "condition": "69e87c4c9356332e74f327b4",
     //   "notification_parameters": {
@@ -129,6 +130,10 @@ public abstract class ImportAlertRule {
     @Nullable
     public abstract Integer getAggregationTime();
 
+    @JsonProperty(AlertFields.FIELD_BACKLOG)
+    @Nullable
+    public abstract Long getBacklog();
+
     @JsonProperty(AlertFields.FIELD_NOTIFICATION_PARAMETERS)
     public abstract NotificationParameters getNotificationParameters();
 
@@ -146,6 +151,7 @@ public abstract class ImportAlertRule {
             @JsonProperty(AlertFields.FIELD_SECOND_EVENT_DEFINITION) String secondEventDefinition,
             @JsonProperty(AlertFields.FIELD_DISABLED) boolean disabled,
             @JsonProperty(AlertFields.FIELD_AGGREGATION_TIME) Integer aggregationTime,
+            @JsonProperty(AlertFields.FIELD_BACKLOG) Long backlog,
             @JsonProperty(AlertFields.FIELD_NOTIFICATION_PARAMETERS) NotificationParameters notificationParameters
     ) {
         return new AutoValue_ImportAlertRule(
@@ -161,6 +167,7 @@ public abstract class ImportAlertRule {
                 secondEventDefinition,
                 disabled,
                 aggregationTime,
+                backlog,
                 notificationParameters
         );
     }

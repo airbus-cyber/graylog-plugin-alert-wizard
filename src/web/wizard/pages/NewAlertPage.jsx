@@ -69,6 +69,7 @@ const NewAlertPage = () => {
             description: '',
             priority: default_values.priority,
             condition_type: 'COUNT',
+
             condition_parameters: {
                 threshold_type: default_values.threshold_type,
                 additional_threshold_type: default_values.threshold_type,
@@ -77,7 +78,6 @@ const NewAlertPage = () => {
                 time: time * time_type,
                 repeat_notifications: default_values.repeat_notifications,
                 grace: default_values.grace,
-                backlog: default_values.backlog,
                 grouping_fields: [],
                 distinct_by: '',
                 field: '',
@@ -92,7 +92,9 @@ const NewAlertPage = () => {
             second_stream: {
                 matching_type: default_values.matching_type,
                 field_rule: [],
-            }
+            },
+            aggregation_time: default_values.aggregation_time,
+            backlog: default_values.backlog,
         };
         componentCreateAlertRule = <AlertRuleForm initialAlert={alert} onSave={_save} />;
     } else {

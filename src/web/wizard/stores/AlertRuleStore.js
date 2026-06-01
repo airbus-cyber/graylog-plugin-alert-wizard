@@ -153,6 +153,12 @@ const AlertRuleStore = Reflux.createStore({
             disabled: newAlert.disabled,
             aggregation_time: newAlert.aggregation_time
         };
+        if (undefined !== newAlert.backlog) {
+            request.backlog = newAlert.backlog;
+        }
+        if (undefined !== newAlert.aggregation_time) {
+            request.aggregation_time = newAlert.aggregation_time;
+        }
 
         const promise = fetch('POST', url, request)
             .then(() => {
@@ -203,6 +209,12 @@ const AlertRuleStore = Reflux.createStore({
             second_stream: updatedAlert.second_stream,
             disabled: updatedAlert.disabled
         };
+        if (undefined !== updatedAlert.backlog) {
+            request.backlog = updatedAlert.backlog;
+        }
+        if (undefined !== updatedAlert.aggregation_time) {
+            request.aggregation_time = updatedAlert.aggregation_time;
+        }
 
         const promise = fetch(method, url, request)
             .then(() => {

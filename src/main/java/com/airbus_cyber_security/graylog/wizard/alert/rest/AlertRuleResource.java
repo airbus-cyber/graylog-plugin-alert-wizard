@@ -77,6 +77,7 @@ import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.Alert
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.CloneAlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.ImportAlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetDataAlertRule;
+import com.airbus_cyber_security.graylog.wizard.alert.utilities.ConditionParametersAdapter;
 import com.airbus_cyber_security.graylog.wizard.audit.AlertWizardAuditEventTypes;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfiguration;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfigurationService;
@@ -197,6 +198,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         boolean isDisabled = false;
         AlertRuleStream alertRuleStream = null;
         AlertRuleStream alertRuleStream2 = null;
+        Long backlog = null;
 
         if (alertPattern instanceof CorrelationAlertPattern pattern) {
             event = this.eventDefinitionService.getEventDefinition(pattern.eventIdentifier());
@@ -241,6 +243,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             eventIdentifier = eventDefinitionDto.id();
             description = eventDefinitionDto.description();
             priority = eventDefinitionDto.priority();
+            backlog = event.get().notificationSettings().backlogSize();
             EventFieldSpec fieldSpec = eventDefinitionDto.fieldSpec().get(EventDefinitionService.AGGREGATION_TIME_RANGE_FIELD_NAME);
             if (fieldSpec != null && fieldSpec.providers() != null && !fieldSpec.providers().isEmpty()) {
                 Optional<FieldValueProvider.Config> fieldValueProvider = fieldSpec.providers().stream().filter(provider -> provider.type().equals(AggregationFieldValueProvider.Config.TYPE_NAME)).findFirst();
@@ -278,7 +281,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 parametersCondition,
                 alertRuleStream,
                 alertRuleStream2,
-                aggregationTime);
+                aggregationTime, 
+                backlog);
     }
 
     private Map<String, Object> getConditionParameters(Optional<EventDefinitionDto> event) {
@@ -429,7 +433,8 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                     importAlertRule.getConditionParameters(),
                     importAlertRule.getStream(),
                     importAlertRule.getSecondStream(),
-                    importAlertRule.getAggregationTime()
+                    importAlertRule.getAggregationTime(), 
+                    importAlertRule.getBacklog()
             );
             String notificationIdentifier = this.notificationService.createNotification(importAlertRule.getTitle(), userContext);
             GetDataAlertRule result = createPatternAndRule(createRequest, userContext, notificationIdentifier, importAlertRule.getTitle(),
@@ -485,29 +490,32 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 String description = request.getDescription();
                 Integer priority = request.getPriority();
                 Integer aggregationTime = request.getAggregationTime();
+                Long backlog = request.getBacklog();
                 Map<String, Object> conditionParameters = request.conditionParameters();
                 String streamIdentifier = conditions.outputStreamIdentifier();
                 EventProcessorConfig configuration = this.conversions.createEventConfiguration(alertType, conditionParameters, streamIdentifier);
-
-                String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, priority, notificationIdentifier, configuration, aggregationTime, userContext, request.isDisabled());
+                
+                String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, priority, notificationIdentifier, configuration, aggregationTime, 
+                		backlog, userContext, request.isDisabled());
 
                 return AggregationAlertPattern.builder().conditions(conditions).eventIdentifier(eventIdentifier).build();
         }
     }
-
+    
     private DisjunctionAlertPattern createDisjunctionAlertPattern(String notificationIdentifier, AlertRuleRequest request, String alertTitle, UserContext userContext, String userName, TriggeringConditions conditions) throws ValidationException {
         String description = request.getDescription();
         Integer priority = request.getPriority();
         Integer aggregationTime = request.getAggregationTime();
+        Long backlog = request.getBacklog();
         Map<String, Object> conditionParameters = request.conditionParameters();
 
         TriggeringConditions conditions2 = this.triggeringConditionsService.createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName, request.isDisabled());
         String streamIdentifier = conditions.outputStreamIdentifier();
         EventProcessorConfig configuration1 = this.conversions.createAggregationCondition(streamIdentifier, conditionParameters);
-        String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, priority, notificationIdentifier, configuration1, aggregationTime, userContext, request.isDisabled());
+        String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, priority, notificationIdentifier, configuration1, aggregationTime, backlog, userContext, request.isDisabled());
         String streamIdentifier2 = conditions2.outputStreamIdentifier();
         EventProcessorConfig configuration2 = this.conversions.createAdditionalAggregationCondition(streamIdentifier2, conditionParameters);
-        String eventIdentifier2 = this.eventDefinitionService.createEvent(alertTitle + "#2", description, priority, notificationIdentifier, configuration2, aggregationTime, userContext, request.isDisabled());
+        String eventIdentifier2 = this.eventDefinitionService.createEvent(alertTitle + "#2", description, priority, notificationIdentifier, configuration2, aggregationTime, backlog, userContext, request.isDisabled());
 
         return DisjunctionAlertPattern.builder()
                 .conditions1(conditions).conditions2(conditions2).eventIdentifier1(eventIdentifier).eventIdentifier2(eventIdentifier2)
@@ -519,13 +527,14 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         Integer priority = request.getPriority();
         AlertType alertType = request.getConditionType();
         Integer aggregationTime = request.getAggregationTime();
+        Long backlog = request.getBacklog();
         Map<String, Object> conditionParameters = request.conditionParameters();
 
         TriggeringConditions conditions2 = this.triggeringConditionsService.createTriggeringConditions(request.getSecondStream(), alertTitle + "#2", userName, request.isDisabled());
         String streamIdentifier = conditions.outputStreamIdentifier();
         String streamIdentifier2 = conditions2.outputStreamIdentifier();
         EventProcessorConfig configuration = this.conversions.createCorrelationCondition(alertType, streamIdentifier, streamIdentifier2, conditionParameters);
-        String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, priority, notificationIdentifier, configuration, aggregationTime, userContext, request.isDisabled());
+        String eventIdentifier = this.eventDefinitionService.createEvent(alertTitle, description, priority, notificationIdentifier, configuration, aggregationTime, backlog, userContext, request.isDisabled());
         return CorrelationAlertPattern.builder().conditions1(conditions).conditions2(conditions2).eventIdentifier(eventIdentifier).build();
     }
 
@@ -540,6 +549,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             return createAlertPattern(notificationIdentifier, request, title, userContext, userName);
         }
 
+        Integer aggregationTime = request.getAggregationTime();
+        Long backlog = request.getBacklog();
+        
         String title2 = title + "#2";
         // TODO increase readability: extract three methods?
         if (previousAlertPattern instanceof CorrelationAlertPattern previousPattern) {
@@ -551,7 +563,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             String streamIdentifier = conditions.outputStreamIdentifier();
             String streamIdentifier2 = conditions2.outputStreamIdentifier();
             EventProcessorConfig configuration = this.conversions.createCorrelationCondition(alertType, streamIdentifier, streamIdentifier2, request.conditionParameters());
-            this.eventDefinitionService.updateEvent(title, request.getDescription(), request.getPriority(), previousPattern.eventIdentifier(), configuration, request.isDisabled());
+            this.eventDefinitionService.updateEvent(title, request.getDescription(), request.getPriority(), aggregationTime, backlog, previousPattern.eventIdentifier(), configuration, request.isDisabled());
 
             return previousPattern.toBuilder().conditions1(conditions).conditions2(conditions2).build();
         } else if (previousAlertPattern instanceof DisjunctionAlertPattern previousPattern) {
@@ -562,11 +574,11 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
             String streamIdentifier = conditions.outputStreamIdentifier();
             EventProcessorConfig configuration = this.conversions.createEventConfiguration(request.getConditionType(), request.conditionParameters(), streamIdentifier);
-            this.eventDefinitionService.updateEvent(title, request.getDescription(), request.getPriority(), previousPattern.eventIdentifier1(), configuration, request.isDisabled());
+            this.eventDefinitionService.updateEvent(title, request.getDescription(), request.getPriority(), aggregationTime, backlog, previousPattern.eventIdentifier1(), configuration, request.isDisabled());
 
             String streamIdentifier2 = conditions2.outputStreamIdentifier();
             EventProcessorConfig configuration2 = this.conversions.createAdditionalAggregationCondition(streamIdentifier2, request.conditionParameters());
-            this.eventDefinitionService.updateEvent(title2, request.getDescription(), request.getPriority(), previousPattern.eventIdentifier2(), configuration2, request.isDisabled());
+            this.eventDefinitionService.updateEvent(title2, request.getDescription(), request.getPriority(), aggregationTime, backlog, previousPattern.eventIdentifier2(), configuration2, request.isDisabled());
 
             return previousPattern.toBuilder().conditions1(conditions).conditions2(conditions2).build();
         } else if (previousAlertPattern instanceof AggregationAlertPattern previousPattern) {
@@ -574,7 +586,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             TriggeringConditions conditions = this.triggeringConditionsService.updateTriggeringConditions(previousConditions, title, streamConfiguration, userName, request.isDisabled());
             String streamIdentifier = conditions.outputStreamIdentifier();
             EventProcessorConfig configuration = this.conversions.createEventConfiguration(request.getConditionType(), request.conditionParameters(), streamIdentifier);
-            this.eventDefinitionService.updateEvent(title, request.getDescription(), request.getPriority(), previousPattern.eventIdentifier(), configuration, request.isDisabled());
+            this.eventDefinitionService.updateEvent(title, request.getDescription(), request.getPriority(), aggregationTime, backlog, previousPattern.eventIdentifier(), configuration, request.isDisabled());
 
             return previousPattern.toBuilder().conditions(conditions).build();
         }
@@ -702,6 +714,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         String title = request.getTitle();
         String description = request.getDescription();
         Integer aggregationTime = sourceAlert.getAggregationTime();
+        Long backlog = sourceAlert.getBacklog();
         String alertTitle = checkImportPolicyAndGetTitle(title, userContext);
         Map<String, Object> conditionParameters = sourceAlert.conditionParameters();
         if (null == conditionParameters) {
@@ -717,7 +730,6 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             this.appendIfMissing(conditionParameters, AlertConditionParameters.ADDITIONAL_THRESHOLD, 0);
             this.appendIfMissing(conditionParameters, AlertConditionParameters.TIME, 1);
             this.appendIfMissing(conditionParameters, AlertConditionParameters.GRACE, 1);
-            this.appendIfMissing(conditionParameters, AlertConditionParameters.BACKLOG, 500);
             this.appendIfMissing(conditionParameters, AlertConditionParameters.GROUPING_FIELDS, Collections.emptyList());
             this.appendIfMissing(conditionParameters, AlertConditionParameters.DISTINCT_BY, "");
             this.appendIfMissing(conditionParameters, AlertConditionParameters.FIELD, "");
@@ -741,7 +753,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         }
         String notificationIdentifier = createNotificationFromCloneRequest(alertTitle, userContext, sourceAlert.getNotificationID(), request.getCloneNotification());
         AlertRuleRequest alertRuleRequest = AlertRuleRequest.create(title, sourceAlert.getPriority(), description, sourceAlert.isDisabled(), alertType,
-                conditionParameters, stream, secondStream, aggregationTime);
+                conditionParameters, stream, secondStream, aggregationTime, backlog);
 
         GetDataAlertRule result = createPatternAndRule(alertRuleRequest, userContext, notificationIdentifier, alertTitle, userName, alertType);
         return Response.ok().entity(result).build();

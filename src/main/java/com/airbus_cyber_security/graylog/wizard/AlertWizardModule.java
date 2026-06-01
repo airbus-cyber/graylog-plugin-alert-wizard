@@ -35,29 +35,28 @@ import java.util.Set;
  * Extend the PluginModule abstract class here to add you plugin to the system.
  */
 public class AlertWizardModule extends PluginModule {
-    /**
-     * Returns all configuration beans required by this plugin.
-     *
-     * Implementing this method is optional. The default method returns an empty {@link Set}.
-     */
-    @Override
-    public Set<? extends PluginConfigBean> getConfigBeans() {
-        return Collections.emptySet();
-    }
+	/**
+	 * Returns all configuration beans required by this plugin.
+	 *
+	 * Implementing this method is optional. The default method returns an empty
+	 * {@link Set}.
+	 */
+	@Override
+	public Set<? extends PluginConfigBean> getConfigBeans() {
+		return Collections.emptySet();
+	}
 
-    @Override
-    protected void configure() {
-    	bind(AlertRuleService.class);
-        bind(AlertListService.class);
+	@Override
+	protected void configure() {
+		bind(AlertRuleService.class);
+		bind(AlertListService.class);
 
-        addPermissions(AlertRuleRestPermissions.class);
-        addRestResource(AlertRuleResource.class);
-        addAuditEventTypes(AlertWizardAuditEventTypes.class);
-        addRestResource(AlertWizardConfigResource.class);
-        addRestResource(AlertListResource.class);
-        addEventFieldValueProvider(AggregationFieldValueProvider.Config.TYPE_NAME,
-                AggregationFieldValueProvider.class,
-                AggregationFieldValueProvider.Factory.class,
-                AggregationFieldValueProvider.Config.class);
-    }
+		addPermissions(AlertRuleRestPermissions.class);
+		addRestResource(AlertRuleResource.class);
+		addAuditEventTypes(AlertWizardAuditEventTypes.class);
+		addRestResource(AlertWizardConfigResource.class);
+		addRestResource(AlertListResource.class);
+		addEventFieldValueProvider(AggregationFieldValueProvider.Config.TYPE_NAME, AggregationFieldValueProvider.class,
+				AggregationFieldValueProvider.Factory.class, AggregationFieldValueProvider.Config.class);
+	}
 }
