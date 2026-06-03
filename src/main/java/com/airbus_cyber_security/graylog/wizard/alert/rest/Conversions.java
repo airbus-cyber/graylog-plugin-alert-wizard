@@ -17,6 +17,7 @@
 package com.airbus_cyber_security.graylog.wizard.alert.rest;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -54,6 +55,9 @@ import com.airbus_cyber_security.graylog.wizard.alert.model.AlertType;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.ImportAlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.utilities.ConditionParametersAdapter;
+import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfiguration;
+import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfigurationService;
+import com.airbus_cyber_security.graylog.wizard.config.rest.DefaultValues;
 import com.airbus_cyber_security.graylog.wizard.database.Description;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -77,10 +81,12 @@ public class Conversions {
 	// there is even a way to do it nicely with Jackson: see jackson-docs
 	// polymorphic type handling, jsonsubtypes
 	private final Validator validator;
+	private final AlertWizardConfigurationService configurationService;
 
 	@Inject
-	public Conversions(FieldRulesUtilities fieldRulesUtilities) {
+	public Conversions(FieldRulesUtilities fieldRulesUtilities, AlertWizardConfigurationService configurationService) {
 		this.validator = new Validator(fieldRulesUtilities);
+		this.configurationService = configurationService;
 	}
 
 	// TODO should avoid these conversions by always working with ms (from the IHM
@@ -228,17 +234,30 @@ public class Conversions {
 		int additionalThreshold = conditionParametersAdapter.getAdditionalThreshold();
 
 		long searchWithinMs = this.convertMinutesToMilliseconds(conditionParametersAdapter.getTime());
-		long executeEveryMs = this.convertMinutesToMilliseconds(conditionParametersAdapter.getGrace());
+		
 
-		return CorrelationCountProcessorConfig.builder().stream(streamIdentifier).thresholdType(thresholdType)
-				.threshold(threshold).additionalStream(streamIdentifier2)
-				.additionalThresholdType(additionalThresholdType).additionalThreshold(additionalThreshold)
-				.messagesOrder(messageOrder).searchWithinMs(searchWithinMs).executeEveryMs(executeEveryMs)
+		AlertWizardConfiguration pluginConfiguration = this.configurationService.getConfiguration();
+		DefaultValues defaultValues = pluginConfiguration.accessDefaultValues();
+		long graceInMinutes = null == conditionParametersAdapter.getGrace() ? defaultValues.getGrace() : conditionParametersAdapter.getGrace();
+		long executeEveryMs = this.convertMinutesToMilliseconds(graceInMinutes);
+
+		return CorrelationCountProcessorConfig.builder()
+				.stream(streamIdentifier)
+				.searchQuery(searchQuery)
+				.thresholdType(thresholdType)
+				.threshold(threshold)
+				.additionalStream(streamIdentifier2)
+				.additionalSearchQuery(additionalSearchQuery)
+				.additionalThresholdType(additionalThresholdType)
+				.additionalThreshold(additionalThreshold)
+				.messagesOrder(messageOrder)
+				.searchWithinMs(searchWithinMs)
+				.executeEveryMs(executeEveryMs)
 				// TODO CorrelationCountProcessorConfig.groupingFields should be of type List
 				// (or better just Collection/Iterable) rather than Set
 				.groupingFields(conditionParametersAdapter.getGroupingFields())
-				.comment(Description.COMMENT_ALERT_WIZARD).searchQuery(searchQuery)
-				.additionalSearchQuery(additionalSearchQuery).build();
+				.comment(Description.COMMENT_ALERT_WIZARD)
+				.build();
 	}
 
 	private Expression<Boolean> createExpressionFromNumberThreshold(String identifier, String thresholdType,
@@ -256,31 +275,7 @@ public class Conversions {
 		}
 	}
 
-	public EventProcessorConfig createAggregationCondition(String streamIdentifier,
-			Map<String, Object> conditionParameter) {
-		return createAggregationCondition(streamIdentifier, conditionParameter, AlertConditionParameters.SEARCH_QUERY);
-	}
-
-	public EventProcessorConfig createAdditionalAggregationCondition(String streamIdentifier,
-			Map<String, Object> conditionParameter) {
-		ConditionParametersAdapter conditionParametersAdapter = new ConditionParametersAdapter(conditionParameter);
-		String additionalThresholdType = conditionParametersAdapter.getAdditionalThresholdType();
-		int additionalThreshold = conditionParametersAdapter.getAdditionalThreshold();
-		conditionParameter.put(AlertConditionParameters.THRESHOLD_TYPE, additionalThresholdType);
-		conditionParameter.put(AlertConditionParameters.THRESHOLD, additionalThreshold);
-		return this.createAggregationCondition(streamIdentifier, conditionParameter,
-				AlertConditionParameters.ADDITIONAL_SEARCH_QUERY);
-	}
-
-	private SeriesSpecBuilder<?, ?> createSeriesBuilder(String identifier, String distinctBy) {
-		if (distinctBy == null || distinctBy.isEmpty()) {
-			return Count.builder().id(identifier);
-		}
-		return Cardinality.builder().id(identifier).field(distinctBy);
-	}
-
-	private EventProcessorConfig createAggregationCondition(String streamIdentifier,
-			Map<String, Object> conditionParameter, String searchQueryField) {
+	public EventProcessorConfig createAggregationCondition(String streamIdentifier, Map<String, Object> conditionParameter) {
 		ConditionParametersAdapter conditionParametersAdapter = new ConditionParametersAdapter(conditionParameter);
 		List<String> groupByFields = conditionParametersAdapter.getGroupingFields();
 		String distinctBy = conditionParametersAdapter.getDistinctBy();
@@ -304,9 +299,32 @@ public class Conversions {
 		String searchQuery = conditionParametersAdapter.getSearchQuery();
 		Set<String> streams = getStreamsParameterFromOutputStream(streamIdentifier);
 
-		return AggregationEventProcessorConfig.builder().query(searchQuery).streams(streams).groupBy(groupByFields)
-				.series(ImmutableList.of(series)).conditions(conditions).executeEveryMs(executeEveryMs)
-				.searchWithinMs(searchWithinMs).build();
+		return AggregationEventProcessorConfig.builder().query(searchQuery)
+				.streams(streams)
+				.groupBy(groupByFields)
+				.series(ImmutableList.of(series))
+				.conditions(conditions)
+				.executeEveryMs(executeEveryMs)
+				.searchWithinMs(searchWithinMs)
+				.build();
+	}
+
+	public EventProcessorConfig createAdditionalAggregationCondition(String streamIdentifier,
+			Map<String, Object> conditionParameter) {
+		// Create the additional condition the same way as the first condition
+		Map<String, Object> additionalConditionParameter = new HashMap<>(conditionParameter);
+		ConditionParametersAdapter conditionParametersAdapter = new ConditionParametersAdapter(conditionParameter);
+		additionalConditionParameter.put(AlertConditionParameters.SEARCH_QUERY, conditionParametersAdapter.getAdditionalSearchQuery());
+		additionalConditionParameter.put(AlertConditionParameters.THRESHOLD, conditionParametersAdapter.getAdditionalThreshold());
+		additionalConditionParameter.put(AlertConditionParameters.THRESHOLD_TYPE, conditionParametersAdapter.getAdditionalThresholdType());
+		return this.createAggregationCondition(streamIdentifier, additionalConditionParameter);
+	}
+
+	private SeriesSpecBuilder<?, ?> createSeriesBuilder(String identifier, String distinctBy) {
+		if (distinctBy == null || distinctBy.isEmpty()) {
+			return Count.builder().id(identifier);
+		}
+		return Cardinality.builder().id(identifier).field(distinctBy);
 	}
 
 	private SeriesSpec createSeriesSpec(String type, String identifier, String field) {

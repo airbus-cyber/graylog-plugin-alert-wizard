@@ -33,8 +33,8 @@ function _isFieldRulesValid(search_query, field_rules) {
     if (search_query === '' && field_rules.length <= 0) {
         return false;
     }
-    for (let i = 0; i < field_rules.length; i++) {
-        if (!_isRuleValid(field_rules[i])){
+    for (const field_rule of field_rules) {
+        if (!_isRuleValid(field_rule)){
             return false;
         }
     }
@@ -50,6 +50,9 @@ export default {
             return false;
         }
         if (alert.stream.matching_type === '') {
+            return false;
+        }
+        if (alert.condition_parameters.grace === null || alert.condition_parameters.grace === undefined) {
             return false;
         }
         if (alert.condition_parameters.time === null) {

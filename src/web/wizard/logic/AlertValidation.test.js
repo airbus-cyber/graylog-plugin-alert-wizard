@@ -26,6 +26,7 @@ describe('AlertValidation.isAlertValid', () => {
                 threshold_type: '>',
                 threshold: 0,
                 time: 1,
+                grace: 1,
             },
             stream: {
                 matching_type: 'AND',

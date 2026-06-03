@@ -35,7 +35,7 @@ test('statistics rule should retain field', async ({ page }) => {
   await page.getByRole('option', { name: 'standard deviation' }).click();
 
   await page.locator('#react-select-9-input').fill('source');
-  await page.getByRole('option', { name: 'source – string' }).click();
+  await page.getByRole('option', { name: 'source – string', exact: true }).click();
   await page.getByRole('button', { name: 'Save' }).click();
 
   // Go on search page
