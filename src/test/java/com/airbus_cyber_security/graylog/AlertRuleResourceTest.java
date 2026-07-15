@@ -17,7 +17,7 @@
 
 package com.airbus_cyber_security.graylog;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class AlertRuleResourceTest {
 

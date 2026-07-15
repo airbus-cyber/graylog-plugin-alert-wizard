@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import org.graylog.events.conditions.BooleanExpression;
 import org.graylog.events.conditions.Expr;
 import org.graylog.events.conditions.Expression;
 import org.graylog.events.processor.EventProcessorConfig;
@@ -260,7 +261,7 @@ public class Conversions {
 				.build();
 	}
 
-	private Expression<Boolean> createExpressionFromNumberThreshold(String identifier, String thresholdType,
+	private BooleanExpression createExpressionFromNumberThreshold(String identifier, String thresholdType,
 			int threshold) {
 		Expr.NumberReference left = Expr.NumberReference.create(identifier);
 		Expr.NumberValue right = Expr.NumberValue.create(threshold);
@@ -293,7 +294,7 @@ public class Conversions {
 
 		SeriesSpec series = (SeriesSpec) seriesBuilder.build();
 
-		Expression<Boolean> expression = createExpressionFromNumberThreshold(identifier, thresholdType, threshold);
+		BooleanExpression expression = createExpressionFromNumberThreshold(identifier, thresholdType, threshold);
 		AggregationConditions conditions = AggregationConditions.builder().expression(expression).build();
 
 		String searchQuery = conditionParametersAdapter.getSearchQuery();
@@ -353,7 +354,7 @@ public class Conversions {
 		}
 	}
 
-	private Expression<Boolean> createExpressionFromThreshold(String identifier, String thresholdType, int threshold) {
+	private BooleanExpression createExpressionFromThreshold(String identifier, String thresholdType, int threshold) {
 		Expr.NumberReference left = Expr.NumberReference.create(identifier);
 		Expr.NumberValue right = Expr.NumberValue.create(threshold);
 		switch (thresholdType) {
@@ -386,7 +387,7 @@ public class Conversions {
 		String identifier = UUID.randomUUID().toString();
 		SeriesSpec series = createSeriesSpec(type, identifier, conditionParametersAdapter.getField());
 
-		Expression<Boolean> expression = createExpressionFromThreshold(identifier,
+		BooleanExpression expression = createExpressionFromThreshold(identifier,
 				conditionParametersAdapter.getThresholdType(), threshold);
 
 		String searchQuery = conditionParametersAdapter.getSearchQuery();

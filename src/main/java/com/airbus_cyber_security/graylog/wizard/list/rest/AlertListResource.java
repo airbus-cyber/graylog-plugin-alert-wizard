@@ -14,40 +14,11 @@
  * along with this program. If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-
 package com.airbus_cyber_security.graylog.wizard.list.rest;
 
-import com.airbus_cyber_security.graylog.wizard.audit.AlertWizardAuditEventTypes;
-import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfiguration;
-import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfigurationService;
-import com.airbus_cyber_security.graylog.wizard.config.rest.ImportPolicyType;
-import com.airbus_cyber_security.graylog.wizard.list.model.AlertList;
-import com.airbus_cyber_security.graylog.wizard.list.business.AlertListService;
-import com.airbus_cyber_security.graylog.wizard.list.bundles.AlertListExporter;
-import com.airbus_cyber_security.graylog.wizard.list.bundles.ExportAlertList;
-import com.airbus_cyber_security.graylog.wizard.list.bundles.ExportAlertListRequest;
-import com.airbus_cyber_security.graylog.wizard.list.rest.models.requests.AlertListRequest;
-import com.airbus_cyber_security.graylog.wizard.list.rest.models.responses.GetAlertList;
-import com.airbus_cyber_security.graylog.wizard.list.rest.models.responses.GetListAlertList;
-import com.airbus_cyber_security.graylog.wizard.list.utilities.AlertListUtilsService;
-import com.airbus_cyber_security.graylog.wizard.permissions.AlertRuleRestPermissions;
-import com.codahale.metrics.annotation.Timed;
-import com.mongodb.MongoException;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import jakarta.ws.rs.BadRequestException;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -63,17 +34,44 @@ import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.airbus_cyber_security.graylog.wizard.audit.AlertWizardAuditEventTypes;
+import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfiguration;
+import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfigurationService;
+import com.airbus_cyber_security.graylog.wizard.config.rest.ImportPolicyType;
+import com.airbus_cyber_security.graylog.wizard.list.bundles.AlertListExporter;
+import com.airbus_cyber_security.graylog.wizard.list.bundles.ExportAlertList;
+import com.airbus_cyber_security.graylog.wizard.list.bundles.ExportAlertListRequest;
+import com.airbus_cyber_security.graylog.wizard.list.business.AlertListService;
+import com.airbus_cyber_security.graylog.wizard.list.model.AlertList;
+import com.airbus_cyber_security.graylog.wizard.list.rest.models.requests.AlertListRequest;
+import com.airbus_cyber_security.graylog.wizard.list.rest.models.responses.GetAlertList;
+import com.airbus_cyber_security.graylog.wizard.list.rest.models.responses.GetListAlertList;
+import com.airbus_cyber_security.graylog.wizard.list.utilities.AlertListUtilsService;
+import com.airbus_cyber_security.graylog.wizard.permissions.AlertRuleRestPermissions;
+import com.codahale.metrics.annotation.Timed;
+import com.mongodb.MongoException;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.List;
-
-@Api(value = "Wizard/Lists", description = "Management of Wizard lists.")
+@Tag(name = "Wizard/Lists", description = "Management of Wizard lists.")
 @Path("/lists")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -89,10 +87,9 @@ public class AlertListResource extends RestResource implements PluginRestResourc
     private final AlertListExporter alertListExporter;
     private final AlertListUtilsService alertListUtilsService;
 
-
     @Inject
     public AlertListResource(AlertListService alertListService,
-                             AlertWizardConfigurationService configurationService) {
+            AlertWizardConfigurationService configurationService) {
         this.alertListService = alertListService;
         this.configurationService = configurationService;
         this.alertListUtilsService = new AlertListUtilsService(alertListService);
@@ -101,7 +98,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
 
     @GET
     @Timed
-    @ApiOperation(value = "AlertListDisplay all existing lists")
+    @Operation(summary = "AlertListDisplay all existing lists")
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_READ)
     public GetListAlertList list() {
@@ -112,13 +109,12 @@ public class AlertListResource extends RestResource implements PluginRestResourc
     @GET
     @Path("/{title}")
     @Timed
-    @ApiOperation(value = "Get a list")
+    @Operation(summary = "Get a list")
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_READ)
     @ApiResponses(value = {
-            @ApiResponse(code = 404, message = "List not found."),
-    })
-    public GetAlertList get(@ApiParam(name = TITLE, required = true) @PathParam(TITLE) String title)
+        @ApiResponse(responseCode = "404", description = "List not found."),})
+    public GetAlertList get(@Parameter(name = TITLE, required = true) @PathParam(TITLE) String title)
             throws UnsupportedEncodingException, NotFoundException {
         String listTitle = java.net.URLDecoder.decode(title, ENCODING);
 
@@ -129,7 +125,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
         return GetAlertList.create(list);
     }
 
-    private String checkImportPolicyAndGetTitle(String title){
+    private String checkImportPolicyAndGetTitle(String title) {
         String listTitle = title;
         if (this.alertListService.isPresent(listTitle)) {
             AlertWizardConfiguration configGeneral = configurationService.getConfiguration();
@@ -138,7 +134,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
                 String newListTitle;
                 int i = 1;
                 do {
-                    newListTitle = listTitle+"("+i+")";
+                    newListTitle = listTitle + "(" + i + ")";
                     i++;
                 } while (this.alertListService.isPresent(newListTitle));
                 listTitle = newListTitle;
@@ -159,12 +155,13 @@ public class AlertListResource extends RestResource implements PluginRestResourc
 
     @POST
     @Timed
-    @ApiOperation(value = "Create a list")
+    @Operation(summary = "Create a list")
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_CREATE)
-    @ApiResponses(value = {@ApiResponse(code = 400, message = "The supplied request is not valid.")})
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "400", description = "The supplied request is not valid.")})
     @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_CREATE)
-    public Response create(@ApiParam(name = "JSON body", required = true) @Valid @NotNull AlertListRequest request)
+    public Response create(@Parameter(name = "JSON body", required = true) @Valid @NotNull AlertListRequest request)
             throws ValidationException, BadRequestException, IOException {
 
         this.alertListUtilsService.checkIsValidRequest(request);
@@ -203,15 +200,16 @@ public class AlertListResource extends RestResource implements PluginRestResourc
     @PUT
     @Path("/import")
     @Timed
-    @ApiOperation(value = "Import a list")
+    @Operation(summary = "Import a list")
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_CREATE)
-    @ApiResponses(value = {@ApiResponse(code = 400, message = "The supplied request is not valid.")})
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "400", description = "The supplied request is not valid.")})
     @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_CREATE)
-    public Response importAlertLists(@ApiParam(name = "JSON body", required = true) @Valid @NotNull List<ExportAlertList> request) {
+    public Response importAlertLists(@Parameter(name = "JSON body", required = true) @Valid @NotNull List<ExportAlertList> request) {
         Response responses = Response.accepted().build();
 
-        for (ExportAlertList alertList: request) {
+        for (ExportAlertList alertList : request) {
             if (!this.alertListService.isValidImportRequest(alertList)) {
                 LOG.error("Invalid list:" + alertList.getTitle());
             } else {
@@ -232,12 +230,13 @@ public class AlertListResource extends RestResource implements PluginRestResourc
     @Timed
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_UPDATE)
-    @ApiOperation(value = "Update a list")
-    @ApiResponses(value = {@ApiResponse(code = 400, message = "The supplied request is not valid.")})
+    @Operation(summary = "Update a list")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "400", description = "The supplied request is not valid.")})
     @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_UPDATE)
-    public Response update(@ApiParam(name = TITLE, required = true)
-                           @PathParam(TITLE) String title,
-                           @ApiParam(name = "JSON body", required = true) @Valid @NotNull AlertListRequest request
+    public Response update(@Parameter(name = TITLE, required = true)
+            @PathParam(TITLE) String title,
+            @Parameter(name = "JSON body", required = true) @Valid @NotNull AlertListRequest request
     ) throws IOException, NotFoundException, ValidationException, ConfigurationException {
 
         this.alertListUtilsService.checkIsValidRequest(request);
@@ -264,14 +263,14 @@ public class AlertListResource extends RestResource implements PluginRestResourc
     @Path("/{title}")
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_DELETE)
-    @ApiOperation(value = "Delete a list")
+    @Operation(summary = "Delete a list")
     @ApiResponses(value = {
-            @ApiResponse(code = 404, message = "List not found."),
-            @ApiResponse(code = 400, message = "Invalid ObjectId.")
+        @ApiResponse(responseCode = "404", description = "List not found."),
+        @ApiResponse(responseCode = "400", description = "Invalid ObjectId.")
     })
     @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_DELETE)
-    public void delete(@ApiParam(name = TITLE, required = true)
-                       @PathParam(TITLE) String title
+    public void delete(@Parameter(name = TITLE, required = true)
+            @PathParam(TITLE) String title
     ) throws MongoException, IOException {
         String listTitle = java.net.URLDecoder.decode(title, ENCODING);
 
@@ -286,11 +285,11 @@ public class AlertListResource extends RestResource implements PluginRestResourc
     @POST
     @Path("/export")
     @Timed
-    @ApiOperation(value = "Export lists")
+    @Operation(summary = "Export lists")
     @RequiresAuthentication
     @RequiresPermissions(AlertRuleRestPermissions.WIZARD_ALERTS_RULES_READ)
     @AuditEvent(type = AlertWizardAuditEventTypes.WIZARD_ALERTS_RULES_READ)
-    public List<ExportAlertList> getExportAlertList(@ApiParam(name = "JSON body", required = true) @Valid @NotNull ExportAlertListRequest request) {
+    public List<ExportAlertList> getExportAlertList(@Parameter(name = "JSON body", required = true) @Valid @NotNull ExportAlertListRequest request) {
         LOG.debug("List titles : " + request.getTitles());
         return alertListExporter.export(request.getTitles());
     }

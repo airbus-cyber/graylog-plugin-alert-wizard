@@ -14,19 +14,17 @@
  * along with this program. If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-
 package com.airbus_cyber_security.graylog.wizard.alert.business;
 
-import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
-import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
-import com.airbus_cyber_security.graylog.wizard.database.Description;
-import com.google.common.collect.Maps;
-import jakarta.inject.Inject;
-import jakarta.ws.rs.BadRequestException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import org.bson.types.ObjectId;
 import org.graylog2.database.NotFoundException;
 import org.graylog2.events.ClusterEventBus;
-import org.graylog2.indexer.IndexSetRegistry;
+import org.graylog2.indexer.indexset.registry.IndexSetRegistry;
 import org.graylog2.plugin.database.ValidationException;
 import org.graylog2.plugin.streams.Stream;
 import org.graylog2.plugin.streams.StreamRule;
@@ -39,10 +37,13 @@ import org.graylog2.streams.events.StreamsChangedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import com.airbus_cyber_security.graylog.wizard.alert.model.FieldRule;
+import com.airbus_cyber_security.graylog.wizard.alert.rest.models.AlertRuleStream;
+import com.airbus_cyber_security.graylog.wizard.database.Description;
+import com.google.common.collect.Maps;
+
+import jakarta.inject.Inject;
+import jakarta.ws.rs.BadRequestException;
 
 public class StreamFacade {
 
@@ -56,10 +57,10 @@ public class StreamFacade {
 
     @Inject
     public StreamFacade(org.graylog2.streams.StreamService streamService,
-                        StreamRuleService streamRuleService,
-                        ClusterEventBus clusterEventBus,
-                        IndexSetRegistry indexSetRegistry,
-                        FieldRulesUtilities fieldRulesUtilities) {
+            StreamRuleService streamRuleService,
+            ClusterEventBus clusterEventBus,
+            IndexSetRegistry indexSetRegistry,
+            FieldRulesUtilities fieldRulesUtilities) {
         this.streamService = streamService;
         this.streamRuleService = streamRuleService;
         this.clusterEventBus = clusterEventBus;
@@ -111,7 +112,7 @@ public class StreamFacade {
                     + "' does not exists.");
         }
 
-        for (StreamRule streamRule: stream.getStreamRules()) {
+        for (StreamRule streamRule : stream.getStreamRules()) {
             this.streamRuleService.destroy(streamRule);
         }
 
@@ -125,7 +126,7 @@ public class StreamFacade {
     }
 
     private void createStreamRule(List<FieldRule> fieldRules, String streamID) throws ValidationException {
-        for (FieldRule fieldRule: fieldRules) {
+        for (FieldRule fieldRule : fieldRules) {
             Map<String, Object> streamRuleData = Maps.newHashMapWithExpectedSize(6);
 
             if (fieldRule.getType() >= 0) {
@@ -148,7 +149,7 @@ public class StreamFacade {
     // TODO most probably move up (this is a rather a conversion in the rest layer)
     public List<FieldRule> getStreamFieldRules(List<FieldRule> fieldRules) {
         List<FieldRule> streamFieldRules = new ArrayList<FieldRule>();
-        for (FieldRule fieldRule: fieldRules) {
+        for (FieldRule fieldRule : fieldRules) {
             if (this.fieldRulesUtilities.isListFieldRule(fieldRule)) {
                 continue;
             }

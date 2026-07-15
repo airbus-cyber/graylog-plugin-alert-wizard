@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.1.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/7.0.0...7.1.0)
+### Features
+* Add compatibility with ([Graylog 7.1.0](https://graylog.org/post/announcing-graylog-7-1-0/))
+* Move Export button to Bulk actions ([issue #150](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/150))
+* Add an API endpoint to import rules ([issue #155](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/155))
+* Allow to change the type when duplicating a rule ([issue #168](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/168))
+* Modify Group by field: search of existing fields is case sensitive ([issue #169](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/169))
+* Add advanced settings in rule wizard: creation and updating  ([issue #41](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/41))
+
+
 ## [7.0.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/6.3.0...7.0.0)
 ### Features
 * Add compatibility with [Graylog 7.0.1](https://graylog.org/post/announcing-graylog-7-0-1/) ([issue #167](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/167))

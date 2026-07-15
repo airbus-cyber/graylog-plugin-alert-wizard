@@ -14,7 +14,6 @@
  * along with this program. If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-
 package com.airbus_cyber_security.graylog.wizard.config.rest;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -27,9 +26,9 @@ import static org.graylog2.shared.security.RestPermissions.CLUSTER_CONFIG_ENTRY_
 
 import com.codahale.metrics.annotation.Timed;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -40,12 +39,12 @@ import jakarta.ws.rs.core.MediaType;
 
 // TODO rename into AlertWizardConfigurationResource
 @RequiresAuthentication
-@Api(value="Wizard/Config", description="Manage alert wizard setings")
+@Tag(name = "Wizard/Config", description = "Manage alert wizard setings")
 @Path("/config")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class AlertWizardConfigResource extends RestResource implements PluginRestResource {
-	
+
     private final AlertWizardConfigurationService configurationService;
 
     @Inject
@@ -55,7 +54,7 @@ public class AlertWizardConfigResource extends RestResource implements PluginRes
 
     @GET
     @Timed
-    @ApiOperation(value = "Get alert wizard configuration")
+    @Operation(summary = "Get alert wizard configuration")
     @RequiresPermissions({CLUSTER_CONFIG_ENTRY_READ})
     public AlertWizardConfiguration config() {
         return this.configurationService.getConfiguration();
@@ -63,10 +62,10 @@ public class AlertWizardConfigResource extends RestResource implements PluginRes
 
     @PUT
     @Timed
-    @ApiOperation(value = "Update alert wizard configuration")
+    @Operation(summary = "Update alert wizard configuration")
     @RequiresPermissions({CLUSTER_CONFIG_ENTRY_READ})
     @AuditEvent(type = AuditEventTypes.AUTHENTICATION_PROVIDER_CONFIGURATION_UPDATE)
-    public AlertWizardConfiguration updateConfig(@ApiParam(name = "config", required = true) AlertWizardConfiguration configuration) {
+    public AlertWizardConfiguration updateConfig(@Parameter(name = "config", required = true) AlertWizardConfiguration configuration) {
         this.configurationService.updateConfiguration(configuration);
         return configuration;
     }
