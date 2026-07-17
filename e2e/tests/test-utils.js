@@ -16,7 +16,8 @@ export async function open_alert_page_and_filter(page, filter) {
 }
 
 export async function fill_field_condition(page, input, option, value, nth= 0) {
-    await page.getByRole('button', { name: 'add_circle' }).nth(nth).click();
+    // await page.getByRole('button', { name: 'add_circle' }).nth(nth).click(); // Does not work any more ater migration to graylog 7.1.0. Why?
+    await page.locator('button', { hasText: 'add_circle'}).nth(nth).click();
     await page.waitForTimeout(200);
     await page.getByText('arrow_drop_down').nth(nth * 4 + 2).click();
     await page.getByRole('option', { name: input, exact: true }).click();

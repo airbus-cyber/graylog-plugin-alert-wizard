@@ -19,7 +19,7 @@ test('disable/enable rule without stream should work', async ({ page }) => {
 
     // Disable Rule
     await page.getByTitle('Select entity').click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(1000);
     await page.getByRole('button', { name: 'Bulk actions arrow_drop_down' }).click();
     await page.waitForTimeout(500);
     await page.getByRole('menuitem', { name: 'Disable' }).click();
@@ -52,7 +52,7 @@ test('disable stream#2 should disable rule', async ({ page }) => {
     // Create Rule with 2 streams
     const title = `AAA-${crypto.randomUUID()}`;
     await page.getByRole('link', { name: 'Create' }).click();
-    await page.getByRole('button', { name: 'OR' }).click();
+    await page.getByRole('button', { name: 'OR', exact: true }).click();
     await page.locator('#title').fill(title);
 
     await fill_field_condition(page, 'message', 'matches exactly', 'abc');

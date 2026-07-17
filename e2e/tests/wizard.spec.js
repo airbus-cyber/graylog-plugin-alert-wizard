@@ -87,7 +87,7 @@ test('open_two_tabs_when_click_on_search_button', async ({ page }) => {
   // Fill Title
   const title = `AAA-${crypto.randomUUID()}`;
   await page.getByRole('link', { name: 'Create' }).click();
-  await page.getByRole('button', { name: 'OR' }).click();
+  await page.getByRole('button', { name: 'OR', exact: true }).click();
   await page.locator('#title').fill(title);
 
   // Add 1st Field Condition
@@ -145,7 +145,7 @@ test('open_two_tabs_when_click_on_search_button_when_second_stream_condition_is_
   // Fill Title
   const title = `AAA-${crypto.randomUUID()}`;
   await page.getByRole('link', { name: 'Create' }).click();
-  await page.getByRole('button', { name: 'OR' }).click();
+  await page.getByRole('button', { name: 'OR', exact: true }).click();
   await page.locator('#title').fill(title);
 
   // Add 1st Field Condition
@@ -197,7 +197,7 @@ test('OR rule should contains GroupBy field', async ({ page }) => {
   // Fill Title
   const title = `AAA-${crypto.randomUUID()}`;
   await page.getByRole('link', { name: 'Create' }).click();
-  await page.getByRole('button', { name: 'OR' }).click();
+  await page.getByRole('button', { name: 'OR', exact: true }).click();
   await page.locator('#title').fill(title);
 
   await expect(page.getByText('Group by Condition')).toBeVisible();

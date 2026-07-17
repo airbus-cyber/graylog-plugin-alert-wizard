@@ -1,7 +1,7 @@
 // @ts-check
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import crypto from 'node:crypto';
-import { login_steps, fill_field_condition, open_alert_page_and_filter } from './test-utils.js';
+import { fill_field_condition, login_steps, open_alert_page_and_filter } from './test-utils.js';
 
 test('remove event definition should conflict rule', async ({ page }) => {
     await page.goto('wizard/AlertRules');
@@ -11,7 +11,7 @@ test('remove event definition should conflict rule', async ({ page }) => {
     // Fill Title
     const title = `CONF-${crypto.randomUUID()}`;
     await page.getByRole('link', { name: 'Create' }).click();
-    await page.getByRole('button', { name: 'OR' }).click();
+    await page.getByRole('button', { name: 'OR', exact: true }).click();
     await page.locator('#title').fill(title);
 
     // Add 1st Field Condition
