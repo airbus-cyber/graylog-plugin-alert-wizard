@@ -61,11 +61,13 @@ export const fetchAlertRules = (searchParams: SearchParams) => AlertRuleStore.se
     searchParams.pageSize,
     searchParams.query,
     { sort: searchParams?.sort.attributeId, order: searchParams?.sort.direction },
-).then(({ elements, pagination, attributes }) => ({
-    list: elements,
-    pagination,
-    attributes,
-}));
+).then(({ elements, pagination, attributes }) => { 
+    return {
+        list: elements,
+        pagination,
+        attributes,
+    };
+});
 
 export const KEY_PREFIX = ['alertRule', 'overview'];
 export const keyFn = (searchParams?: SearchParams | undefined) => ([KEY_PREFIX, ...(searchParams ? [searchParams] : [])]);

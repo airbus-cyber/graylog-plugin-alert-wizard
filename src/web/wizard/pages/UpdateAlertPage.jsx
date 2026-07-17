@@ -28,7 +28,7 @@ import useHistory from 'routing/useHistory';
 import messages_fr from 'translations/fr.json';
 import AlertRuleForm from 'wizard/components/rules/AlertRuleForm';
 import AlertRuleActions from 'wizard/actions/AlertRuleActions';
-import Navigation from 'wizard/routing/Navigation';
+import AlertWizardRoutes from 'wizard/routing/AlertWizardRoutes';
 import ButtonToEventDefinition from 'wizard/components/buttons/ButtonToEventDefinition';
 import ButtonToNotification from 'wizard/components/buttons/ButtonToNotification';
 import generateIdentifier from 'wizard/logic/IdentifierSequence';
@@ -60,7 +60,7 @@ const UpdateAlertPage = ({params}) => {
             if (response !== true) {
                 return;
             }
-            history.push(Navigation.getWizardRoute());
+            history.push(AlertWizardRoutes.WIZARD.ALERTRULES);
         });
     };
 
@@ -80,7 +80,7 @@ const UpdateAlertPage = ({params}) => {
             <DocumentTitle title="Edit alert rule">
                     <PageHeader title={<FormattedMessage id="wizard.updateAlertRule" defaultMessage='Wizard: Editing alert rule "{title}"' values={{title: alert.title }} />}
                                 actions={(
-                                    <LinkContainer to={Navigation.getWizardRoute()}>
+                                    <LinkContainer to={AlertWizardRoutes.WIZARD.ALERTRULES}>
                                         <Button bsStyle="info"><FormattedMessage id= "wizard.back" defaultMessage= "Back to alert rules" /></Button>
                                     </LinkContainer>
                                 )}>

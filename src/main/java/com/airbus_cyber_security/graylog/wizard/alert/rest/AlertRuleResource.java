@@ -78,7 +78,7 @@ import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.Clone
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.ImportAlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.responses.GetDataAlertRule;
 import com.airbus_cyber_security.graylog.wizard.audit.AlertWizardAuditEventTypes;
-import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfiguration;
+import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfigurationService;
 import com.airbus_cyber_security.graylog.wizard.config.rest.ImportPolicyType;
 import com.airbus_cyber_security.graylog.wizard.fields.AggregationFieldValueProvider;
@@ -349,7 +349,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         if (this.alertRuleService.isPresent(alertTitle)) {
             // TODO should be get or default here: it will return null when starting with a fresh instance of graylog
             // Idem in AlertListRessource. Add a test that creates two alerts with same title
-            AlertWizardConfiguration configuration = this.configurationService.getConfiguration();
+            AlertWizardConfig configuration = this.configurationService.getConfiguration();
             ImportPolicyType importPolicy = configuration.accessImportPolicy();
             if (importPolicy != null && importPolicy.equals(ImportPolicyType.RENAME)) {
                 String newAlertTitle;

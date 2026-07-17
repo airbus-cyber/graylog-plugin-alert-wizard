@@ -29,7 +29,7 @@ import { IntlProvider, FormattedMessage } from 'react-intl';
 import messages_fr from 'translations/fr.json';
 import CreateListFormInput from 'wizard/components/lists/CreateListFormInput';
 import AlertListActions from 'wizard/actions/AlertListActions';
-import Navigation from 'wizard/routing/Navigation';
+import AlertWizardRoutes from 'wizard/routing/AlertWizardRoutes';
 
 const language = navigator.language.split(/[-_]/)[0];
 
@@ -45,7 +45,7 @@ const NewAlertListPage = () => {
             if (response !== true) {
                 return;
             }
-            history.push(Navigation.getWizardListRoute());
+            history.push(AlertWizardRoutes.WIZARD.LISTS);
         });
     };
 
@@ -55,7 +55,7 @@ const NewAlertListPage = () => {
                 <div>
                     <PageHeader title={<FormattedMessage id="wizard.newList" defaultMessage="Wizard: New list" />}
                                 actions={(
-                                    <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
+                                    <LinkContainer to={AlertWizardRoutes.WIZARD._LISTS}>
                                         <Button bsStyle="info"><FormattedMessage id="wizard.backlist" defaultMessage= "Back to lists" /></Button>
                                     </LinkContainer>
                                 )}>

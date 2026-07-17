@@ -22,10 +22,10 @@ import Reflux from 'reflux';
 import { Button } from 'components/bootstrap';
 import { toDateObject } from 'util/DateTime';
 import { DataTable, IfPermitted, OverlayTrigger, Spinner, Timestamp } from 'components/common';
-import Routes from 'routing/Routes';
 import AlertListActions from 'wizard/actions/AlertListActions';
 import AlertListStore from 'wizard/stores/AlertListStore';
 import AlertListCloneForm from './AlertListCloneForm';
+import AlertWizardRoutes from 'wizard/routing/AlertWizardRoutes';
 
 const AlertListDisplay = ({config}) => {
     const intl = useIntl();
@@ -125,7 +125,7 @@ const AlertListDisplay = ({config}) => {
 
         const updateList = (
             <IfPermitted permissions="wizard_alerts_rules:read">
-                <LinkContainer to={Routes.pluginRoute('WIZARD_UPDATELIST_ALERTLISTTITLE')(list.title.replace(/\//g, '%2F'))}>
+                <LinkContainer to={AlertWizardRoutes.WIZARD.UPDATELIST(list.title.replace(/\//g, '%2F'))}>
                     <Button bsStyle="info" type="submit" title={messages.infoUpdate} >
                         <FormattedMessage id ="wizard.edit" defaultMessage="Edit" />
                     </Button>
@@ -199,19 +199,19 @@ const AlertListDisplay = ({config}) => {
         return (
             <div>
                 <div className="pull-right has-bm">
-                    <LinkContainer to={Routes.pluginRoute('WIZARD_NEWLIST')}>
+                    <LinkContainer to={AlertWizardRoutes.WIZARD.NEWLIST}>
                         <Button bsStyle="success" type="submit" title={messages.createAlertList}>
                             <FormattedMessage id="wizard.create" defaultMessage="Create"/>
                         </Button>
                     </LinkContainer>
                     {' '}
-                    <LinkContainer to={Routes.pluginRoute('WIZARD_IMPORTLIST')}>
+                    <LinkContainer to={AlertWizardRoutes.WIZARD.IMPORTLIST}>
                         <Button bsStyle="success" type="submit" title={messages.importAlertList}>
                             <FormattedMessage id="wizard.import" defaultMessage="Import"/>
                         </Button>
                     </LinkContainer>
                     {' '}
-                    <LinkContainer to={Routes.pluginRoute('WIZARD_EXPORTLIST')}>
+                    <LinkContainer to={AlertWizardRoutes.WIZARD.EXPORTLIST}>
                         <Button bsStyle="success" type="submit" title={messages.exportAlertList}>
                             <FormattedMessage id="wizard.export" defaultMessage="Export"/>
                         </Button>

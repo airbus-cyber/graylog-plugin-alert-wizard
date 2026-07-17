@@ -20,7 +20,7 @@ import PropTypes from 'prop-types';
 import { Button } from 'components/bootstrap';
 import { IfPermitted } from 'components/common';
 import { useIntl, FormattedMessage } from 'react-intl';
-import Routes from 'routing/Routes';
+import AlertWizardRoutes from 'wizard/routing/AlertWizardRoutes';
 
 const ButtonToUpdateRule = ({target, disabled}) => {
     const intl = useIntl();
@@ -29,7 +29,7 @@ const ButtonToUpdateRule = ({target, disabled}) => {
     const computeURl = () => {
         let url = '';
         if (!disabled) {
-            url = Routes.pluginRoute('WIZARD_UPDATEALERT_ALERTID')(target.replace(/\//g, '%2F'));
+            url = AlertWizardRoutes.WIZARD.UPDATEALERT(target.replace(/\//g, '%2F'));
         }
         return url;
     };

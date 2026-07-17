@@ -56,7 +56,7 @@ public class AlertWizardConfigResource extends RestResource implements PluginRes
     @Timed
     @Operation(summary = "Get alert wizard configuration")
     @RequiresPermissions({CLUSTER_CONFIG_ENTRY_READ})
-    public AlertWizardConfiguration config() {
+    public AlertWizardConfig config() {
         return this.configurationService.getConfiguration();
     }
 
@@ -65,7 +65,7 @@ public class AlertWizardConfigResource extends RestResource implements PluginRes
     @Operation(summary = "Update alert wizard configuration")
     @RequiresPermissions({CLUSTER_CONFIG_ENTRY_READ})
     @AuditEvent(type = AuditEventTypes.AUTHENTICATION_PROVIDER_CONFIGURATION_UPDATE)
-    public AlertWizardConfiguration updateConfig(@Parameter(name = "config", required = true) AlertWizardConfiguration configuration) {
+    public AlertWizardConfig updateConfig(@Parameter(name = "config", required = true) AlertWizardConfig configuration) {
         this.configurationService.updateConfiguration(configuration);
         return configuration;
     }

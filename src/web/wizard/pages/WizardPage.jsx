@@ -21,7 +21,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { LinkContainer } from 'react-router-bootstrap';
-import Routes from 'routing/Routes';
+import AlertWizardRoutes from 'wizard/routing/AlertWizardRoutes';
 import { Col, Row, Button } from 'components/bootstrap';
 import { IfPermitted, PageHeader, DocumentTitle, Spinner } from 'components/common';
 import { IntlProvider, FormattedMessage } from 'react-intl';
@@ -55,12 +55,12 @@ const WizardPage = () => {
                 <PageHeader title={<FormattedMessage id="wizard.alertsRule" defaultMessage= "Alert Rules" />} subpage={false} actions={(
                     <IfPermitted permissions="wizard_alerts_rules:read">
                         <div style={{display: 'flex', alignItems: 'flex-end', columnGap: '2px'}}>
-                            <LinkContainer to={Routes.pluginRoute('WIZARD_NEWALERT')}>
+                            <LinkContainer to={AlertWizardRoutes.WIZARD.NEWALERT}>
                                 <Button bsStyle="success" type="submit">
                                     <FormattedMessage id="wizard.create" defaultMessage="Create" />
                                 </Button>
                             </LinkContainer>
-                            <LinkContainer to={Routes.pluginRoute('WIZARD_IMPORTALERT')}>
+                            <LinkContainer to={AlertWizardRoutes.WIZARD.IMPORTALERT}>
                                 <Button bsStyle="success" type="submit">
                                     <FormattedMessage id="wizard.import" defaultMessage="Import" />
                                 </Button>

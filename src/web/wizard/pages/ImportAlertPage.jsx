@@ -23,7 +23,7 @@ import { DocumentTitle, PageHeader } from 'components/common';
 import { Input, Row, Col, Button } from 'components/bootstrap';
 import messages_fr from 'translations/fr.json';
 import AlertRuleActions from 'wizard/actions/AlertRuleActions';
-import Navigation from 'wizard/routing/Navigation';
+import AlertWizardRoutes from 'wizard/routing/AlertWizardRoutes';
 import AlertRuleSelectionList from 'wizard/components/rules/AlertRuleSelectionList';
 import RulesImportExport from 'wizard/logic/RulesImportExport';
 import { EventNotificationsActions } from 'stores/event-notifications/EventNotificationsStore';
@@ -82,7 +82,7 @@ const ImportAlertPage = () => {
                 <div>
                     <PageHeader title={<FormattedMessage id="wizard.importWizardAlertRule" defaultMessage="Wizard: Import alert rules" />}
                                 actions={(
-                                    <LinkContainer to={Navigation.getWizardRoute()}>
+                                    <LinkContainer to={AlertWizardRoutes.WIZARD.ALERTRULES}>
                                         <Button bsStyle="info"><FormattedMessage id= "wizard.back" defaultMessage= "Back to alert rules" /></Button>
                                     </LinkContainer>
                                 )}>

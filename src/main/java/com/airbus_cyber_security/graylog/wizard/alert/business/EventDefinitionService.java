@@ -31,7 +31,7 @@ import org.graylog.security.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfiguration;
+import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfigurationService;
 import com.airbus_cyber_security.graylog.wizard.config.rest.DefaultValues;
 import com.airbus_cyber_security.graylog.wizard.fields.AggregationFieldValueProvider;
@@ -81,7 +81,7 @@ public class EventDefinitionService {
 		EventNotificationHandler.Config notificationConfiguration = EventNotificationHandler.Config.builder()
 				.notificationId(notificationIdentifier).build();
 
-		AlertWizardConfiguration pluginConfiguration = this.configurationService.getConfiguration();
+		AlertWizardConfig pluginConfiguration = this.configurationService.getConfiguration();
 		DefaultValues defaultValues = pluginConfiguration.accessDefaultValues();
 		int computedAggregationTime = this.computeInt(aggregationTime, defaultValues.getAggregationTime(), 0);
 		long computedBacklog = this.computeLong(backlog, defaultValues.getBacklog());
@@ -120,7 +120,7 @@ public class EventDefinitionService {
 		ImmutableMap<String, EventFieldSpec> aggregationFieldSpecs = event.fieldSpec();
 
 		if (null != aggregationTime) {
-			AlertWizardConfiguration pluginConfiguration = this.configurationService.getConfiguration();
+			AlertWizardConfig pluginConfiguration = this.configurationService.getConfiguration();
 			DefaultValues defaultValues = pluginConfiguration.accessDefaultValues();
 			int computedAggregationTime = computeInt(aggregationTime, defaultValues.getAggregationTime(), 0);
 			EventFieldSpec aggregationFieldSpec = EventFieldSpec.builder().dataType(FieldValueType.STRING)

@@ -24,7 +24,7 @@ import { Input, Row, Col, Button } from 'components/bootstrap';
 import messages_fr from 'translations/fr.json';
 import AlertListActions from 'wizard/actions/AlertListActions';
 import { DocumentTitle, PageHeader } from 'components/common';
-import Navigation from 'wizard/routing/Navigation';
+import AlertWizardRoutes from 'wizard/routing/AlertWizardRoutes';
 
 const language = navigator.language.split(/[-_]/)[0];
 
@@ -104,7 +104,7 @@ const ImportListPage = () => {
             if (response !== true) {
                 return;
             }
-            history.push(Navigation.getWizardListRoute());
+            history.push(AlertWizardRoutes.WIZARD.LISTS);
         });
     };
 
@@ -114,7 +114,7 @@ const ImportListPage = () => {
                 <div>
                     <PageHeader title={<FormattedMessage id= "wizard.importWizardList" defaultMessage= "Wizard: Import lists" />}
                                 actions={(
-                                    <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
+                                    <LinkContainer to={AlertWizardRoutes.WIZARD.LISTS}>
                                         <Button bsStyle="info"><FormattedMessage id="wizard.backlist" defaultMessage= "Back to lists" /></Button>
                                     </LinkContainer>
                                 )}>

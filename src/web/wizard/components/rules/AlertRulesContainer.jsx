@@ -114,19 +114,23 @@ const AlertRulesContainer = ({ fieldOrder }) => {
         return '';
     };
 
-    const [columnOrder] = useState([...['title'], ...fieldOrder.map((field) => field.name).map((fieldName) => fieldsTitle.find(x => x.config === fieldName).key)]);
+    const [columnOrder] = useState(['title', ...fieldOrder.map((field) => field.name).map((fieldName) => fieldsTitle.find(x => x.config === fieldName).key)]);
     const [additionalAttributes] = useState([...fieldsTitle.map((field) => { return {id: field.key, title: field.label, sortable: field.sortable};})]);
     const [layoutConfig] = useState({
         ...DEFAULT_LAYOUT,
         defaultDisplayedAttributes: ['title', ...fieldOrder.filter(field => field.enabled).map((field) => field.name).map((fieldName) => fieldsTitle.find(x => x.config === fieldName).key)]
     });
 
-    const renderHeader = (_column) => {
-        return (<span>{fieldsTitle.find(x => x.key === _column.id).label}</span>);
+    const renderHeader = (_columnLabel) => {
+        return (<span>{_columnLabel}</span>);
     };
+
     const columnRenderers = () => ({
         attributes: {
             title: {
+                renderCell: (_title, alert) => {
+                    return (<span style={{whiteSpace: 'pre-line'}}>{alert.title}</span>);
+                },
                 renderHeader
             },
             user: {
@@ -134,11 +138,11 @@ const AlertRulesContainer = ({ fieldOrder }) => {
                 renderHeader
             },
             priority: {
-                renderCell: (_priority) => (<span style={{whiteSpace: 'pre-line'}}>{getPriorityType(_priority)}</span>),
+                renderCell: (_priority, alert) => (<span style={{whiteSpace: 'pre-line'}}>{getPriorityType(alert.priority)}</span>),
                 renderHeader
             },
             description: {
-                renderCell: (_description) => (<span style={{whiteSpace: 'pre-line'}}>{_description}</span>),
+                renderCell: (_description, alert) => (<span style={{whiteSpace: 'pre-line'}}>{alert.description}</span>),
                 renderHeader
             },
             created: {
@@ -296,6 +300,24 @@ const AlertRulesContainer = ({ fieldOrder }) => {
                                   additionalAttributes={additionalAttributes}
                                   tableLayout={layoutConfig}/>
         </>
+
+
+        // queryHelpComponent={<QueryHelper entityName="event" fieldMap={additionalSearchFields} />}
+        // entityActions={entityActions}
+        // tableLayout={eventsTableElements.defaultLayout}
+
+        // defaultFilters={defaultFilters}
+        // fetchEntities={_fetchEvents}
+        // fetchSlices={_fetchSlices}
+        // sliceRenderers={eventsSliceRenderers}
+        // keyFn={keyFn}
+        // expandedSectionRenderers={expandedSections}
+        // entityAttributesAreCamelCase={false}
+        // filterValueRenderers={FilterValueRenderers}
+        // columnRenderers={CustomColumnRenderers}
+        // bulkSelection={bulkSelection}
+        // topRightCol={<EventsRefreshControls />}
+        // middleSection={EventsWidgets}
     );
 };
 

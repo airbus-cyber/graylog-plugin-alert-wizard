@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.airbus_cyber_security.graylog.wizard.audit.AlertWizardAuditEventTypes;
-import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfiguration;
+import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfigurationService;
 import com.airbus_cyber_security.graylog.wizard.config.rest.ImportPolicyType;
 import com.airbus_cyber_security.graylog.wizard.list.bundles.AlertListExporter;
@@ -128,7 +128,7 @@ public class AlertListResource extends RestResource implements PluginRestResourc
     private String checkImportPolicyAndGetTitle(String title) {
         String listTitle = title;
         if (this.alertListService.isPresent(listTitle)) {
-            AlertWizardConfiguration configGeneral = configurationService.getConfiguration();
+            AlertWizardConfig configGeneral = configurationService.getConfiguration();
             ImportPolicyType importPolicy = configGeneral.accessImportPolicy();
             if (importPolicy != null && importPolicy.equals(ImportPolicyType.RENAME)) {
                 String newListTitle;

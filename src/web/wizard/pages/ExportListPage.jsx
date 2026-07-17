@@ -17,18 +17,18 @@
 
 // sources of inspiration for this code: 
 // * views/components/views/MissingRequirements.tsx
-import React, {useEffect, useState} from 'react';
-import { IntlProvider, FormattedMessage } from 'react-intl';
+import { Button, Col, Input, Row } from 'components/bootstrap';
+import { DocumentTitle, PageHeader } from 'components/common';
+import { useEffect, useState } from 'react';
+import { FormattedMessage, IntlProvider } from 'react-intl';
 import { LinkContainer } from 'react-router-bootstrap';
 import messages_fr from 'translations/fr.json';
-import { Input, Row, Col, Button } from 'components/bootstrap';
-import { DocumentTitle, PageHeader} from 'components/common';
-import UserNotification from 'util/UserNotification';
 import { adjustFormat } from 'util/DateTime';
-import Routes from 'routing/Routes';
+import UserNotification from 'util/UserNotification';
 import AlertListActions from 'wizard/actions/AlertListActions';
-import FileSaver from 'wizard/logic/FileSaver';
 import IconDownload from 'wizard/components/icons/Download';
+import FileSaver from 'wizard/logic/FileSaver';
+import AlertWizardRoutes from 'wizard/routing/AlertWizardRoutes';
 
 const language = navigator.language.split(/[-_]/)[0];
 
@@ -101,7 +101,7 @@ const ExportListPage = () => {
                 <div>
                     <PageHeader title={<FormattedMessage id= "wizard.exportWizardList" defaultMessage= "Wizard: Export lists" />}
                                 actions={(
-                                    <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
+                                    <LinkContainer to={AlertWizardRoutes.WIZARD.LISTS}>
                                         <Button bsStyle="info"><FormattedMessage id="wizard.backlist" defaultMessage= "Back to lists" /></Button>
                                     </LinkContainer>
                                 )}>

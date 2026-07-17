@@ -23,7 +23,7 @@ import { useIntl, FormattedMessage } from 'react-intl';
 import { Button, Col, Row, Nav, NavItem } from 'components/bootstrap';
 import ObjectUtils from 'util/ObjectUtils';
 
-import Navigation from 'wizard/routing/Navigation';
+import AlertWizardRoutes from 'wizard/routing/AlertWizardRoutes';
 import StatisticsCondition from 'wizard/components/conditions/StatisticsCondition';
 import GroupDistinctCondition from 'wizard/components/conditions/GroupDistinctCondition';
 import CorrelationCondition from 'wizard/components/conditions/CorrelationCondition';
@@ -162,7 +162,7 @@ const AlertRuleForm = ({initialAlert, navigationToRuleComponents, onSave, disabl
                         <AdvancedSettings onUpdate={_updateAdvancedSettingsChanged} alert={alert} />
                     </form>
                     <div className="pull-left">
-                        <LinkContainer to={Navigation.getWizardRoute()}>
+                        <LinkContainer to={AlertWizardRoutes.WIZARD.ALERTRULES}>
                             <Button>
                                 <FormattedMessage id="wizard.cancel" defaultMessage="Cancel" />
                             </Button>

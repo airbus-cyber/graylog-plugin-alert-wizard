@@ -30,7 +30,7 @@ import jakarta.validation.constraints.NotNull;
 
 @AutoValue
 @JsonAutoDetect
-public abstract class AlertWizardConfiguration {
+public abstract class AlertWizardConfig { // Do not rename
 
 	@JsonProperty("field_order")
 	@NotNull
@@ -44,7 +44,7 @@ public abstract class AlertWizardConfiguration {
 	public abstract ImportPolicyType accessImportPolicy();
 	
 	@JsonCreator
-    public static AlertWizardConfiguration create(@JsonProperty("field_order") List<FieldWizard> fieldOrder,
+    public static AlertWizardConfig create(@JsonProperty("field_order") List<FieldWizard> fieldOrder,
     		@JsonProperty("default_values") DefaultValues defaultValues, @JsonProperty("import_policy") ImportPolicyType importPolicy ){
         return builder()
                 .accessFieldOrder(fieldOrder)
@@ -54,7 +54,7 @@ public abstract class AlertWizardConfiguration {
     }
 
 
-	public static AlertWizardConfiguration defaultConfig() {
+	public static AlertWizardConfig defaultConfig() {
 		return builder()
 				.accessFieldOrder(ImmutableList.of(
 						FieldWizard.create("Priority", true),
@@ -79,7 +79,7 @@ public abstract class AlertWizardConfiguration {
 	}
 	
     public static Builder builder() {
-        return new AutoValue_AlertWizardConfiguration.Builder();
+        return new AutoValue_AlertWizardConfig.Builder();
     }
 
     public abstract Builder toBuilder();
@@ -89,7 +89,7 @@ public abstract class AlertWizardConfiguration {
 	 	public abstract Builder accessFieldOrder(List<FieldWizard> fieldOrder);
 	 	public abstract Builder accessDefaultValues(DefaultValues defaultValues);
 	 	public abstract Builder accessImportPolicy(ImportPolicyType importPolicy);
-	 	public abstract AlertWizardConfiguration build();
+	 	public abstract AlertWizardConfig build();
 	}
 }
 

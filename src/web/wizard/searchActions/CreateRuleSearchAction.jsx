@@ -19,7 +19,7 @@ import React from 'react';
 import { useCallback } from 'react';
 import { MenuItem } from 'components/bootstrap';
 import useHistory from 'routing/useHistory';
-import Navigation from 'wizard/routing/Navigation';
+import AlertWizardRoutes from 'wizard/routing/AlertWizardRoutes';
 
 const CreateRuleSearchAction = (searchActionProps) => {
 
@@ -34,7 +34,7 @@ const CreateRuleSearchAction = (searchActionProps) => {
 
     const createWizardRule = useCallback(() => {
         const queryString = _extractQueryString(searchActionProps.search);
-        history.pushWithState(Navigation.getWizardNewAlertRoute(), { queryString });
+        history.pushWithState(AlertWizardRoutes.WIZARD.NEWALERT, { queryString });
     }, [history]);
 
     return (

@@ -56,7 +56,7 @@ import com.airbus_cyber_security.graylog.wizard.alert.model.AlertType;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.AlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests.ImportAlertRuleRequest;
 import com.airbus_cyber_security.graylog.wizard.alert.utilities.ConditionParametersAdapter;
-import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfiguration;
+import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfig;
 import com.airbus_cyber_security.graylog.wizard.config.rest.AlertWizardConfigurationService;
 import com.airbus_cyber_security.graylog.wizard.config.rest.DefaultValues;
 import com.airbus_cyber_security.graylog.wizard.database.Description;
@@ -237,7 +237,7 @@ public class Conversions {
 		long searchWithinMs = this.convertMinutesToMilliseconds(conditionParametersAdapter.getTime());
 		
 
-		AlertWizardConfiguration pluginConfiguration = this.configurationService.getConfiguration();
+		AlertWizardConfig pluginConfiguration = this.configurationService.getConfiguration();
 		DefaultValues defaultValues = pluginConfiguration.accessDefaultValues();
 		long graceInMinutes = null == conditionParametersAdapter.getGrace() ? defaultValues.getGrace() : conditionParametersAdapter.getGrace();
 		long executeEveryMs = this.convertMinutesToMilliseconds(graceInMinutes);

@@ -30,7 +30,7 @@ import messages_fr from 'translations/fr.json';
 import AlertRuleForm from 'wizard/components/rules/AlertRuleForm';
 import AlertRuleResource from 'wizard/resources/AlertRuleResource';
 import WizardConfigurationResource from 'wizard/resources/WizardConfigurationResource';
-import Navigation from 'wizard/routing/Navigation';
+import AlertWizardRoutes from 'wizard/routing/AlertWizardRoutes';
 
 const language = navigator.language.split(/[-_]/)[0];
 
@@ -55,7 +55,7 @@ const NewAlertPage = () => {
             if (response !== true) {
                 return;
             }
-            history.push(Navigation.getWizardRoute());
+            history.push(AlertWizardRoutes.WIZARD.ALERTRULES);
         });
     };
 
@@ -106,7 +106,7 @@ const NewAlertPage = () => {
             <DocumentTitle title="New alert rule">
                 <PageHeader title={<FormattedMessage id="wizard.newAlertRule" defaultMessage="Wizard: New alert rule" />}
                             actions={(
-                                <LinkContainer to={Navigation.getWizardRoute()}>
+                                <LinkContainer to={AlertWizardRoutes.WIZARD.ALERTRULES}>
                                     <Button bsStyle="info"><FormattedMessage id="wizard.back" defaultMessage="Back to alert rules" /></Button>
                                 </LinkContainer>
                             )}>

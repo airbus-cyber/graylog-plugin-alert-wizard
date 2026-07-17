@@ -20,5 +20,7 @@ import type { Sort } from 'stores/PaginationTypes';
 export const DEFAULT_LAYOUT = {
   entityTableId: 'alert_rules',
   defaultPageSize: 20,
-  defaultSort: { attributeId: 'title', direction: 'asc' } as Sort
+  defaultSort: { attributeId: 'title', direction: 'asc' } as Sort,
+  defaultDisplayedAttributes: ['title', 'priority', 'description', 'created', 'lastModified', 'user', 'status', 'rule'],
+  defaultColumnOrder: ['title', 'priority', 'description', 'created', 'lastModified', 'user', 'status', 'rule'],
 };

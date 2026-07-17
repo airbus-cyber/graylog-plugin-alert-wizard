@@ -15,18 +15,17 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-import React, {useEffect, useState} from 'react';
 import { Button, Col, Row } from 'components/bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
 import { DocumentTitle, PageHeader, Spinner } from 'components/common';
-import Routes from 'routing/Routes';
-import withParams from 'routing/withParams';
-import useHistory from 'routing/useHistory';
+import { useEffect, useState } from 'react';
 import { FormattedMessage, IntlProvider } from 'react-intl';
+import { LinkContainer } from 'react-router-bootstrap';
+import useHistory from 'routing/useHistory';
+import withParams from 'routing/withParams';
 import messages_fr from 'translations/fr.json';
-import CreateListFormInput from 'wizard/components/lists/CreateListFormInput';
 import AlertListActions from 'wizard/actions/AlertListActions';
-import Navigation from 'wizard/routing/Navigation';
+import CreateListFormInput from 'wizard/components/lists/CreateListFormInput';
+import AlertWizardRoutes from 'wizard/routing/AlertWizardRoutes';
 
 const language = navigator.language.split(/[-_]/)[0];
 
@@ -51,7 +50,7 @@ const UpdateListPage = ({params}) => {
 
     const _update = (newList) => {
         AlertListActions.update(list.title, newList).finally(() => {
-            history.push(Navigation.getWizardListRoute());
+            history.push(AlertWizardRoutes.WIZARD.LISTS);
         });
     };
 
@@ -67,7 +66,7 @@ const UpdateListPage = ({params}) => {
                                                          defaultMessage='Wizard: Editing list "{title}"'
                                                          values={{title: list.title}}/>}
                                 actions={(
-                                    <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
+                                    <LinkContainer to={AlertWizardRoutes.WIZARD.LISTS}>
                                         <Button bsStyle="info"><FormattedMessage id="wizard.backlist" defaultMessage= "Back to lists" /></Button>
                                     </LinkContainer>
                                 )}>

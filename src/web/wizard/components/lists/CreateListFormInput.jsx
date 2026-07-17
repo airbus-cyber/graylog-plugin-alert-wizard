@@ -21,6 +21,7 @@ import ObjectUtils from 'util/ObjectUtils';
 import Routes from 'routing/Routes';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Input, Button, Col, Row } from 'components/bootstrap';
+import AlertWizardRoutes from 'wizard/routing/AlertWizardRoutes';
 
 const CreateListFormInput = ({list, onSave}) =>  {
 
@@ -39,7 +40,7 @@ const CreateListFormInput = ({list, onSave}) =>  {
     };
 
     const buttonCancel = (
-        <LinkContainer to={Routes.pluginRoute('WIZARD_LISTS')}>
+        <LinkContainer to={AlertWizardRoutes.WIZARD.LISTS}>
             <Button><FormattedMessage id= "wizard.cancel" defaultMessage="Cancel" /></Button>
         </LinkContainer>
     );
