@@ -127,7 +127,6 @@ class TestsFast(TestCase):
         self._graylog.start_logs_capture()
         self._graylog.update_alert_rule(rule['id'], {**rule, 'stream': stream})
         logs: str = self._graylog.extract_logs()
-        print('[DEBUG] logs=', logs)
         self.assertNotIn('Exception', logs)
 
     def test_update_alert_rule_should_delete_stream_when_removing_conditions(self):
