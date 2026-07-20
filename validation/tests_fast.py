@@ -120,13 +120,14 @@ class TestsFast(TestCase):
             'matching_type': 'AND'
         }
         rule = self._api.create_alert_rule_count(title, _PERIOD, stream=stream)
-        stream = {
+        stream: dict[str, any] = {
             'field_rule': [],
             'matching_type': 'AND'
         }
         self._graylog.start_logs_capture()
         self._graylog.update_alert_rule(rule['id'], {**rule, 'stream': stream})
-        logs = self._graylog.extract_logs()
+        logs: str = self._graylog.extract_logs()
+        print('[DEBUG] logs=', logs)
         self.assertNotIn('Exception', logs)
 
     def test_update_alert_rule_should_delete_stream_when_removing_conditions(self):
