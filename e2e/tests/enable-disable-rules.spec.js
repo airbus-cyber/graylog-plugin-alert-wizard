@@ -18,9 +18,10 @@ test('disable/enable rule without stream should work', async ({ page }) => {
     await open_alert_page_and_filter(page, title);
 
     // Disable Rule
-    await page.getByTitle('Select entity').click();
+    // await page.getByTitle('Select entity').click(); // TODO why this call fails?
+    await page.getByTitle('Select entity').locator('*').first().click();
     await page.waitForTimeout(1000);
-    await page.getByRole('button', { name: 'Bulk actions arrow_drop_down' }).click();
+    await page.getByRole('button', { name: 'Bulk actions' }).click();
     await page.waitForTimeout(500);
     await page.getByRole('menuitem', { name: 'Disable' }).click();
     await page.waitForTimeout(500);
@@ -31,9 +32,9 @@ test('disable/enable rule without stream should work', async ({ page }) => {
     await expect(page.getByText('Disabled')).toHaveCSS('background-color', 'rgb(255, 165, 0)');
 
     // Enable Rule
-    await page.getByTitle('Select entity').click();
+    await page.getByTitle('Select entity').click(); // TODO Why this one works while the previous one fails?
     await page.waitForTimeout(500);
-    await page.getByRole('button', { name: 'Bulk actions arrow_drop_down' }).click();
+    await page.getByRole('button', { name: 'Bulk actions' }).click();
     await page.waitForTimeout(500);
     await page.getByRole('menuitem', { name: 'Enable' }).click();
     await page.waitForTimeout(500);
