@@ -173,4 +173,4 @@ jobs:
           PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           echo -n "$GPG_PRIVATE_KEY" | gpg2 --batch --allow-secret-key-import --import
-          ./mvnw clean deploy -DskipTests=true --settings deployment/settings.xml
+          ./mvnw -X clean deploy -DskipTests=true --settings deployment/settings.xml
