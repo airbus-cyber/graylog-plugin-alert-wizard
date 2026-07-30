@@ -46,32 +46,32 @@ const AdvancedSettings = ({alert, onUpdate}) => {
                 <FormattedMessage id="wizard.advancedSettings" defaultMessage="Advanced settings" />
             </button>
                 { showControls ? (
-                    <div class="panel panel-default" id="advancedSettings">
+                    <div class="panel panel-default" id="advancedSettings"  style={{ width: '50%', minWidth: '800px'}}>
                         <Row style={{ marginTop: '.25em', marginBottom: '.25em'}}>
-                            <Col md={2} style={{ marginTop: 5, marginBottom: 0 }}>
+                            <Col md={7} style={{ marginTop: 5, marginBottom: 0 }}>
                                 <label className="pull-right" ><FormattedMessage id="wizard.advancedSettingsGrace" defaultMessage="Execute search every (minutes)" /></label>
                             </Col>
-                            <Col md={10}>
+                            <Col md={5}>
                                 <Input  id="grace" name="grace" type="number" min="0" onChange={_onGraceChanged}
                                         value={alert?.condition_parameters?.grace}
                                         style={{borderTopLeftRadius: '0px', borderBottomLeftRadius: '0px', height:'36px', width:'150px'}} />
                             </Col>
                         </Row>
                         <Row style={{ marginTop: '.25em', marginBottom: '.25em'}}>
-                            <Col md={2} style={{ marginTop: 5, marginBottom: 0 }}>
+                            <Col md={7} style={{ marginTop: 5, marginBottom: 0 }}>
                                 <label className="pull-right" ><FormattedMessage id="wizard.advancedSettingsBacklog" defaultMessage="Message backlog" /></label>
                             </Col>
-                            <Col md={10}>
+                            <Col md={5}>
                                 <Input  id="backlog" name="backlog" type="number" min="0" onChange={_onBacklogChanged}
                                         value={alert?.backlog}
                                         style={{borderTopLeftRadius: '0px', borderBottomLeftRadius: '0px', height:'36px', width:'150px'}} />
                             </Col>
                         </Row>
                         <Row style={{ marginTop: '.25em', marginBottom: '.25em'}}>
-                            <Col md={2} style={{ marginTop: 5, marginBottom: 0 }}>
+                            <Col md={7} style={{ marginTop: 5, marginBottom: 0 }}>
                                 <label className="pull-right" ><FormattedMessage id="wizard.advancedSettingsAggregationTime" defaultMessage="Notification aggregation time range (minutes)" /></label>
                             </Col>
-                            <Col md={10}>
+                            <Col md={5}>
                                 <Input  id="aggregation_time" name="aggregation_time" type="number" min="0" onChange={_onAggregationTimeChanged}
                                         value={alert?.aggregation_time}
                                         style={{borderTopLeftRadius: '0px', borderBottomLeftRadius: '0px', height:'36px', width:'150px'}} />
