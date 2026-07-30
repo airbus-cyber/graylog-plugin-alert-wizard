@@ -49,7 +49,7 @@ const AdvancedSettings = ({alert, onUpdate}) => {
                     <div class="panel panel-default" id="advancedSettings">
                         <Row style={{ marginTop: '.25em', marginBottom: '.25em'}}>
                             <Col md={2} style={{ marginTop: 5, marginBottom: 0 }}>
-                                <label className="pull-right" ><FormattedMessage id="wizard.advancedSettingsGrace" defaultMessage="Grace" /></label>
+                                <label className="pull-right" ><FormattedMessage id="wizard.advancedSettingsGrace" defaultMessage="Execute search every (minutes)" /></label>
                             </Col>
                             <Col md={10}>
                                 <Input  id="grace" name="grace" type="number" min="0" onChange={_onGraceChanged}
@@ -59,7 +59,7 @@ const AdvancedSettings = ({alert, onUpdate}) => {
                         </Row>
                         <Row style={{ marginTop: '.25em', marginBottom: '.25em'}}>
                             <Col md={2} style={{ marginTop: 5, marginBottom: 0 }}>
-                                <label className="pull-right" ><FormattedMessage id="wizard.advancedSettingsBacklog" defaultMessage="Backlog" /></label>
+                                <label className="pull-right" ><FormattedMessage id="wizard.advancedSettingsBacklog" defaultMessage="Message backlog" /></label>
                             </Col>
                             <Col md={10}>
                                 <Input  id="backlog" name="backlog" type="number" min="0" onChange={_onBacklogChanged}
@@ -69,7 +69,7 @@ const AdvancedSettings = ({alert, onUpdate}) => {
                         </Row>
                         <Row style={{ marginTop: '.25em', marginBottom: '.25em'}}>
                             <Col md={2} style={{ marginTop: 5, marginBottom: 0 }}>
-                                <label className="pull-right" ><FormattedMessage id="wizard.advancedSettingsAggregationTime" defaultMessage="Backlog" /></label>
+                                <label className="pull-right" ><FormattedMessage id="wizard.advancedSettingsAggregationTime" defaultMessage="Notification aggregation time range (minutes)" /></label>
                             </Col>
                             <Col md={10}>
                                 <Input  id="aggregation_time" name="aggregation_time" type="number" min="0" onChange={_onAggregationTimeChanged}
