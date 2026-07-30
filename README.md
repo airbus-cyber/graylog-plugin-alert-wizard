@@ -209,7 +209,7 @@ MyUser must be a user with admin rights
 
 ## Build
 
-This project requires Java 17 JDK.
+This project requires Java 21 JDK.
 
 * Clone this repository.
 * Clone [graylog2-server](https://github.com/Graylog2/graylog2-server) repository next to this repository.

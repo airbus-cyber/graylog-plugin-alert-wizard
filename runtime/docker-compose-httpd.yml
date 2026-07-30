@@ -1,0 +1,64 @@
+include:
+  - docker-compose-common.yml
+
+# sources of inspiration for this file
+# * https://go2docs.graylog.org/5-1/downloading_and_installing_graylog/docker_installation.htm
+# * https://github.com/Graylog2/docker-compose
+
+services:
+
+  # Graylog: https://hub.docker.com/r/graylog/graylog/
+  httpd:
+    # image: httpd:latest
+    build:
+      context: ./httpd
+    container_name: httpd
+    ports:
+    - '10080:80'
+    volumes:
+    - ./httpd/webapp:/usr/local/apache2/htdocs
+    networks:
+      - eh-network
+
+  # Graylog: https://hub.docker.com/r/graylog/graylog/
+  graylog:
+    # image: "graylog/graylog:${GRAYLOG_VERSION?Missing GRAYLOG_VERSION. Create a .env from pom: echo GRAYLOG_VERSION=$(cd ..&&mvn help:evaluate -Dexpression=project.parent.version -q -DforceStdout) > .env}"
+    build:
+      context: ./graylog/build
+      args:
+        graylog_version: "${GRAYLOG_VERSION?Missing GRAYLOG_VERSION. Create a .env from pom: echo GRAYLOG_VERSION=$(cd ..&&mvn help:evaluate -Dexpression=project.parent.version -q -DforceStdout) > .env}"
+    container_name: graylog
+    links:
+      - mongo:mongo
+      - opensearch
+    depends_on:
+      - mongo
+      - opensearch
+    ports:
+      # Graylog web interface and REST API
+      - 9000:9000
+      # Raw/Plaintext TCP
+      - 5555:5555
+      # Syslog TCP
+      - 514:514
+      # Syslog UDP
+      - 514:514/udp
+      # GELF TCP
+      - 12201:12201
+      # GELF UDP
+      - 12201:12201/udp
+    volumes:
+     - ./graylog/config:/usr/share/graylog/data/config
+     - ./graylog/plugin:/usr/share/graylog/plugin/
+    healthcheck:
+      test: curl --head --fail http://localhost:9000 || exit 1
+      start_period: 60s
+    networks:
+      - eh-network
+
+networks:
+  eh-network:
+    name: eh-network
+    driver: bridge
+
+
