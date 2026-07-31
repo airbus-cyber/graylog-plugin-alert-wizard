@@ -724,6 +724,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
         AlertType alertType = sourceAlert.getConditionType();
         if (null != conditionType && !conditionType.isEmpty()) {
             alertType = AlertType.valueOf(conditionType);
+            // Default values
             this.appendIfMissing(conditionParameters, AlertConditionParameters.THRESHOLD_TYPE, ">");
             this.appendIfMissing(conditionParameters, AlertConditionParameters.ADDITIONAL_THRESHOLD_TYPE, ">");
             this.appendIfMissing(conditionParameters, AlertConditionParameters.THRESHOLD, 0);
@@ -736,13 +737,19 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             this.appendIfMissing(conditionParameters, AlertConditionParameters.TYPE, "");
             this.appendIfMissing(conditionParameters, AlertConditionParameters.SEARCH_QUERY, "*");
             this.appendIfMissing(conditionParameters, AlertConditionParameters.ADDITIONAL_SEARCH_QUERY, "*");
-            if (AlertType.STATISTICAL == alertType) {
-                if ("".equals(conditionParameters.get(AlertConditionParameters.FIELD))) {
-                    conditionParameters.put(AlertConditionParameters.FIELD, "action"); // TODO how to find an existing value?
+
+            switch (alertType) {
+                case STATISTICAL -> {
+                    if ("".equals(conditionParameters.get(AlertConditionParameters.FIELD))) {
+                        conditionParameters.put(AlertConditionParameters.FIELD, "action"); // TODO how to find an existing value?
+                    }
+                    String conditionParamType = conditionParameters.get(AlertConditionParameters.TYPE).toString();
+                    if (!AlertConditionParameters.STATISTICAL_CONDITION_PARAMETER_TYPES.contains(conditionParamType)) {
+                        conditionParameters.put(AlertConditionParameters.TYPE, AlertConditionParameters.STATISTICAL_CONDITION_PARAMETER_TYPES.get(0));
+                    }
                 }
-                String conditionParamType = conditionParameters.get(AlertConditionParameters.TYPE).toString();
-                if (!AlertConditionParameters.STATISTICAL_CONDITION_PARAMETER_TYPES.contains(conditionParamType)) {
-                    conditionParameters.put(AlertConditionParameters.TYPE, AlertConditionParameters.STATISTICAL_CONDITION_PARAMETER_TYPES.get(0));
+                case COUNT -> {
+                    conditionParameters.put(AlertConditionParameters.GROUPING_FIELDS, Collections.emptyList());
                 }
             }
         }

@@ -208,8 +208,6 @@ public class Conversions {
 	}
 
 	// TODO move method to AlertRuleUtils?
-	// TODO instead of a String, the type could already be a
-	// com.airbus_cyber_security.graylog.events.processor.correlation.checks.OrderType
 	EventProcessorConfig createCorrelationCondition(AlertType type, String streamIdentifier, String streamIdentifier2,
 			Map<String, Object> conditionParameter) {
 		ConditionParametersAdapter conditionParametersAdapter = new ConditionParametersAdapter(conditionParameter);
