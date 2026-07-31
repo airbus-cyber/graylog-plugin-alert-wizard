@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 ## [7.1.1](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/7.1.0...7.1.1)
 ### Features
 * Fix useCondition error in alert rule
+* Fix clone
+* Modify advanced settings labels
+* Fix Group by widget
 
 ## [7.1.0](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/7.0.0...7.1.0)
 ### Features
