@@ -753,9 +753,9 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 case COUNT -> {
                     conditionParameters.put(AlertConditionParameters.GROUPING_FIELDS, Collections.emptyList());
                 }
-                case GROUP_DISTINCT -> {
-                    
-                }
+            }
+            if (AlertType.GROUP_DISTINCT != alertType) {
+                conditionParameters.remove(AlertConditionParameters.DISTINCT_BY, "");
             }
         }
         AlertRuleStream stream = sourceAlert.getStream();
