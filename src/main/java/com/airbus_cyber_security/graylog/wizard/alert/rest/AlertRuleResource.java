@@ -42,6 +42,7 @@ import org.graylog2.database.NotFoundException;
 import org.graylog2.database.PaginatedList;
 import org.graylog2.plugin.database.ValidationException;
 import org.graylog2.plugin.rest.PluginRestResource;
+import org.graylog2.plugin.streams.Stream;
 import org.graylog2.rest.models.SortOrder;
 import org.graylog2.rest.models.tools.responses.PageListResponse;
 import org.graylog2.rest.resources.entities.EntityDefaults;
@@ -751,12 +752,15 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 case COUNT -> {
                     conditionParameters.put(AlertConditionParameters.GROUPING_FIELDS, Collections.emptyList());
                 }
+                case GROUP_DISTINCT -> {
+                    
+                }
             }
         }
         AlertRuleStream stream = sourceAlert.getStream();
         AlertRuleStream secondStream = sourceAlert.getSecondStream();
-        if (AlertType.COUNT != alertType && null == secondStream && null != stream) {
-            secondStream = AlertRuleStream.create(stream.getID(), stream.getMatchingType(), stream.getFieldRules());
+        if (null == secondStream && (AlertType.AND == alertType || AlertType.OR == alertType || AlertType.THEN == alertType)) {
+            secondStream = AlertRuleStream.create(null, Stream.MatchingType.AND, Collections.emptyList());
         }
         String notificationIdentifier = createNotificationFromCloneRequest(alertTitle, userContext, sourceAlert.getNotificationID(), request.getCloneNotification());
         AlertRuleRequest alertRuleRequest = AlertRuleRequest.create(title, sourceAlert.getPriority(), description, sourceAlert.isDisabled(), alertType,
