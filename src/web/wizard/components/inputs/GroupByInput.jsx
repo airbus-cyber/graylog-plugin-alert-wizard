@@ -33,6 +33,16 @@ const GroupByInput = ({onUpdate, formattedFields, grouping_fields}) => {
         onUpdate('grouping_fields', values);
     };
 
+    const _handleIsValidNewOption = (inputValue, selectValue, selectOptions) => {
+        // Check for the same value --> ASD === ASD ?
+        const exactValueExists = selectOptions.some(el => el.value === inputValue);
+        // Check if the value has a valid length.
+        // Without this, it will show create option for empty values.
+        const valueIsNotEmpty = inputValue.trim().length;
+        // If true show create option.
+        return !exactValueExists && valueIsNotEmpty;
+    };
+
     const StyledText = styled(Text)(({ theme }) => css`
         color: ${theme.colors.gray[50]};
         padding-left: 10px;
@@ -52,7 +62,9 @@ const GroupByInput = ({onUpdate, formattedFields, grouping_fields}) => {
                                          options={formattedFields}
                                          value={state.grouping_fields ? (Array.isArray(state.grouping_fields) ? state.grouping_fields.join(',') : state.grouping_fields) : undefined}
                                          onChange={_onGroupingFieldsChange}
-                                         allowCreate={true}/>
+                                         allowCreate={true}
+                                         isValidNewOption={_handleIsValidNewOption}
+                                         />
                         </div>
                     </Input>
                 </Col>
