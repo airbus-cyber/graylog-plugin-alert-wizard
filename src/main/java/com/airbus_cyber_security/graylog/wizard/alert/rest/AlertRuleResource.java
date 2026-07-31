@@ -741,9 +741,10 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
 
             switch (alertType) {
                 case STATISTICAL -> {
-                    if ("".equals(conditionParameters.get(AlertConditionParameters.FIELD))) {
-                        conditionParameters.put(AlertConditionParameters.FIELD, "action"); // TODO how to find an existing value?
-                    }
+                    // if ("".equals(conditionParameters.get(AlertConditionParameters.FIELD))) {
+                    //     conditionParameters.put(AlertConditionParameters.FIELD, "action"); // TODO how to find an existing value?
+                    // }
+                    conditionParameters.put(AlertConditionParameters.FIELD, "");
                     String conditionParamType = conditionParameters.get(AlertConditionParameters.TYPE).toString();
                     if (!AlertConditionParameters.STATISTICAL_CONDITION_PARAMETER_TYPES.contains(conditionParamType)) {
                         conditionParameters.put(AlertConditionParameters.TYPE, AlertConditionParameters.STATISTICAL_CONDITION_PARAMETER_TYPES.get(0));
