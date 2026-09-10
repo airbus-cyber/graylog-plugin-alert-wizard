@@ -710,6 +710,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     @Path("/clone")
     public Response clone(@Parameter(name = "JSON body", required = true) @Valid @NotNull CloneAlertRuleRequest request, @Context UserContext userContext)
             throws ValidationException, BadRequestException, NotFoundException {
+    	
         GetDataAlertRule sourceAlert = getGetDataAlertRuleFromTitle(request.getSourceTitle());
         String userName = getCurrentUser().getName();
         String title = request.getTitle();
@@ -722,8 +723,12 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
             conditionParameters = new HashMap<>();
         }
         String conditionType = request.getConditionType();
-        AlertType alertType = sourceAlert.getConditionType();
+        AlertType alertType = sourceAlert.getConditionType(); // By default use the same value cloned alert
         if (null != conditionType && !conditionType.isEmpty()) {
+        	/*
+        	 *  Override the cloned alert condition type with the new one provided in the request.
+        	 *  This implies so many things...
+        	 */
             alertType = AlertType.valueOf(conditionType);
             // Default values
             this.appendIfMissing(conditionParameters, AlertConditionParameters.THRESHOLD_TYPE, ">");
@@ -752,10 +757,13 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 }
                 case COUNT -> {
                     conditionParameters.put(AlertConditionParameters.GROUPING_FIELDS, Collections.emptyList());
+                    conditionParameters.put(AlertConditionParameters.FIELD, "");
+                    conditionParameters.put(AlertConditionParameters.TYPE, "COUNT");
                 }
+                default -> {}
             }
             if (AlertType.GROUP_DISTINCT != alertType) {
-                conditionParameters.remove(AlertConditionParameters.DISTINCT_BY, "");
+                conditionParameters.remove(AlertConditionParameters.DISTINCT_BY);
             }
         }
         AlertRuleStream stream = sourceAlert.getStream();
