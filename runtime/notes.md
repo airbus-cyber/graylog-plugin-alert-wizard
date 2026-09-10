@@ -8,7 +8,7 @@ docker-compose.yml
 
 ## First time
 ```
-docker compose -f docker-compose-httpd.yml up  --build
+docker compose -f docker-compose-httpd.yml up --build
 ```
 
 ## Manually patch graylog

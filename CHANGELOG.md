@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [7.1.2](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/7.1.1...7.1.2)
+### Features
+* Fix dependencies
+* Fix distinct by cloning to count rule
+
 ## [7.1.1](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/7.1.0...7.1.1)
 ### Features
 * Fix useCondition error in alert rule ([issue #176](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/176))
