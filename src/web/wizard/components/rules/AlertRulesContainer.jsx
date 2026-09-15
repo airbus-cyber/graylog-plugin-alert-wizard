@@ -300,24 +300,6 @@ const AlertRulesContainer = ({ fieldOrder }) => {
                                   additionalAttributes={additionalAttributes}
                                   tableLayout={layoutConfig}/>
         </>
-
-
-        // queryHelpComponent={<QueryHelper entityName="event" fieldMap={additionalSearchFields} />}
-        // entityActions={entityActions}
-        // tableLayout={eventsTableElements.defaultLayout}
-
-        // defaultFilters={defaultFilters}
-        // fetchEntities={_fetchEvents}
-        // fetchSlices={_fetchSlices}
-        // sliceRenderers={eventsSliceRenderers}
-        // keyFn={keyFn}
-        // expandedSectionRenderers={expandedSections}
-        // entityAttributesAreCamelCase={false}
-        // filterValueRenderers={FilterValueRenderers}
-        // columnRenderers={CustomColumnRenderers}
-        // bulkSelection={bulkSelection}
-        // topRightCol={<EventsRefreshControls />}
-        // middleSection={EventsWidgets}
     );
 };
 

@@ -32,20 +32,21 @@ import CreateRuleSearchAction from './wizard/searchActions/CreateRuleSearchActio
 import AggregationFieldValueProviderForm from './wizard/aggregationField/AggregationFieldValueProviderForm';
 import { AGGREGATION_TYPE, AGGREGATION_DEFAULT_CONFIG, AGGREGATION_REQUIRED_FIELDS } from './wizard/aggregationField/AggregationFieldValueProviderForm';
 import AggregationFieldValueProviderSummary from './wizard/aggregationField/AggregationFieldValueProviderSummary';
+import AlertWizardRoutes from 'wizard/routing/AlertWizardRoutes';
 
 // TODO: think about it, but it seems alerts and lists are two entirely different "realms". If so, split their code in two distinct namespace
 PluginStore.register(new PluginManifest(packageJson, {
 
     routes: [
-        {path: '/wizard/AlertRules', component: WizardPage, permissions: 'WIZARD_ALERTS_RULES_READ'},
-        {path: '/wizard/NewAlert', component: NewAlertPage, permissions: 'WIZARD_ALERTS_RULES_CREATE'},
-        {path: '/wizard/UpdateAlert/:alertId', component: UpdateAlertPage, permissions: 'WIZARD_ALERTS_RULES_UPDATE'},
-        {path: '/wizard/ImportAlert', component: ImportAlertPage, permissions: 'WIZARD_ALERTS_RULES_READ'},
-        {path: '/wizard/Lists', component: WizardListsPage},
-        {path: '/wizard/NewList', component: NewAlertListPage},
-        {path: '/wizard/UpdateList/:alertListTitle', component: UpdateListPage},
-        {path: '/wizard/ImportList', component: ImportListPage},
-        {path: '/wizard/ExportList', component: ExportListPage},
+        {path: AlertWizardRoutes.WIZARD.ALERTRULES, component: WizardPage, permissions: 'WIZARD_ALERTS_RULES_READ'},
+        {path: AlertWizardRoutes.WIZARD.NEWALERT, component: NewAlertPage, permissions: 'WIZARD_ALERTS_RULES_CREATE'},
+        {path: AlertWizardRoutes.WIZARD.UPDATEALERT(':alertId'), component: UpdateAlertPage, permissions: 'WIZARD_ALERTS_RULES_UPDATE'},
+        {path: AlertWizardRoutes.WIZARD.IMPORTALERT, component: ImportAlertPage, permissions: 'WIZARD_ALERTS_RULES_READ'},
+        {path: AlertWizardRoutes.WIZARD.LISTS, component: WizardListsPage},
+        {path: AlertWizardRoutes.WIZARD.NEWLIST, component: NewAlertListPage},
+        {path: AlertWizardRoutes.WIZARD.UPDATELIST(':alertListTitle'), component: UpdateListPage},
+        {path: AlertWizardRoutes.WIZARD.IMPORTLIST, component: ImportListPage},
+        {path: AlertWizardRoutes.WIZARD.EXPORTLIST, component: ExportListPage},
     ],
 
     navigation: [
@@ -53,8 +54,8 @@ PluginStore.register(new PluginManifest(packageJson, {
             description: 'Wizard',
             position: { last: true},
             children: [
-                { path: appPrefixed('/wizard/AlertRules'), description: 'Alert Rules' },
-                { path: appPrefixed('/wizard/Lists'), description: 'Lists' },
+                { path: appPrefixed(AlertWizardRoutes.WIZARD.ALERTRULES), description: 'Alert Rules' },
+                { path: appPrefixed(AlertWizardRoutes.WIZARD.LISTS), description: 'Lists' },
             ],
         },
     ],
