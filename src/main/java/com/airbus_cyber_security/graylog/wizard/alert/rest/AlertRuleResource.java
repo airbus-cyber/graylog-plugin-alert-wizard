@@ -346,13 +346,17 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     }
 
     private String checkImportPolicyAndGetTitle(String title, UserContext userContext) {
+        AlertWizardConfig configuration = this.configurationService.getConfiguration();
+        ImportPolicyType importPolicy = configuration.accessImportPolicy();
+        return checkImportPolicyAndGetTitle(title, userContext, importPolicy);
+    }
+
+    private String checkImportPolicyAndGetTitle(String title, UserContext userContext, ImportPolicyType importPolicy) {
         String alertTitle = title;
         if (this.alertRuleService.isPresent(alertTitle)) {
             // TODO should be get or default here: it will return null when starting with a fresh instance of graylog
             // Idem in AlertListRessource. Add a test that creates two alerts with same title
-            AlertWizardConfig configuration = this.configurationService.getConfiguration();
-            ImportPolicyType importPolicy = configuration.accessImportPolicy();
-            if (importPolicy != null && importPolicy.equals(ImportPolicyType.RENAME)) {
+            if (ImportPolicyType.RENAME.equals(importPolicy)) {
                 String newAlertTitle;
                 int i = 1;
                 do {
@@ -360,7 +364,7 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                     i++;
                 } while (this.alertRuleService.isPresent(newAlertTitle));
                 alertTitle = newAlertTitle;
-            } else if (importPolicy != null && importPolicy.equals(ImportPolicyType.REPLACE)) {
+            } else if (ImportPolicyType.REPLACE.equals(importPolicy)) {
                 try {
                     AlertRule alert = this.alertRuleService.load(alertTitle);
                     if (alert != null) {
@@ -711,19 +715,19 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
     public Response clone(@Parameter(name = "JSON body", required = true) @Valid @NotNull CloneAlertRuleRequest request, @Context UserContext userContext)
             throws ValidationException, BadRequestException, NotFoundException {
     	
-        GetDataAlertRule sourceAlert = getGetDataAlertRuleFromTitle(request.getSourceTitle());
+        GetDataAlertRule previousAlertRule = getGetDataAlertRuleFromTitle(request.getSourceTitle());
         String userName = getCurrentUser().getName();
-        String title = request.getTitle();
-        String description = request.getDescription();
-        Integer aggregationTime = sourceAlert.getAggregationTime();
-        Long backlog = sourceAlert.getBacklog();
-        String alertTitle = checkImportPolicyAndGetTitle(title, userContext);
-        Map<String, Object> conditionParameters = sourceAlert.conditionParameters();
+        String newTitle = request.getTitle();
+        String newDescription = request.getDescription();
+        Integer previousAggregationTime = previousAlertRule.getAggregationTime();
+        Long previousBacklog = previousAlertRule.getBacklog();
+        String alertTitle = checkImportPolicyAndGetTitle(newTitle, userContext, request.getPolicy());
+        Map<String, Object> conditionParameters = previousAlertRule.conditionParameters();
         if (null == conditionParameters) {
             conditionParameters = new HashMap<>();
         }
         String conditionType = request.getConditionType();
-        AlertType alertType = sourceAlert.getConditionType(); // By default use the same value cloned alert
+        AlertType alertType = previousAlertRule.getConditionType(); // By default use the same value cloned alert
         if (null != conditionType && !conditionType.isEmpty()) {
         	/*
         	 *  Override the cloned alert condition type with the new one provided in the request.
@@ -766,14 +770,14 @@ public class AlertRuleResource extends RestResource implements PluginRestResourc
                 conditionParameters.remove(AlertConditionParameters.DISTINCT_BY);
             }
         }
-        AlertRuleStream stream = sourceAlert.getStream();
-        AlertRuleStream secondStream = sourceAlert.getSecondStream();
+        AlertRuleStream stream = previousAlertRule.getStream();
+        AlertRuleStream secondStream = previousAlertRule.getSecondStream();
         if (null == secondStream && (AlertType.AND == alertType || AlertType.OR == alertType || AlertType.THEN == alertType)) {
             secondStream = AlertRuleStream.create(null, Stream.MatchingType.AND, Collections.emptyList());
         }
-        String notificationIdentifier = createNotificationFromCloneRequest(alertTitle, userContext, sourceAlert.getNotificationID(), request.getCloneNotification());
-        AlertRuleRequest alertRuleRequest = AlertRuleRequest.create(title, sourceAlert.getPriority(), description, sourceAlert.isDisabled(), alertType,
-                conditionParameters, stream, secondStream, aggregationTime, backlog);
+        String notificationIdentifier = createNotificationFromCloneRequest(alertTitle, userContext, previousAlertRule.getNotificationID(), request.getCloneNotification());
+        AlertRuleRequest alertRuleRequest = AlertRuleRequest.create(newTitle, previousAlertRule.getPriority(), newDescription, previousAlertRule.isDisabled(), alertType,
+                conditionParameters, stream, secondStream, previousAggregationTime, previousBacklog);
 
         GetDataAlertRule result = createPatternAndRule(alertRuleRequest, userContext, notificationIdentifier, alertTitle, userName, alertType);
         return Response.ok().entity(result).build();

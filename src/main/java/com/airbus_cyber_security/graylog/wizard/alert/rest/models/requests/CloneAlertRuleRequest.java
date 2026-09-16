@@ -16,6 +16,12 @@
  */
 package com.airbus_cyber_security.graylog.wizard.alert.rest.models.requests;
 
+import org.bson.Document;
+import org.graylog2.plugin.streams.Stream;
+
+import com.airbus_cyber_security.graylog.wizard.alert.model.CloneAlertRuleFields;
+import com.airbus_cyber_security.graylog.wizard.alert.model.TriggeringConditions;
+import com.airbus_cyber_security.graylog.wizard.config.rest.ImportPolicyType;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -28,33 +34,38 @@ import jakarta.validation.constraints.NotNull;
 @JsonAutoDetect
 public abstract class CloneAlertRuleRequest {
 
-    @JsonProperty("source_title")
+    @JsonProperty(CloneAlertRuleFields.FIELD_SOURCE_TITLE)
     @NotNull
     public abstract String getSourceTitle();
 
-    @JsonProperty("title")
+    @JsonProperty(CloneAlertRuleFields.FIELD_TITLE)
     @NotNull
     public abstract String getTitle();
 
-    @JsonProperty("description")
+    @JsonProperty(CloneAlertRuleFields.FIELD_DESCRIPTION)
     @Nullable
     public abstract String getDescription();
 
-    @JsonProperty("clone_notification")
+    @JsonProperty(CloneAlertRuleFields.FIELD_CLONE_NOTIFICATION)
     @NotNull
     public abstract Boolean getCloneNotification();
 
-    @JsonProperty("condition_type")
+    @JsonProperty(CloneAlertRuleFields.FIELD_CONDITION_TYPE)
     @Nullable
     public abstract String getConditionType();
 
+    @JsonProperty(CloneAlertRuleFields.FIELD_POLICY)
+    @Nullable
+    public abstract ImportPolicyType getPolicy();
+
     @JsonCreator
     public static CloneAlertRuleRequest create(
-            @JsonProperty("source_title") String sourceTitle,
-            @JsonProperty("title") String title,
-            @JsonProperty("description") String description,
-            @JsonProperty("clone_notification") Boolean cloneNotification,
-            @JsonProperty("condition_type") String conditionType) {
-        return new AutoValue_CloneAlertRuleRequest(sourceTitle, title, description, cloneNotification, conditionType);
+            @JsonProperty(CloneAlertRuleFields.FIELD_SOURCE_TITLE) String sourceTitle,
+            @JsonProperty(CloneAlertRuleFields.FIELD_TITLE) String title,
+            @JsonProperty(CloneAlertRuleFields.FIELD_DESCRIPTION) String description,
+            @JsonProperty(CloneAlertRuleFields.FIELD_CLONE_NOTIFICATION) Boolean cloneNotification,
+            @JsonProperty(CloneAlertRuleFields.FIELD_CONDITION_TYPE) String conditionType,
+            @JsonProperty(CloneAlertRuleFields.FIELD_POLICY) ImportPolicyType policy) {
+        return new AutoValue_CloneAlertRuleRequest(sourceTitle, title, description, cloneNotification, conditionType, policy);
     }
 }

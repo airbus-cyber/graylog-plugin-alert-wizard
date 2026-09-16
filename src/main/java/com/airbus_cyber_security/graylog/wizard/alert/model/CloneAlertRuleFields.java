@@ -14,16 +14,21 @@
  * along with this program. If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
+package com.airbus_cyber_security.graylog.wizard.alert.model;
 
-package com.airbus_cyber_security.graylog.wizard.config.rest;
+/**
+ * Available condition parameters of an alert.
+ */
+public final class CloneAlertRuleFields {
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+	private CloneAlertRuleFields() {
+	}
 
-public enum ImportPolicyType {	
-    @JsonProperty("DONOTHING")
-	DONOTHING,
-    @JsonProperty("RENAME")
-	RENAME,
-    @JsonProperty("REPLACE")
-	REPLACE;
+	public static final String FIELD_SOURCE_TITLE = "source_title";
+	public static final String FIELD_TITLE = "title";
+	public static final String FIELD_DESCRIPTION = "description";
+	public static final String FIELD_CLONE_NOTIFICATION = "clone_notification";
+	public static final String FIELD_CONDITION_TYPE = "condition_type";
+	public static final String FIELD_POLICY = "policy";
+
 }

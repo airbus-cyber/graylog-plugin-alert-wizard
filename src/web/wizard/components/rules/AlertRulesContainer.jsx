@@ -189,7 +189,7 @@ const AlertRulesContainer = ({ fieldOrder }) => {
             <ButtonToUpdateRule target={element.id} disabled={!element.valid}/>
             <ButtonToEventDefinition target={element.condition} disabled={!element.valid}/>
             <ButtonToNotification target={element.notification} disabled={!element.valid}/>
-            <AlertRuleCloneForm alertTitle={element.title} disabled={!element.valid} onSubmit={_onCloneSubmit} />
+            <AlertRuleCloneForm alertTitle={element.title} disabled={!element.valid} onSubmit={_onCloneSubmit} onValidate={_onCloneValidate} />
         </div>);
     }, []);
 
@@ -277,9 +277,27 @@ const AlertRulesContainer = ({ fieldOrder }) => {
         return Promise.all(promises);
     }
 
-    const _onCloneSubmit = (name, title, description, shouldCloneNotification, conditionType) => {
-        AlertRuleActions.clone(name, title, description, shouldCloneNotification, conditionType)
+    const _onCloneSubmit = (name, title, description, shouldCloneNotification, conditionType, policy) => {
+        AlertRuleActions.clone(name, title, description, shouldCloneNotification, conditionType, policy)
             .then(() => {}).finally(() => _loadAlertRules());
+    }
+
+    /**
+     * 
+     * @param {string} newTitle 
+     * @param {() => void} onValid 
+     * @param {() => void} onNonValid 
+     */
+    const _onCloneValidate = (newTitle, onNonExist, onAlreadyExist) => {
+        AlertRuleActions.getByTitle(newTitle, true)
+            .then((alertRule) => {
+                if (alertRule) {
+                    // Case where a rule already exists with the same title
+                    onAlreadyExist();
+                } else {
+                    onNonExist();
+                }
+            }).finally(() => _loadAlertRules());
     }
 
     return (

@@ -125,7 +125,7 @@ const AlertRuleStore = Reflux.createStore({
         AlertRuleActions.get.promise(promise);
     },
 
-    getByTitle(title) {
+    getByTitle(title, quiet=false) {
         const promise = fetch('GET', URLUtils.qualifyUrl(SOURCE_URL + '/title/' + encodeURIComponent(title)))
             .then(
                 response => {
@@ -133,8 +133,10 @@ const AlertRuleStore = Reflux.createStore({
                     return response;
                 },
                 error => {
-                    UserNotification.error(`Fetching alert rule failed with status: ${error}`,
-                        'Could not retrieve alert rule');
+                    if (! quiet) {
+                        UserNotification.error(`Fetching alert rule failed with status: ${error}`,
+                            'Could not retrieve alert rule');
+                    }
                 });
         AlertRuleActions.getByTitle.promise(promise);
     },
@@ -172,7 +174,7 @@ const AlertRuleStore = Reflux.createStore({
         AlertRuleActions.create.promise(promise);
     },
 
-    clone(source_title, title, description, shouldCloneNotification, conditionType) {
+    clone(source_title, title, description, shouldCloneNotification, conditionType, policy) {
         const url = URLUtils.qualifyUrl(SOURCE_URL + '/clone');
 
         const request = {
@@ -181,6 +183,7 @@ const AlertRuleStore = Reflux.createStore({
             description: description,
             clone_notification: shouldCloneNotification,
             condition_type: conditionType,
+            policy: policy,
         };
 
         const promise = fetch('POST', url, request)
