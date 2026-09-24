@@ -29,6 +29,7 @@ import packageJson from '../../../../package.json';
 import messages_fr from 'translations/fr.json';
 import WizardConfigurationResource from 'wizard/resources/WizardConfigurationResource';
 import AlertRulesContainer from '../components/rules/AlertRulesContainer';
+import AlertRuleAllActions from '../components/rules/AlertRuleAllActions';
 
 
 const language = navigator.language.split(/[-_]/)[0];
@@ -65,6 +66,7 @@ const WizardPage = () => {
                                     <FormattedMessage id="wizard.import" defaultMessage="Import" />
                                 </Button>
                             </LinkContainer>
+                            <AlertRuleAllActions></AlertRuleAllActions>
                         </div>
                     </IfPermitted>
                 )}>

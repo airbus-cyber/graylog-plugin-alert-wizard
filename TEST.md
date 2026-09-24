@@ -18,6 +18,7 @@ cd graylog-plugin-alert-wizard/runtime;docker compose up
 ## Execute tests
 ### All
 ```
+cd graylog-plugin-alert-wizard/e2e
 npx playwright test -c playwright.config.js
 ```
 ### One in debug + UI
