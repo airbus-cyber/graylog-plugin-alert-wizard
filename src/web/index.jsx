@@ -29,33 +29,39 @@ import ImportListPage from './wizard/pages/ImportListPage';
 import ExportListPage from './wizard/pages/ExportListPage';
 import WizardAlertConfig from './wizard/components/configuration/WizardAlertConfig';
 import CreateRuleSearchAction from './wizard/searchActions/CreateRuleSearchAction';
-import AggregationFieldValueProviderForm from './wizard/aggregationField/AggregationFieldValueProviderForm';
-import { AGGREGATION_TYPE, AGGREGATION_DEFAULT_CONFIG, AGGREGATION_REQUIRED_FIELDS } from './wizard/aggregationField/AggregationFieldValueProviderForm';
+import { AggregationFieldValueProviderForm, AGGREGATION_TYPE, AGGREGATION_DEFAULT_CONFIG, AGGREGATION_REQUIRED_FIELDS } from './wizard/aggregationField/AggregationFieldValueProviderForm';
 import AggregationFieldValueProviderSummary from './wizard/aggregationField/AggregationFieldValueProviderSummary';
 import AlertWizardRoutes from 'wizard/routing/AlertWizardRoutes';
 
 // TODO: think about it, but it seems alerts and lists are two entirely different "realms". If so, split their code in two distinct namespace
+
+console.warn('[DEBUG] AlertWizardRoutes=', AlertWizardRoutes);
 PluginStore.register(new PluginManifest(packageJson, {
-
+    /* Here use unqualified route because it is relative to this web application root URL. 
+     * If root URL is http://localhost:9000/, then qualified and unqualified paths are the same
+     * If root URL is http://localhost:9000/graylog/, then qualified path is /graylog/wizard/AlertRules and unqualified path is /wizard/AlertRules
+     */
     routes: [
-        {path: AlertWizardRoutes.WIZARD.ALERTRULES, component: WizardPage, permissions: 'WIZARD_ALERTS_RULES_READ'},
-        {path: AlertWizardRoutes.WIZARD.NEWALERT, component: NewAlertPage, permissions: 'WIZARD_ALERTS_RULES_CREATE'},
-        {path: AlertWizardRoutes.WIZARD.UPDATEALERT(':alertId'), component: UpdateAlertPage, permissions: 'WIZARD_ALERTS_RULES_UPDATE'},
-        {path: AlertWizardRoutes.WIZARD.IMPORTALERT, component: ImportAlertPage, permissions: 'WIZARD_ALERTS_RULES_READ'},
-        {path: AlertWizardRoutes.WIZARD.LISTS, component: WizardListsPage},
-        {path: AlertWizardRoutes.WIZARD.NEWLIST, component: NewAlertListPage},
-        {path: AlertWizardRoutes.WIZARD.UPDATELIST(':alertListTitle'), component: UpdateListPage},
-        {path: AlertWizardRoutes.WIZARD.IMPORTLIST, component: ImportListPage},
-        {path: AlertWizardRoutes.WIZARD.EXPORTLIST, component: ExportListPage},
+        {path: AlertWizardRoutes.unqualified.WIZARD.ALERTRULES, component: WizardPage, permissions: 'WIZARD_ALERTS_RULES_READ'},
+        {path: AlertWizardRoutes.unqualified.WIZARD.NEWALERT, component: NewAlertPage, permissions: 'WIZARD_ALERTS_RULES_CREATE'},
+        {path: AlertWizardRoutes.unqualified.WIZARD.UPDATEALERT(':alertId'), component: UpdateAlertPage, permissions: 'WIZARD_ALERTS_RULES_UPDATE'},
+        {path: AlertWizardRoutes.unqualified.WIZARD.IMPORTALERT, component: ImportAlertPage, permissions: 'WIZARD_ALERTS_RULES_READ'},
+        {path: AlertWizardRoutes.unqualified.WIZARD.LISTS, component: WizardListsPage},
+        {path: AlertWizardRoutes.unqualified.WIZARD.NEWLIST, component: NewAlertListPage},
+        {path: AlertWizardRoutes.unqualified.WIZARD.UPDATELIST(':alertListTitle'), component: UpdateListPage},
+        {path: AlertWizardRoutes.unqualified.WIZARD.IMPORTLIST, component: ImportListPage},
+        {path: AlertWizardRoutes.unqualified.WIZARD.EXPORTLIST, component: ExportListPage},
     ],
-
+    /*
+     * Navigation needs qualified paths. It describes the main menu items to navigate throught the pages.
+     */
     navigation: [
         {
             description: 'Wizard',
             position: { last: true},
             children: [
-                { path: appPrefixed(AlertWizardRoutes.WIZARD.ALERTRULES), description: 'Alert Rules' },
-                { path: appPrefixed(AlertWizardRoutes.WIZARD.LISTS), description: 'Lists' },
+                { path: AlertWizardRoutes.WIZARD.ALERTRULES, description: 'Alert Rules' },
+                { path: AlertWizardRoutes.WIZARD.LISTS, description: 'Lists' },
             ],
         },
     ],
