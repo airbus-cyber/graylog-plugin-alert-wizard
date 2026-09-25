@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Graylog, Inc.
+ * Copyright (C) 2018 Airbus CyberSecurity (SAS)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Server Side Public License, version 1,
