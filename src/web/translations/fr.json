@@ -228,5 +228,7 @@
   "wizard.search": "Recherche",
   "wizard.tooltipSearch": "Lancer une recherche pour cette règle d'alerte",
   "wizard.cloneNotification": "Dupliquer la notification",
-  "wizard.cloneNotificationHelp": "Si la case est cochée, la notification sera dupliquée"
+  "wizard.cloneNotificationHelp": "Si la case est cochée, la notification sera dupliquée",
+  "wizard.cloneConfirmLabel": "Remplacer la règle d'alerte existante ?",
+  "wizard.cloneConfirmDescription": "Une règle d'alerte portant le même titre existe déjà. Confirmez pour la remplacer."
 }

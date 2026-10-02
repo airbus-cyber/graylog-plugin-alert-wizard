@@ -165,7 +165,7 @@ const CloneButton = ({title, conditionType, disabled = false, onSubmit, messages
                 title={intl.formatMessage({id:"wizard.cloneConfirmLabel", defaultMessage:"Override existing alert rule?"})}
                 onConfirm={confirmSubmit}
                 onCancel={cancelSubmit}>
-                Alert rule with same title already exists. Confirm will override it.
+                {intl.formatMessage({id:"wizard.cloneConfirmDescription", defaultMessage:"Alert rule with same title already exists. Confirm will override it."})}
             </BootstrapModalConfirm>
         </>
     );
