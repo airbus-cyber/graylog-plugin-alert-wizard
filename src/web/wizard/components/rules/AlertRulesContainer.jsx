@@ -189,13 +189,13 @@ const AlertRulesContainer = ({ fieldOrder }) => {
             <ButtonToUpdateRule target={element.id} disabled={!element.valid}/>
             <ButtonToEventDefinition target={element.condition} disabled={!element.valid}/>
             <ButtonToNotification target={element.notification} disabled={!element.valid}/>
-            <AlertRuleCloneForm alertTitle={element.title} disabled={!element.valid} onSubmit={_onCloneSubmit} onValidate={_onCloneValidate} />
+            <AlertRuleCloneForm alertTitle={element.title} alertConditionType={alert.condition_type} disabled={!element.valid} onSubmit={_onCloneSubmit} onValidate={_onCloneValidate} />
         </div>);
     }, []);
 
     const deleteAlertRules = (alertRulesIds) => {
         const promises = alertRulesIds.map(id => AlertRuleActions.delete(id));
-        Promise.all(promises).then(() => {}).finally(() => _loadAlertRules());
+        Promise.all(promises).then(() => {}, () => {}).finally(() => _loadAlertRules());
     }
 
     const disableAlertRules = async (alertRulesIds) => {
@@ -210,7 +210,15 @@ const AlertRulesContainer = ({ fieldOrder }) => {
         for(const elt of tempElements) {
             promises.push(_onPause(elt.title, elt.condition, elt.streamId, elt.secondEventDefinition, elt.streamId2));
         }
-        Promise.all(promises).then(() => {}).finally(() => _loadAlertRules());
+        Promise.all(promises).then(() => {}, () => {}).finally(() => _loadAlertRules());
+
+        // TODO replace with the following code
+        // const promises =  alertRulesIds.map(async (id) => {
+        //     const loadedRule = await AlertRuleActions.get(id);
+        //     const elt = _convertAlertToElement(loadedRule);
+        //     return _onPause(elt.title, elt.condition, elt.streamId, elt.secondEventDefinition, elt.streamId2);
+        // });
+        // Promise.all(promises).then(() => {}, () => {}).finally(() => _loadAlertRules());
     }
 
     const enableAlertRules = async (alertRulesIds) => {
@@ -225,7 +233,7 @@ const AlertRulesContainer = ({ fieldOrder }) => {
         for(const elt of tempElements) {
             promises.push(_onResume(elt.condition, elt.streamId, elt.secondEventDefinition, elt.streamId2));
         }
-        Promise.all(promises).then(() => {}).finally(() => _loadAlertRules());
+        Promise.all(promises).then(() => {}, () => {}).finally(() => _loadAlertRules());
     }
 
     const exportAlertRules = async (alertRulesIds) => {

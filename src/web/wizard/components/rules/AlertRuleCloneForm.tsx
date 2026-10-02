@@ -44,8 +44,8 @@ interface CloneValues {
  * @param onValidate [(newTitle: string, onValid: () => void, onNonValid: () => void) => void]
  * @returns 
  */
-const CloneButton = ({title, disabled = false, onSubmit, messages, onValidate}) => {
-    const [state, setState] = useState<CloneValues>({title: '', description: '', shouldCloneNotification: false, conditionType: ''});
+const CloneButton = ({title, conditionType, disabled = false, onSubmit, messages, onValidate}) => {
+    const [state, setState] = useState<CloneValues>({title: '', description: '', shouldCloneNotification: false, conditionType: conditionType});
     const [showConfigModal, setShowConfigModal] = useState<boolean>(false);
     const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
     const intl: IntlShape = useIntl();
@@ -148,6 +148,7 @@ const CloneButton = ({title, disabled = false, onSubmit, messages, onValidate}) 
                     <Select id="condition_type"
                             options={AVAILABLE_CONDITION_TYPES}
                             matchProp="value"
+                            value={conditionType}
                             onChange={onConditionTypeChanged}
                     />
                 </Input>
@@ -179,7 +180,7 @@ const CloneButton = ({title, disabled = false, onSubmit, messages, onValidate}) 
  * @param onValidate [(newTitle: string, onValid: () => void, onNonValid: () => void) => void]
  * @returns 
  */
-const AlertRuleCloneForm = ({alertTitle, disabled = false, onSubmit, onValidate}) => {
+const AlertRuleCloneForm = ({alertTitle, alertConditionType, disabled = false, onSubmit, onValidate}) => {
     const intl = useIntl();
     const messages = {
         infoClone: intl.formatMessage({id: "wizard.buttonInfoClone", defaultMessage: "Clone this alert rule"}),
@@ -188,7 +189,7 @@ const AlertRuleCloneForm = ({alertTitle, disabled = false, onSubmit, onValidate}
     };
 
     return (
-        <CloneButton title={alertTitle} disabled={disabled} onSubmit={onSubmit} messages={messages} onValidate={onValidate}/>
+        <CloneButton title={alertTitle} conditionType={alertConditionType} disabled={disabled} onSubmit={onSubmit} messages={messages} onValidate={onValidate}/>
     );
 };
 
