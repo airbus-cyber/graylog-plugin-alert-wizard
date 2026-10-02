@@ -14,21 +14,22 @@
  * along with this program. If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
-import * as React from 'react';
 import type { PropsWithChildren } from 'react';
+import * as React from 'react';
+import { useIntl } from 'react-intl';
 
-import { MenuItem, DropdownButton } from 'components/bootstrap';
+import { DropdownButton, MenuItem } from 'components/bootstrap';
 import type { BsSize } from 'components/bootstrap/types';
 
 const AllActionsDropdown = ({ children = undefined }: PropsWithChildren<{ bsSize?: BsSize }>) => {
+    const intl = useIntl();
 
   return (
     <DropdownButton
       bsStyle="success"
-      title="Global actions"
+      title={intl.formatMessage({id:"wizard.allActionDropdownLabel", defaultMessage:"Global actions"})}
       id="all-actions-dropdown">
       {children}
-      {Boolean(React.Children.count(children)) && <MenuItem divider />}
     </DropdownButton>
   );
 };

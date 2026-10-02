@@ -230,5 +230,6 @@
   "wizard.cloneNotification": "Dupliquer la notification",
   "wizard.cloneNotificationHelp": "Si la case est cochée, la notification sera dupliquée",
   "wizard.cloneConfirmLabel": "Remplacer la règle d'alerte existante ?",
-  "wizard.cloneConfirmDescription": "Une règle d'alerte portant le même titre existe déjà. Confirmez pour la remplacer."
+  "wizard.cloneConfirmDescription": "Une règle d'alerte portant le même titre existe déjà. Confirmez pour la remplacer.",
+  "wizard.allActionDropdownLabel": "Actions globales"
 }
