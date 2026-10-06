@@ -4,8 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [7.1.2](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/7.1.1...7.1.2)
 ### Features
+* Add global actions button to apply bulk actions on all rules, not only on selected ones ([issue #175](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/175))
+* Add feature to replace a rule when duplicating a rule with a name that already exists ([issue #174](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/174))
 * Fix dependencies
-* Fix distinct by cloning to count rule
+* Fix distinct by cloning to count rule ([issue #168](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/issues/168))
 
 ## [7.1.1](https://github.com/airbus-cyber/graylog-plugin-alert-wizard/compare/7.1.0...7.1.1)
 ### Features
