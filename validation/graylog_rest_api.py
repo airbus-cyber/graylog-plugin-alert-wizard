@@ -1,8 +1,9 @@
+import os
 import requests
 from urllib import parse
 from requests.exceptions import ConnectionError
 
-_AUTH = ('admin', 'admin')
+_AUTH = (os.environ.get('GRAYLOG_REST_API_USER', 'admin'), os.environ.get('GRAYLOG_REST_API_PASSWORD', 'admin'))
 _HEADERS = {'X-Requested-By': 'test-program'}
 _DEFAULT_STREAM = {
     'field_rule': [],
