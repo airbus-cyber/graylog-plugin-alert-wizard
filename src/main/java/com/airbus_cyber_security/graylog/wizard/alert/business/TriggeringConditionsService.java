@@ -29,12 +29,17 @@ import org.graylog2.plugin.database.ValidationException;
 import org.graylog2.plugin.streams.Stream;
 import org.graylog2.plugin.streams.StreamRule;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 public class TriggeringConditionsService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TriggeringConditionsService.class);
 
     private final StreamPipelineService streamPipelineService;
     private final StreamFacade streamService;
@@ -75,6 +80,7 @@ public class TriggeringConditionsService {
             return this.createFilteringStream(streamConfiguration, title, userName, disabled);
         }
         if (streamFieldRules.isEmpty()) {
+            LOG.info("Deleting filtering stream [{}] as part of updating triggering conditions", previousFilteringStreamIdentifier);
             this.streamPipelineService.deleteStreamFromIdentifier(previousFilteringStreamIdentifier);
             return null;
         }
@@ -90,6 +96,7 @@ public class TriggeringConditionsService {
         // second part of the condition here is probably incorrect...
         if (previousConditions.outputStreamIdentifier() != null
                 && !previousConditions.outputStreamIdentifier().equals(previousConditions.filteringStreamIdentifier())) {
+            LOG.info("Deleting output stream [{}] as part of updating triggering conditions", previousConditions.outputStreamIdentifier());
             this.streamPipelineService.deleteStreamFromIdentifier(previousConditions.outputStreamIdentifier());
         }
         deletePipelineIfAny(previousConditions.pipeline());
@@ -99,9 +106,11 @@ public class TriggeringConditionsService {
 
     public void deleteTriggeringConditions(TriggeringConditions conditions) {
         if (conditions.filteringStreamIdentifier() != null) {
+            LOG.info("Deleting filtering stream [{}] as part of deleting triggering conditions", conditions.filteringStreamIdentifier());
             this.streamPipelineService.deleteStreamFromIdentifier(conditions.filteringStreamIdentifier());
         }
         if (conditions.outputStreamIdentifier() != null && !conditions.outputStreamIdentifier().equals(conditions.filteringStreamIdentifier())) {
+            LOG.info("Deleting output stream [{}] as part of deleting triggering conditions", conditions.outputStreamIdentifier());
             this.streamPipelineService.deleteStreamFromIdentifier(conditions.outputStreamIdentifier());
         }
         deletePipelineIfAny(conditions.pipeline());
