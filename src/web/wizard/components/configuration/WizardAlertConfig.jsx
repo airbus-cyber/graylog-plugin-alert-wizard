@@ -132,7 +132,7 @@ export default function WizardAlertConfig() {
     };
 
     const _displayOptionalConfigurationValue = (value) => {
-        if (!value) {
+        if (value === undefined || value === null || value === '') {
             return '[not set]';
         }
         return value;
